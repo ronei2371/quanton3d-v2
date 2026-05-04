@@ -580,6 +580,8 @@ Potência UV: ${resultado.potenciaUV || "-"}
           onClose={() => setActiveModal(null)}
           abrirGuia={abrirGuia}
           abrirParceiroModal={abrirParceiroModal}
+          resinas={resinas}
+          impressoras={impressoras}
         />
       )}
 
@@ -1185,7 +1187,15 @@ function GuideModal({ guide, onClose }) {
   );
 }
 
-function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
+function SiteModal({
+  type,
+  cliente,
+  onClose,
+  abrirGuia,
+  abrirParceiroModal,
+  resinas = [],
+  impressoras = [],
+}) {
   const titles = {
     contato: "Fale Conosco",
     sobre: "Sobre a Quanton3D",
@@ -1214,7 +1224,13 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "sobre" && <SobreContent abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />}
         {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
-        {type === "galeria" && <GaleriaContent />}
+        {type === "galeria" && (
+          <GaleriaContent
+            cliente={cliente}
+            resinas={resinas}
+            impressoras={impressoras}
+          />
+        )}
         {type === "admin" && <AdminContent />}
         {type === "bot" && <BotContent />}
       </section>
@@ -1265,22 +1281,135 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
 }
 
 function FormulacaoContent({ cliente }) {
+  const [form, setForm] = useState({
+    nome: cliente?.nome || "",
+    telefone: cliente?.telefone || "",
+    email: cliente?.email || "",
+    cor: "",
+    aplicacao: "",
+    dureza: "",
+    flexibilidade: "",
+    resistencia: "",
+    observacoes: "",
+  });
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
+
+  function alterar(campo, valor) {
+    setForm((atual) => ({ ...atual, [campo]: valor }));
+  }
+
+  async function enviar(event) {
+    event.preventDefault();
+    setErro("");
+    setSucesso("");
+
+    if (!form.nome.trim() || !form.telefone.trim() || !form.aplicacao.trim()) {
+      setErro("Preencha nome, WhatsApp e aplicação desejada.");
+      return;
+    }
+
+    try {
+      setEnviando(true);
+      await api.post("/formulacoes", {
+        ...form,
+        caracteristica: [
+          form.aplicacao,
+          form.dureza && `Dureza: ${form.dureza}`,
+          form.flexibilidade && `Flexibilidade: ${form.flexibilidade}`,
+          form.resistencia && `Resistência: ${form.resistencia}`,
+        ]
+          .filter(Boolean)
+          .join(" | "),
+        detalhes: form.observacoes,
+      });
+      setSucesso("Pedido de formulação enviado para análise técnica.");
+      setForm((atual) => ({
+        ...atual,
+        cor: "",
+        aplicacao: "",
+        dureza: "",
+        flexibilidade: "",
+        resistencia: "",
+        observacoes: "",
+      }));
+    } catch (error) {
+      console.error("Erro ao enviar formulação:", error);
+      setErro(error?.response?.data?.error || "Não foi possível enviar o pedido.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
   return (
-    <div className="modal-rich-content">
+    <form className="modal-rich-content" onSubmit={enviar}>
       <p>
-        Pedido de formulação personalizada para cliente:{" "}
-        <strong>{cliente?.nome || "não identificado"}</strong>.
+        Solicite uma formulação personalizada para uma necessidade específica de
+        cor, dureza, flexibilidade, resistência ou aplicação.
       </p>
 
-      <p>
-        Esta tela será ligada ao MongoDB na próxima fase para salvar telefone,
-        e-mail, cor, aplicação, dureza, flexibilidade, resistência e observações.
-      </p>
+      {erro && <div className="modal-error">{erro}</div>}
+      {sucesso && <div className="modal-success">{sucesso}</div>}
 
-      <div className="notice-box">
-        Próximo passo: formulário real de formulação + painel admin.
+      <div className="form-grid">
+        <label>
+          <span>Nome *</span>
+          <input value={form.nome} onChange={(e) => alterar("nome", e.target.value)} />
+        </label>
+
+        <label>
+          <span>WhatsApp *</span>
+          <input value={form.telefone} onChange={(e) => alterar("telefone", e.target.value)} />
+        </label>
+
+        <label>
+          <span>E-mail</span>
+          <input type="email" value={form.email} onChange={(e) => alterar("email", e.target.value)} />
+        </label>
+
+        <label>
+          <span>Cor desejada</span>
+          <input value={form.cor} onChange={(e) => alterar("cor", e.target.value)} placeholder="Ex.: cinza, translúcida, preta" />
+        </label>
+
+        <label>
+          <span>Aplicação *</span>
+          <input value={form.aplicacao} onChange={(e) => alterar("aplicacao", e.target.value)} placeholder="Ex.: peça funcional, odontologia, miniatura" />
+        </label>
+
+        <label>
+          <span>Dureza desejada</span>
+          <input value={form.dureza} onChange={(e) => alterar("dureza", e.target.value)} placeholder="Ex.: rígida, média, flexível" />
+        </label>
+
+        <label>
+          <span>Flexibilidade</span>
+          <input value={form.flexibilidade} onChange={(e) => alterar("flexibilidade", e.target.value)} placeholder="Ex.: baixa, média, alta" />
+        </label>
+
+        <label>
+          <span>Resistência</span>
+          <input value={form.resistencia} onChange={(e) => alterar("resistencia", e.target.value)} placeholder="Ex.: impacto, temperatura, desgaste" />
+        </label>
+
+        <label className="form-full">
+          <span>Observações</span>
+          <textarea
+            rows="4"
+            value={form.observacoes}
+            onChange={(e) => alterar("observacoes", e.target.value)}
+            placeholder="Descreva o comportamento esperado, limitações e uso final."
+          />
+        </label>
       </div>
-    </div>
+
+      <div className="modal-action-grid">
+        <button type="submit" disabled={enviando}>
+          {enviando ? "Enviando..." : "Enviar pedido"}
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -1305,18 +1434,158 @@ function QualidadeContent({ abrirGuia }) {
   );
 }
 
-function GaleriaContent() {
+function GaleriaContent({ cliente, resinas = [], impressoras = [] }) {
+  const [form, setForm] = useState({
+    nome: cliente?.nome || "",
+    telefone: cliente?.telefone || "",
+    email: cliente?.email || "",
+    resina: "",
+    impressora: "",
+    alturaCamada: "",
+    exposicaoNormal: "",
+    exposicaoBase: "",
+    camadasBase: "",
+    observacao: "",
+  });
+  const [imagem, setImagem] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
+
+  function alterar(campo, valor) {
+    setForm((atual) => ({ ...atual, [campo]: valor }));
+  }
+
+  async function enviar(event) {
+    event.preventDefault();
+    setErro("");
+    setSucesso("");
+
+    if (!form.nome.trim() || !form.telefone.trim()) {
+      setErro("Preencha nome e WhatsApp.");
+      return;
+    }
+
+    try {
+      setEnviando(true);
+      const dados = new FormData();
+      Object.entries(form).forEach(([campo, valor]) => {
+        dados.append(campo, String(valor || "").trim());
+      });
+      if (imagem) dados.append("imagem", imagem);
+
+      await api.post("/gallery", dados, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setSucesso("Configuração enviada para análise antes de aparecer na galeria.");
+      setImagem(null);
+      setForm((atual) => ({
+        ...atual,
+        resina: "",
+        impressora: "",
+        alturaCamada: "",
+        exposicaoNormal: "",
+        exposicaoBase: "",
+        camadasBase: "",
+        observacao: "",
+      }));
+    } catch (error) {
+      console.error("Erro ao enviar galeria:", error);
+      setErro(error?.response?.data?.error || "Não foi possível enviar a configuração.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
   return (
-    <div className="modal-rich-content">
+    <form className="modal-rich-content" onSubmit={enviar}>
       <p>
-        A galeria será integrada na próxima fase para receber imagem, resina,
-        impressora, parâmetros e dados do cliente.
+        Compartilhe uma foto e os parâmetros usados para ajudar a base técnica
+        da Quanton3D. O envio fica pendente até aprovação no painel.
       </p>
 
-      <div className="notice-box">
-        O botão já está conectado visualmente. Falta ligar upload + MongoDB.
+      {erro && <div className="modal-error">{erro}</div>}
+      {sucesso && <div className="modal-success">{sucesso}</div>}
+
+      <div className="form-grid">
+        <label>
+          <span>Nome *</span>
+          <input value={form.nome} onChange={(e) => alterar("nome", e.target.value)} />
+        </label>
+
+        <label>
+          <span>WhatsApp *</span>
+          <input value={form.telefone} onChange={(e) => alterar("telefone", e.target.value)} />
+        </label>
+
+        <label>
+          <span>E-mail</span>
+          <input type="email" value={form.email} onChange={(e) => alterar("email", e.target.value)} />
+        </label>
+
+        <label>
+          <span>Resina</span>
+          <select value={form.resina} onChange={(e) => alterar("resina", e.target.value)}>
+            <option value="">Selecione</option>
+            {resinas.map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          <span>Impressora</span>
+          <select value={form.impressora} onChange={(e) => alterar("impressora", e.target.value)}>
+            <option value="">Selecione</option>
+            {impressoras.map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          <span>Altura de camada</span>
+          <input value={form.alturaCamada} onChange={(e) => alterar("alturaCamada", e.target.value)} placeholder="Ex.: 0.05" />
+        </label>
+
+        <label>
+          <span>Exposição normal</span>
+          <input value={form.exposicaoNormal} onChange={(e) => alterar("exposicaoNormal", e.target.value)} placeholder="Ex.: 2.2" />
+        </label>
+
+        <label>
+          <span>Exposição base</span>
+          <input value={form.exposicaoBase} onChange={(e) => alterar("exposicaoBase", e.target.value)} placeholder="Ex.: 35" />
+        </label>
+
+        <label>
+          <span>Camadas base</span>
+          <input value={form.camadasBase} onChange={(e) => alterar("camadasBase", e.target.value)} placeholder="Ex.: 5" />
+        </label>
+
+        <label>
+          <span>Foto</span>
+          <input type="file" accept="image/*" onChange={(e) => setImagem(e.target.files?.[0] || null)} />
+        </label>
+
+        <label className="form-full">
+          <span>Observação</span>
+          <textarea
+            rows="4"
+            value={form.observacao}
+            onChange={(e) => alterar("observacao", e.target.value)}
+            placeholder="Conte o resultado, ajustes ou problema resolvido."
+          />
+        </label>
       </div>
-    </div>
+
+      <div className="modal-action-grid">
+        <button type="submit" disabled={enviando}>
+          {enviando ? "Enviando..." : "Enviar configuração"}
+        </button>
+      </div>
+    </form>
   );
 }
 
