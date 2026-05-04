@@ -20,15 +20,19 @@ function ContactMessageModal({ aberto, aoFechar, cliente }) {
   useEffect(() => {
     if (!aberto) return;
 
-    setForm({
-      ...estadoInicial,
-      nome: cliente?.nome || "",
-      telefone: cliente?.telefone || "",
-      email: cliente?.email || "",
-    });
+    const timer = setTimeout(() => {
+      setForm({
+        ...estadoInicial,
+        nome: cliente?.nome || "",
+        telefone: cliente?.telefone || "",
+        email: cliente?.email || "",
+      });
 
-    setErro("");
-    setSucesso("");
+      setErro("");
+      setSucesso("");
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [aberto, cliente]);
 
   if (!aberto) return null;
