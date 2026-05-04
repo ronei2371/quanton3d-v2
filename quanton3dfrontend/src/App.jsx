@@ -1,7 +1,6 @@
 import PartnerRequestModal from "./components/PartnerRequestModal";
 import ContactMessageModal from "./components/ContactMessageModal";
-import CalculadoraExposicao from "./components/CalculadoraExposicao";
-import CalculadoraVolume from "./components/CalculadoraVolume";
+import Ferramentas from "./components/Ferramentas";
 import BotTicketModal from "./components/BotTicketModal";
 import AdminUnifiedPanel from "./components/AdminUnifiedPanel";
 import { useEffect, useMemo, useState } from "react";
@@ -616,7 +615,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
             </button>
 
             <button type="button" onClick={() => scrollToSection("calculadoras")}>
-              Calculadoras
+              Ferramentas
             </button>
 
             <button type="button" onClick={() => setMostrarAdminUnificado(true)}>
@@ -819,45 +818,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
       </section>
 
       <section id="calculadoras" className="content-section">
-        <div>
-          <span className="section-label">Ferramentas técnicas</span>
-          <h2>Calculadoras Quanton3D</h2>
-          <p>
-            Use estas ferramentas para estimar parâmetros de exposição e consumo de resina
-            antes de iniciar sua impressão.
-          </p>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "18px",
-            marginTop: "22px",
-          }}
-        >
-          <div
-            style={{
-              borderRadius: "24px",
-              overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.04)",
-            }}
-          >
-            <CalculadoraExposicao />
-          </div>
-
-          <div
-            style={{
-              borderRadius: "24px",
-              overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.04)",
-            }}
-          >
-            <CalculadoraVolume />
-          </div>
-        </div>
+        <Ferramentas />
       </section>
 
       <section id="produtos" className="content-section">
