@@ -1,0 +1,2 @@
+import express from 'express'; import { criarParametro,listarParametros,listarResinas,listarImpressoras,buscarPerfil } from '../controllers/parametrosController.js';
+const router=express.Router(); router.get('/',listarParametros); router.post('/',criarParametro); router.get('/resinas',listarResinas); router.get('/impressoras',listarImpressoras); router.get('/perfil',buscarPerfil); export default router;

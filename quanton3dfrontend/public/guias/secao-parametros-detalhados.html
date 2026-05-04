@@ -1,0 +1,339 @@
+<!-- SEÇÃO PARA INSERIR NO HTML PRINCIPAL -->
+
+            <!-- PARÂMETROS DETALHADOS CHITUBOX -->
+            <div class="step">
+                <div class="step-number">🔧</div>
+                <h3>Parâmetros Detalhados do Chitubox</h3>
+                <img src="images/chitubox-detalhado.png" alt="Parâmetros detalhados do Chitubox" class="step-image">
+                
+                <div class="step-description">
+                    <p>Entenda CADA parâmetro do Chitubox e como ele afeta sua impressão:</p>
+                </div>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📋 Seção: Imprimir (Print Settings)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Altura da Camada (Layer Height):</strong> 
+                    <br><strong>O que é:</strong> Espessura de cada camada de resina curada
+                    <br><strong>Valor típico:</strong> 0.05mm
+                    <br><strong>Como afeta:</strong> Camadas menores = mais qualidade + mais tempo. Camadas maiores = menos qualidade + menos tempo
+                    <br><strong>Ajuste:</strong> 0.025mm (alta qualidade) até 0.10mm (rápido)</li>
+                    
+                    <li><strong>Camadas de Base (Bottom Layers):</strong>
+                    <br><strong>O que é:</strong> Número de camadas iniciais com exposição prolongada
+                    <br><strong>Valor típico:</strong> 5-8 camadas
+                    <br><strong>Como afeta:</strong> Garante adesão forte à plataforma de impressão
+                    <br><strong>Ajuste:</strong> Plataforma flexível pode usar 3-5. Plataforma rígida use 6-8</li>
+                    
+                    <li><strong>Tempo Exposição (Exposure Time):</strong>
+                    <br><strong>O que é:</strong> Tempo que a luz UV fica ligada para curar cada camada normal
+                    <br><strong>Valor típico:</strong> 2.5-3.5s (para 0.05mm)
+                    <br><strong>Como afeta:</strong> Muito baixo = peça frágil. Muito alto = perda de detalhes
+                    <br><strong>Ajuste:</strong> Use gabarito de calibração Quanton3D!</li>
+                    
+                    <li><strong>Tempo Exposição Base (Bottom Exposure Time):</strong>
+                    <br><strong>O que é:</strong> Tempo de exposição das camadas base
+                    <br><strong>Valor típico:</strong> 30-50s (8-10x o tempo normal)
+                    <br><strong>Como afeta:</strong> Garante que a peça grude forte na plataforma
+                    <br><strong>Ajuste:</strong> Se peça não adere, aumente para 40-60s</li>
+                    
+                    <li><strong>Contagem de Camadas de Transição (Transition Layers Count):</strong>
+                    <br><strong>O que é:</strong> Número de camadas que fazem transição gradual entre base e normal
+                    <br><strong>Valor típico:</strong> 5 camadas
+                    <br><strong>Como afeta:</strong> Suaviza a mudança brusca entre camadas base e normais, reduz marcas
+                    <br><strong>Ajuste:</strong> 3-8 camadas. Mais camadas = transição mais suave</li>
+                    
+                    <li><strong>Tipo da Primeira Transição (Transition Type):</strong>
+                    <br><strong>O que é:</strong> Como o tempo de exposição muda nas camadas de transição
+                    <br><strong>Valor típico:</strong> Linear
+                    <br><strong>Como afeta:</strong> Linear = mudança gradual uniforme. Exponencial = mudança mais rápida no início
+                    <br><strong>Ajuste:</strong> Mantenha Linear para maioria dos casos</li>
+                    
+                    <li><strong>Diferença de Tempo de Intervalo da Camada (Transition Time Difference):</strong>
+                    <br><strong>O que é:</strong> Quanto o tempo de exposição diminui a cada camada de transição
+                    <br><strong>Valor típico:</strong> Calculado automaticamente
+                    <br><strong>Como afeta:</strong> Determina a velocidade da transição
+                    <br><strong>Ajuste:</strong> Deixe automático na maioria dos casos</li>
+                </ul>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⬆️ Seção: Movimento (Motion Settings)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Dist. Elevação Inferior (Bottom Lift Distance):</strong>
+                    <br><strong>O que é:</strong> Distância que a plataforma sobe após curar cada camada base
+                    <br><strong>Valor típico:</strong> 6-8mm
+                    <br><strong>Como afeta:</strong> Precisa ser suficiente para resina fluir sob a peça
+                    <br><strong>Ajuste:</strong> Tanque raso = 5mm. Tanque fundo = 8mm</li>
+                    
+                    <li><strong>Distância Elevação (Lift Distance):</strong>
+                    <br><strong>O que é:</strong> Distância que a plataforma sobe após curar cada camada normal
+                    <br><strong>Valor típico:</strong> 6-8mm
+                    <br><strong>Como afeta:</strong> Igual ao anterior, mas para camadas normais
+                    <br><strong>Ajuste:</strong> Pode ser igual ou ligeiramente menor que o bottom lift</li>
+                    
+                    <li><strong>Distância de Retração Inferior (Bottom Retract Distance):</strong>
+                    <br><strong>O que é:</strong> Distância extra que a plataforma desce antes de parar
+                    <br><strong>Valor típico:</strong> 0-2mm
+                    <br><strong>Como afeta:</strong> Ajuda a comprimir a resina uniformemente
+                    <br><strong>Ajuste:</strong> Geralmente 0mm. Use 1-2mm se tiver bolhas</li>
+                    
+                    <li><strong>Distância de Retração (Retract Distance):</strong>
+                    <br><strong>O que é:</strong> Igual ao anterior, mas para camadas normais
+                    <br><strong>Valor típico:</strong> 0-2mm
+                    <br><strong>Como afeta:</strong> Mesmo efeito do bottom retract
+                    <br><strong>Ajuste:</strong> Mantenha igual ao bottom retract</li>
+                    
+                    <li><strong>Vel. Elevação Inferior (Bottom Lift Speed):</strong>
+                    <br><strong>O que é:</strong> Velocidade que a plataforma sobe nas camadas base
+                    <br><strong>Valor típico:</strong> 60-80mm/min
+                    <br><strong>Como afeta:</strong> Muito rápido pode quebrar a peça. Muito lento aumenta tempo
+                    <br><strong>Ajuste:</strong> Resina rígida = 40-60mm/min. Resina flexível = 80-100mm/min</li>
+                    
+                    <li><strong>Velocidade de Elevação (Lift Speed):</strong>
+                    <br><strong>O que é:</strong> Velocidade que a plataforma sobe nas camadas normais
+                    <br><strong>Valor típico:</strong> 60-80mm/min
+                    <br><strong>Como afeta:</strong> Parâmetro CRÍTICO! Muito rápido = peça quebra durante impressão
+                    <br><strong>Ajuste:</strong> Resinas com alta rigidez = 40-60mm/min</li>
+                    
+                    <li><strong>Velocidade de Retração Inferior (Bottom Retract Speed):</strong>
+                    <br><strong>O que é:</strong> Velocidade que a plataforma desce após lift nas camadas base
+                    <br><strong>Valor típico:</strong> 150-200mm/min
+                    <br><strong>Como afeta:</strong> Pode ser mais rápido pois não há risco de quebrar
+                    <br><strong>Ajuste:</strong> 150-250mm/min é seguro</li>
+                    
+                    <li><strong>Vel. Retração (Retract Speed):</strong>
+                    <br><strong>O que é:</strong> Velocidade que a plataforma desce após lift nas camadas normais
+                    <br><strong>Valor típico:</strong> 150-200mm/min
+                    <br><strong>Como afeta:</strong> Afeta tempo total, mas não qualidade
+                    <br><strong>Ajuste:</strong> Pode ser 2-3x mais rápido que lift speed</li>
+                </ul>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⏱️ Seção: Tempos de Espera (Wait Times)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Modo de Espera Durante a Impressão (Rest Mode):</strong>
+                    <br><strong>O que é:</strong> Quando a impressora aguarda antes de curar
+                    <br><strong>Opções:</strong> "Tempo de descanso" ou "Antes da exposição"
+                    <br><strong>Como afeta:</strong> Define se espera antes ou depois do lift
+                    <br><strong>Ajuste:</strong> "Tempo de descanso" é mais comum</li>
+                    
+                    <li><strong>Tempo de Descanso Antes da Elevação (Rest Time Before Lift):</strong>
+                    <br><strong>O que é:</strong> Pausa após curar, antes de subir a plataforma
+                    <br><strong>Valor típico:</strong> 0s
+                    <br><strong>Como afeta:</strong> Permite resina drenar antes do movimento
+                    <br><strong>Ajuste:</strong> 0-1s. Só use se tiver problemas de adesão</li>
+                    
+                    <li><strong>Tempo de Descanso Após a Elevação (Rest Time After Lift):</strong>
+                    <br><strong>O que é:</strong> Pausa após subir, antes de descer
+                    <br><strong>Valor típico:</strong> 0-2s
+                    <br><strong>Como afeta:</strong> Permite resina se estabilizar no tanque
+                    <br><strong>Ajuste:</strong> 1-2s para resinas viscosas. 0s para resinas fluidas</li>
+                    
+                    <li><strong>Tempo de Descanso Após a Retração (Rest Time After Retract):</strong>
+                    <br><strong>O que é:</strong> Pausa após descer, antes de curar próxima camada
+                    <br><strong>Valor típico:</strong> 0.5-1s
+                    <br><strong>Como afeta:</strong> Tempo para resina fluir sob a peça
+                    <br><strong>Ajuste:</strong> 0.5s para resinas fluidas. 1-2s para resinas viscosas</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h3>⚠️ ATENÇÃO - Lift Speed</h3>
+                    <p><strong>Velocidade de Elevação (Lift Speed)</strong> é o parâmetro que MAIS causa falhas!<br><br>
+                    Se sua impressão quebra no meio do processo, o problema é quase sempre lift speed muito alto para aquela resina.<br><br>
+                    <strong>Resinas com alta rigidez (ABS-Like, Tough, Engineering):</strong> Use 40-60mm/min<br>
+                    <strong>Resinas normais (Standard):</strong> Use 60-80mm/min<br>
+                    <strong>Resinas flexíveis:</strong> Use 80-100mm/min</p>
+                </div>
+            </div>
+
+            <!-- PARÂMETROS DETALHADOS LYCHEE -->
+            <div class="step">
+                <div class="step-number">🔧</div>
+                <h3>Parâmetros Detalhados do Lychee Slicer</h3>
+                <img src="images/lychee-detalhado.png" alt="Parâmetros detalhados do Lychee Slicer" class="step-image">
+                
+                <div class="step-description">
+                    <p>Entenda CADA parâmetro do Lychee Slicer e como ele afeta sua impressão:</p>
+                </div>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📋 Global Parameters (Parâmetros Globais)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Two Stage Motion Control (TSMC):</strong>
+                    <br><strong>O que é:</strong> Sistema de movimento em dois estágios
+                    <br><strong>Valor típico:</strong> ON
+                    <br><strong>Como afeta:</strong> Permite lift speed diferente no início (mais lento) e depois (mais rápido)
+                    <br><strong>Ajuste:</strong> Ative para reduzir risco de quebra mantendo velocidade</li>
+                    
+                    <li><strong>Light Off Delay (On) / Resting Time (Off):</strong>
+                    <br><strong>O que é:</strong> Tempo de espera após desligar a luz UV
+                    <br><strong>Valor típico:</strong> ON
+                    <br><strong>Como afeta:</strong> ON = espera após curar. OFF = espera após movimento
+                    <br><strong>Ajuste:</strong> ON é mais moderno e eficiente</li>
+                </ul>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">🔥 Burn In Layers (Camadas Base)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Number of Layers:</strong>
+                    <br><strong>O que é:</strong> Quantidade de camadas base
+                    <br><strong>Valor típico:</strong> 6 camadas
+                    <br><strong>Como afeta:</strong> Garante adesão à plataforma
+                    <br><strong>Ajuste:</strong> 5-8 camadas conforme tipo de plataforma</li>
+                    
+                    <li><strong>Exposure Time:</strong>
+                    <br><strong>O que é:</strong> Tempo de exposição das camadas base
+                    <br><strong>Valor típico:</strong> 30-50s
+                    <br><strong>Como afeta:</strong> Deve ser 8-10x maior que exposição normal
+                    <br><strong>Ajuste:</strong> Se não aderir, aumente para 40-60s</li>
+                    
+                    <li><strong>Transition Layers Count:</strong>
+                    <br><strong>O que é:</strong> Camadas de transição entre base e normal
+                    <br><strong>Valor típico:</strong> 6 camadas
+                    <br><strong>Como afeta:</strong> Suaviza mudança, reduz marcas
+                    <br><strong>Ajuste:</strong> 4-8 camadas</li>
+                    
+                    <li><strong>Lift Distance:</strong>
+                    <br><strong>O que é:</strong> Distância de elevação nas camadas base
+                    <br><strong>Valor típico:</strong> 4-6mm
+                    <br><strong>Como afeta:</strong> Precisa ser suficiente para resina fluir
+                    <br><strong>Ajuste:</strong> 4-8mm conforme tanque</li>
+                    
+                    <li><strong>Retract Distance:</strong>
+                    <br><strong>O que é:</strong> Distância extra ao descer
+                    <br><strong>Valor típico:</strong> 0-2mm
+                    <br><strong>Como afeta:</strong> Comprime resina uniformemente
+                    <br><strong>Ajuste:</strong> 0mm padrão. 1-2mm se tiver bolhas</li>
+                    
+                    <li><strong>Lift Speed:</strong>
+                    <br><strong>O que é:</strong> Velocidade de subida nas camadas base
+                    <br><strong>Valor típico:</strong> 60-100mm/min
+                    <br><strong>Como afeta:</strong> Muito rápido pode quebrar
+                    <br><strong>Ajuste:</strong> 40-60mm/min para resinas rígidas</li>
+                    
+                    <li><strong>Retract Speed:</strong>
+                    <br><strong>O que é:</strong> Velocidade de descida
+                    <br><strong>Valor típico:</strong> 150-200mm/min
+                    <br><strong>Como afeta:</strong> Pode ser mais rápido que lift
+                    <br><strong>Ajuste:</strong> 150-250mm/min</li>
+                    
+                    <li><strong>Light Intensity:</strong>
+                    <br><strong>O que é:</strong> Intensidade da luz UV (%)
+                    <br><strong>Valor típico:</strong> 100%
+                    <br><strong>Como afeta:</strong> Reduzir aumenta tempo necessário
+                    <br><strong>Ajuste:</strong> Mantenha 100% e ajuste tempo de exposição</li>
+                </ul>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📄 Normal Layers (Camadas Normais)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Layer Thickness:</strong>
+                    <br><strong>O que é:</strong> Altura de cada camada (Layer Height)
+                    <br><strong>Valor típico:</strong> 50 microns (0.05mm)
+                    <br><strong>Como afeta:</strong> Menor = mais qualidade. Maior = mais rápido
+                    <br><strong>Ajuste:</strong> 25-100 microns (0.025-0.10mm)</li>
+                    
+                    <li><strong>Exposure Time:</strong>
+                    <br><strong>O que é:</strong> Tempo de exposição das camadas normais
+                    <br><strong>Valor típico:</strong> 2.5-3.5s (para 0.05mm)
+                    <br><strong>Como afeta:</strong> Parâmetro CRÍTICO! Use gabarito de calibração
+                    <br><strong>Ajuste:</strong> Varia com altura de camada e resina</li>
+                    
+                    <li><strong>Lift Distance:</strong>
+                    <br><strong>O que é:</strong> Distância de elevação nas camadas normais
+                    <br><strong>Valor típico:</strong> 4-6mm
+                    <br><strong>Como afeta:</strong> Igual às camadas base
+                    <br><strong>Ajuste:</strong> Pode ser igual ou menor que base</li>
+                    
+                    <li><strong>Retract Distance:</strong>
+                    <br><strong>O que é:</strong> Distância de retração
+                    <br><strong>Valor típico:</strong> 0-2mm
+                    <br><strong>Como afeta:</strong> Compressão da resina
+                    <br><strong>Ajuste:</strong> Igual às camadas base</li>
+                    
+                    <li><strong>Lift Speed:</strong>
+                    <br><strong>O que é:</strong> Velocidade de subida - PARÂMETRO CRÍTICO!
+                    <br><strong>Valor típico:</strong> 60-180mm/min (com TSMC)
+                    <br><strong>Como afeta:</strong> Principal causa de quebra durante impressão
+                    <br><strong>Ajuste:</strong> Resina rígida = 40-60mm/min inicial</li>
+                    
+                    <li><strong>Retract Speed:</strong>
+                    <br><strong>O que é:</strong> Velocidade de descida
+                    <br><strong>Valor típico:</strong> 150-200mm/min
+                    <br><strong>Como afeta:</strong> Tempo total de impressão
+                    <br><strong>Ajuste:</strong> Pode ser 2-3x mais rápido que lift</li>
+                    
+                    <li><strong>Wait Before Print:</strong>
+                    <br><strong>O que é:</strong> Tempo de espera antes de curar
+                    <br><strong>Valor típico:</strong> 0-1s
+                    <br><strong>Como afeta:</strong> Permite resina se acomodar
+                    <br><strong>Ajuste:</strong> 0.5-1s para resinas viscosas</li>
+                    
+                    <li><strong>Wait After Print:</strong>
+                    <br><strong>O que é:</strong> Tempo de espera após curar
+                    <br><strong>Valor típico:</strong> 0s
+                    <br><strong>Como afeta:</strong> Permite drenagem antes de mover
+                    <br><strong>Ajuste:</strong> Geralmente 0s</li>
+                    
+                    <li><strong>Wait After Lift:</strong>
+                    <br><strong>O que é:</strong> Tempo de espera após subir
+                    <br><strong>Valor típico:</strong> 0-2s
+                    <br><strong>Como afeta:</strong> Estabilização da resina no tanque
+                    <br><strong>Ajuste:</strong> 1-2s para resinas viscosas</li>
+                    
+                    <li><strong>Light Intensity:</strong>
+                    <br><strong>O que é:</strong> Intensidade da luz UV (%)
+                    <br><strong>Valor típico:</strong> 100%
+                    <br><strong>Como afeta:</strong> Potência da cura
+                    <br><strong>Ajuste:</strong> Mantenha 100%</li>
+                </ul>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📐 Scene Scale Compensation (Compensação de Escala)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Scale X, Y, Z:</strong>
+                    <br><strong>O que é:</strong> Compensação dimensional em cada eixo
+                    <br><strong>Valor típico:</strong> 100% (sem compensação)
+                    <br><strong>Como afeta:</strong> Corrige encolhimento da resina após cura
+                    <br><strong>Ajuste:</strong> 100-102% se peças saem menores que esperado</li>
+                </ul>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⚖️ Compensation (Compensação)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Compensation Type:</strong>
+                    <br><strong>O que é:</strong> Tipo de compensação dimensional
+                    <br><strong>Opções:</strong> Grey Pixel ou Fixed Removal
+                    <br><strong>Como afeta:</strong> Corrige superexposição nas bordas
+                    <br><strong>Ajuste:</strong> Grey Pixel é mais preciso</li>
+                    
+                    <li><strong>Burn In Layers / Normal Layers:</strong>
+                    <br><strong>O que é:</strong> Valor de compensação em mm
+                    <br><strong>Valor típico:</strong> 0mm (sem compensação)
+                    <br><strong>Como afeta:</strong> Reduz dimensões para compensar superexposição
+                    <br><strong>Ajuste:</strong> 0-0.2mm se furos saem menores</li>
+                    
+                    <li><strong>Support Resin Compensation:</strong>
+                    <br><strong>O que é:</strong> Compensação específica para suportes
+                    <br><strong>Valor típico:</strong> OFF
+                    <br><strong>Como afeta:</strong> Facilita remoção de suportes
+                    <br><strong>Ajuste:</strong> ON se suportes grudarem muito</li>
+                </ul>
+
+                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⏱️ Print Time Override (Sobrescrever Tempo)</h4>
+                
+                <ul class="step-list">
+                    <li><strong>Time per Burn In Layer / Time per Layer:</strong>
+                    <br><strong>O que é:</strong> Sobrescrever tempo de exposição por camada
+                    <br><strong>Valor típico:</strong> OFF
+                    <br><strong>Como afeta:</strong> Permite ajuste fino por camada
+                    <br><strong>Ajuste:</strong> Raramente necessário, use apenas para testes avançados</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>🎯 Diferenças Chitubox vs Lychee</h4>
+                    <p><strong>Chitubox:</strong> Mais simples e direto. Melhor para iniciantes.<br>
+                    <strong>Lychee:</strong> Mais opções avançadas (TSMC, compensação). Melhor para usuários experientes.<br><br>
+                    <strong>Ambos produzem resultados excelentes quando configurados corretamente!</strong></p>
+                </div>
+            </div>

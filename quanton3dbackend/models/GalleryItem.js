@@ -1,0 +1,3 @@
+import mongoose from 'mongoose';
+const Schema = new mongoose.Schema({ nome:String, telefone:String, email:String, resina:String, impressora:String, imagem:String, observacao:String, parametros:{alturaCamada:String,exposicaoNormal:String,exposicaoBase:String,camadasBase:String}, status:{type:String,default:'pendente'} }, {timestamps:true});
+export default mongoose.model('GalleryItem', Schema);

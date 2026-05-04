@@ -1,0 +1,1500 @@
+{
+  "database": "test",
+  "generatedAt": "2026-05-03T04:38:06.757Z",
+  "totalCollections": 14,
+  "collections": [
+    {
+      "name": "conversas",
+      "count": 5,
+      "fieldPaths": [
+        "_id",
+        "howDidYouHear",
+        "sessionId",
+        "source",
+        "updatedAt",
+        "userEmail",
+        "userName",
+        "userPhone"
+      ],
+      "knowledgeScore": 0,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9d1feb0e187c93283b43a"
+          },
+          "sessionId": {
+            "type": "string",
+            "preview": "session_1776931311569_pmt1fpy"
+          },
+          "howDidYouHear": {
+            "type": "string",
+            "preview": "Instagram"
+          },
+          "source": {
+            "type": "string",
+            "preview": "instagram"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:05.978Z"
+          },
+          "userEmail": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "userName": {
+            "type": "string",
+            "preview": "Ronei martins fonseca"
+          },
+          "userPhone": {
+            "type": "string",
+            "preview": "31983340053"
+          }
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9d22db0e187c93283b43d"
+          },
+          "sessionId": {
+            "type": "string",
+            "preview": "session_1776931348060_fn20kli"
+          },
+          "howDidYouHear": {
+            "type": "string",
+            "preview": "YouTube"
+          },
+          "source": {
+            "type": "string",
+            "preview": "youtube"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:52.271Z"
+          },
+          "userEmail": {
+            "type": "string",
+            "preview": "rone71@gmail.com"
+          },
+          "userName": {
+            "type": "string",
+            "preview": "joao"
+          },
+          "userPhone": {
+            "type": "string",
+            "preview": "3198555999"
+          }
+        }
+      ]
+    },
+    {
+      "name": "parametros",
+      "count": 390,
+      "fieldPaths": [
+        "__v",
+        "_id",
+        "alturaCamada",
+        "camadasBase",
+        "createdAt",
+        "exposicaoBase",
+        "exposicaoNormal",
+        "impressora",
+        "resina",
+        "updatedAt"
+      ],
+      "knowledgeScore": 6,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eeef66b704e6d9ecbcf6a4"
+          },
+          "resina": {
+            "type": "string",
+            "preview": "PYROBLAST"
+          },
+          "impressora": {
+            "type": "string",
+            "preview": "PHOTON CLÁSSICA"
+          },
+          "alturaCamada": {
+            "type": "string",
+            "preview": "0.05mm"
+          },
+          "exposicaoNormal": {
+            "type": "string",
+            "preview": "8s"
+          },
+          "exposicaoBase": {
+            "type": "string",
+            "preview": "70s"
+          },
+          "camadasBase": {
+            "type": "string",
+            "preview": "10"
+          },
+          "__v": 0,
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-27T05:08:54.108Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-27T05:08:54.108Z"
+          }
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eeef66b704e6d9ecbcf6a5"
+          },
+          "resina": {
+            "type": "string",
+            "preview": "PYROBLAST"
+          },
+          "impressora": {
+            "type": "string",
+            "preview": "PHOTON S"
+          },
+          "alturaCamada": {
+            "type": "string",
+            "preview": "0.05mm"
+          },
+          "exposicaoNormal": {
+            "type": "string",
+            "preview": "8s"
+          },
+          "exposicaoBase": {
+            "type": "string",
+            "preview": "70s"
+          },
+          "camadasBase": {
+            "type": "string",
+            "preview": "10"
+          },
+          "__v": 0,
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-27T05:08:54.109Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-27T05:08:54.109Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "gallery",
+      "count": 1,
+      "fieldPaths": [
+        "_id",
+        "allowCommercialContact",
+        "allowPublic",
+        "approvedAt",
+        "contact",
+        "contactCommercial",
+        "createdAt",
+        "imageUrl",
+        "images",
+        "images[]",
+        "name",
+        "note",
+        "printer",
+        "resin",
+        "settings",
+        "settings.baseLayers",
+        "settings.exposureBase",
+        "settings.exposureNormal",
+        "settings.layerHeight",
+        "status",
+        "updatedAt"
+      ],
+      "knowledgeScore": 0,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9d32f395e7577655a0695"
+          },
+          "name": {
+            "type": "string",
+            "preview": "RONEI"
+          },
+          "contact": {
+            "type": "string",
+            "preview": "319833400536"
+          },
+          "contactCommercial": {
+            "type": "string",
+            "preview": ""
+          },
+          "resin": {
+            "type": "string",
+            "preview": "IRON"
+          },
+          "printer": {
+            "type": "string",
+            "preview": "ELEGOO"
+          },
+          "imageUrl": {
+            "type": "string",
+            "preview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMSEhUSEhIVFhUVFRgVFRYVFhgWFhYWFxUXFxcVFhgYHSggGBolHRUWITEhJSkrLi4uGB8zODMtNygtL"
+          },
+          "images": {
+            "type": "array",
+            "length": 1,
+            "sample": {
+              "type": "string",
+              "preview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMSEhUSEhIVFhUVFRgVFRYVFhgWFhYWFxUXFxcVFhgYHSggGBolHRUWITEhJSkrLi4uGB8zODMtNygtL"
+            }
+          },
+          "note": {
+            "type": "string",
+            "preview": "OK"
+          },
+          "settings": {
+            "layerHeight": {
+              "type": "string",
+              "preview": "0,1"
+            },
+            "exposureNormal": {
+              "type": "string",
+              "preview": "2"
+            },
+            "exposureBase": {
+              "type": "string",
+              "preview": "30"
+            },
+            "baseLayers": {
+              "type": "string",
+              "preview": "5"
+            }
+          },
+          "allowPublic": true,
+          "allowCommercialContact": false,
+          "status": {
+            "type": "string",
+            "preview": "approved"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T08:07:11.808Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T23:53:40.298Z"
+          },
+          "approvedAt": {
+            "type": "date",
+            "value": "2026-04-23T23:53:40.298Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "galleryitems",
+      "count": 0,
+      "fieldPaths": [],
+      "knowledgeScore": 0,
+      "sampleDocs": []
+    },
+    {
+      "name": "documents",
+      "count": 126,
+      "fieldPaths": [
+        "_id",
+        "content",
+        "createdAt",
+        "embedding",
+        "embedding[]",
+        "source",
+        "tags",
+        "title",
+        "updatedAt"
+      ],
+      "knowledgeScore": 6,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9cc87ad97615d683dd384"
+          },
+          "title": {
+            "type": "string",
+            "preview": "MELHOR PINTOR REALISTA DO BRASIL ARTUR MONTEIRO , CAROL OTTOLINI , PEDRO CALEIRO , BEATRIZ PESSOA , AMANDAWAYNE.ART , POLYPANT STUDIOS, PABL"
+          },
+          "content": {
+            "type": "string",
+            "preview": "ARTISTA COMPLETO DO BRASIL RENATOGUEDESART MELHOR MODELADOR DO BRASIL THIAGO SUBLIMESKINS , CARDOSO3D, CP STUDIOS CARLOS , MELHOR designer g"
+          },
+          "source": {
+            "type": "string",
+            "preview": "rag-knowledge/chunk_199.txt"
+          },
+          "tags": {
+            "type": "array",
+            "length": 0,
+            "sample": null
+          },
+          "embedding": {
+            "type": "array",
+            "length": 3072,
+            "sample": 0.003269195556640625
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T07:38:47.096Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T07:38:47.096Z"
+          }
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9cc87ad97615d683dd385"
+          },
+          "title": {
+            "type": "string",
+            "preview": "=== 50 ERROS SLA/DLP + SOLUÇÃO RÁPIDA + MELHOR RESINA QUANTON3D ==="
+          },
+          "content": {
+            "type": "string",
+            "preview": "1. Não gruda na base → 40–60s base, limpar FEP, Iron 7030 ou Pyroblast+ 2. Desprende no meio → Re-nivelar placa, lift speed 60–90 mm/min 3. "
+          },
+          "source": {
+            "type": "string",
+            "preview": "rag-knowledge/chunk_200.txt"
+          },
+          "tags": {
+            "type": "array",
+            "length": 0,
+            "sample": null
+          },
+          "embedding": {
+            "type": "array",
+            "length": 3072,
+            "sample": -0.01358795166015625
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T07:38:47.899Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T07:38:47.899Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "contactmessages",
+      "count": 2,
+      "fieldPaths": [
+        "__v",
+        "_id",
+        "assunto",
+        "clienteId",
+        "createdAt",
+        "email",
+        "mensagem",
+        "nome",
+        "observacaoAdmin",
+        "origem",
+        "status",
+        "telefone",
+        "updatedAt"
+      ],
+      "knowledgeScore": 0,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69f588c75454cc15d207d197"
+          },
+          "clienteId": {
+            "type": "string",
+            "preview": "69f588995454cc15d207d195"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "teste"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "3188888888"
+          },
+          "email": {
+            "type": "string",
+            "preview": "teste123@gmail.com"
+          },
+          "assunto": {
+            "type": "string",
+            "preview": "resina teste020526"
+          },
+          "mensagem": {
+            "type": "string",
+            "preview": "teste 020526 **********"
+          },
+          "origem": {
+            "type": "string",
+            "preview": "site"
+          },
+          "status": {
+            "type": "string",
+            "preview": "nova"
+          },
+          "observacaoAdmin": {
+            "type": "string",
+            "preview": ""
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-05-02T05:16:55.218Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-05-02T05:16:55.218Z"
+          },
+          "__v": 0
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69f6c63455faf911c77fc205"
+          },
+          "clienteId": {
+            "type": "string",
+            "preview": "69f6c52855faf911c77fc203"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "ro"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "31983340055"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "assunto": {
+            "type": "string",
+            "preview": "teste"
+          },
+          "mensagem": {
+            "type": "string",
+            "preview": "teste"
+          },
+          "origem": {
+            "type": "string",
+            "preview": "site"
+          },
+          "status": {
+            "type": "string",
+            "preview": "nova"
+          },
+          "observacaoAdmin": {
+            "type": "string",
+            "preview": ""
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-05-03T03:51:16.943Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-05-03T03:51:16.943Z"
+          },
+          "__v": 0
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "count": 2,
+      "fieldPaths": [
+        "_id",
+        "blocked",
+        "createdAt",
+        "email",
+        "howDidYouHear",
+        "lastSeenAt",
+        "name",
+        "origin",
+        "phone",
+        "source",
+        "updatedAt"
+      ],
+      "knowledgeScore": 0,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9d1feb0e187c93283b43b"
+          },
+          "blocked": false,
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:05.978Z"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "howDidYouHear": {
+            "type": "string",
+            "preview": "Instagram"
+          },
+          "lastSeenAt": {
+            "type": "date",
+            "value": "2026-04-24T06:42:17.644Z"
+          },
+          "name": {
+            "type": "string",
+            "preview": "Ronei martins fonseca"
+          },
+          "origin": {
+            "type": "string",
+            "preview": "instagram"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "source": {
+            "type": "string",
+            "preview": "instagram"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-24T06:42:17.644Z"
+          }
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9d22db0e187c93283b43e"
+          },
+          "blocked": false,
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:52.271Z"
+          },
+          "email": {
+            "type": "string",
+            "preview": "rone71@gmail.com"
+          },
+          "howDidYouHear": {
+            "type": "string",
+            "preview": "YouTube"
+          },
+          "lastSeenAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:52.271Z"
+          },
+          "name": {
+            "type": "string",
+            "preview": "joao"
+          },
+          "origin": {
+            "type": "string",
+            "preview": "youtube"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "3198555999"
+          },
+          "source": {
+            "type": "string",
+            "preview": "youtube"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:52.271Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "contact_entries",
+      "count": 6,
+      "fieldPaths": [
+        "_id",
+        "createdAt",
+        "email",
+        "howDidYouHear",
+        "name",
+        "origin",
+        "phone",
+        "sessionId",
+        "source",
+        "updatedAt",
+        "userId"
+      ],
+      "knowledgeScore": -2,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9d1fe217824d8adef49a3"
+          },
+          "userId": {
+            "type": "ObjectId",
+            "value": "69e9d1feb0e187c93283b43b"
+          },
+          "sessionId": {
+            "type": "string",
+            "preview": "session_1776931311569_pmt1fpy"
+          },
+          "name": {
+            "type": "string",
+            "preview": "Ronei martins fonseca"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "howDidYouHear": {
+            "type": "string",
+            "preview": "Instagram"
+          },
+          "source": {
+            "type": "string",
+            "preview": "instagram"
+          },
+          "origin": {
+            "type": "string",
+            "preview": "instagram"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:05.978Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:05.978Z"
+          }
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69e9d22c395e7577655a0694"
+          },
+          "userId": {
+            "type": "ObjectId",
+            "value": "69e9d22db0e187c93283b43e"
+          },
+          "sessionId": {
+            "type": "string",
+            "preview": "session_1776931348060_fn20kli"
+          },
+          "name": {
+            "type": "string",
+            "preview": "joao"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "3198555999"
+          },
+          "email": {
+            "type": "string",
+            "preview": "rone71@gmail.com"
+          },
+          "howDidYouHear": {
+            "type": "string",
+            "preview": "YouTube"
+          },
+          "source": {
+            "type": "string",
+            "preview": "youtube"
+          },
+          "origin": {
+            "type": "string",
+            "preview": "youtube"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:52.271Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T08:02:52.271Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "custom_requests",
+      "count": 3,
+      "fieldPaths": [
+        "_id",
+        "caracteristica",
+        "color",
+        "complementos",
+        "cor",
+        "createdAt",
+        "desiredFeature",
+        "details",
+        "email",
+        "name",
+        "phone",
+        "source",
+        "status",
+        "updatedAt"
+      ],
+      "knowledgeScore": 0,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eaae95b8ea9c067c545f91"
+          },
+          "name": {
+            "type": "string",
+            "preview": "Ronei martins fonseca"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "desiredFeature": {
+            "type": "string",
+            "preview": "resistente"
+          },
+          "caracteristica": {
+            "type": "string",
+            "preview": "resistente"
+          },
+          "color": {
+            "type": "string",
+            "preview": "azul"
+          },
+          "cor": {
+            "type": "string",
+            "preview": "azul"
+          },
+          "details": {
+            "type": "string",
+            "preview": "teste"
+          },
+          "complementos": {
+            "type": "string",
+            "preview": "teste"
+          },
+          "status": {
+            "type": "string",
+            "preview": "pending"
+          },
+          "source": {
+            "type": "string",
+            "preview": "site-custom-request"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T23:43:17.746Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T23:43:17.746Z"
+          }
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eaaf43b8ea9c067c545f93"
+          },
+          "name": {
+            "type": "string",
+            "preview": "Ronei martins fonseca"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "desiredFeature": {
+            "type": "string",
+            "preview": "resistente"
+          },
+          "caracteristica": {
+            "type": "string",
+            "preview": "resistente"
+          },
+          "color": {
+            "type": "string",
+            "preview": "azul"
+          },
+          "cor": {
+            "type": "string",
+            "preview": "azul"
+          },
+          "details": {
+            "type": "string",
+            "preview": "sss"
+          },
+          "complementos": {
+            "type": "string",
+            "preview": "sss"
+          },
+          "status": {
+            "type": "string",
+            "preview": "resolved"
+          },
+          "source": {
+            "type": "string",
+            "preview": "site-custom-request"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T23:46:11.759Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T23:53:11.722Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "partnerrequests",
+      "count": 7,
+      "fieldPaths": [
+        "__v",
+        "_id",
+        "categoria",
+        "cidade",
+        "createdAt",
+        "descricao",
+        "email",
+        "estado",
+        "instagram",
+        "nome",
+        "observacaoAdmin",
+        "origem",
+        "portfolio",
+        "site",
+        "status",
+        "telefone",
+        "tipo",
+        "titulo",
+        "updatedAt"
+      ],
+      "knowledgeScore": -2,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69f18443090912df2857eb57"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "Teste Parceiro"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "31999999999"
+          },
+          "email": {
+            "type": "string",
+            "preview": "teste@parceiro.com"
+          },
+          "instagram": {
+            "type": "string",
+            "preview": "@testeparceiro"
+          },
+          "site": {
+            "type": "string",
+            "preview": "https://exemplo.com"
+          },
+          "tipo": {
+            "type": "string",
+            "preview": "Quero ser parceiro"
+          },
+          "titulo": {
+            "type": "string",
+            "preview": "Curso de Pintura Realista"
+          },
+          "descricao": {
+            "type": "string",
+            "preview": "Tenho um curso e gostaria de aparecer na �rea de parceiros da Quanton3D."
+          },
+          "categoria": {
+            "type": "string",
+            "preview": "Curso"
+          },
+          "cidade": {
+            "type": "string",
+            "preview": "Belo Horizonte"
+          },
+          "estado": {
+            "type": "string",
+            "preview": "MG"
+          },
+          "portfolio": {
+            "type": "string",
+            "preview": "https://exemplo.com/portfolio"
+          },
+          "origem": {
+            "type": "string",
+            "preview": "site"
+          },
+          "status": {
+            "type": "string",
+            "preview": "pendente"
+          },
+          "observacaoAdmin": {
+            "type": "string",
+            "preview": ""
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-29T04:08:35.728Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-29T04:08:35.728Z"
+          },
+          "__v": 0
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69f19a7d090912df2857eb5b"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "ronei"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "instagram": {
+            "type": "string",
+            "preview": ""
+          },
+          "site": {
+            "type": "string",
+            "preview": ""
+          },
+          "tipo": {
+            "type": "string",
+            "preview": "Tenho serviço"
+          },
+          "titulo": {
+            "type": "string",
+            "preview": "teste 2904"
+          },
+          "descricao": {
+            "type": "string",
+            "preview": "teste 290426"
+          },
+          "categoria": {
+            "type": "string",
+            "preview": "Projeto"
+          },
+          "cidade": {
+            "type": "string",
+            "preview": "Belo Horizonte"
+          },
+          "estado": {
+            "type": "string",
+            "preview": "MG"
+          },
+          "portfolio": {
+            "type": "string",
+            "preview": ""
+          },
+          "origem": {
+            "type": "string",
+            "preview": "site"
+          },
+          "status": {
+            "type": "string",
+            "preview": "pendente"
+          },
+          "observacaoAdmin": {
+            "type": "string",
+            "preview": ""
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-29T05:43:25.505Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-29T05:43:25.505Z"
+          },
+          "__v": 0
+        }
+      ]
+    },
+    {
+      "name": "formulacaos",
+      "count": 0,
+      "fieldPaths": [],
+      "knowledgeScore": 0,
+      "sampleDocs": []
+    },
+    {
+      "name": "messages",
+      "count": 3,
+      "fieldPaths": [
+        "_id",
+        "createdAt",
+        "email",
+        "message",
+        "name",
+        "phone",
+        "source",
+        "status",
+        "updatedAt"
+      ],
+      "knowledgeScore": 0,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eaae88b8ea9c067c545f90"
+          },
+          "name": {
+            "type": "string",
+            "preview": "Ronei martins fonseca"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "message": {
+            "type": "string",
+            "preview": "teste"
+          },
+          "status": {
+            "type": "string",
+            "preview": "pending"
+          },
+          "source": {
+            "type": "string",
+            "preview": "site-contact"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T23:43:04.830Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T23:43:04.830Z"
+          }
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eaaf39b8ea9c067c545f92"
+          },
+          "name": {
+            "type": "string",
+            "preview": "Ronei martins fonseca"
+          },
+          "phone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "message": {
+            "type": "string",
+            "preview": "sss"
+          },
+          "status": {
+            "type": "string",
+            "preview": "pending"
+          },
+          "source": {
+            "type": "string",
+            "preview": "site-contact"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-23T23:46:01.639Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-23T23:46:01.639Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clientes",
+      "count": 28,
+      "fieldPaths": [
+        "__v",
+        "_id",
+        "createdAt",
+        "email",
+        "nome",
+        "origem",
+        "telefone",
+        "updatedAt"
+      ],
+      "knowledgeScore": -1,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eed12dc70439de9603098d"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "ronei"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei@gmail.com"
+          },
+          "origem": {
+            "type": "string",
+            "preview": "Google / Pesquisa"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-27T02:59:57.956Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-27T02:59:57.956Z"
+          },
+          "__v": 0
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69eed366c70439de96030998"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "ronei"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "31983340053"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei@gmail.com"
+          },
+          "origem": {
+            "type": "string",
+            "preview": "Mercado Livre / Shopee"
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-04-27T03:09:26.796Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-04-27T03:09:26.796Z"
+          },
+          "__v": 0
+        }
+      ]
+    },
+    {
+      "name": "bottickets",
+      "count": 2,
+      "fieldPaths": [
+        "__v",
+        "_id",
+        "clienteId",
+        "confiancaBot",
+        "createdAt",
+        "descricao",
+        "email",
+        "feedbackCliente",
+        "fotos",
+        "fotos[].mimeType",
+        "fotos[].nomeArquivo",
+        "fotos[].nomeOriginal",
+        "fotos[].tamanho",
+        "fotos[].url",
+        "impressora",
+        "nome",
+        "observacaoAdmin",
+        "parametrosInformados",
+        "precisaHumano",
+        "problema",
+        "resina",
+        "respostaBot",
+        "status",
+        "telefone",
+        "updatedAt"
+      ],
+      "knowledgeScore": 8,
+      "sampleDocs": [
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69f6925d55faf911c77fc1c5"
+          },
+          "clienteId": {
+            "type": "string",
+            "preview": "69f6919655faf911c77fc1c3"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "eri"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "3199999999"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ron271@gmail.com"
+          },
+          "resina": {
+            "type": "string",
+            "preview": "ALCHEMIST"
+          },
+          "impressora": {
+            "type": "string",
+            "preview": "HALOT R6"
+          },
+          "problema": {
+            "type": "string",
+            "preview": "Problema desconhecido"
+          },
+          "descricao": {
+            "type": "string",
+            "preview": "deslocamento vase"
+          },
+          "parametrosInformados": {
+            "type": "string",
+            "preview": ""
+          },
+          "respostaBot": {
+            "type": "string",
+            "preview": "Problema informado: Problema desconhecido. Resina: ALCHEMIST. Impressora: HALOT R6. Descrição recebida: deslocamento vase. Seu caso foi regi"
+          },
+          "confiancaBot": 35,
+          "precisaHumano": true,
+          "status": {
+            "type": "string",
+            "preview": "novo"
+          },
+          "feedbackCliente": {
+            "type": "string",
+            "preview": ""
+          },
+          "observacaoAdmin": {
+            "type": "string",
+            "preview": ""
+          },
+          "fotos": {
+            "type": "array",
+            "length": 1,
+            "sample": {
+              "type": "object",
+              "keys": [
+                "nomeOriginal",
+                "nomeArquivo",
+                "url",
+                "mimeType",
+                "tamanho"
+              ]
+            }
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-05-03T00:10:05.553Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-05-03T00:10:05.553Z"
+          },
+          "__v": 0
+        },
+        {
+          "_id": {
+            "type": "ObjectId",
+            "value": "69f6ab7255faf911c77fc1e0"
+          },
+          "clienteId": {
+            "type": "string",
+            "preview": "69f6a8fe55faf911c77fc1db"
+          },
+          "nome": {
+            "type": "string",
+            "preview": "ronei"
+          },
+          "telefone": {
+            "type": "string",
+            "preview": "31988988888"
+          },
+          "email": {
+            "type": "string",
+            "preview": "ronei3271@gmail.com"
+          },
+          "resina": {
+            "type": "string",
+            "preview": "SPIN+"
+          },
+          "impressora": {
+            "type": "string",
+            "preview": "MARS 3 ULTRA"
+          },
+          "problema": {
+            "type": "string",
+            "preview": "Problema desconhecido"
+          },
+          "descricao": {
+            "type": "string",
+            "preview": "peça rachando"
+          },
+          "parametrosInformados": {
+            "type": "string",
+            "preview": ""
+          },
+          "respostaBot": {
+            "type": "string",
+            "preview": "Problema informado: Problema desconhecido. Resina: SPIN+. Impressora: MARS 3 ULTRA. Descrição recebida: peça rachando. Seu caso foi registra"
+          },
+          "confiancaBot": 35,
+          "precisaHumano": true,
+          "status": {
+            "type": "string",
+            "preview": "novo"
+          },
+          "feedbackCliente": {
+            "type": "string",
+            "preview": ""
+          },
+          "observacaoAdmin": {
+            "type": "string",
+            "preview": ""
+          },
+          "fotos": {
+            "type": "array",
+            "length": 1,
+            "sample": {
+              "type": "object",
+              "keys": [
+                "nomeOriginal",
+                "nomeArquivo",
+                "url",
+                "mimeType",
+                "tamanho"
+              ]
+            }
+          },
+          "createdAt": {
+            "type": "date",
+            "value": "2026-05-03T01:57:06.174Z"
+          },
+          "updatedAt": {
+            "type": "date",
+            "value": "2026-05-03T01:57:06.174Z"
+          },
+          "__v": 0
+        }
+      ]
+    }
+  ],
+  "likelyKnowledgeCollections": [
+    {
+      "name": "bottickets",
+      "count": 2,
+      "knowledgeScore": 8,
+      "fieldPaths": [
+        "__v",
+        "_id",
+        "clienteId",
+        "confiancaBot",
+        "createdAt",
+        "descricao",
+        "email",
+        "feedbackCliente",
+        "fotos",
+        "fotos[].mimeType",
+        "fotos[].nomeArquivo",
+        "fotos[].nomeOriginal",
+        "fotos[].tamanho",
+        "fotos[].url",
+        "impressora",
+        "nome",
+        "observacaoAdmin",
+        "parametrosInformados",
+        "precisaHumano",
+        "problema",
+        "resina",
+        "respostaBot",
+        "status",
+        "telefone",
+        "updatedAt"
+      ]
+    },
+    {
+      "name": "parametros",
+      "count": 390,
+      "knowledgeScore": 6,
+      "fieldPaths": [
+        "__v",
+        "_id",
+        "alturaCamada",
+        "camadasBase",
+        "createdAt",
+        "exposicaoBase",
+        "exposicaoNormal",
+        "impressora",
+        "resina",
+        "updatedAt"
+      ]
+    },
+    {
+      "name": "documents",
+      "count": 126,
+      "knowledgeScore": 6,
+      "fieldPaths": [
+        "_id",
+        "content",
+        "createdAt",
+        "embedding",
+        "embedding[]",
+        "source",
+        "tags",
+        "title",
+        "updatedAt"
+      ]
+    }
+  ]
+}
