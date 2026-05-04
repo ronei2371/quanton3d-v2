@@ -39,11 +39,6 @@ export default function DiarioTecnico() {
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroResina, setFiltroResina] = useState("todas");
 
-  // Carrega registros do backend
-  useEffect(() => {
-    carregarRegistros();
-  }, []);
-
   const carregarRegistros = async () => {
     setCarregando(true);
     try {
@@ -60,6 +55,12 @@ export default function DiarioTecnico() {
       setCarregando(false);
     }
   };
+
+  // Carrega registros do backend
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    carregarRegistros();
+  }, []);
 
   const salvar = async () => {
     if (!form.resina || !form.status) return;
@@ -92,7 +93,9 @@ export default function DiarioTecnico() {
   };
 
   const excluir = async id => {
-    try { await fetch(`${API_URL}/api/diario/${id}`, { method: "DELETE" }); } catch {}
+    try { await fetch(`${API_URL}/api/diario/${id}`, { method: "DELETE" }); } catch (err) {
+      console.warn("Falha ao excluir no backend, aplicando fallback local", err);
+    }
     const novos = registros.filter(r => r.id !== id);
     setRegistros(novos);
     localStorage.setItem("diario_q3d", JSON.stringify(novos));
