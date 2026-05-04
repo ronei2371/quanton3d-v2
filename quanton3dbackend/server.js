@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 app.use("/uploads", express.static("uploads"));
 app.use("/api/bot-tickets", botTicketsRoutes);
 
-app.get("/", (_req, res) => {
+app.get("/api/status", (_req, res) => {
   res.json({
     success: true,
     message: "Quanton3D Final Backend online",
