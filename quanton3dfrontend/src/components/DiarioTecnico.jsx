@@ -58,11 +58,33 @@ export default function DiarioTecnico() {
 
   // Carrega registros do backend
   useEffect(() => {
+ codex/revise-the-code-dsrf12
+
+ codex/revise-the-code-12oj9t
+
+ codex/revise-the-code-eagrq8
+
+ codex/revise-the-code-s2elcb
+ main
+ main
+ main
     const timer = setTimeout(() => {
       carregarRegistros();
     }, 0);
 
     return () => clearTimeout(timer);
+ codex/revise-the-code-dsrf12
+
+ codex/revise-the-code-12oj9t
+
+ codex/revise-the-code-eagrq8
+
+ // eslint-disable-next-line react-hooks/set-state-in-effect
+    carregarRegistros();
+ main
+ main
+
+ main
   }, []);
 
   const salvar = async () => {
