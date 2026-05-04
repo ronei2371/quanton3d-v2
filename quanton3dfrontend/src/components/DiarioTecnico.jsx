@@ -58,8 +58,15 @@ export default function DiarioTecnico() {
 
   // Carrega registros do backend
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+ codex/revise-the-code-s2elcb
+    const timer = setTimeout(() => {
+      carregarRegistros();
+    }, 0);
+
+    return () => clearTimeout(timer);
+ // eslint-disable-next-line react-hooks/set-state-in-effect
     carregarRegistros();
+ main
   }, []);
 
   const salvar = async () => {
