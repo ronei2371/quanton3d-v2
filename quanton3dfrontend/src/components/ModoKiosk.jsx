@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 export default function ModoKiosk() {
   const [params, setParams] = useState({
@@ -21,6 +21,7 @@ export default function ModoKiosk() {
   const [paused, setPaused] = useState(false);
   const [temp, setTemp] = useState(24);
   const [hora, setHora] = useState("");
+  const [agoraMs, setAgoraMs] = useState(() => Date.now());
 
   const totalSecs = params.tempoTotalMin * 60;
 
@@ -29,7 +30,8 @@ export default function ModoKiosk() {
       const now = new Date();
       const pad = n => String(n).padStart(2, "0");
       setHora(`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`);
-      setTemp(22 + Math.round(Math.sin(Date.now() / 60000) * 3));
+      setAgoraMs(now.getTime());
+      setTemp(22 + Math.round(Math.sin(now.getTime() / 60000) * 3));
       if (!paused) {
         setElapsed(e => {
           const next = e + 1;
@@ -45,14 +47,13 @@ export default function ModoKiosk() {
   const remSecs = Math.max(0, totalSecs - elapsed);
   const remMin = Math.floor(remSecs / 60);
   const remSec = remSecs % 60;
-  const finish = new Date(Date.now() + remSecs * 1000);
+  const finish = new Date(agoraMs + remSecs * 1000);
   const pad = n => String(n).padStart(2, "0");
   const etaStr = `${pad(finish.getHours())}:${pad(finish.getMinutes())}`;
   const concluido = camadaAtual >= params.totalCamadas;
 
   const statusColor = concluido ? "#00ff88" : paused ? "#ffaa00" : "#00ff88";
   const statusLabel = concluido ? "CONCLUÍDO" : paused ? "PAUSADO" : "IMPRIMINDO";
-  const tempColor = temp > 28 ? "#ffaa00" : temp < 18 ? "#00d4ff" : "#00ff88";
 
   const salvar = () => { setParams(draft); setEditing(false); setCamadaAtual(0); setElapsed(0); setPaused(false); };
 
