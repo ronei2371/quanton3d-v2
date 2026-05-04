@@ -56,60 +56,7 @@ export default function DiarioTecnico() {
     }
   };
 
-  // Carrega registros do backend
-  useEffect(() => {
- codex/revise-the-code-7bn2gr
-    // Mantém carregamento assíncrono na abertura para estabilidade do modal/página.
-
- codex/revise-the-code-ygsv2f
-
- codex/revise-the-code-li9sbn
-
- codex/revise-the-code-enxvz2
-
- codex/revise-the-code-dsrf12
-
- codex/revise-the-code-12oj9t
-
- codex/revise-the-code-eagrq8
-
- codex/revise-the-code-s2elcb
- main
- main
- main
- main
- main
- main
- main
-    const timer = setTimeout(() => {
-      carregarRegistros();
-    }, 0);
-
-    return () => clearTimeout(timer);
-codex/revise-the-code-7bn2gr
-
- codex/revise-the-code-ygsv2f
-
- codex/revise-the-code-li9sbn
-
- codex/revise-the-code-enxvz2
-
- codex/revise-the-code-dsrf12
-
- codex/revise-the-code-12oj9t
-
- codex/revise-the-code-eagrq8
-
- // eslint-disable-next-line react-hooks/set-state-in-effect
-    carregarRegistros();
- main
- main
-
- main
- main
- main
-  }, []);
-
+ 
   const salvar = async () => {
     if (!form.resina || !form.status) return;
     setSalvando(true);
