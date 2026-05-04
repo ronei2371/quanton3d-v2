@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 import { connectDB } from "./config/db.js";
 import contactMessagesRoutes from "./routes/contactMessages.js";
 import clientesRoutes from "./routes/clientes.js";
@@ -16,6 +18,7 @@ dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT || 10000);
+const frontendDistPath = path.resolve(process.cwd(), "../quanton3dfrontend/dist");
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
   .split(",")
@@ -67,6 +70,14 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact-messages", contactMessagesRoutes);
+
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+
+  app.get(/^\/(?!api\/|uploads\/).*/, (_req, res) => {
+    res.sendFile(path.join(frontendDistPath, "index.html"));
+  });
+}
 
 app.use((err, _req, res, _next) => {
   console.error("[SERVER]", err);

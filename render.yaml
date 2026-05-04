@@ -1,10 +1,9 @@
 services:
   - type: web
-    name: quanton3dbackend-v2
+    name: quanton3d-v2
     runtime: node
-    rootDir: quanton3dbackend
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: npm install --prefix quanton3dbackend && npm install --prefix quanton3dfrontend && npm run build --prefix quanton3dfrontend
+    startCommand: npm start --prefix quanton3dbackend
     envVars:
       - key: NODE_ENV
         value: production
