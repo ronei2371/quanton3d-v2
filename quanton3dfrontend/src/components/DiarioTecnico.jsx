@@ -58,6 +58,9 @@ export default function DiarioTecnico() {
 
   // Carrega registros do backend
   useEffect(() => {
+ codex/revise-the-code-7bn2gr
+    // Mantém carregamento assíncrono na abertura para estabilidade do modal/página.
+
  codex/revise-the-code-ygsv2f
 
  codex/revise-the-code-li9sbn
@@ -77,11 +80,14 @@ export default function DiarioTecnico() {
  main
  main
  main
+ main
     const timer = setTimeout(() => {
       carregarRegistros();
     }, 0);
 
     return () => clearTimeout(timer);
+codex/revise-the-code-7bn2gr
+
  codex/revise-the-code-ygsv2f
 
  codex/revise-the-code-li9sbn
@@ -99,6 +105,7 @@ export default function DiarioTecnico() {
  main
  main
 
+ main
  main
  main
   }, []);
