@@ -9,9 +9,15 @@ export default function TimerImpressao() {
   const [horaInicio, setHoraInicio] = useState(null);
   const [concluido, setConcluido] = useState(false);
   const [notificou, setNotificou] = useState(false);
+  const [agoraMs, setAgoraMs] = useState(() => Date.now());
   const intervalRef = useRef(null);
 
   const totalSecs = horasTotal * 3600 + minutosTotal * 60;
+
+  useEffect(() => {
+    const clockId = setInterval(() => setAgoraMs(Date.now()), 1000);
+    return () => clearInterval(clockId);
+  }, []);
 
   const iniciar = () => {
     if (totalSecs <= 0) return;
@@ -32,6 +38,7 @@ export default function TimerImpressao() {
       setSecsRestantes(s => {
         if (s <= 1) {
           setConcluido(true);
+          setNotificou(true);
           clearInterval(intervalRef.current);
           return 0;
         }
@@ -42,11 +49,9 @@ export default function TimerImpressao() {
   }, [iniciado, paused, concluido]);
 
   useEffect(() => {
-    if (concluido && !notificou) {
-      setNotificou(true);
-      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-        new Notification("Quanton3D — Impressão concluída!", { body: "Sua impressão terminou. Hora de remover e lavar a peça!" });
-      }
+    if (!concluido || !notificou) return;
+    if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+      new Notification("Quanton3D — Impressão concluída!", { body: "Sua impressão terminou. Hora de remover e lavar a peça!" });
     }
   }, [concluido, notificou]);
 
@@ -99,7 +104,7 @@ export default function TimerImpressao() {
             <span style={s.infoLabel}>Término estimado:</span>
             <span style={s.infoVal}>
               {(() => {
-                const f = new Date(Date.now() + totalSecs * 1000);
+                const f = new Date(agoraMs + totalSecs * 1000);
                 return `${pad(f.getHours())}:${pad(f.getMinutes())}`;
               })()}
             </span>
