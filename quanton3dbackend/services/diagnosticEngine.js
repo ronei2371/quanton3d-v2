@@ -414,18 +414,19 @@ const PROBLEM_CATALOG = [
         technicalFields: [],
         causes: [
           "Resina vazada ou curada sobre a LCD ou no protetor.",
-          "Dano permanente na LCD ou no protetor da tela.",
-          "Marca visível no teste de exposição indicando desgaste físico."
+          "Dano permanente na LCD, no polarizador ou no protetor da tela.",
+          "Marca visível no teste de exposição indicando dano físico ou desgaste óptico."
         ],
         checklist: [
           "Faça o teste de exposição da tela sem o tanque para ver se a marca aparece diretamente na LCD.",
-          "Inspecione se a mancha está no protetor da tela ou na própria LCD.",
-          "Limpe apenas com produto compatível e microfibra, sem raspar a superfície.",
-          "Se a marca persistir no teste de exposição, trate como dano de LCD/protetor e programe substituição da peça."
+          "Confirme se a mancha está apenas no protetor/película ou se aparece na própria LCD.",
+          "Se a mancha aparece no teste da LCD, não trate como sujeira: programe a troca da LCD ou do conjunto afetado.",
+          "Se estiver somente no protetor/película, substitua o protetor antes de voltar a imprimir.",
+          "Não raspe, não force limpeza e não use produto agressivo sobre a tela."
         ],
         prevention: [
           "Nunca imprima após vazamento sem revisar a área da LCD.",
-          "Use limpeza suave e proteção correta da tela."
+          "Use protetor de tela adequado e substitua a película quando houver dano."
         ]
       },
       {
@@ -851,6 +852,10 @@ function buildFinalAnswer({
 
   if (checklist.length > 0) {
     parts.push(`O que testar agora: ${checklist.join(" ")}`);
+  }
+
+  if (detectedProblem?.id === "lcd_manchas") {
+    parts.push("Conclusão prática: mancha permanente que aparece no teste da LCD não se corrige com limpeza; a solução é troca da LCD, do polarizador ou do protetor afetado, conforme onde o dano estiver.");
   }
 
   if (detectedProblem?.kind === "hardware") {
