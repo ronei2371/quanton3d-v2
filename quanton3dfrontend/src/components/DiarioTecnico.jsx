@@ -58,6 +58,8 @@ export default function DiarioTecnico() {
 
   // Carrega registros do backend
   useEffect(() => {
+ codex/revise-the-code-ygsv2f
+
  codex/revise-the-code-li9sbn
 
  codex/revise-the-code-enxvz2
@@ -74,11 +76,14 @@ export default function DiarioTecnico() {
  main
  main
  main
+ main
     const timer = setTimeout(() => {
       carregarRegistros();
     }, 0);
 
     return () => clearTimeout(timer);
+ codex/revise-the-code-ygsv2f
+
  codex/revise-the-code-li9sbn
 
  codex/revise-the-code-enxvz2
@@ -94,6 +99,7 @@ export default function DiarioTecnico() {
  main
  main
 
+ main
  main
   }, []);
 
