@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.js";
 import contactMessagesRoutes from "./routes/contactMessages.js";
 import clientesRoutes from "./routes/clientes.js";
@@ -18,7 +19,9 @@ dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT || 10000);
-const frontendDistPath = path.resolve(process.cwd(), "../quanton3dfrontend/dist");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendDistPath = path.resolve(__dirname, "../quanton3dfrontend/dist");
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
   .split(",")
