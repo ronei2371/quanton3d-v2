@@ -46,16 +46,20 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
   useEffect(() => {
     if (!aberto) return;
 
-    setForm({
-      ...estadoInicial,
-      nome: cliente?.nome || "",
-      telefone: cliente?.telefone || "",
-      email: cliente?.email || "",
-    });
+    const timer = setTimeout(() => {
+      setForm({
+        ...estadoInicial,
+        nome: cliente?.nome || "",
+        telefone: cliente?.telefone || "",
+        email: cliente?.email || "",
+      });
 
-    setFotos([]);
-    setErro("");
-    setSucesso("");
+      setFotos([]);
+      setErro("");
+      setSucesso("");
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [aberto, cliente]);
 
   const nomesFotos = useMemo(() => {
