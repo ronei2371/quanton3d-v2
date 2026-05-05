@@ -9,6 +9,8 @@ import "./App.css";
 
 const ORIGENS = [
   "Instagram",
+  "Facebook",
+  "TikTok",
   "YouTube",
   "Google / Pesquisa",
   "Indicação de amigo",
@@ -18,6 +20,13 @@ const ORIGENS = [
 ];
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
+
+const SOCIAL_LINKS = [
+  { label: "Instagram", href: "https://www.instagram.com/quanton3d" },
+  { label: "Facebook", href: "https://www.facebook.com/quanton3d" },
+  { label: "TikTok", href: "https://www.tiktok.com/@quanton3d" },
+  { label: "YouTube", href: "https://www.youtube.com/@quanton3d" },
+];
 
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
@@ -999,18 +1008,12 @@ function CadastroInicial({
         <div className="social-box">
           <strong>Siga a Quanton3D nas redes</strong>
 
-          <div>
-            <a
-              href="https://www.instagram.com/quanton3d"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Instagram
-            </a>
-
-            <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
-              YouTube
-            </a>
+          <div style={{ flexWrap: "wrap" }}>
+            {SOCIAL_LINKS.map((rede) => (
+              <a key={rede.label} href={rede.href} target="_blank" rel="noreferrer">
+                {rede.label}
+              </a>
+            ))}
           </div>
         </div>
 
