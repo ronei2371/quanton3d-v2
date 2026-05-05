@@ -56,6 +56,7 @@ export default function DiarioTecnico() {
     }
   };
 
+ codex/revise-the-code-ibw0ln
   // Carrega registros do backend
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -65,6 +66,8 @@ export default function DiarioTecnico() {
     return () => clearTimeout(timer);
   }, []);
 
+ 
+main
   const salvar = async () => {
     if (!form.resina || !form.status) return;
     setSalvando(true);
