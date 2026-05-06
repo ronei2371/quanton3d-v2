@@ -148,20 +148,24 @@ function BotTicketModal({
   useEffect(() => {
     if (!aberto) return;
 
-    setForm({
-      ...estadoInicial,
-      nome: cliente?.nome || "",
-      telefone: cliente?.telefone || "",
-      email: cliente?.email || "",
-    });
-    setParametros(estadoParametrosInicial);
-    setRespostasGuiadas({});
-    setFotos([]);
-    setEtapa("selecionar");
-    setErro("");
-    setResultado(null);
+    const timer = setTimeout(() => {
+      setForm({
+        ...estadoInicial,
+        nome: cliente?.nome || "",
+        telefone: cliente?.telefone || "",
+        email: cliente?.email || "",
+      });
+      setParametros(estadoParametrosInicial);
+      setRespostasGuiadas({});
+      setFotos([]);
+      setEtapa("selecionar");
+      setErro("");
+      setResultado(null);
 
-    carregarCatalogo();
+      carregarCatalogo();
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [aberto, cliente]);
 
   async function carregarCatalogo() {

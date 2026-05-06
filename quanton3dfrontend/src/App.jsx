@@ -9,7 +9,10 @@ import "./App.css";
 
 const ORIGENS = [
   "Instagram",
+  "Facebook",
+  "TikTok",
   "YouTube",
+  "WhatsApp",
   "Google / Pesquisa",
   "Indicação de amigo",
   "Mercado Livre / Shopee",
@@ -18,6 +21,14 @@ const ORIGENS = [
 ];
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
+
+const SOCIAL_LINKS = [
+  { label: "Instagram", href: "https://www.instagram.com/quanton3d" },
+  { label: "Facebook", href: "https://www.facebook.com/quanton3d" },
+  { label: "TikTok", href: "https://www.tiktok.com/@quanton3d" },
+  { label: "YouTube", href: "https://www.youtube.com/@quanton3d" },
+  { label: "WhatsApp", href: "https://wa.me/553132716935" },
+];
 
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
@@ -102,23 +113,7 @@ function App() {
   const [activeGuide, setActiveGuide] = useState(null);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
-  const [salvandoParceiro, setSalvandoParceiro] = useState(false);
-  const [erroParceiro, setErroParceiro] = useState("");
-  const [sucessoParceiro, setSucessoParceiro] = useState("");
-  const [formParceiro, setFormParceiro] = useState({
-    nome: "",
-    telefone: "",
-    email: "",
-    instagram: "",
-    site: "",
-    tipo: "Quero ser parceiro",
-    titulo: "",
-    descricao: "",
-    categoria: "Parceiro",
-    cidade: "",
-    estado: "",
-    portfolio: "",
-  });
+
 
   useEffect(() => {
     carregarParametros();
@@ -126,16 +121,7 @@ function App() {
   }, []);
 
 
-useEffect(() => {
-  if (!cliente) return;
 
-  setFormParceiro((atual) => ({
-    ...atual,
-    nome: atual.nome || cliente.nome || "",
-    telefone: atual.telefone || cliente.telefone || "",
-    email: atual.email || cliente.email || "",
-  }));
-}, [cliente]);
 
 
   function carregarEstadoInicial() {
@@ -323,12 +309,6 @@ useEffect(() => {
     setResultado(encontrado || null);
   }
 
-  function limparSelecao() {
-    setResinaSelecionada("");
-    setImpressoraSelecionada("");
-    setResultado(null);
-  }
-
   function abrirCadastro() {
     setErroCadastro("");
 
@@ -398,79 +378,7 @@ useEffect(() => {
 
 
 function abrirParceiroModal() {
-  setErroParceiro("");
-  setSucessoParceiro("");
-
-  setFormParceiro((atual) => ({
-    ...atual,
-    nome: cliente?.nome || atual.nome || "",
-    telefone: cliente?.telefone || atual.telefone || "",
-    email: cliente?.email || atual.email || "",
-  }));
-
   setMostrarParceiroModal(true);
-}
-
-function alterarParceiro(campo, valor) {
-  setFormParceiro((atual) => ({
-    ...atual,
-    [campo]: valor,
-  }));
-}
-
-async function salvarSolicitacaoParceiro(event) {
-  event.preventDefault();
-
-  setErroParceiro("");
-  setSucessoParceiro("");
-
-  const payload = {
-    nome: limparTexto(formParceiro.nome),
-    telefone: limparTexto(formParceiro.telefone),
-    email: limparTexto(formParceiro.email),
-    instagram: limparTexto(formParceiro.instagram),
-    site: limparTexto(formParceiro.site),
-    tipo: limparTexto(formParceiro.tipo) || "Quero ser parceiro",
-    titulo: limparTexto(formParceiro.titulo),
-    descricao: limparTexto(formParceiro.descricao),
-    categoria: limparTexto(formParceiro.categoria) || "Parceiro",
-    cidade: limparTexto(formParceiro.cidade),
-    estado: limparTexto(formParceiro.estado),
-    portfolio: limparTexto(formParceiro.portfolio),
-    origem: "site",
-  };
-
-  if (!payload.nome || !payload.telefone || !payload.email || !payload.titulo || !payload.descricao) {
-    setErroParceiro("Preencha nome, telefone, e-mail, título e descrição.");
-    return;
-  }
-
-  try {
-    setSalvandoParceiro(true);
-
-    await api.post("/partner-requests", payload);
-
-    setSucessoParceiro("Solicitação enviada com sucesso. Ela já foi salva para análise no painel administrativo.");
-    setFormParceiro({
-      nome: cliente?.nome || "",
-      telefone: cliente?.telefone || "",
-      email: cliente?.email || "",
-      instagram: "",
-      site: "",
-      tipo: "Quero ser parceiro",
-      titulo: "",
-      descricao: "",
-      categoria: "Parceiro",
-      cidade: "",
-      estado: "",
-      portfolio: "",
-    });
-  } catch (error) {
-    console.error("Erro ao enviar solicitação de parceiro:", error);
-    setErroParceiro("Não foi possível enviar sua solicitação agora.");
-  } finally {
-    setSalvandoParceiro(false);
-  }
 }
 
   function executarAcao(item) {
@@ -1046,6 +954,9 @@ function CadastroInicial({
           <div>
             <h2>Seja bem-vindo!</h2>
             <p>Identifique-se para liberar o suporte técnico especializado.</p>
+            <p style={{ marginTop: 6, fontSize: "12px", color: "#6b7280" }}>
+              Site e bot funcionam juntos: você navega no site e aciona o bot técnico no mesmo painel.
+            </p>
           </div>
         </div>
 
@@ -1102,18 +1013,12 @@ function CadastroInicial({
         <div className="social-box">
           <strong>Siga a Quanton3D nas redes</strong>
 
-          <div>
-            <a
-              href="https://www.instagram.com/quanton3d"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Instagram
-            </a>
-
-            <a href="https://www.youtube.com" target="_blank" rel="noreferrer">
-              YouTube
-            </a>
+          <div style={{ flexWrap: "wrap" }}>
+            {SOCIAL_LINKS.map((rede) => (
+              <a key={rede.label} href={rede.href} target="_blank" rel="noreferrer">
+                {rede.label}
+              </a>
+            ))}
           </div>
         </div>
 

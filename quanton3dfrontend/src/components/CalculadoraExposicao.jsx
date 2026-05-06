@@ -27,6 +27,13 @@ function estiloOption() {
   return { color: "#111827", backgroundColor: "#ffffff" };
 }
 
+function indiceCamadaReceita(receita) {
+  if (!receita) return 4;
+  const camadaBase = numero(receita.alturaCamada, 0.05);
+  const idx = CAMADAS.findIndex((item) => Math.abs(item - camadaBase) < 0.001);
+  return idx >= 0 ? idx : 4;
+}
+
 function SelectField({ label, value, onChange, options, disabled = false }) {
   return (
     <div style={styles.field}>
@@ -84,16 +91,6 @@ export default function CalculadoraExposicao() {
         if (!ativo) return;
 
         setParametros(lista);
-
-        const resinas = [...new Set(lista.map((item) => tituloResina(item.resina)))];
-        const primeiraResina = resinas[0] || "";
-        setResinaSelecionada((atual) => atual || primeiraResina);
-
-        const impressoras = lista
-          .filter((item) => tituloResina(item.resina) === primeiraResina)
-          .map((item) => tituloImpressora(item.impressora));
-        const unicas = [...new Set(impressoras)];
-        setImpressoraSelecionada((atual) => atual || unicas[0] || "");
       } catch (error) {
         console.error("Erro ao carregar parâmetros para calculadora:", error);
         if (!ativo) return;
@@ -116,50 +113,56 @@ export default function CalculadoraExposicao() {
     }));
   }, [parametros]);
 
+  const resinaAtual = opcoesResina.some((item) => item.value === resinaSelecionada)
+    ? resinaSelecionada
+    : opcoesResina[0]?.value || "";
+
   const opcoesImpressora = useMemo(() => {
     return [...new Set(
       parametros
-        .filter((item) => tituloResina(item.resina) === resinaSelecionada)
+        .filter((item) => tituloResina(item.resina) === resinaAtual)
         .map((item) => tituloImpressora(item.impressora))
     )].map((item) => ({
       value: item,
       label: item,
     }));
-  }, [parametros, resinaSelecionada]);
+  }, [parametros, resinaAtual]);
 
-  useEffect(() => {
-    if (!opcoesResina.length) return;
-    if (!opcoesResina.some((item) => item.value === resinaSelecionada)) {
-      setResinaSelecionada(opcoesResina[0].value);
-    }
-  }, [opcoesResina, resinaSelecionada]);
-
-  useEffect(() => {
-    if (!opcoesImpressora.length) {
-      setImpressoraSelecionada("");
-      return;
-    }
-    if (!opcoesImpressora.some((item) => item.value === impressoraSelecionada)) {
-      setImpressoraSelecionada(opcoesImpressora[0].value);
-    }
-  }, [opcoesImpressora, impressoraSelecionada]);
+  const impressoraAtual = opcoesImpressora.some((item) => item.value === impressoraSelecionada)
+    ? impressoraSelecionada
+    : opcoesImpressora[0]?.value || "";
 
   const receitaBase = useMemo(() => {
     return (
       parametros.find(
         (item) =>
-          tituloResina(item.resina) === resinaSelecionada &&
-          tituloImpressora(item.impressora) === impressoraSelecionada
+          tituloResina(item.resina) === resinaAtual &&
+          tituloImpressora(item.impressora) === impressoraAtual
       ) || null
     );
-  }, [parametros, resinaSelecionada, impressoraSelecionada]);
+  }, [parametros, resinaAtual, impressoraAtual]);
 
-  useEffect(() => {
-    if (!receitaBase) return;
-    const camadaBase = numero(receitaBase.alturaCamada, 0.05);
-    const idx = CAMADAS.findIndex((item) => Math.abs(item - camadaBase) < 0.001);
-    setLayerIdx(idx >= 0 ? idx : 4);
-  }, [receitaBase]);
+  function alterarResina(valor) {
+    setResinaSelecionada(valor);
+
+    const primeiraImpressora = parametros.find(
+      (item) => tituloResina(item.resina) === valor
+    );
+    const impressora = primeiraImpressora ? tituloImpressora(primeiraImpressora.impressora) : "";
+    setImpressoraSelecionada(impressora);
+    setLayerIdx(indiceCamadaReceita(primeiraImpressora));
+  }
+
+  function alterarImpressora(valor) {
+    setImpressoraSelecionada(valor);
+
+    const receita = parametros.find(
+      (item) =>
+        tituloResina(item.resina) === resinaAtual &&
+        tituloImpressora(item.impressora) === valor
+    );
+    setLayerIdx(indiceCamadaReceita(receita));
+  }
 
   const resultado = useMemo(() => {
     if (!receitaBase) return null;
@@ -206,16 +209,16 @@ export default function CalculadoraExposicao() {
         <div style={styles.grid2}>
           <SelectField
             label="Resina Quanton3D"
-            value={resinaSelecionada}
-            onChange={setResinaSelecionada}
+            value={resinaAtual}
+            onChange={alterarResina}
             options={opcoesResina}
             disabled={carregando || !opcoesResina.length}
           />
 
           <SelectField
             label="Impressora"
-            value={impressoraSelecionada}
-            onChange={setImpressoraSelecionada}
+            value={impressoraAtual}
+            onChange={alterarImpressora}
             options={opcoesImpressora}
             disabled={carregando || !opcoesImpressora.length}
           />

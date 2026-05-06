@@ -14,8 +14,8 @@ import DiarioTecnico         from "./DiarioTecnico";
 const ABAS = [
   {
     id: "kiosk",
-    label: "🖥 Kiosk",
-    descricao: "Painel ao lado da impressora",
+    label: "🖥 Painel da Impressão",
+    descricao: "Acompanhamento visual ao lado da impressora",
     componente: <ModoKiosk />,
   },
   {
@@ -27,7 +27,7 @@ const ABAS = [
   {
     id: "timer",
     label: "⏱ Timer",
-    descricao: "Acompanhe a impressão",
+    descricao: "Pausar/retomar aqui só afeta o painel",
     componente: <TimerImpressao />,
   },
   {
@@ -76,6 +76,9 @@ export default function Ferramentas() {
         <p style={s.pageSubtitle}>
           Calculadoras, timers, checklist e painel de monitoramento para
           sua impressão 3D em resina.
+        </p>
+        <p style={s.pageHint}>
+          Dica: os botões de pausar/retomar do painel servem para acompanhamento visual e não enviam comando direto para a impressora.
         </p>
       </div>
 
@@ -134,6 +137,13 @@ const s = {
     margin: "0 0 12px",
     color: "#fff",
     lineHeight: 1.1,
+  },
+  pageHint: {
+    fontSize: "12px",
+    color: "rgba(255,255,255,.38)",
+    maxWidth: 680,
+    lineHeight: 1.5,
+    margin: "10px 0 0",
   },
   pageSubtitle: {
     fontSize: "15px",

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 export default function ModoKiosk() {
   const [params, setParams] = useState({
@@ -8,10 +8,22 @@ export default function ModoKiosk() {
     exposicaoBottom: 16.8,
     liftSpeed: 65,
     restTime: 1,
+    distElevacaoInferior: 10,
+    distElevacao: 10,
+    distanciaRetracao: 10,
+    velElevacaoInferior: 130,
+    velElevacao: 130,
+    velRetracaoInferior: 120,
+    velRetracao: 120,
+    transicao: 0,
+    tipoTransicao: "Linear",
+    retardoDesligarUV: 2,
     camada: 0.05,
     camadasBottom: 6,
     antiAliasing: "4x",
     totalCamadas: 320,
+    tempoFatiadorMin: 160,
+    ajusteMaquinaMin: 0,
     tempoTotalMin: 160,
   });
   const [editing, setEditing] = useState(false);
@@ -21,6 +33,7 @@ export default function ModoKiosk() {
   const [paused, setPaused] = useState(false);
   const [temp, setTemp] = useState(24);
   const [hora, setHora] = useState("");
+  const [agoraMs, setAgoraMs] = useState(() => Date.now());
 
   const totalSecs = params.tempoTotalMin * 60;
 
@@ -29,7 +42,8 @@ export default function ModoKiosk() {
       const now = new Date();
       const pad = n => String(n).padStart(2, "0");
       setHora(`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`);
-      setTemp(22 + Math.round(Math.sin(Date.now() / 60000) * 3));
+      setAgoraMs(now.getTime());
+      setTemp(22 + Math.round(Math.sin(now.getTime() / 60000) * 3));
       if (!paused) {
         setElapsed(e => {
           const next = e + 1;
@@ -45,16 +59,33 @@ export default function ModoKiosk() {
   const remSecs = Math.max(0, totalSecs - elapsed);
   const remMin = Math.floor(remSecs / 60);
   const remSec = remSecs % 60;
-  const finish = new Date(Date.now() + remSecs * 1000);
+  const finish = new Date(agoraMs + remSecs * 1000);
   const pad = n => String(n).padStart(2, "0");
   const etaStr = `${pad(finish.getHours())}:${pad(finish.getMinutes())}`;
   const concluido = camadaAtual >= params.totalCamadas;
 
   const statusColor = concluido ? "#00ff88" : paused ? "#ffaa00" : "#00ff88";
   const statusLabel = concluido ? "CONCLUÍDO" : paused ? "PAUSADO" : "IMPRIMINDO";
-  const tempColor = temp > 28 ? "#ffaa00" : temp < 18 ? "#00d4ff" : "#00ff88";
 
-  const salvar = () => { setParams(draft); setEditing(false); setCamadaAtual(0); setElapsed(0); setPaused(false); };
+  function normalizarDraft() {
+    const numericKeys = [
+      "exposicao", "exposicaoBottom", "liftSpeed", "restTime", "camada", "camadasBottom", "totalCamadas", "tempoTotalMin",
+      "distElevacaoInferior", "distElevacao", "distanciaRetracao", "velElevacaoInferior", "velElevacao", "velRetracaoInferior", "velRetracao",
+      "transicao", "retardoDesligarUV", "tempoFatiadorMin", "ajusteMaquinaMin"
+    ];
+    const next = { ...draft };
+    for (const key of numericKeys) {
+      const parsed = Number(String(draft[key]).replace(",", "."));
+      next[key] = Number.isFinite(parsed) ? parsed : params[key];
+    }
+    next.tempoTotalMin = Math.max(0, next.tempoFatiadorMin + next.ajusteMaquinaMin);
+    next.tipoTransicao = draft.tipoTransicao || params.tipoTransicao;
+    next.resina = draft.resina || params.resina;
+    next.impressora = draft.impressora || params.impressora;
+    return next;
+  }
+
+  const salvar = () => { setParams(normalizarDraft()); setEditing(false); setCamadaAtual(0); setElapsed(0); setPaused(false); };
 
   return (
     <div style={s.kiosk}>
@@ -101,6 +132,16 @@ export default function ModoKiosk() {
           <InfoRow label="Camada" value={`${params.camada} mm`} />
           <InfoRow label="Camadas bottom" value={params.camadasBottom} />
           <InfoRow label="Rest time" value={`${params.restTime} s`} />
+          <InfoRow label="Dist. elevação inf." value={`${params.distElevacaoInferior} mm`} />
+          <InfoRow label="Dist. elevação" value={`${params.distElevacao} mm`} />
+          <InfoRow label="Dist. retração" value={`${params.distanciaRetracao} mm`} />
+          <InfoRow label="Vel. elevação inf." value={`${params.velElevacaoInferior} mm/min`} />
+          <InfoRow label="Vel. elevação" value={`${params.velElevacao} mm/min`} />
+          <InfoRow label="Vel. retração inf." value={`${params.velRetracaoInferior} mm/min`} />
+          <InfoRow label="Vel. retração" value={`${params.velRetracao} mm/min`} />
+          <InfoRow label="Camadas transição" value={params.transicao} />
+          <InfoRow label="Tipo transição" value={params.tipoTransicao} />
+          <InfoRow label="Retardo UV" value={`${params.retardoDesligarUV} s`} />
           <InfoRow label="Anti-aliasing" value={params.antiAliasing} />
         </div>
         <div style={s.infoCard}>
@@ -110,6 +151,8 @@ export default function ModoKiosk() {
           <div style={{ marginTop: 10 }}>
             <InfoRow label="Tempo restante" value={`${remMin}min ${remSec}s`} />
             <InfoRow label="Tempo total est." value={`${params.tempoTotalMin}min`} />
+            <InfoRow label="Fatiador" value={`${params.tempoFatiadorMin}min`} />
+            <InfoRow label="Ajuste máquina" value={`${params.ajusteMaquinaMin}min`} />
           </div>
         </div>
       </div>
@@ -138,22 +181,36 @@ export default function ModoKiosk() {
               {[
                 ["Resina", "resina", "text"],
                 ["Impressora", "impressora", "text"],
+                ["Altura camada (mm)", "camada", "number"],
+                ["Camadas de base", "camadasBottom", "number"],
                 ["Exposição (s)", "exposicao", "number"],
-                ["Bottom exp. (s)", "exposicaoBottom", "number"],
+                ["Exposição base (s)", "exposicaoBottom", "number"],
+                ["Camadas transição", "transicao", "number"],
+                ["Tipo transição", "tipoTransicao", "text"],
+                ["Retardo desligar UV (s)", "retardoDesligarUV", "number"],
+                ["Dist. elevação inferior (mm)", "distElevacaoInferior", "number"],
+                ["Distância elevação (mm)", "distElevacao", "number"],
+                ["Distância retração (mm)", "distanciaRetracao", "number"],
+                ["Vel. elevação inferior", "velElevacaoInferior", "number"],
+                ["Vel. elevação", "velElevacao", "number"],
+                ["Vel. retração inferior", "velRetracaoInferior", "number"],
+                ["Vel. retração", "velRetracao", "number"],
                 ["Lift speed (mm/min)", "liftSpeed", "number"],
                 ["Rest time (s)", "restTime", "number"],
-                ["Camada (mm)", "camada", "number"],
-                ["Camadas bottom", "camadasBottom", "number"],
                 ["Anti-aliasing", "antiAliasing", "text"],
                 ["Total camadas", "totalCamadas", "number"],
-                ["Tempo total (min)", "tempoTotalMin", "number"],
+                ["Tempo fatiador (min)", "tempoFatiadorMin", "number"],
+                ["Ajuste máquina (min)", "ajusteMaquinaMin", "number"],
               ].map(([label, key, type]) => (
                 <div key={key} style={s.modalField}>
                   <label style={s.modalLabel}>{label}</label>
                   <input
                     type={type}
                     value={draft[key]}
-                    onChange={e => setDraft(d => ({ ...d, [key]: type === "number" ? parseFloat(e.target.value) : e.target.value }))}
+                    onChange={e => setDraft(d => ({
+                      ...d,
+                      [key]: e.target.value,
+                    }))}
                     style={s.modalInput}
                   />
                 </div>
