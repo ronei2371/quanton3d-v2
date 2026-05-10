@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo } from "react";
 
 const RESINAS = [
   { value: "standard", label: "Standard / Comum",       densidade: 1.10, precoKg: 120, waste: 0.20 },
@@ -35,20 +35,23 @@ export default function ComparadorCusto() {
   const [quantidade,  setQuantidade]  = useState(1);
   const [selecionadas, setSelecionadas] = useState(["standard", "abs", "castable"]);
   const [precosCustom, setPrecosCustom] = useState({});
-  const [resultados, setResultados] = useState([]);
+  const [resinaCustomNome, setResinaCustomNome] = useState("Resina Quanton personalizada");
+  const [resinaCustomPreco, setResinaCustomPreco] = useState(0);
 
-  const recalc = useCallback(() => {
-    const res = RESINAS
+  const resinasDisponiveis = useMemo(() => ([
+    ...RESINAS,
+    { value: "custom_q3d", label: resinaCustomNome || "Resina Quanton personalizada", densidade: 1.10, precoKg: Number(resinaCustomPreco) || 0, waste: 0.20 },
+  ]), [resinaCustomNome, resinaCustomPreco]);
+
+  const resultados = useMemo(() => {
+    return resinasDisponiveis
       .filter(r => selecionadas.includes(r.value))
       .map(r => ({
         ...r,
         resultado: calcCusto(r, volumeCm3, suportesPct, quantidade, precosCustom[r.value] || 0),
       }))
       .sort((a, b) => a.resultado.custoPorPeca - b.resultado.custoPorPeca);
-    setResultados(res);
-  }, [volumeCm3, suportesPct, quantidade, selecionadas, precosCustom]);
-
-  useEffect(() => { recalc(); }, [recalc]);
+  }, [resinasDisponiveis, selecionadas, volumeCm3, suportesPct, quantidade, precosCustom]);
 
   const toggleResina = v => {
     setSelecionadas(s =>
@@ -85,7 +88,7 @@ export default function ComparadorCusto() {
       <div style={s.card}>
         <p style={s.cardLabel}>SELECIONE AS RESINAS PARA COMPARAR</p>
         <div style={s.resinasGrid}>
-          {RESINAS.map(r => (
+          {resinasDisponiveis.map(r => (
             <button key={r.value}
               style={{ ...s.resinBtn, ...(selecionadas.includes(r.value) ? s.resinBtnActive : {}) }}
               onClick={() => toggleResina(r.value)}>
@@ -95,11 +98,25 @@ export default function ComparadorCusto() {
         </div>
       </div>
 
+      <div style={s.card}>
+        <p style={s.cardLabel}>ADICIONAR RESINA DA QUANTON3D (opcional)</p>
+        <div style={s.grid3}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label style={s.label}>Nome da resina</label>
+            <input value={resinaCustomNome} onChange={e => setResinaCustomNome(e.target.value)} style={s.input} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label style={s.label}>Preço (R$/kg)</label>
+            <input type="number" min={0} step={1} value={resinaCustomPreco} onChange={e => setResinaCustomPreco(Number(e.target.value) || 0)} style={s.input} />
+          </div>
+        </div>
+      </div>
+
       {/* Preços customizados */}
       <div style={s.card}>
         <p style={s.cardLabel}>AJUSTE OS PREÇOS (opcional — deixe 0 para usar referência)</p>
         <div style={s.grid3}>
-          {RESINAS.filter(r => selecionadas.includes(r.value)).map(r => (
+          {resinasDisponiveis.filter(r => selecionadas.includes(r.value)).map(r => (
             <div key={r.value} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <label style={s.label}>{r.label}</label>
               <div style={s.inputWrap}>

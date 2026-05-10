@@ -1,7 +1,6 @@
 import { useState } from "react";
 import ModoKiosk            from "./ModoKiosk";
 import ChecklistPreImpressao from "./ChecklistPreImpressao";
-import TimerImpressao        from "./TimerImpressao";
 import CalculadoraCuraUV     from "./CalculadoraCuraUV";
 import CalculadoraExposicao  from "./CalculadoraExposicao";
 import CalculadoraVolume     from "./CalculadoraVolume";
@@ -24,12 +23,7 @@ const ABAS = [
     descricao: "Verificação pré-impressão",
     componente: <ChecklistPreImpressao />,
   },
-  {
-    id: "timer",
-    label: "⏱ Timer",
-    descricao: "Pausar/retomar aqui só afeta o painel",
-    componente: <TimerImpressao />,
-  },
+
   {
     id: "exposicao",
     label: "💡 Exposição",
@@ -74,7 +68,7 @@ export default function Ferramentas() {
         <span style={s.badge}>FERRAMENTAS</span>
         <h1 style={s.pageTitle}>Central de Ferramentas</h1>
         <p style={s.pageSubtitle}>
-          Calculadoras, timers, checklist e painel de monitoramento para
+          Calculadoras, checklist e painel de monitoramento para
           sua impressão 3D em resina.
         </p>
         <p style={s.pageHint}>
