@@ -1,7 +1,6 @@
 import { useState } from "react";
 import ModoKiosk            from "./ModoKiosk";
 import ChecklistPreImpressao from "./ChecklistPreImpressao";
-import TimerImpressao        from "./TimerImpressao";
 import CalculadoraCuraUV     from "./CalculadoraCuraUV";
 import CalculadoraExposicao  from "./CalculadoraExposicao";
 import CalculadoraVolume     from "./CalculadoraVolume";
