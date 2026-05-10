@@ -2,6 +2,7 @@ import { useState } from "react";
 import ModoKiosk            from "./ModoKiosk";
 import ChecklistPreImpressao from "./ChecklistPreImpressao";
 import CalculadoraCuraUV     from "./CalculadoraCuraUV";
+import TimerImpressao from "./TimerImpressao";
 import CalculadoraExposicao  from "./CalculadoraExposicao";
 import CalculadoraVolume     from "./CalculadoraVolume";
 import ComparadorCusto       from "./ComparadorCusto";
