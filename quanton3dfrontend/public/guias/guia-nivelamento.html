@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia de Nivelamento Elite | Quanton3D</title>
+    <title>Protocolo de Calibração Z-Zero para Impressoras 3D de Resina | Quanton3D</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-
+        /* Reset e Base */
         * {
             margin: 0;
             padding: 0;
@@ -14,359 +13,193 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #e2e8f0;
-            background-color: #0a0a0c;
+            font-family: 'Inter', sans-serif; /* Fonte mais sóbria */
+            line-height: 1.7;
+            color: #e0e0e0; /* Texto claro para fundo escuro */
+            background-color: #1a1a2e; /* Fundo azul escuro/cinza */
+            min-height: 100vh;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #2c3e50; /* Fundo do container um pouco mais claro */
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 60px 40px;
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            padding: 50px 40px;
             text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            border-radius: 2px;
-        }
-
-        .logo {
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 4px;
-            color: #3b82f6;
-            margin-bottom: 15px;
-            text-transform: uppercase;
+            border-bottom: 2px solid #3498db;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            font-weight: 800;
+            font-size: 2.2em;
+            color: #fff;
             margin-bottom: 10px;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .header p {
-            font-size: 1.1em;
-            color: #64748b;
+            color: #3498db;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9em;
         }
 
         .content {
             padding: 40px;
         }
 
-        .intro {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.1);
-            padding: 30px;
-            border-radius: 24px;
+        .section {
             margin-bottom: 40px;
         }
 
-        .intro h2 {
+        .section h2 {
+            color: #3498db;
             font-size: 1.5em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #3b82f6;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .intro p {
-            font-size: 1.05em;
-            color: #94a3b8;
-            line-height: 1.8;
-        }
-
-        .warning-box {
-            background: rgba(245, 158, 11, 0.05);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            padding: 25px;
-            margin: 30px 0;
-            border-radius: 20px;
-        }
-
-        .warning-box h3 {
-            color: #f59e0b;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .warning-box p {
-            color: #d97706;
-            font-size: 1em;
-        }
-
-        .materials {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 30px;
-            border-radius: 24px;
-            margin: 40px 0;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .materials h3 {
-            color: #fff;
-            font-size: 1.4em;
             margin-bottom: 20px;
-            font-weight: 700;
-        }
-
-        .materials ul {
-            list-style: none;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .materials li {
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            font-size: 0.95em;
-            color: #cbd5e1;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .materials li:before {
-            content: "✓";
-            color: #10b981;
-            font-weight: bold;
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
 
-        .step {
-            margin: 40px 0;
-            padding: 35px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative;
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .step-card {
+            background: #34495e;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #3498db;
         }
 
         .step-number {
-            position: absolute;
-            top: -20px;
-            left: 30px;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            color: white;
-            width: 45px;
-            height: 45px;
-            border-radius: 14px;
-            text-align: center;
-            line-height: 45px;
-            font-size: 1.2em;
+            font-size: 0.8em;
+            color: #3498db;
             font-weight: 800;
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            margin-bottom: 10px;
+            display: block;
         }
 
-        .step h3 {
-            font-size: 1.5em;
+        .step-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
             color: #fff;
-            margin-bottom: 20px;
-            margin-top: 10px;
-            font-weight: 700;
         }
 
-        .step-image {
+        .image-placeholder {
             width: 100%;
-            border-radius: 20px;
-            margin: 25px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .step-description {
-            font-size: 1.05em;
-            color: #94a3b8;
-            margin-bottom: 20px;
-        }
-
-        .step-list {
-            list-style: none;
-        }
-
-        .step-list li {
-            padding: 15px;
-            margin: 10px 0;
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 4px solid #3b82f6;
+            height: 250px;
+            background: #1a1a2e;
             border-radius: 8px;
-            font-size: 1em;
-            color: #cbd5e1;
-        }
-
-        .step-list li strong {
-            color: #3b82f6;
-        }
-
-        .tip-box {
-            background: rgba(16, 185, 129, 0.05);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 20px;
-            border-radius: 16px;
             margin: 20px 0;
-        }
-
-        .tip-box h4 {
-            color: #10b981;
-            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .error-box {
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 20px;
-            border-radius: 16px;
-            margin: 20px 0;
-        }
-
-        .error-box h4 {
-            color: #ef4444;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            justify-content: center;
+            color: #555;
+            font-style: italic;
+            border: 1px dashed #3498db;
         }
 
         .footer {
-            background: #0f172a;
-            padding: 50px 40px;
+            padding: 30px;
             text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: #1a1a2e;
+            color: #7f8c8d;
+            font-size: 0.85em;
         }
 
-        .footer h3 {
-            font-size: 1.2em;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            color: #fff;
-        }
-
-        .footer p {
-            font-size: 0.9em;
-            color: #64748b;
-            margin: 5px 0;
-        }
-
-        .footer a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .footer a:hover {
-            color: #60a5fa;
+        .highlight {
+            color: #3498db;
+            font-weight: bold;
         }
 
         @media (max-width: 768px) {
-            .header h1 { font-size: 1.8em; }
+            .header h1 { font-size: 1.6em; }
             .content { padding: 20px; }
-            .step { padding: 25px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">Quanton3D</div>
-            <h1>Guia de Nivelamento Elite</h1>
-            <p>Alta Performance em Impressão 3D de Resina</p>
+            <p>Divisão Técnica Quanton3D</p>
+            <h1>Protocolo de Calibração Z-Zero</h1>
         </div>
 
         <div class="content">
-            <div class="intro">
-                <h2>📋 A Base do Sucesso</h2>
-                <p>O nivelamento correto da plataforma de construção é o fundamento de toda impressão 3D de resina bem-sucedida. Uma plataforma mal nivelada resulta em falhas de adesão, peças incompletas e desperdício de resina. Este guia Elite traz o método definitivo para garantir impressões perfeitas.</p>
-            </div>
-
-            <div class="warning-box">
-                <h3>⚠️ ATENÇÃO</h3>
-                <p>O nivelamento incorreto é a causa número 1 de falhas. Refaça o processo a cada 10-15 impressões ou sempre que notar problemas de adesão. A tela LCD é delicada - opere com cuidado!</p>
-            </div>
-
-            <div class="materials">
-                <h3>🛠️ Kit de Preparação</h3>
-                <ul>
-                    <li>Papel sulfite A4 (75-90g/m²)</li>
-                    <li>Chave Allen original</li>
-                    <li>Álcool isopropílico 99%</li>
-                    <li>Pano de microfibra limpo</li>
-                    <li>Luvas de nitrilo</li>
-                    <li>Iluminação adequada</li>
-                </ul>
-            </div>
-
-            <!-- PASSO 1 -->
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Limpeza e Preparação</h3>
-                <div class="step-description">
-                    <p>A precisão começa com a limpeza absoluta dos componentes:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Remova o VAT:</strong> Nunca tente nivelar com resina no tanque.</li>
-                    <li><strong>Tela LCD:</strong> Limpe com álcool e microfibra, removendo qualquer resíduo.</li>
-                    <li><strong>Plataforma:</strong> Certifique-se de que a base metálica está 100% limpa e seca.</li>
-                </ul>
-            </div>
-
-            <!-- PASSO 2 -->
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>O Método do Papel</h3>
-                <div class="step-description">
-                    <p>Posicione a folha de papel sobre a tela LCD e inicie o comando "Home" no painel da impressora.</p>
-                </div>
-                <div class="tip-box">
-                    <h4>💡 Dica de Especialista</h4>
-                    <p>A resistência ao puxar o papel deve ser uniforme em todos os cantos. Se um lado estiver mais solto que o outro, sua impressão falhará naquele ponto.</p>
+            <div class="section">
+                <h2>🎯 Objetivo do Protocolo</h2>
+                <div class="card">
+                    <p>Este documento estabelece o procedimento padrão para o <span class="highlight">Nivelamento de Precisão (Z-Zero)</span> em impressoras SLA/DLP. A execução correta deste protocolo garante a adesão molecular da primeira camada e previne falhas estruturais durante o processo de cura UV.</p>
                 </div>
             </div>
 
-            <!-- SOLUÇÃO DE PROBLEMAS -->
-            <div class="error-box">
-                <h4>❌ Falha de Adesão?</h4>
-                <p>Se a peça não gruda, verifique se o papel estava muito solto durante o nivelamento ou se a plataforma possui resíduos de gordura.</p>
+            <div class="section">
+                <h2>🛠️ Fases de Execução</h2>
+                <div class="step-grid">
+                    <div class="step-card">
+                        <span class="step-number">FASE 01</span>
+                        <h3>Sanitização e Preparação</h3>
+                        <p>Remova o VAT e certifique-se de que a tela LCD e a plataforma de construção estão 100% livres de resíduos de resina curada. Use álcool isopropílico 99%.</p>
+                        <div class="image-placeholder">
+                            [Imagem: Detalhe de limpeza industrial da tela LCD]
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <span class="step-number">FASE 02</span>
+                        <h3>Ajuste de Torque</h3>
+                        <p>Afrouxe os parafusos de fixação da plataforma até que ela se mova livremente. Posicione o cartão de calibração sobre o LCD.</p>
+                        <div class="image-placeholder">
+                            [Imagem: Chave Allen ajustando parafusos da plataforma]
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <span class="step-number">FASE 03</span>
+                        <h3>Ponto Zero (Home)</h3>
+                        <p>Acione o comando HOME. Com a plataforma pressionada, aplique pressão uniforme e reaperte os parafusos em padrão cruzado para evitar empenamento.</p>
+                        <div class="image-placeholder">
+                            [Imagem: Pressão manual uniforme sobre a plataforma]
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💡 Notas de Engenharia</h2>
+                <div class="card" style="border-left: 4px solid #f1c40f;">
+                    <p><span class="highlight" style="color: #f1c40f;">DICA:</span> A lubrificação periódica do eixo Z com graxa de lítio ou PTFE reduz o atrito e garante que o motor de passo atinja o ponto zero com precisão micrométrica.</p>
+                </div>
             </div>
         </div>
 
         <div class="footer">
-            <h3>QUANTON3D • ELITE RESINS</h3>
-            <p>Suporte Técnico Especializado</p>
-            <p>WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a></p>
-            <p>© 2025 Quanton3D - High Performance SLA/DLP</p>
+            <p>© 2025 QUANTON3D • LABORATÓRIO DE DESENVOLVIMENTO DE RESINAS</p>
+            <p>Documento Técnico Interno - Uso Autorizado para Clientes Elite</p>
         </div>
     </div>
 </body>
