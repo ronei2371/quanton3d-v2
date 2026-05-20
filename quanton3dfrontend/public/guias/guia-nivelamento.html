@@ -30,176 +30,370 @@
             margin: 0 auto;
             background-color: #2c3e50; /* Fundo do container um pouco mais claro */
             border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             overflow: hidden;
         }
 
+        /* Cabeçalho */
         .header {
-            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-            padding: 50px 40px;
+            background-color: #1a1a2e; /* Mantém o fundo escuro */
+            color: #00bcd4; /* Título em destaque */
+            padding: 50px 30px;
             text-align: center;
-            border-bottom: 2px solid #3498db;
+            border-bottom: 3px solid #4caf50; /* Linha verde de destaque */
         }
 
         .header h1 {
-            font-size: 2.2em;
-            color: #fff;
-            margin-bottom: 10px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-family: 'Space Grotesk', sans-serif; /* Fonte para títulos */
+            font-size: 3.2em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            color: #00bcd4;
         }
 
         .header p {
-            color: #3498db;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.9em;
+            font-size: 1.2em;
+            opacity: 0.9;
+            color: #a0a0a0;
         }
 
+        .logo {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4caf50; /* Logo em verde */
+        }
+
+        /* Conteúdo Principal */
         .content {
-            padding: 40px;
+            padding: 40px 30px;
+        }
+
+        .intro {
+            background-color: #34495e; /* Fundo para introdução */
+            color: #e0e0e0;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .intro h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2em;
+            margin-bottom: 12px;
+            color: #00bcd4;
+        }
+
+        .intro p {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #a0a0a0;
         }
 
         .section {
-            margin-bottom: 40px;
+            margin: 45px 0;
+            padding: 35px;
+            background-color: #34495e; /* Fundo dos passos */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #00bcd4; /* Borda lateral azul */
         }
 
-        .section h2 {
-            color: #3498db;
-            font-size: 1.5em;
-            margin-bottom: 20px;
+        .section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.7em;
+            color: #e0e0e0;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
+        .section-number {
+            display: inline-block;
+            background-color: #00bcd4; /* Número do passo em azul */
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 55px;
+            font-size: 1.6em;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
         }
 
-        .step-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .step-card {
-            background: #34495e;
-            padding: 25px;
-            border-radius: 12px;
-            border-left: 4px solid #3498db;
-        }
-
-        .step-number {
-            font-size: 0.8em;
-            color: #3498db;
-            font-weight: 800;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .step-card h3 {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-
-        .image-placeholder {
+        .section-image {
             width: 100%;
-            height: 250px;
-            background: #1a1a2e;
-            border-radius: 8px;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            font-style: italic;
-            border: 1px dashed #3498db;
+            max-width: 700px;
+            height: auto;
+            border-radius: 10px;
+            margin: 25px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: block;
+            object-fit: contain;
         }
 
+        .section-description {
+            font-size: 1.0em;
+            line-height: 1.8;
+            color: #a0a0a0;
+            margin: 18px 0;
+        }
+
+        .step-list {
+            list-style: none;
+            margin: 18px 0;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #2c3e50; /* Fundo dos itens da lista */
+            border-left: 3px solid #4caf50; /* Borda verde */
+            border-radius: 6px;
+            font-size: 1.0em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #e0e0e0;
+        }
+
+        .step-list li strong {
+            color: #00bcd4; /* Destaque em azul */
+        }
+
+        .tip-box {
+            background-color: #2a3a4a; /* Fundo azul escuro para dicas */
+            border-left: 5px solid #00bcd4; /* Borda azul */
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tip-box h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            color: #00bcd4;
+        }
+
+        .tip-box p {
+            font-size: 1.0em;
+            line-height: 1.7;
+            color: #a0a0a0;
+        }
+
+        .warning-box {
+            background-color: #4a2a2a; /* Fundo vermelho escuro */
+            border-left: 5px solid #e74c3c; /* Borda vermelha */
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #e0e0e0;
+        }
+
+        .warning-box h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #e0e0e0;
+            font-size: 1.0em;
+            line-height: 1.7;
+        }
+
+        /* Rodapé */
         .footer {
+            background-color: #1a1a2e; /* Fundo escuro */
+            color: #a0a0a0;
             padding: 30px;
             text-align: center;
-            background: #1a1a2e;
-            color: #7f8c8d;
-            font-size: 0.85em;
+            border-top: 3px solid #4caf50; /* Linha verde de destaque */
         }
 
-        .highlight {
-            color: #3498db;
+        .footer h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            color: #00bcd4;
+        }
+
+        .footer p {
+            font-size: 1.0em;
+            margin: 8px 0;
+        }
+
+        .footer a {
+            color: #4caf50; /* Links em verde */
+            text-decoration: none;
             font-weight: bold;
         }
 
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsividade */
         @media (max-width: 768px) {
-            .header h1 { font-size: 1.6em; }
-            .content { padding: 20px; }
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .content {
+                padding: 30px 15px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <p>Divisão Técnica Quanton3D</p>
-            <h1>Protocolo de Calibração Z-Zero</h1>
+            <div class="logo">🔬 QUANTON3D</div>
+            <h1>🎯 Protocolo de Calibração Z-Zero para Impressoras 3D de Resina</h1>
+            <p>A Precisão Fundamental para Impressões Perfeitas</p>
         </div>
 
         <div class="content">
+            <div class="intro">
+                <h2>⚙️ A Essência do Nivelamento em Impressão 3D de Resina</h2>
+                <p>O nivelamento da plataforma de construção, ou calibração Z-Zero, é o passo mais crítico para o sucesso de qualquer impressão 3D de resina. Diferente das impressoras FDM, onde a distância entre o bico e a mesa é ajustada, nas impressoras de resina (LCD/SLA/DLP), a plataforma desce e comprime a primeira camada de resina contra a tela LCD. Uma calibração imprecisa resulta em falhas de adesão, deformações e perda de detalhes. Este guia detalha o processo com rigor técnico, garantindo que suas impressões atinjam a máxima fidelidade dimensional.</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Importância Crítica da Calibração Z-Zero</h3>
+                <p>A calibração Z-Zero inadequada é a principal causa de falhas em impressões de resina. Dedique atenção meticulosa a este protocolo. Recomenda-se recalibrar a cada 10-15 impressões ou sempre que houver qualquer alteração na plataforma ou no tanque de resina. A tela LCD é um componente sensível; evite pressão excessiva!</p>
+            </div>
+
             <div class="section">
-                <h2>🎯 Objetivo do Protocolo</h2>
-                <div class="card">
-                    <p>Este documento estabelece o procedimento padrão para o <span class="highlight">Nivelamento de Precisão (Z-Zero)</span> em impressoras SLA/DLP. A execução correta deste protocolo garante a adesão molecular da primeira camada e previne falhas estruturais durante o processo de cura UV.</p>
+                <h2 class="section-title">
+                    <div class="section-number">1</div>
+                    Materiais e Preparação do Ambiente
+                </h2>
+                <div class="section-description">
+                    <p>A preparação adequada dos materiais e do ambiente de trabalho é o primeiro passo para uma calibração Z-Zero bem-sucedida.</p>
+                </div>
+
+                <img src="images/nivelamento-images/impressora-resina.jpg" alt="Impressora de resina" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">🛠️ Checklist de Materiais:</h3>
+                <ul class="step-list">
+                    <li><strong>Folha de Calibração:</strong> Uma folha de papel sulfite A4 (75-90g/m²) ou a folha de calibração fornecida pelo fabricante.</li>
+                    <li><strong>Ferramentas:</strong> Chave Allen ou ferramenta específica para os parafusos da plataforma (geralmente inclusa com a impressora).</li>
+                    <li><strong>Limpeza:</strong> Pano de microfibra e Álcool Isopropílico 99% (IPA) para desengordurar.</li>
+                    <li><strong>Segurança:</strong> Luvas descartáveis de nitrilo para manuseio da resina e componentes.</li>
+                    <li><strong>Iluminação:</strong> Ambiente bem iluminado para visualização precisa.</li>
+                </ul>
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">🧼 Preparação da Impressora:</h3>
+                <ol class="step-list">
+                    <li><strong>Desenergização:</strong> Desligue a impressora da tomada para evitar movimentos acidentais.</li>
+                    <li><strong>Remoção do Tanque:</strong> Retire o tanque de resina (VAT) com extremo cuidado. Certifique-se de que não há resina líquida ou curada no tanque.</li>
+                    <li><strong>Limpeza da Tela LCD:</strong> Com um pano de microfibra e IPA, limpe delicadamente a superfície da tela LCD para remover poeira, impressões digitais ou resíduos de resina.</li>
+                    <li><strong>Limpeza da Plataforma:</strong> Limpe a plataforma de construção com IPA, garantindo que esteja completamente seca e livre de qualquer resíduo.</li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">
+                    <div class="section-number">2</div>
+                    Protocolo de Calibração Z-Zero (Método do Papel)
+                </h2>
+                <div class="section-description">
+                    <p>Este método é amplamente utilizado e eficaz para a maioria das impressoras de resina, garantindo uma distância inicial precisa entre a plataforma e a tela LCD.</p>
+                </div>
+
+                <img src="images/nivelamento-images/papel-impressora.jpg" alt="Papel de impressora" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">⚙️ Procedimento Passo a Passo:</h3>
+                <ol class="step-list">
+                    <li><strong>Posicionamento da Folha:</strong> Coloque a folha de papel sulfite sobre a tela LCD da impressora.</li>
+                    <li><strong>Soltar Parafusos da Plataforma:</strong> Com a chave Allen, solte os parafusos que fixam a plataforma de construção ao braço do eixo Z. A plataforma deve estar livre para se mover.</li>
+                    <li><strong>Movimento Z-Home:</strong> No menu da impressora, selecione a opção "Home" ou "Z-Home". A plataforma descerá até o ponto zero, pressionando a folha de papel contra a tela LCD.</li>
+                    <li><strong>Ajuste da Pressão:</strong> Enquanto a plataforma está pressionando o papel, deslize a folha para frente e para trás. Ajuste a altura da plataforma (se sua impressora permitir um ajuste manual fino) até sentir uma leve resistência ao puxar o papel, mas sem que ele rasgue.</li>
+                    <li><strong>Apertar Parafusos:</strong> Com a plataforma ainda pressionando o papel, aperte os parafusos da plataforma em um padrão cruzado (estrela) para garantir uma fixação uniforme e evitar desalinhamento.</li>
+                    <li><strong>Verificação Final:</strong> Deslize o papel novamente para confirmar que a resistência é uniforme em todos os cantos da plataforma.</li>
+                    <li><strong>Definir Z-Zero:</strong> No menu da impressora, selecione a opção "Set Z=0" ou "Set Current Position as Z=0". Isso define a posição atual como o novo ponto zero.</li>
+                </ol>
+
+                <img src="images/nivelamento-images/papel-teste.jpg" alt="Teste de nivelamento com papel" class="section-image">
+
+                <div class="tip-box">
+                    <h4>💡 Dica de Precisão: O "Arrasto" do Papel</h4>
+                    <p>A sensação de "arrasto" ideal do papel deve ser similar à de puxar uma nota de dinheiro de debaixo de um copo levemente pesado. Nem muito solto, nem travado. Isso indica a compressão correta para a primeira camada.</p>
                 </div>
             </div>
 
             <div class="section">
-                <h2>🛠️ Fases de Execução</h2>
-                <div class="step-grid">
-                    <div class="step-card">
-                        <span class="step-number">FASE 01</span>
-                        <h3>Sanitização e Preparação</h3>
-                        <p>Remova o VAT e certifique-se de que a tela LCD e a plataforma de construção estão 100% livres de resíduos de resina curada. Use álcool isopropílico 99%.</p>
-                        <div class="image-placeholder">
-                            [Imagem: Detalhe de limpeza industrial da tela LCD]
-                        </div>
-                    </div>
+                <h2 class="section-title">
+                    <div class="section-number">3</div>
+                    Calibração Z-Zero Específica por Modelo de Impressora
+                </h2>
+                <div class="section-description">
+                    <p>Embora o método do papel seja universal, algumas impressoras possuem particularidades. Abaixo, detalhamos os procedimentos para modelos populares.</p>
+                </div>
 
-                    <div class="step-card">
-                        <span class="step-number">FASE 02</span>
-                        <h3>Ajuste de Torque</h3>
-                        <p>Afrouxe os parafusos de fixação da plataforma até que ela se mova livremente. Posicione o cartão de calibração sobre o LCD.</p>
-                        <div class="image-placeholder">
-                            [Imagem: Chave Allen ajustando parafusos da plataforma]
-                        </div>
-                    </div>
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">Anycubic Photon Mono/Mono X:</h3>
+                <ul class="step-list">
+                    <li><strong>Desligar e Remover:</strong> Desligue a impressora, remova o tanque e a plataforma.</li>
+                    <li><strong>Soltar Parafusos:</strong> Solte os 4 parafusos laterais da plataforma.</li>
+                    <li><strong>Z-Home:</strong> Selecione "Move Z" e depois "Home".</li>
+                    <li><strong>Ajuste e Aperto:</strong> Deslize o papel e aperte os parafusos em cruz.</li>
+                    <li><strong>Set Z=0:</strong> Confirme a posição como Z=0.</li>
+                </ul>
 
-                    <div class="step-card">
-                        <span class="step-number">FASE 03</span>
-                        <h3>Ponto Zero (Home)</h3>
-                        <p>Acione o comando HOME. Com a plataforma pressionada, aplique pressão uniforme e reaperte os parafusos em padrão cruzado para evitar empenamento.</p>
-                        <div class="image-placeholder">
-                            [Imagem: Pressão manual uniforme sobre a plataforma]
-                        </div>
-                    </div>
+                <img src="images/nivelamento-images/anycubic-mono.jpg" alt="Anycubic Mono" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">Elegoo Mars/Saturn:</h3>
+                <ul class="step-list">
+                    <li><strong>Desligar e Remover:</strong> Desligue a impressora, remova o tanque e a plataforma.</li>
+                    <li><strong>Soltar Parafusos:</strong> Solte os 2 parafusos frontais da plataforma.</li>
+                    <li><strong>Z-Home:</strong> Selecione "Tool" > "Manual" > "Home".</li>
+                    <li><strong>Ajuste e Aperto:</strong> Deslize o papel e aperte os parafusos.</li>
+                    <li><strong>Set Z=0:</strong> Confirme a posição como Z=0.</li>
+                </ul>
+
+                <img src="images/nivelamento-images/elegoo-saturn.jpg" alt="Elegoo Saturn" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">Outras Impressoras (Generalizado):</h3>
+                <ul class="step-list">
+                    <li>Siga o princípio básico: soltar parafusos, descer ao home com papel, ajustar pressão, apertar parafusos, definir Z=0.</li>
+                    <li>Consulte o manual do fabricante para detalhes específicos do seu modelo.</li>
+                </ul>
+
+                <img src="images/nivelamento-images/photon-nivelamento.jpg" alt="Nivelamento Photon" class="section-image">
+
+                <div class="warning-box">
+                    <h3>⚠️ Verificação Pós-Calibração:</h3>
+                    <p>Após a calibração, execute um teste de exposição do LCD sem o tanque de resina para verificar se a luz UV está sendo projetada uniformemente em toda a área da tela. Isso ajuda a identificar "dead pixels" ou bloqueios.</p>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>💡 Notas de Engenharia</h2>
-                <div class="card" style="border-left: 4px solid #f1c40f;">
-                    <p><span class="highlight" style="color: #f1c40f;">DICA:</span> A lubrificação periódica do eixo Z com graxa de lítio ou PTFE reduz o atrito e garante que o motor de passo atinja o ponto zero com precisão micrométrica.</p>
-                </div>
-            </div>
         </div>
 
         <div class="footer">
-            <p>© 2025 QUANTON3D • LABORATÓRIO DE DESENVOLVIMENTO DE RESINAS</p>
-            <p>Documento Técnico Interno - Uso Autorizado para Clientes Elite</p>
+            <h3>QUANTON3D - Excelência em Impressão 3D Odontológica</h3>
+            <p>A vanguarda da tecnologia para resultados clínicos e laboratoriais superiores.</p>
+            <p>Visite nosso site: <a href="https://quanton3d.com.br" target="_blank">quanton3d.com.br</a></p>
         </div>
     </div>
 </body>
