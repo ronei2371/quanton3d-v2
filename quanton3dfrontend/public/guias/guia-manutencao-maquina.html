@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo de Manutenção Preventiva para Impressoras 3D de Resina | Quanton3D</title>
+    <style>
+        /* Reset e Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; /* Fonte mais sóbria */
+            line-height: 1.7;
+            color: #e0e0e0; /* Texto claro para fundo escuro */
+            background-color: #1a1a2e; /* Fundo azul escuro/cinza */
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: #2c3e50; /* Fundo do container um pouco mais claro */
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        /* Cabeçalho */
+        .header {
+            background-color: #1a1a2e; /* Mantém o fundo escuro */
+            color: #00bcd4; /* Título em destaque */
+            padding: 50px 30px;
+            text-align: center;
+            border-bottom: 3px solid #4caf50; /* Linha verde de destaque */
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif; /* Fonte para títulos */
+            font-size: 3.2em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            color: #00bcd4;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            color: #a0a0a0;
+        }
+
+        .logo {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4caf50; /* Logo em verde */
+        }
+
+        /* Conteúdo Principal */
+        .content {
+            padding: 40px 30px;
+        }
+
+        .intro {
+            background-color: #34495e; /* Fundo para introdução */
+            color: #e0e0e0;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .intro h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2em;
+            margin-bottom: 12px;
+            color: #00bcd4;
+        }
+
+        .intro p {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #a0a0a0;
+        }
+
+        .section {
+            margin: 45px 0;
+            padding: 35px;
+            background-color: #34495e; /* Fundo dos passos */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #00bcd4; /* Borda lateral azul */
+        }
+
+        .section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.7em;
+            color: #e0e0e0;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-number {
+            display: inline-block;
+            background-color: #00bcd4; /* Número do passo em azul */
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 55px;
+            font-size: 1.6em;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
+        }
+
+        .section-image {
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            border-radius: 10px;
+            margin: 25px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: block;
+            object-fit: contain;
+        }
+
+        .section-description {
+            font-size: 1.0em;
+            line-height: 1.8;
+            color: #a0a0a0;
+            margin: 18px 0;
+        }
+
+        .step-list {
+            list-style: none;
+            margin: 18px 0;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #2c3e50; /* Fundo dos itens da lista */
+            border-left: 3px solid #4caf50; /* Borda verde */
+            border-radius: 6px;
+            font-size: 1.0em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #e0e0e0;
+        }
+
+        .step-list li strong {
+            color: #00bcd4; /* Destaque em azul */
+        }
+
+        .tip-box {
+            background-color: #2a3a4a; /* Fundo azul escuro para dicas */
+            border-left: 5px solid #00bcd4; /* Borda azul */
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tip-box h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            color: #00bcd4;
+        }
+
+        .tip-box p {
+            font-size: 1.0em;
+            line-height: 1.7;
+            color: #a0a0a0;
+        }
+
+        .warning-box {
+            background-color: #4a2a2a; /* Fundo vermelho escuro */
+            border-left: 5px solid #e74c3c; /* Borda vermelha */
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #e0e0e0;
+        }
+
+        .warning-box h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #e0e0e0;
+            font-size: 1.0em;
+            line-height: 1.7;
+        }
+
+        /* Rodapé */
+        .footer {
+            background-color: #1a1a2e; /* Fundo escuro */
+            color: #a0a0a0;
+            padding: 30px;
+            text-align: center;
+            border-top: 3px solid #4caf50; /* Linha verde de destaque */
+        }
+
+        .footer h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            color: #00bcd4;
+        }
+
+        .footer p {
+            font-size: 1.0em;
+            margin: 8px 0;
+        }
+
+        .footer a {
+            color: #4caf50; /* Links em verde */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .content {
+                padding: 30px 15px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔬 QUANTON3D</div>
+            <h1>🔧 Protocolo de Manutenção Preventiva para Impressoras 3D de Resina</h1>
+            <p>Maximizando a Longevidade e a Performance do Seu Equipamento</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h2>⚙️ A Importância da Manutenção na Odontologia Digital</h2>
+                <p>Em um ambiente clínico e laboratorial onde a precisão e a confiabilidade são inegociáveis, a manutenção preventiva da sua impressora 3D de resina não é apenas uma recomendação, mas uma exigência operacional. Uma rotina de cuidados bem estabelecida garante a consistência das impressões, prolonga a vida útil dos componentes críticos e minimiza o tempo de inatividade. Este guia detalha os procedimentos essenciais para manter seu equipamento em condições ótimas, assegurando resultados superiores e previsíveis.</p>
+            </div>
+
+            <!-- SEÇÃO 1: LUBRIFICAÇÃO DO EIXO Z -->
+            <div class="section">
+                <h2 class="section-title">
+                    <div class="section-number">1</div>
+                    Lubrificação do Eixo Z: A Base da Estabilidade Vertical
+                </h2>
+                <div class="section-description">
+                    <p>O eixo Z é o componente responsável pelo movimento vertical da plataforma de construção, determinando a altura de cada camada. A lubrificação adequada é crucial para garantir um movimento suave, preciso e sem "Z-wobble" (oscilação do eixo Z), que pode comprometer a qualidade da superfície da peça.</p>
+                </div>
+
+                <img src="images/manutencao-images/eixo-z-neutro.webp" alt="Eixo Z com Fuso" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">📋 Frequência e Indicadores de Lubrificação:</h3>
+                <ul class="step-list">
+                    <li><strong>Manutenção Periódica:</strong> Recomenda-se a cada <strong>100 horas de impressão</strong> ou mensalmente, o que ocorrer primeiro.</li>
+                    <li><strong>Sinais Acústicos:</strong> Ruídos anormais, como rangidos ou estalos durante o movimento do eixo Z, indicam atrito excessivo.</li>
+                    <li><strong>Anomalias Visuais:</strong> Movimentos irregulares, travamentos ou "banding" (linhas horizontais indesejadas) nas impressões podem ser sintomas de lubrificação deficiente.</li>
+                    <li><strong>Pós-Limpeza Profunda:</strong> Após a limpeza completa da impressora, a relubrificação é essencial.</li>
+                </ul>
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">🛠️ Protocolo de Lubrificação:</h3>
+                <ol class="step-list">
+                    <li><strong>Desenergização e Segurança:</strong> Desligue a impressora da tomada e remova o tanque de resina para evitar contaminação.</li>
+                    <li><strong>Limpeza do Fuso:</strong> Utilize um pano de microfibra limpo e seco (evite materiais que soltem fiapos) para remover qualquer resíduo ou sujeira do fuso do eixo Z.</li>
+                    <li><strong>Aplicação do Lubrificante:</strong> Aplique uma pequena quantidade de lubrificante de alta qualidade (graxa de lítio ou óleo de máquina de baixa viscosidade, específicos para fusos de esferas ou rolamentos lineares) ao longo do fuso.</li>
+                    <li><strong>Distribuição Uniforme:</strong> Mova manualmente o eixo Z para cima e para baixo várias vezes para garantir a distribuição homogênea do lubrificante.</li>
+                    <li><strong>Remoção de Excesso:</strong> Com um pano limpo, remova qualquer excesso de lubrificante para evitar acúmulo de poeira e contaminação.</li>
+                    <li><strong>Teste Funcional:</strong> Ligue a impressora e execute um ciclo de movimento do eixo Z para verificar a suavidade e ausência de ruídos.</li>
+                </ol>
+
+                <div class="tip-box">
+                    <h4>💡 Dica de Engenharia: Escolha do Lubrificante</h4>
+                    <p>Utilize lubrificantes à base de lítio ou PTFE (Teflon) para fusos de esferas e guias lineares. Evite lubrificantes à base de silicone ou WD-40, pois podem atrair partículas e degradar a longo prazo, comprometendo a precisão do movimento.</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Alerta de Contaminação:</h3>
+                    <p>A aplicação excessiva de lubrificante pode resultar em escorrimento para a tela LCD ou filme FEP, causando manchas e bloqueios na passagem da luz UV, o que leva a falhas de impressão e degradação dos componentes.</p>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: TROCA DO FEP -->
+            <div class="section">
+                <h2 class="section-title">
+                    <div class="section-number">2</div>
+                    Troca do Filme FEP: A Interface Crítica da Impressão
+                </h2>
+                <div class="section-description">
+                    <p>O filme FEP (Fluorinated Ethylene Propylene) é uma membrana transparente e antiaderente que reveste o fundo do tanque de resina. Ele permite a passagem da luz UV enquanto impede a adesão da resina curada. A integridade do FEP é vital para o sucesso da impressão.</p>
+                </div>
+
+                <img src="images/manutencao-images/troca-fep-1.jpg" alt="Troca do FEP - Passo 1" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">📋 Quando Substituir o FEP:</h3>
+                <ul class="step-list">
+                    <li><strong>Opacidade ou Nebulosidade:</strong> Perda de transparência que impede a passagem uniforme da luz UV.</li>
+                    <li><strong>Arrancamentos e Furos:</strong> Danos físicos visíveis que podem causar vazamento de resina.</li>
+                    <li><strong>Marcas de Impressão:</strong> Marcas persistentes ou deformações na superfície do FEP que afetam a qualidade da base da peça.</li>
+                    <li><strong>Perda de Antiaderência:</strong> Aumento da força de "peeling" e dificuldade na remoção da peça da plataforma.</li>
+                </ul>
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">🛠️ Protocolo de Substituição do FEP:</h3>
+                <ol class="step-list">
+                    <li><strong>Esvaziamento e Limpeza do Tanque:</strong> Remova toda a resina do tanque e limpe-o completamente com IPA.</li>
+                    <li><strong>Desmontagem do Quadro:</strong> Desparafuse o quadro que fixa o FEP ao tanque.</li>
+                    <li><strong>Remoção do FEP Antigo:</strong> Com cuidado, remova o filme FEP danificado.</li>
+                    <li><strong>Instalação do Novo FEP:</strong> Posicione o novo filme FEP sobre o quadro, garantindo que esteja tensionado uniformemente. Utilize os parafusos para fixá-lo, apertando em padrão cruzado para evitar rugas.</li>
+                    <li><strong>Teste de Vazamento:</strong> Adicione uma pequena quantidade de IPA no tanque e verifique se há vazamentos antes de adicionar a resina.</li>
+                </ol>
+
+                <img src="images/manutencao-images/troca-fep-2.jpg" alt="Troca do FEP - Passo 2" class="section-image">
+
+                <div class="tip-box">
+                    <h4>💡 Dica de Manuseio: Tensão do FEP</h4>
+                    <p>A tensão correta do FEP é crucial. Um FEP muito frouxo pode causar imprecisão e falhas de adesão. Um FEP muito tensionado pode rasgar facilmente. O som de um tambor ao tocar levemente o FEP indica a tensão ideal.</p>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 3: LIMPEZA DO TANQUE DE RESINA -->
+            <div class="section">
+                <h2 class="section-title">
+                    <div class="section-number">3</div>
+                    Limpeza do Tanque de Resina: Prevenção de Contaminação
+                </h2>
+                <div class="section-description">
+                    <p>A limpeza regular do tanque de resina é fundamental para prevenir a contaminação da resina, a formação de resíduos curados e a degradação do filme FEP. Partículas de resina curada podem causar danos ao LCD e falhas de impressão.</p>
+                </div>
+
+                <img src="images/manutencao-images/limpeza-fep-neutro.jpg" alt="Limpeza do Tanque de Resina" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">📋 Frequência e Protocolo de Limpeza:</h3>
+                <ul class="step-list">
+                    <li><strong>Após Cada Impressão Falha:</strong> Sempre que uma impressão falhar, esvazie e limpe o tanque para remover resíduos curados.</li>
+                    <li><strong>Periodicamente:</strong> A cada 5-10 impressões bem-sucedidas, ou quando a resina estiver visivelmente turva.</li>
+                </ul>
+                <ol class="step-list">
+                    <li><strong>Esvaziamento:</strong> Despeje a resina não utilizada de volta para o frasco original, utilizando um filtro de malha fina para remover partículas.</li>
+                    <li><strong>Limpeza com IPA:</strong> Utilize IPA 99.8% e um pano macio ou papel toalha para limpar o interior do tanque e o filme FEP. Evite objetos pontiagudos que possam danificar o FEP.</li>
+                    <li><strong>Inspeção Visual:</strong> Verifique o FEP contra a luz para identificar quaisquer danos ou opacidades.</li>
+                </ol>
+
+                <div class="tip-box">
+                    <h4>💡 Dica de Segurança: Filtragem da Resina</h4>
+                    <p>Sempre filtre a resina não utilizada antes de retorná-la ao frasco. Isso remove pequenas partículas curadas que podem flutuar na resina e causar falhas em impressões futuras.</p>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 4: LIMPEZA DA TELA LCD -->
+            <div class="section">
+                <h2 class="section-title">
+                    <div class="section-number">4</div>
+                    Limpeza da Tela LCD: A Fonte de Luz Precisa
+                </h2>
+                <div class="section-description">
+                    <p>A tela LCD é o coração da impressora de resina, responsável por projetar a imagem da camada. Qualquer sujeira, poeira ou resíduo na superfície do LCD pode bloquear a luz UV, resultando em áreas não curadas ou falhas na impressão.</p>
+                </div>
+
+                <img src="images/manutencao-images/manutencao-preventiva.jpg" alt="Limpeza da Tela LCD" class="section-image">
+
+                <h3 style="color: #00bcd4; margin: 25px 0 15px 0;">📋 Protocolo de Limpeza do LCD:</h3>
+                <ul class="step-list">
+                    <li><strong>Frequência:</strong> Limpe o LCD sempre que notar manchas, poeira ou após a limpeza do tanque de resina.</li>
+                    <li><strong>Materiais:</strong> Utilize um pano de microfibra macio e limpo (específico para telas) e IPA 99.8%.</li>
+                </ul>
+                <ol class="step-list">
+                    <li><strong>Desligue a Impressora:</strong> Certifique-se de que a impressora esteja desligada e desconectada da energia.</li>
+                    <li><strong>Remova o Tanque:</strong> Retire o tanque de resina e a plataforma de construção.</li>
+                    <li><strong>Limpeza Suave:</strong> Com o pano de microfibra levemente umedecido com IPA, limpe delicadamente a superfície do LCD. Não aplique pressão excessiva.</li>
+                    <li><strong>Secagem:</strong> Deixe o LCD secar completamente antes de recolocar o tanque e a plataforma.</li>
+                </ol>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado Extremo com o LCD:</h3>
+                    <p>A tela LCD é um componente sensível e caro. Evite o uso de produtos químicos abrasivos, objetos pontiagudos ou força excessiva, pois podem causar danos irreversíveis. Nunca derrame IPA diretamente sobre o LCD.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <h3>QUANTON3D - Excelência em Impressão 3D Odontológica</h3>
+            <p>A vanguarda da tecnologia para resultados clínicos e laboratoriais superiores.</p>
+            <p>Visite nosso site: <a href="https://quanton3d.com.br" target="_blank">quanton3d.com.br</a></p>
+        </div>
+    </div>
+</body>
+</html>

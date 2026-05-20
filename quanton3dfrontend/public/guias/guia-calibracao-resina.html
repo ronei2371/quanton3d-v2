@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocolo de Calibração de Exposição UV | Quanton3D</title>
+    <title>Protocolo de Calibração de Fidelidade Micrométrica | Quanton3D</title>
     <style>
         /* Reset e Base */
         * {
@@ -13,10 +13,10 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif; /* Fonte mais sóbria */
             line-height: 1.7;
-            color: #e0e0e0;
-            background-color: #1a1a2e;
+            color: #e0e0e0; /* Texto claro para fundo escuro */
+            background-color: #1a1a2e; /* Fundo azul escuro/cinza */
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -28,195 +28,498 @@
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
-            background-color: #2c3e50;
+            background-color: #2c3e50; /* Fundo do container um pouco mais claro */
             border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             overflow: hidden;
         }
 
+        /* Cabeçalho */
         .header {
-            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-            padding: 50px 40px;
+            background-color: #1a1a2e; /* Mantém o fundo escuro */
+            color: #00bcd4; /* Título em destaque */
+            padding: 50px 30px;
             text-align: center;
-            border-bottom: 2px solid #3498db;
+            border-bottom: 3px solid #4caf50; /* Linha verde de destaque */
         }
 
         .header h1 {
-            font-size: 2.2em;
-            color: #fff;
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif; /* Fonte para títulos */
+            font-size: 3.2em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            color: #00bcd4;
         }
 
         .header p {
-            color: #3498db;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.9em;
+            font-size: 1.2em;
+            opacity: 0.9;
+            color: #a0a0a0;
         }
 
+        .logo {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4caf50; /* Logo em verde */
+        }
+
+        /* Conteúdo Principal */
         .content {
-            padding: 40px;
+            padding: 40px 30px;
         }
 
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .section h2 {
-            color: #3498db;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
+        .intro {
+            background-color: #34495e; /* Fundo para introdução */
+            color: #e0e0e0;
             padding: 25px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .step-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+        .intro h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2em;
+            margin-bottom: 12px;
+            color: #00bcd4;
         }
 
-        .step-card {
-            background: #34495e;
+        .intro p {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #a0a0a0;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            border-radius: 10px;
+            margin: 35px auto;
+            display: block;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            object-fit: contain; /* Garante que a imagem se ajuste sem cortar */
+        }
+
+        .download-box {
+            background-color: #1a1a2e; /* Fundo escuro para a caixa de download */
+            color: #e0e0e0;
             padding: 25px;
-            border-radius: 12px;
-            border-left: 4px solid #3498db;
+            border-radius: 10px;
+            margin: 35px 0;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid #4caf50; /* Borda verde */
+        }
+
+        .download-box h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8em;
+            margin-bottom: 12px;
+            color: #4caf50;
+        }
+
+        .download-box p {
+            font-size: 1.1em;
+            margin-bottom: 18px;
+            color: #a0a0a0;
+        }
+
+        .download-button {
+            display: inline-block;
+            background-color: #4caf50; /* Botão verde */
+            color: white;
+            padding: 12px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .download-button:hover {
+            background-color: #388e3c; /* Tom mais escuro no hover */
+            transform: translateY(-2px);
+        }
+
+        /* Passos */
+        .step {
+            margin: 45px 0;
+            padding: 35px;
+            background-color: #34495e; /* Fundo dos passos */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #00bcd4; /* Borda lateral azul */
+        }
+
+        .step:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
         }
 
         .step-number {
-            font-size: 0.8em;
-            color: #3498db;
-            font-weight: 800;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .step-card h3 {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-
-        .download-btn {
             display: inline-block;
-            background: #3498db;
+            background-color: #00bcd4; /* Número do passo em azul */
             color: white;
-            padding: 15px 30px;
-            border-radius: 8px;
-            text-decoration: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 55px;
+            font-size: 1.6em;
             font-weight: bold;
-            margin-top: 20px;
-            transition: background 0.3s;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
         }
 
-        .download-btn:hover {
-            background: #2980b9;
+        .step h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.7em;
+            color: #e0e0e0;
+            margin-bottom: 18px;
         }
 
-        .image-placeholder {
-            width: 100%;
-            height: 250px;
-            background: #1a1a2e;
-            border-radius: 8px;
-            margin: 20px 0;
+        .step-description {
+            font-size: 1.0em;
+            line-height: 1.8;
+            color: #a0a0a0;
+            margin: 18px 0;
+        }
+
+        .step-list {
+            list-style: none;
+            margin: 18px 0;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #2c3e50; /* Fundo dos itens da lista */
+            border-left: 3px solid #4caf50; /* Borda verde */
+            border-radius: 6px;
+            font-size: 1.0em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #e0e0e0;
+        }
+
+        .step-list li strong {
+            color: #00bcd4; /* Destaque em azul */
+        }
+
+        /* Diagramas e Análise */
+        .diagram-container {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            font-style: italic;
-            border: 1px dashed #3498db;
+            justify-content: space-around;
+            align-items: flex-start; /* Alinha ao topo */
+            margin: 40px 0;
+            gap: 25px;
+            flex-wrap: wrap;
         }
 
+        .diagram-box {
+            flex: 1;
+            min-width: 280px;
+            background-color: #34495e; /* Fundo das caixas de diagrama */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            border: 1px solid #00bcd4; /* Borda azul */
+        }
+
+        .diagram-box img {
+            width: 100%;
+            max-width: 300px; /* Ajuste para melhor visualização */
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .diagram-box h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3em;
+            color: #4caf50; /* Título em verde */
+            margin-bottom: 10px;
+        }
+
+        .diagram-box p {
+            font-size: 0.95em;
+            color: #a0a0a0;
+            line-height: 1.7;
+        }
+
+        /* Caixas de Alerta */
+        .error-box {
+            background-color: #4a2a2a; /* Fundo vermelho escuro */
+            border-left: 5px solid #e74c3c; /* Borda vermelha */
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #e74c3c;
+        }
+
+        .error-box h4 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .error-box p {
+            color: #e0e0e0;
+            font-size: 1.0em;
+            line-height: 1.7;
+        }
+
+        .success-box {
+            background-color: #2a4a2a; /* Fundo verde escuro */
+            border-left: 5px solid #2ecc71; /* Borda verde */
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #2ecc71;
+        }
+
+        .success-box h4 {
+            color: #2ecc71;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .success-box p {
+            color: #e0e0e0;
+            font-size: 1.0em;
+            line-height: 1.7;
+        }
+
+        .tip-box {
+            background-color: #2a3a4a; /* Fundo azul escuro para dicas */
+            border-left: 5px solid #00bcd4; /* Borda azul */
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tip-box h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            color: #00bcd4;
+        }
+
+        .tip-box p {
+            font-size: 1.0em;
+            line-height: 1.7;
+            color: #a0a0a0;
+        }
+
+        .warning-box {
+            background-color: #4a4a2a; /* Fundo amarelo escuro */
+            border-left: 5px solid #f1c40f; /* Borda amarela */
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #f1c40f;
+        }
+
+        .warning-box h3 {
+            color: #f1c40f;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #e0e0e0;
+            font-size: 1.0em;
+            line-height: 1.7;
+        }
+
+        /* Rodapé */
         .footer {
+            background-color: #1a1a2e; /* Fundo escuro */
+            color: #a0a0a0;
             padding: 30px;
             text-align: center;
-            background: #1a1a2e;
-            color: #7f8c8d;
-            font-size: 0.85em;
+            border-top: 3px solid #4caf50; /* Linha verde de destaque */
         }
 
-        .highlight {
-            color: #3498db;
+        .footer h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            color: #00bcd4;
+        }
+
+        .footer p {
+            font-size: 1.0em;
+            margin: 8px 0;
+        }
+
+        .footer a {
+            color: #4caf50; /* Links em verde */
+            text-decoration: none;
             font-weight: bold;
         }
 
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsividade */
         @media (max-width: 768px) {
-            .header h1 { font-size: 1.6em; }
-            .content { padding: 20px; }
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .content {
+                padding: 30px 15px;
+            }
+
+            .step {
+                padding: 20px;
+            }
+
+            .diagram-container {
+                flex-direction: column;
+            }
+
+            .diagram-box {
+                min-width: 100%;
+            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <p>Protocolo Técnico Quanton3D</p>
-            <h1>Calibração de Exposição UV</h1>
+            <div class="logo">🔬 QUANTON3D</div>
+            <h1>🎯 Protocolo de Calibração de Fidelidade Micrométrica</h1>
+            <p>Otimizando a Precisão Dimensional em Impressoras de Resina</p>
         </div>
 
         <div class="content">
-            <div class="section">
-                <h2>🎯 Otimização de Precisão</h2>
-                <div class="card">
-                    <p>A calibração correta do tempo de exposição é o pilar da <span class="highlight">impressão de alta fidelidade</span>. Cada resina e impressora possuem uma assinatura térmica e de cura única. O uso do Gabarito Quanton3D permite encontrar o equilíbrio perfeito entre detalhes finos e estabilidade dimensional.</p>
-                    <a href="https://quanton3d.com.br/calibrador/" target="_blank" class="download-btn">📥 Baixar Gabarito STL</a>
+            <div class="intro">
+                <h2>🔬 A Essência da Calibração: Por Que é Crucial?</h2>
+                <p>A calibração precisa de uma impressora 3D de resina é o pilar fundamental para alcançar a **fidelidade micrométrica** e a **reprodutibilidade** em suas peças. Um arquivo de teste bem projetado não apenas valida as configurações do seu equipamento e do software fatiador, mas também revela nuances críticas sobre a interação entre a resina, a fonte de luz UV e o processo de cura. A Quanton3D, pensando na sua excelência, disponibiliza um gabarito de calibração avançado. Este guia detalha como utilizá-lo para diagnosticar e otimizar seus parâmetros, garantindo resultados impecáveis e consistentes.</p>
+            </div>
+
+            <img src="images/calibracao-images/gabarito-3d.png" alt="Gabarito de Calibração Quanton3D 3D" class="hero-image">
+
+            <div class="download-box">
+                <h3>⬇️ BAIXE O GABARITO DE CALIBRAÇÃO AVANÇADO QUANTON3D</h3>
+                <p>Arquivo STL otimizado para diagnóstico e calibração de precisão</p>
+                <a href="https://quanton3d.com.br/calibrador/" target="_blank" class="download-button">📥 ACESSO IMEDIATO AO GABARITO</a>
+            </div>
+
+            <!-- PASSO 1: PREPARAÇÃO -->
+            <div class="step">
+                <span class="step-number">1</span>
+                <h3>Preparação do Ambiente e da Impressora</h3>
+                <div class="step-description">
+                    <p>Antes de iniciar qualquer processo de calibração, é imperativo assegurar que sua impressora esteja em condições operacionais ideais. A estabilidade do equipamento e a pureza dos materiais são fatores determinantes para a acurácia dos resultados.</p>
+                    <ul class="step-list">
+                        <li><strong>Verificação do Nivelamento da Plataforma:</strong> Um nivelamento inadequado pode introduzir distorções dimensionais e falhas de adesão. Consulte o <a href="guia-nivelamento.html">Guia de Calibração de Z-Zero</a> para um procedimento detalhado.</li>
+                        <li><strong>Limpeza da Cuba de Resina e FEP:</strong> Resíduos de resina curada ou impurezas no filme FEP podem causar pontos cegos na exposição UV, resultando em falhas de impressão.</li>
+                        <li><strong>Homogeneização da Resina:</strong> Agite a resina conforme as recomendações do fabricante para garantir a dispersão uniforme dos pigmentos e fotoiniciadores.</li>
+                        <li><strong>Temperatura Ambiente Controlada:</strong> Flutuações de temperatura podem afetar a viscosidade da resina e a cinética de polimerização, impactando a qualidade da impressão. Mantenha o ambiente entre 20-25°C.</li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>🛠️ Fases do Protocolo</h2>
-                <div class="step-grid">
-                    <div class="step-card">
-                        <span class="step-number">FASE 01</span>
-                        <h3>Preparação do Fatiador</h3>
-                        <p>Importe o Gabarito STL. Configure a altura de camada padrão (0.05mm) e utilize o tempo de exposição base recomendado em nosso seletor.</p>
-                        <div class="image-placeholder">
-                            [Imagem: Interface do fatiador com o Gabarito Quanton3D]
-                        </div>
-                    </div>
-
-                    <div class="step-card">
-                        <span class="step-number">FASE 02</span>
-                        <h3>Execução da Impressão</h3>
-                        <p>Inicie a impressão do gabarito. Certifique-se de que a temperatura ambiente esteja entre 22°C e 28°C para garantir a fluidez ideal da resina.</p>
-                        <div class="image-placeholder">
-                            [Imagem: Impressora SLA em operação com luz UV]
-                        </div>
-                    </div>
-
-                    <div class="step-card">
-                        <span class="step-number">FASE 03</span>
-                        <h3>Análise de Resultados</h3>
-                        <p>Após a cura, verifique os encaixes e as pontas finas. Se os detalhes estiverem "gordos", reduza o tempo. Se estiverem falhando, aumente o tempo.</p>
-                        <div class="image-placeholder">
-                            [Imagem: Macro fotografia do gabarito impresso]
-                        </div>
-                    </div>
+            <!-- PASSO 2: CONFIGURAÇÃO DO Fatiador -->
+            <div class="step">
+                <span class="step-number">2</span>
+                <h3>Configuração Paramétrica no Software Fatiador</h3>
+                <div class="step-description">
+                    <p>O software fatiador é a interface entre o modelo digital e a impressora física. A configuração precisa dos parâmetros de exposição é vital para a cura adequada da resina.</p>
+                    <ul class="step-list">
+                        <li><strong>Importação do Gabarito:</strong> Carregue o arquivo STL do gabarito Quanton3D no seu software fatiador (e.g., Chitubox, Lychee Slicer).</li>
+                        <li><strong>Orientação Estratégica:</strong> Oriente o gabarito em um ângulo de 30-45 graus em relação à plataforma de impressão. Isso minimiza o efeito de "peeling" e otimiza a distribuição de suportes.</li>
+                        <li><strong>Geração de Suportes Otimizados:</strong> Utilize suportes leves com densidade moderada para as áreas críticas do gabarito. O diâmetro da ponta de contato deve ser minimizado para facilitar a remoção pós-impressão.</li>
+                        <li><strong>Parâmetros Iniciais de Exposição:</strong> Defina a altura da camada (geralmente 0.05mm para detalhes finos) e o tempo de exposição inicial de acordo com as recomendações do fabricante da resina. Para a primeira camada (base), utilize um tempo de exposição 5-10 vezes maior para garantir adesão robusta.</li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>📊 Critérios de Avaliação</h2>
-                <div class="card">
-                    <p><span class="highlight">Super-exposição:</span> Detalhes fundidos, furos menores que o nominal, dificuldade de remoção.</p>
-                    <p><span class="highlight">Sub-exposição:</span> Peças moles, suportes quebrando, perda de detalhes finos, falta de adesão.</p>
+            <!-- PASSO 3: IMPRESSÃO DO GABARITO -->
+            <div class="step">
+                <span class="step-number">3</span>
+                <h3>Execução da Impressão de Teste</h3>
+                <div class="step-description">
+                    <p>Após a configuração, inicie o processo de impressão. Monitore as primeiras camadas para identificar quaisquer anomalias.</p>
+                    <ul class="step-list">
+                        <li><strong>Transferência do Arquivo:</strong> Salve o arquivo fatiado (.cbddlp, .pwmo, etc.) e transfira-o para a impressora via USB ou rede.</li>
+                        <li><strong>Início da Impressão:</strong> Selecione o arquivo e inicie a impressão. Observe atentamente as primeiras camadas para verificar a adesão à plataforma.</li>
+                        <li><strong>Monitoramento:</strong> Embora a impressão de resina seja relativamente autônoma, um monitoramento ocasional pode prevenir falhas catastróficas.</li>
+                    </ul>
                 </div>
             </div>
+
+            <!-- PASSO 4: PÓS-PROCESSAMENTO -->
+            <div class="step">
+                <span class="step-number">4</span>
+                <h3>Pós-Processamento e Cura Pós-Impressão</h3>
+                <div class="step-description">
+                    <p>O pós-processamento é tão crucial quanto a impressão em si para a obtenção de propriedades mecânicas e estéticas ideais.</p>
+                    <ul class="step-list">
+                        <li><strong>Remoção da Plataforma:</strong> Com cuidado, remova a plataforma de impressão e a peça impressa.</li>
+                        <li><strong>Lavagem da Peça:</strong> Lave a peça em álcool isopropílico (IPA) 99.8% ou solução de limpeza específica para resina, utilizando uma estação de lavagem ou dois banhos separados para remover o excesso de resina não curada.</li>
+                        <li><strong>Remoção de Suportes:</strong> Remova os suportes cuidadosamente para evitar danos à superfície da peça. Utilize ferramentas de corte precisas.</li>
+                        <li><strong>Cura Pós-Impressão (UV):</strong> Cure a peça em uma câmara UV dedicada. O tempo de cura deve seguir as recomendações do fabricante da resina para maximizar as propriedades mecânicas e a biocompatibilidade.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PASSO 5: ANÁLISE DOS RESULTADOS -->
+            <div class="step">
+                <span class="step-number">5</span>
+                <h3>Análise Crítica do Gabarito Impresso</h3>
+                <div class="step-description">
+                    <p>A interpretação do gabarito é a chave para ajustar seus parâmetros. Observe as características dimensionais, a integridade dos detalhes e a presença de artefatos.</p>
+                </div>
+            </div>
+
+            <div class="diagram-container">
+                <div class="diagram-box">
+                    <img src="images/calibracao-images/subexposicao.png" alt="Subexposição da Resina">
+                    <h4>Subexposição Crônica</h4>
+                    <p>Caracterizada por detalhes perdidos, bordas arredondadas, estruturas frágeis e superfícies pegajosas. Indica que a resina não recebeu energia UV suficiente para uma polimerização completa. Solução: Aumentar o tempo de exposição em incrementos de 0.5 a 1 segundo.</p>
+                </div>
+                <div class="diagram-box">
+                    <img src="images/calibracao-images/superexposicao.png" alt="Superexposição da Resina">
+                    <h4>Superexposição Excessiva</h4>
+                    <p>Resulta em perda de detalhes finos, inchaço dimensional, fusão de características e endurecimento excessivo da peça, tornando-a quebradiça. Indica que a resina recebeu energia UV além do necessário. Solução: Diminuir o tempo de exposição em incrementos de 0.5 a 1 segundo.</p>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Dica de Ouro: Otimização Iterativa</h4>
+                <p>A calibração é um processo iterativo. Realize pequenos ajustes nos parâmetros de exposição e imprima o gabarito novamente. Mantenha um registro detalhado de suas configurações e resultados para construir uma biblioteca de perfis de resina otimizados.</p>
+            </div>
+
+            <div class="success-box">
+                <h4>✅ Gabarito Perfeito: O Que Buscar?</h4>
+                <p>Um gabarito perfeitamente calibrado exibirá detalhes nítidos, dimensões precisas, superfícies lisas e a capacidade de remover os suportes com mínima marcação. Isso indica um equilíbrio ideal entre o tempo de exposição, a potência da fonte de luz e as características da resina.</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Atenção à Saúde e Segurança</h3>
+                <p>Sempre utilize Equipamentos de Proteção Individual (EPIs) como luvas e óculos de segurança ao manusear resinas líquidas e peças não curadas. Trabalhe em ambientes bem ventilados para evitar a inalação de vapores.</p>
+            </div>
+
         </div>
 
         <div class="footer">
-            <p>© 2025 QUANTON3D • LABORATÓRIO DE DESENVOLVIMENTO DE RESINAS</p>
-            <p>Documento Técnico - Calibração de Precisão para Resinas Elite</p>
+            <h3>QUANTON3D - Inovação em Odontologia Digital</h3>
+            <p>Seu parceiro em tecnologia de impressão 3D para resultados clínicos superiores.</p>
+            <p>Visite nosso site: <a href="https://quanton3d.com.br" target="_blank">quanton3d.com.br</a></p>
         </div>
     </div>
 </body>
