@@ -95,7 +95,8 @@ async function seed() {
       });
     });
 
-    await mongoose.connect(process.env.MONGODB_URI);
+    const uri = process.env.MONGODB_URI || "mongodb+srv://ronei2371:Ronei2371@quanton3d.7f7k9.mongodb.net/quanton3d?retryWrites=true&w=majority";
+    await mongoose.connect(uri);
     console.log("Mongo conectado");
 
     await Parametro.deleteMany({});

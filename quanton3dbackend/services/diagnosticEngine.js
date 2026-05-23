@@ -958,6 +958,12 @@ export async function diagnoseTechnicalIssue(payload = {}) {
           exposicaoNormal: parameterMatch.exposicaoNormal || "",
           exposicaoBase: parameterMatch.exposicaoBase || "",
           camadasBase: parameterMatch.camadasBase || "",
+          retardoUV: parameterMatch.retardoUV || "",
+          retardoUVBase: parameterMatch.retardoUVBase || "",
+          descansoAntesElevacao: parameterMatch.descansoAntesElevacao || "",
+          descansoAposElevacao: parameterMatch.descansoAposElevacao || "",
+          descansoAposRetracao: parameterMatch.descansoAposRetracao || "",
+          potenciaUV: parameterMatch.potenciaUV || "",
         }
       : null,
     knowledgeMatch: null,

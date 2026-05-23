@@ -155,7 +155,7 @@ function AdminUnifiedPanel({ aberto, aoFechar }) {
                         {item.fotos.map((foto, index) => (
                           <img
                             key={`${item._id}-${index}`}
-                            src={`http://localhost:10000${foto.url}`}
+                            src={foto.url.startsWith('http') ? foto.url : `${api.defaults.baseURL.replace('/api', '')}${foto.url}`}
                             alt={foto.nomeOriginal || "foto parceiro"}
                           />
                         ))}
@@ -190,7 +190,7 @@ function AdminUnifiedPanel({ aberto, aoFechar }) {
                         {item.fotos.map((foto, index) => (
                           <img
                             key={`${item._id}-${index}`}
-                            src={`http://localhost:10000${foto.url}`}
+                            src={foto.url.startsWith('http') ? foto.url : `${api.defaults.baseURL.replace('/api', '')}${foto.url}`}
                             alt={foto.nomeOriginal || "foto ticket"}
                           />
                         ))}

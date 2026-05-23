@@ -38,7 +38,7 @@ const SERVICE_BUTTONS = [
   { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao" },
   { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao" },
   { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
-  { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
+  { label: "PARÂMETROS DE IMPRESSÃO", kind: "scroll", id: "parametros" },
 ];
 
 const GUIDES = {
@@ -48,7 +48,7 @@ const GUIDES = {
   },
   fatiadores: {
     title: "Configuração de Fatiadores",
-    file: "/guias/guia-configuracao-fatiadores.html",
+    file: "/guias/guia-configuracao-fatiador.html",
   },
   calibracao: {
     title: "Calibração de Resina",
@@ -60,7 +60,7 @@ const GUIDES = {
   },
   manutencao: {
     title: "Manutenção de Impressora",
-    file: "/guias/guia-manutencao-impressora.html",
+    file: "/guias/guia-manutencao-maquina.html",
   },
   otimizacao: {
     title: "Otimização e Pós-processamento",
@@ -350,38 +350,35 @@ function App() {
 
       const resposta = await api.post("/clientes", payload);
 
-      const clienteSalvo =
-        resposta.data?.cliente ||
-        resposta.data?.data ||
-        resposta.data?.client ||
-        payload;
+      const clienteSalvo = resposta.data.cliente;
 
-      const clienteFinal = {
-        ...payload,
-        ...clienteSalvo,
-      };
-
-      localStorage.setItem("quanton3d_cliente", JSON.stringify(clienteFinal));
-
-      setCliente(clienteFinal);
-      setMostrarCadastro(false);
+      if (clienteSalvo) {
+        localStorage.setItem("quanton3d_cliente", JSON.stringify(clienteSalvo));
+        setCliente(clienteSalvo);
+        setMostrarCadastro(false);
+      }
     } catch (error) {
       console.error("Erro ao salvar cliente:", error);
-      setErroCadastro("Erro ao salvar seus dados. Tente novamente.");
+      setErroCadastro(
+        error.response?.data?.error || "Erro ao conectar com o servidor."
+      );
     } finally {
       setSalvandoCliente(false);
     }
   }
 
-
-
-function abrirParceiroModal() {
-  setMostrarParceiroModal(true);
-}
+  function abrirParceiroModal() {
+    setMostrarParceiroModal(true);
+  }
 
   function executarAcao(item) {
     if (item.kind === "guide") {
       setActiveGuide(GUIDES[item.id]);
+      return;
+    }
+
+    if (item.kind === "scroll") {
+      scrollToSection(item.id);
       return;
     }
 
@@ -699,18 +696,9 @@ Potência UV: ${resultado.potenciaUV || "-"}
               <ParamItem label="Camadas de Base" value={resultado.camadasBase} />
               <ParamItem label="Retardo UV" value={resultado.retardoUV} />
               <ParamItem label="Retardo UV Base" value={resultado.retardoUVBase} />
-              <ParamItem
-                label="Descanso Antes Elevação"
-                value={resultado.descansoAntesElevacao}
-              />
-              <ParamItem
-                label="Descanso Após Elevação"
-                value={resultado.descansoAposElevacao}
-              />
-              <ParamItem
-                label="Descanso Após Retração"
-                value={resultado.descansoAposRetracao}
-              />
+              <ParamItem label="Descanso Antes Elevação" value={resultado.descansoAntesElevacao} />
+              <ParamItem label="Descanso Após Elevação" value={resultado.descansoAposElevacao} />
+              <ParamItem label="Descanso Após Retração" value={resultado.descansoAposRetracao} />
               <ParamItem label="Potência UV" value={resultado.potenciaUV} />
             </div>
 
@@ -738,198 +726,117 @@ Potência UV: ${resultado.potenciaUV || "-"}
         </div>
 
         <div className="cards-grid">
-          <InfoCard
-            title="Alta Qualidade"
-            text="Conheça linhas, aplicações, FISPQs e características técnicas."
-            onClick={() => setActiveModal("qualidade")}
-          />
+          <div className="info-card">
+            <h3>Família IRON</h3>
+            <p>Resinas de alta dureza e precisão para peças técnicas.</p>
+          </div>
 
-          <InfoCard
-            title="Parâmetros detalhados"
-            text="Abra o guia completo para entender cada campo do Chitubox."
-            onClick={() => abrirGuia("parametrosDetalhados")}
-          />
+          <div className="info-card">
+            <h3>Família FLEX</h3>
+            <p>Flexibilidade e resistência ao impacto para prototipagem.</p>
+          </div>
 
-          <InfoCard
-            title="Parceiros e cursos"
-            text="Veja parceiros, pintores, cursos e serviços recomendados."
-            onClick={() => abrirGuia("parceiros")}
-          />
-
-          <InfoCard
-            title="Quero ser parceiro"
-            text="Envie sua proposta para divulgar seu curso, serviço, projeto ou trabalho."
-            onClick={abrirParceiroModal}
-          />
+          <div className="info-card">
+            <h3>Odontologia</h3>
+            <p>Biocompatibilidade e estabilidade dimensional.</p>
+          </div>
         </div>
       </section>
 
       <section id="servicos" className="content-section">
         <div>
-          <span className="section-label">Guias técnicos completos</span>
-          <h2>Atendimento especializado para impressão 3D em resina</h2>
+          <span className="section-label">Suporte</span>
+          <h2>Serviços e Apoio Técnico</h2>
           <p>
-            Esses botões carregam os arquivos HTML completos do material antigo,
-            com imagens, textos e passos técnicos.
+            A Quanton3D oferece mais que resina: entregamos a solução completa
+            para sua impressão.
           </p>
         </div>
 
-        <div className="service-list">
-          <ServiceLine title="Nivelamento de plataforma" onClick={() => abrirGuia("nivelamento")} />
-          <ServiceLine title="Configuração de fatiador" onClick={() => abrirGuia("fatiadores")} />
-          <ServiceLine title="Calibração de resina" onClick={() => abrirGuia("calibracao")} />
-          <ServiceLine title="Manutenção de máquina" onClick={() => abrirGuia("manutencao")} />
-          <ServiceLine title="Diagnóstico de problemas" onClick={() => abrirGuia("diagnostico")} />
-          <ServiceLine title="Posicionamento de suportes" onClick={() => abrirGuia("suportes")} />
+        <div className="cards-grid">
+          <div
+            className="info-card clickable-card"
+            onClick={() => setActiveModal("formulacao")}
+          >
+            <h3>Formulações</h3>
+            <p>Desenvolvemos cores e propriedades sob medida.</p>
+          </div>
+
+          <div
+            className="info-card clickable-card"
+            onClick={() => setActiveGuide(GUIDES.nivelamento)}
+          >
+            <h3>Treinamento</h3>
+            <p>Guias técnicos e masterclasses de engenharia.</p>
+          </div>
+
+          <div
+            className="info-card clickable-card"
+            onClick={() => setMostrarBotTicket(true)}
+          >
+            <h3>Diagnóstico</h3>
+            <p>Bot inteligente para resolução de falhas.</p>
+          </div>
         </div>
       </section>
 
-      <section id="formulacao" className="formulation-section">
-        <div>
-          <span className="section-label">Formulação personalizada</span>
-          <h2>Precisa de uma resina com comportamento específico?</h2>
-          <p>
-            A área de formulação será integrada ao painel administrativo na
-            próxima fase.
-          </p>
-        </div>
-
-        <button type="button" onClick={() => setActiveModal("formulacao")}>
-          Solicitar formulação personalizada
-        </button>
-      </section>
-
-      <section id="contato" className="contact-section">
+      <section className="contact-section">
         <div>
           <span className="section-label">Contato</span>
-          <h2>Atendimento Quanton3D</h2>
+          <h2>Vamos conversar?</h2>
           <p>
-            Cliente ativo: {cliente?.nome || "não identificado"}. O atendimento
-            técnico usará seu cadastro para manter histórico e melhorar as
-            respostas.
+            Nossa equipe técnica está pronta para tirar suas dúvidas e ajudar no
+            seu projeto.
           </p>
         </div>
 
         <div className="contact-actions">
-          <button type="button" onClick={abrirCadastro}>
-            Atualizar meus dados
-          </button>
-
           <button type="button" onClick={() => setMostrarContatoMensagem(true)}>
-            Fale conosco
+            Falar com a equipe
           </button>
+          <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="whatsapp-btn">
+            WhatsApp Prioritário
+          </a>
+        </div>
+
+        <div className="social-footer">
+          {SOCIAL_LINKS.map((link) => (
+            <a key={link.label} href={link.href} target="_blank" rel="noreferrer">
+              {link.label}
+            </a>
+          ))}
         </div>
       </section>
 
-      <footer id="sobre" className="site-footer">
-        <strong>© 2025 Quanton3D</strong>
-        <span>Fabricação especializada de resinas UV SLA/DLP</span>
+      <footer className="main-footer">
+        <p>© 2025 Quanton3D • Elite Technical Support</p>
       </footer>
     </main>
   );
 }
 
-function PrivacidadeModal({ aceitarPrivacidade }) {
-  const [confirmouAceite, setConfirmouAceite] = useState(false);
+function ParamItem({ label, value }) {
+  if (!value) return null;
 
   return (
+    <div className="param-item">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function PrivacidadeModal({ aceitarPrivacidade }) {
+  return (
     <div className="modal-backdrop">
-      <section className="privacy-modal">
-        <div className="modal-icon">🔒</div>
-
-        <h2>Termo de Privacidade e Consentimento</h2>
-
+      <section className="site-modal privacy-modal">
+        <h2>Privacidade e Termos</h2>
         <p>
-          Antes de acessar o suporte técnico da Quanton3D, leia com atenção este
-          termo. Ao continuar, você declara estar ciente sobre como seus dados
-          poderão ser usados para atendimento, suporte técnico e melhoria dos
-          serviços.
+          Para acessar nossa base técnica e suporte, coletamos dados básicos de
+          contato. Ao continuar, você concorda com nossa política de uso.
         </p>
-
-        <div className="privacy-content">
-          <h3>1. Dados que poderão ser coletados</h3>
-          <p>
-            A Quanton3D poderá coletar e armazenar dados informados por você,
-            incluindo nome, WhatsApp, e-mail, origem do contato, data e horário
-            de acesso, mensagens enviadas no atendimento, dúvidas técnicas,
-            resina utilizada, impressora utilizada, parâmetros de impressão,
-            pedidos de formulação personalizada e imagens ou fotos enviadas
-            voluntariamente para análise técnica.
-          </p>
-
-          <h3>2. Finalidade do uso dos dados</h3>
-          <p>
-            Os dados serão utilizados para liberar o acesso ao suporte técnico,
-            responder dúvidas sobre resinas e impressão 3D, analisar problemas
-            relatados, manter histórico de atendimento, acompanhar solicitações,
-            organizar pedidos de formulação, melhorar a base de conhecimento da
-            Quanton3D e permitir contato comercial relacionado aos serviços
-            solicitados pelo próprio usuário.
-          </p>
-
-          <h3>3. Uso de imagens enviadas</h3>
-          <p>
-            Caso você envie fotos de peças, falhas de impressão, configurações
-            ou resultados obtidos, essas imagens poderão ser usadas para análise
-            técnica, orientação de parâmetros e melhoria do suporte. Imagens não
-            serão publicadas em galeria pública sem autorização ou aprovação
-            específica.
-          </p>
-
-          <h3>4. Compartilhamento e segurança</h3>
-          <p>
-            A Quanton3D não deve vender seus dados pessoais. As informações
-            poderão ser armazenadas em sistemas necessários para funcionamento
-            do site, banco de dados, atendimento e ferramentas técnicas usadas
-            para prestar suporte. Serão adotadas medidas razoáveis para proteger
-            os dados contra acesso não autorizado, perda, alteração ou uso
-            indevido.
-          </p>
-
-          <h3>5. Histórico e melhoria do atendimento</h3>
-          <p>
-            As conversas, perguntas, avaliações de respostas e informações
-            técnicas poderão ser mantidas para melhorar a qualidade do suporte,
-            evitar perda de contexto e permitir que a equipe Quanton3D acompanhe
-            melhor cada caso.
-          </p>
-
-          <h3>6. Direitos do usuário</h3>
-          <p>
-            Você poderá solicitar acesso, correção, atualização ou exclusão dos
-            seus dados pessoais, quando aplicável. Também poderá pedir
-            esclarecimentos sobre o uso das informações fornecidas.
-          </p>
-
-          <h3>7. Consentimento</h3>
-          <p>
-            Ao marcar a opção abaixo e continuar, você confirma que leu este
-            termo e autoriza a Quanton3D a tratar seus dados para as finalidades
-            descritas acima.
-          </p>
-        </div>
-
-        <label className="privacy-accept-row">
-          <input
-            type="checkbox"
-            checked={confirmouAceite}
-            onChange={(e) => setConfirmouAceite(e.target.checked)}
-          />
-
-          <span>
-            Li e aceito o Termo de Privacidade e autorizo o uso dos meus dados
-            para atendimento, suporte técnico e serviços relacionados à
-            Quanton3D.
-          </span>
-        </label>
-
-        <button
-          type="button"
-          className="submit-registration"
-          disabled={!confirmouAceite}
-          onClick={aceitarPrivacidade}
-        >
-          Aceitar e continuar
+        <button type="button" onClick={aceitarPrivacidade}>
+          Aceitar e Continuar
         </button>
       </section>
     </div>
@@ -945,104 +852,91 @@ function CadastroInicial({
 }) {
   return (
     <div className="modal-backdrop">
-      <form className="registration-modal" onSubmit={salvarCliente}>
-        <div className="modal-header">
-          <div className="modal-icon">👥</div>
-
-          <div>
-            <h2>Seja bem-vindo!</h2>
-            <p>Identifique-se para liberar o suporte técnico especializado.</p>
-          </div>
+      <section className="site-modal register-modal">
+        <div className="brand-mark" style={{ margin: "0 auto 20px" }}>
+          Q3D
         </div>
+        <h2>Identificação de Acesso</h2>
+        <p>
+          Olá! Identifique-se para liberar o acesso total aos guias e parâmetros
+          da Quanton3D.
+        </p>
 
-        {erroCadastro && <div className="modal-error">{erroCadastro}</div>}
+        {erroCadastro && <div className="error-box">{erroCadastro}</div>}
 
-        <div className="form-grid">
+        <form onSubmit={salvarCliente} className="register-form">
           <label>
-            <span>Seu Nome *</span>
-
+            <span>Seu Nome</span>
             <input
+              required
               value={formCliente.nome}
               onChange={(e) => alterarCliente("nome", e.target.value)}
-              placeholder="Digite seu nome"
+              placeholder="Ex.: João Silva"
             />
           </label>
 
           <label>
-            <span>WhatsApp *</span>
-
+            <span>WhatsApp</span>
             <input
+              required
               value={formCliente.telefone}
               onChange={(e) => alterarCliente("telefone", e.target.value)}
-              placeholder="DDD + número"
+              placeholder="Ex.: 31 99999-9999"
             />
           </label>
 
           <label>
-            <span>E-mail *</span>
-
+            <span>E-mail</span>
             <input
+              required
               type="email"
               value={formCliente.email}
               onChange={(e) => alterarCliente("email", e.target.value)}
-              placeholder="seu@email.com"
+              placeholder="Ex.: joao@email.com"
             />
           </label>
 
           <label>
-            <span>Como nos conheceu? *</span>
-
+            <span>Como nos conheceu?</span>
             <select
               value={formCliente.origem}
               onChange={(e) => alterarCliente("origem", e.target.value)}
             >
-              {ORIGENS.map((origem) => (
-                <option key={origem} value={origem}>
-                  {origem}
+              {ORIGENS.map((o) => (
+                <option key={o} value={o}>
+                  {o}
                 </option>
               ))}
             </select>
           </label>
-        </div>
 
-        <div className="social-box">
-          <strong>Siga a Quanton3D nas redes</strong>
-
-          <div style={{ flexWrap: "wrap" }}>
-            {SOCIAL_LINKS.map((rede) => (
-              <a key={rede.label} href={rede.href} target="_blank" rel="noreferrer">
-                {rede.label}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <button className="submit-registration" type="submit" disabled={salvandoCliente}>
-          {salvandoCliente ? "Salvando..." : "Entrar no Suporte Técnico"}
-        </button>
-      </form>
+          <button type="submit" disabled={salvandoCliente}>
+            {salvandoCliente ? "Salvando..." : "Liberar Acesso"}
+          </button>
+        </form>
+      </section>
     </div>
   );
 }
 
-
-
 function GuideModal({ guide, onClose }) {
   return (
     <div className="modal-backdrop">
-      <section className="guide-modal">
+      <section className="site-modal guide-modal">
         <div className="guide-header">
           <div>
-            <span className="section-label">Guia técnico</span>
+            <span className="section-label">Guia Técnico</span>
             <h2>{guide.title}</h2>
           </div>
-
           <button type="button" onClick={onClose}>
             Fechar
           </button>
         </div>
-
-        <iframe title={guide.title} src={guide.file} className="guide-frame" />
+        <iframe
+          src={guide.file}
+          title={guide.title}
+          className="guide-iframe"
+        ></iframe>
       </section>
     </div>
   );
@@ -1389,9 +1283,7 @@ function GaleriaContent({ cliente, resinas = [], impressoras = [] }) {
           <span>Resina</span>
           <select value={form.resina} onChange={(e) => alterar("resina", e.target.value)}>
             <option value="">Selecione</option>
-            {resinas.map((item) => (
-              <option key={item} value={item}>{item}</option>
-            ))}
+            {resinas.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
         </label>
 
@@ -1399,51 +1291,44 @@ function GaleriaContent({ cliente, resinas = [], impressoras = [] }) {
           <span>Impressora</span>
           <select value={form.impressora} onChange={(e) => alterar("impressora", e.target.value)}>
             <option value="">Selecione</option>
-            {impressoras.map((item) => (
-              <option key={item} value={item}>{item}</option>
-            ))}
+            {impressoras.map((i) => <option key={i} value={i}>{i}</option>)}
           </select>
         </label>
 
         <label>
-          <span>Altura de camada</span>
-          <input value={form.alturaCamada} onChange={(e) => alterar("alturaCamada", e.target.value)} placeholder="Ex.: 0.05" />
+          <span>Altura Camada</span>
+          <input value={form.alturaCamada} onChange={(e) => alterar("alturaCamada", e.target.value)} />
         </label>
 
         <label>
-          <span>Exposição normal</span>
-          <input value={form.exposicaoNormal} onChange={(e) => alterar("exposicaoNormal", e.target.value)} placeholder="Ex.: 2.2" />
+          <span>Exposição Normal</span>
+          <input value={form.exposicaoNormal} onChange={(e) => alterar("exposicaoNormal", e.target.value)} />
         </label>
 
         <label>
-          <span>Exposição base</span>
-          <input value={form.exposicaoBase} onChange={(e) => alterar("exposicaoBase", e.target.value)} placeholder="Ex.: 35" />
+          <span>Exposição Base</span>
+          <input value={form.exposicaoBase} onChange={(e) => alterar("exposicaoBase", e.target.value)} />
         </label>
 
         <label>
-          <span>Camadas base</span>
-          <input value={form.camadasBase} onChange={(e) => alterar("camadasBase", e.target.value)} placeholder="Ex.: 5" />
+          <span>Camadas Base</span>
+          <input value={form.camadasBase} onChange={(e) => alterar("camadasBase", e.target.value)} />
         </label>
 
-        <label>
-          <span>Foto</span>
-          <input type="file" accept="image/*" onChange={(e) => setImagem(e.target.files?.[0] || null)} />
+        <label className="form-full">
+          <span>Foto da peça</span>
+          <input type="file" onChange={(e) => setImagem(e.target.files[0])} accept="image/*" />
         </label>
 
         <label className="form-full">
           <span>Observação</span>
-          <textarea
-            rows="4"
-            value={form.observacao}
-            onChange={(e) => alterar("observacao", e.target.value)}
-            placeholder="Conte o resultado, ajustes ou problema resolvido."
-          />
+          <textarea rows="3" value={form.observacao} onChange={(e) => alterar("observacao", e.target.value)} />
         </label>
       </div>
 
       <div className="modal-action-grid">
         <button type="submit" disabled={enviando}>
-          {enviando ? "Enviando..." : "Enviar configuração"}
+          {enviando ? "Enviando..." : "Compartilhar"}
         </button>
       </div>
     </form>
@@ -1451,65 +1336,11 @@ function GaleriaContent({ cliente, resinas = [], impressoras = [] }) {
 }
 
 function AdminContent() {
-  return (
-    <div className="modal-rich-content">
-      <p>
-        O painel administrativo definitivo entra depois que finalizarmos as telas
-        públicas.
-      </p>
-
-      <div className="modal-action-grid">
-        <a href="http://localhost:10000/api/clientes" target="_blank" rel="noreferrer">
-          Ver clientes API
-        </a>
-        <a href="http://localhost:10000/api/parametros" target="_blank" rel="noreferrer">
-          Ver parâmetros API
-        </a>
-        <a href="http://localhost:10000/api/partner-requests" target="_blank" rel="noreferrer">
-          Ver parceiros API
-        </a>
-      </div>
-    </div>
-  );
+  return <div className="modal-rich-content"><p>Acesse o painel unificado pelo menu superior.</p></div>;
 }
 
 function BotContent() {
-  return (
-    <div className="modal-rich-content">
-      <p>
-        O bot está suspenso por enquanto para não quebrar o que já está
-        funcionando. Vamos religar a inteligência dele em uma fase própria, com
-        regras de resina, imagem e parâmetros.
-      </p>
-    </div>
-  );
-}
-
-function ParamItem({ label, value }) {
-  return (
-    <div className="param-item">
-      <span>{label}</span>
-      <strong translate="no">{value || "-"}</strong>
-    </div>
-  );
-}
-
-function InfoCard({ title, text, onClick }) {
-  return (
-    <button type="button" className="info-card clickable-card" onClick={onClick}>
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </button>
-  );
-}
-
-function ServiceLine({ title, onClick }) {
-  return (
-    <button type="button" className="service-line" onClick={onClick}>
-      <span>✓</span>
-      <strong>{title}</strong>
-    </button>
-  );
+  return <div className="modal-rich-content"><p>O bot técnico agora abre em uma janela dedicada.</p></div>;
 }
 
 export default App;
