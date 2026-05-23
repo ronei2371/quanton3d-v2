@@ -10,6 +10,23 @@ function AdminUnifiedPanel({ aberto, aoFechar }) {
   const [contatos, setContatos] = useState([]);
   const [parceiros, setParceiros] = useState([]);
   const [tickets, setTickets] = useState([]);
+  const [parametros, setParametros] = useState([]);
+  const [mostrarFormParam, setMostrarFormParam] = useState(false);
+  const [formParam, setFormParam] = useState({
+    resina: "",
+    marca: "",
+    impressora: "",
+    alturaCamada: "",
+    exposicaoNormal: "",
+    exposicaoBase: "",
+    camadasBase: "",
+    retardoUV: "",
+    retardoUVBase: "",
+    descansoAntesElevacao: "",
+    descansoAposElevacao: "",
+    descansoAposRetracao: "",
+    potenciaUV: ""
+  });
 
   useEffect(() => {
     if (!aberto) return;
@@ -23,15 +40,17 @@ function AdminUnifiedPanel({ aberto, aoFechar }) {
       setCarregando(true);
       setErro("");
 
-      const [resContatos, resParceiros, resTickets] = await Promise.all([
+      const [resContatos, resParceiros, resTickets, resParams] = await Promise.all([
         api.get("/contact-messages"),
         api.get("/partner-requests"),
         api.get("/bot-tickets"),
+        api.get("/parametros"),
       ]);
 
       setContatos(resContatos.data?.contactMessages || []);
       setParceiros(resParceiros.data?.partnerRequests || []);
       setTickets(resTickets.data?.botTickets || []);
+      setParametros(resParams.data?.parametros || []);
     } catch (error) {
       console.error("Erro ao carregar admin unificado:", error);
       setErro("Erro ao carregar os dados do painel administrativo.");
@@ -103,6 +122,14 @@ function AdminUnifiedPanel({ aberto, aoFechar }) {
               onClick={() => setAba("tickets")}
             >
               Bot Técnico
+            </button>
+
+            <button
+              type="button"
+              className={aba === "parametros" ? "active" : ""}
+              onClick={() => setAba("parametros")}
+            >
+              Parâmetros
             </button>
           </div>
 
@@ -196,6 +223,79 @@ function AdminUnifiedPanel({ aberto, aoFechar }) {
                         ))}
                       </div>
                     )}
+                  </article>
+                ))
+              )}
+            </div>
+          )}
+
+          {!carregando && !erro && aba === "parametros" && (
+            <div className="admin-list">
+              <div style={{ marginBottom: "20px" }}>
+                <button 
+                  type="button" 
+                  className="admin-refresh"
+                  onClick={() => setMostrarFormParam(!mostrarFormParam)}
+                >
+                  {mostrarFormParam ? "Cancelar" : "+ Adicionar Parâmetro"}
+                </button>
+              </div>
+
+              {mostrarFormParam && (
+                <div className="admin-card" style={{ marginBottom: "20px" }}>
+                  <h3>Novo Parâmetro</h3>
+                  <div className="admin-form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "15px" }}>
+                    <input placeholder="Resina" value={formParam.resina} onChange={e => setFormParam({...formParam, resina: e.target.value})} />
+                    <input placeholder="Marca" value={formParam.marca} onChange={e => setFormParam({...formParam, marca: e.target.value})} />
+                    <input placeholder="Impressora" value={formParam.impressora} onChange={e => setFormParam({...formParam, impressora: e.target.value})} />
+                    <input placeholder="Altura Camada" value={formParam.alturaCamada} onChange={e => setFormParam({...formParam, alturaCamada: e.target.value})} />
+                    <input placeholder="Exp Normal" value={formParam.exposicaoNormal} onChange={e => setFormParam({...formParam, exposicaoNormal: e.target.value})} />
+                    <input placeholder="Exp Base" value={formParam.exposicaoBase} onChange={e => setFormParam({...formParam, exposicaoBase: e.target.value})} />
+                    <input placeholder="Camadas Base" value={formParam.camadasBase} onChange={e => setFormParam({...formParam, camadasBase: e.target.value})} />
+                    <input placeholder="Retardo UV" value={formParam.retardoUV} onChange={e => setFormParam({...formParam, retardoUV: e.target.value})} />
+                    <input placeholder="Potência UV" value={formParam.potenciaUV} onChange={e => setFormParam({...formParam, potenciaUV: e.target.value})} />
+                  </div>
+                  <button 
+                    type="button" 
+                    className="admin-refresh" 
+                    style={{ marginTop: "15px", width: "100%" }}
+                    onClick={async () => {
+                      try {
+                        await api.post("/parametros", formParam);
+                        alert("Parâmetro salvo!");
+                        setMostrarFormParam(false);
+                        carregarTudo();
+                      } catch (e) { alert("Erro ao salvar"); }
+                    }}
+                  >
+                    Salvar Parâmetro
+                  </button>
+                </div>
+              )}
+
+              {parametros.length === 0 ? (
+                <div className="admin-empty">Nenhum parâmetro cadastrado.</div>
+              ) : (
+                parametros.map((item) => (
+                  <article key={item._id} className="admin-card">
+                    <div className="admin-card-top">
+                      <h3>{item.resina} - {item.impressora}</h3>
+                      <button 
+                        style={{ background: "none", border: "none", color: "red", cursor: "pointer" }}
+                        onClick={async () => {
+                          if(confirm("Excluir este parâmetro?")) {
+                            try {
+                              await api.delete(`/parametros/${item._id}`);
+                              carregarTudo();
+                            } catch(e) { alert("Erro ao excluir"); }
+                          }
+                        }}
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                    <p><strong>Marca:</strong> {item.marca || "-"}</p>
+                    <p><strong>Exp:</strong> {item.exposicaoNormal} | <strong>Base:</strong> {item.exposicaoBase} | <strong>Camadas:</strong> {item.camadasBase}</p>
                   </article>
                 ))
               )}

@@ -5,3 +5,4 @@ export async function listarParametros(_req,res){ const parametros=await Paramet
 export async function listarResinas(_req,res){ const resinas=(await Parametro.distinct('resina')).filter(Boolean).sort(); res.json({success:true,resinas}); }
 export async function listarImpressoras(_req,res){ const impressoras=(await Parametro.distinct('impressora')).filter(Boolean).sort(); res.json({success:true,impressoras}); }
 export async function buscarPerfil(req,res){ const {resina,impressora}=req.query||{}; const perfil=await Parametro.findOne({resina:new RegExp(`^${resina}$`,'i'),impressora:new RegExp(`^${impressora}$`,'i')}); res.json({success:true,perfil}); }
+export async function excluirParametro(req,res){ try { await Parametro.findByIdAndDelete(req.params.id); res.json({success:true}); } catch(e){ res.status(500).json({success:false,error:e.message}); } }
