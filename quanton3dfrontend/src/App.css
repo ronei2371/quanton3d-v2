@@ -579,7 +579,7 @@ a {
 .site-modal {
   width: min(760px, 100%);
   max-height: calc(100vh - 32px);
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   padding: 34px;
@@ -588,6 +588,27 @@ a {
   color: #111827;
   border: 3px solid #2563eb;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+}
+
+.register-modal {
+  max-width: 500px !important;
+}
+
+.register-modal .form-grid {
+  grid-template-columns: 1fr !important;
+  gap: 12px;
+}
+
+.register-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+}
+
+.register-modal input, .register-modal select {
+  width: 100% !important;
+  height: 45px !important;
 }
 
 .registration-modal {
