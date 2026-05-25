@@ -45,6 +45,10 @@ const GUIDES = {
     title: "Calibração de Resina",
     file: "/guias/guia-calibracao-resina.html",
   },
+  calibracaoQuanton3D: {
+    title: "Calibração Quanton3D",
+    file: "/guias/guia-calibracao-quanton3d.html",
+  },
   manutencao: {
     title: "Manutenção de Impressora",
     file: "/guias/guia-manutencao-impressora.html",
@@ -56,6 +60,10 @@ const GUIDES = {
   diagnostico: {
     title: "Diagnóstico de Problemas",
     file: "/guias/guia-diagnostico-problemas.html",
+  },
+  suportes: {
+    title: "Posicionamento de Suportes",
+    file: "/guias/guia-posicionamento-suportes.html",
   },
   parceiros: {
     title: "Parceiros Quanton3D",
@@ -72,11 +80,11 @@ function App() {
   const [resinaSelecionada, setResinaSelecionada] = useState("");
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
   const [resultado, setResultado] = useState(null);
-  
+  const [mostrarAdminUnificado, setMostrarAdminUnificado] = useState(false);
+
   const [cliente, setCliente] = useState(null);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
   const [mostrarCadastro, setMostrarCadastro] = useState(false);
-  const [mostrarAdminUnificado, setMostrarAdminUnificado] = useState(false);
 
   const [formCliente, setFormCliente] = useState({
     nome: "",
@@ -102,11 +110,14 @@ function App() {
   }, []);
 
   function carregarEstadoInicial() {
-    const privacidadeAceita = localStorage.getItem("quanton3d_privacidade_aceita") === "true";
+    const privacidadeAceita =
+      localStorage.getItem("quanton3d_privacidade_aceita") === "true";
+
     const clienteLocal = carregarClienteLocal();
 
     if (!privacidadeAceita) {
       setMostrarPrivacidade(true);
+      setMostrarCadastro(false);
       return;
     }
 
@@ -350,7 +361,6 @@ Potência UV: ${resultado.potenciaUV || "-"}
           onClose={() => setActiveModal(null)}
           abrirGuia={abrirGuia}
           abrirParceiroModal={abrirParceiroModal}
-          setMostrarBotTicket={setActiveModal}
         />
       )}
 
@@ -519,6 +529,10 @@ function PrivacidadeModal({ aceitarPrivacidade }) {
           <h3>1. Coleta de Dados</h3><p>Solicitamos nome, e-mail e WhatsApp para suporte técnico personalizado.</p>
           <h3>2. Uso das Informações</h3><p>Dados usados apenas para melhorar sua experiência e histórico de suporte.</p>
           <h3>3. Segurança</h3><p>Não compartilhamos dados com terceiros. Armazenamento seguro.</p>
+          <h3>4. Finalidade</h3><p>As informações coletadas permitem que a Quanton3D ofereça parâmetros precisos para sua impressora.</p>
+          <h3>5. Direitos</h3><p>Você pode solicitar a exclusão de seus dados a qualquer momento via suporte.</p>
+          <h3>6. Cookies</h3><p>Usamos armazenamento local para manter sua sessão ativa e evitar novos cadastros.</p>
+          <h3>7. Consentimento</h3><p>Ao marcar a opção abaixo, você confirma que leu e autoriza o tratamento dos dados.</p>
         </div>
         <label className="privacy-accept-row">
           <input type="checkbox" checked={confirmouAceite} onChange={(e) => setConfirmouAceite(e.target.checked)} />
