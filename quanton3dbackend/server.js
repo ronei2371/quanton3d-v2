@@ -1,9 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.js";
 import contactMessagesRoutes from "./routes/contactMessages.js";
 import clientesRoutes from "./routes/clientes.js";
@@ -11,7 +8,6 @@ import partnerRequestsRoutes from "./routes/partnerRequests.js";
 import parametrosRoutes from "./routes/parametros.js";
 import formulacoesRoutes from "./routes/formulacoes.js";
 import galleryRoutes from "./routes/gallery.js";
-import diarioRoutes from "./routes/diario.js";
 import chatRoutes from "./routes/chat.js";
 import adminRoutes from "./routes/admin.js";
 import botTicketsRoutes from "./routes/botTickets.js";
@@ -20,9 +16,6 @@ dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT || 10000);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const frontendDistPath = path.resolve(__dirname, "../quanton3dfrontend/dist");
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
   .split(",")
@@ -51,7 +44,7 @@ app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 app.use("/uploads", express.static("uploads"));
 app.use("/api/bot-tickets", botTicketsRoutes);
 
-app.get("/api/status", (_req, res) => {
+app.get("/", (_req, res) => {
   res.json({
     success: true,
     message: "Quanton3D Final Backend online",
@@ -71,18 +64,9 @@ app.use("/api/parametros", parametrosRoutes);
 app.use("/api/partner-requests", partnerRequestsRoutes);
 app.use("/api/formulacoes", formulacoesRoutes);
 app.use("/api/gallery", galleryRoutes);
-app.use("/api/diario", diarioRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact-messages", contactMessagesRoutes);
-
-if (fs.existsSync(frontendDistPath)) {
-  app.use(express.static(frontendDistPath));
-
-  app.get(/^\/(?!api\/|uploads\/).*/, (_req, res) => {
-    res.sendFile(path.join(frontendDistPath, "index.html"));
-  });
-}
 
 app.use((err, _req, res, _next) => {
   console.error("[SERVER]", err);

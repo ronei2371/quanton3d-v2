@@ -1,10 +1,6 @@
 import express from "express";
 import BotTicket from "../models/BotTicket.js";
 import uploadBotTicketImages from "../middleware/botTicketUpload.js";
-import {
-  diagnoseTechnicalIssue,
-  getProblemCatalog,
-} from "../services/diagnosticEngine.js";
 
 const router = express.Router();
 
@@ -12,21 +8,31 @@ function limparTexto(valor) {
   return String(valor || "").trim();
 }
 
-router.get("/catalog", (_req, res) => {
-  try {
-    return res.json({
-      success: true,
-      totalCategories: getProblemCatalog().length,
-      catalog: getProblemCatalog(),
-    });
-  } catch (error) {
-    console.error("Erro ao carregar catálogo de problemas:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Erro ao carregar catálogo de problemas.",
-    });
+function gerarRespostaInicial({ problema, resina, impressora, descricao }) {
+  const partes = [];
+
+  if (problema) {
+    partes.push(`Problema informado: ${problema}.`);
   }
-});
+
+  if (resina) {
+    partes.push(`Resina: ${resina}.`);
+  }
+
+  if (impressora) {
+    partes.push(`Impressora: ${impressora}.`);
+  }
+
+  if (descricao) {
+    partes.push(`Descrição recebida: ${descricao}.`);
+  }
+
+  partes.push(
+    "Seu caso foi registrado para análise técnica da Quanton3D. Se necessário, ele será encaminhado para atendimento humano."
+  );
+
+  return partes.join(" ");
+}
 
 router.post("/", (req, res) => {
   uploadBotTicketImages.array("fotos", 6)(req, res, async (erroUpload) => {
@@ -38,8 +44,6 @@ router.post("/", (req, res) => {
     }
 
     try {
-      const problemaOriginal = limparTexto(req.body.problema || req.body.problem);
-
       const payload = {
         clienteId: limparTexto(req.body.clienteId),
         nome: limparTexto(req.body.nome),
@@ -47,12 +51,11 @@ router.post("/", (req, res) => {
         email: limparTexto(req.body.email).toLowerCase(),
         resina: limparTexto(req.body.resina),
         impressora: limparTexto(req.body.impressora),
-        problema: problemaOriginal,
+        problema: limparTexto(req.body.problema),
         descricao: limparTexto(req.body.descricao),
         parametrosInformados: limparTexto(req.body.parametrosInformados),
         feedbackCliente: "",
         status: "novo",
-        observacaoAdmin: "",
         fotos: (req.files || []).map((file) => ({
           nomeOriginal: file.originalname || "",
           nomeArquivo: file.filename || "",
@@ -69,47 +72,9 @@ router.post("/", (req, res) => {
         });
       }
 
-      const diagnostico = await diagnoseTechnicalIssue({
-        problem: payload.problema,
-        description: payload.descricao,
-        resina: payload.resina,
-        impressora: payload.impressora,
-        exposicaoNormal: limparTexto(req.body.exposicaoNormal),
-        exposicaoBase: limparTexto(req.body.exposicaoBase),
-        camadasBase: limparTexto(req.body.camadasBase),
-        alturaCamada: limparTexto(req.body.alturaCamada),
-        liftSpeed: limparTexto(req.body.liftSpeed),
-        temperaturaAmbiente: limparTexto(req.body.temperaturaAmbiente),
-        nivelamentoRecente: limparTexto(req.body.nivelamentoRecente),
-        resinaCondicao: limparTexto(req.body.resinaCondicao),
-        momentoFalha: limparTexto(req.body.momentoFalha),
-        localFalha: limparTexto(req.body.localFalha),
-        diametroSuporte: limparTexto(req.body.diametroSuporte),
-        contatoSuporte: limparTexto(req.body.contatoSuporte),
-        angulacaoPeca: limparTexto(req.body.angulacaoPeca),
-        tempoCuraUv: limparTexto(req.body.tempoCuraUv),
-        secagemAntesCura: limparTexto(req.body.secagemAntesCura),
-        alcoolPureza: limparTexto(req.body.alcoolPureza),
-        alcoolReuso: limparTexto(req.body.alcoolReuso),
-        observacoesTecnicas: limparTexto(req.body.observacoesTecnicas),
-        guidedAnswers: (() => {
-          try {
-            return JSON.parse(req.body.guidedAnswers || "{}");
-          } catch {
-            return {};
-          }
-        })(),
-      });
-
-      payload.problema =
-        diagnostico?.detectedProblem?.label || payload.problema;
-      payload.respostaBot =
-        diagnostico?.finalAnswer ||
-        "Não foi possível gerar diagnóstico automático.";
-      payload.confiancaBot = Number(diagnostico?.confidence || 0);
-      payload.precisaHumano = Boolean(
-        diagnostico?.shouldEscalateToAdmin ?? true
-      );
+      payload.respostaBot = gerarRespostaInicial(payload);
+      payload.confiancaBot = 35;
+      payload.precisaHumano = true;
 
       const novoTicket = await BotTicket.create(payload);
 
@@ -117,7 +82,6 @@ router.post("/", (req, res) => {
         success: true,
         message: "Ticket técnico criado com sucesso.",
         botTicket: novoTicket,
-        diagnostico,
       });
     } catch (error) {
       console.error("Erro ao criar bot ticket:", error);

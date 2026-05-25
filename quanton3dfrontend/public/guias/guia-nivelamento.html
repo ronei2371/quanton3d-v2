@@ -3,278 +3,572 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masterclass: Engenharia de Nivelamento Z-Zero | Quanton3D</title>
+    <title>Guia Completo de Nivelamento - Impressora 3D de Resina | Quanton3D</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Inter:wght@300;400;600;700&display=swap');
-
-        :root {
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --accent: #4caf50;
-            --warning: #e74c3c;
-            --bg-dark: #0a0b10;
-            --bg-card: #161b22;
-            --text-main: #e6edf3;
-            --text-dim: #8b949e;
-            --border: rgba(255, 255, 255, 0.1);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: var(--bg-card);
-            border-radius: 32px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.7);
-        }
-
-        /* Hero Section Premium */
-        .hero {
-            background: linear-gradient(rgba(10, 11, 16, 0.85), rgba(10, 11, 16, 0.85)), 
-                        url('/images/nivelamento-images/impressora-resina.jpg');
-            background-size: cover;
-            background-position: center;
-            padding: 100px 40px;
-            text-align: center;
-            border-bottom: 3px solid var(--secondary);
-            position: relative;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(0, 242, 254, 0.1) 0%, transparent 70%);
-        }
-
-        .hero-tag {
-            display: inline-block;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: var(--bg-dark);
-            padding: 8px 20px;
-            border-radius: 100px;
-            font-size: 0.9rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
-        }
-
-        .hero h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 4rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 20px;
-            letter-spacing: -1px;
-        }
-
-        .hero p { color: var(--text-dim); font-size: 1.4rem; max-width: 800px; margin: 0 auto; font-weight: 300; }
-
-        /* Main Content */
-        .content { padding: 60px; }
-
-        .intro-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            margin-bottom: 80px;
-            align-items: center;
-        }
-
-        .intro-text h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 25px;
-        }
-
-        .tech-image {
-            width: 100%;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            transition: 0.5s;
-        }
-
-        .tech-image:hover { transform: scale(1.02); border-color: var(--primary); }
-
-        /* Evolution Section */
-        .evolution-box {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(155, 89, 182, 0.1) 100%);
-            border: 1px solid var(--border);
-            padding: 40px;
-            border-radius: 24px;
-            margin: 60px 0;
-        }
-
-        .evolution-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
-        }
-
-        .evo-card {
-            background: rgba(255,255,255,0.03);
-            padding: 25px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .evo-card h4 { color: var(--primary); margin-bottom: 15px; font-size: 1.2rem; }
-
-        /* Master Protocol Steps */
-        .master-steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .master-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px;
-            position: relative;
-        }
-
-        .step-tag {
-            position: absolute;
-            top: -15px;
-            right: 30px;
-            background: var(--primary);
-            color: var(--bg-dark);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-weight: 800;
-            font-size: 0.8rem;
-        }
-
-        .master-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; margin-bottom: 20px; color: #fff; }
-
-        .master-card img { width: 100%; border-radius: 12px; margin: 20px 0; }
-
-        /* Science Highlight */
-        .science-box {
-            background: rgba(46, 204, 113, 0.05);
-            border: 1px solid rgba(46, 204, 113, 0.2);
-            padding: 30px;
+            background: white;
             border-radius: 20px;
-            margin-top: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
 
-        .science-box h4 { color: var(--accent); margin-bottom: 15px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
-
-        .footer {
-            background: #0d1117;
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 60px 40px;
             text-align: center;
-            border-top: 1px solid var(--border);
         }
 
-        .footer h2 { font-family: 'Space Grotesk', sans-serif; color: #fff; margin-bottom: 20px; }
-        .footer p { color: var(--text-dim); }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
 
-        @media (max-width: 900px) {
-            .intro-section, .evolution-grid { grid-template-columns: 1fr; }
-            .hero h1 { font-size: 2.5rem; }
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .logo {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .content {
+            padding: 60px 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            font-size: 1.05em;
+        }
+
+        .step {
+            margin: 50px 0;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 60px;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .step h3 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .step-image {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .step-description {
+            font-size: 1.15em;
+            line-height: 1.9;
+            color: #555;
+            margin: 20px 0;
+        }
+
+        .step-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .step-list li {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-list li strong {
+            color: #667eea;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #155724;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tip-box h4 {
+            font-size: 1.4em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tip-box p {
+            font-size: 1.1em;
+            line-height: 1.7;
+        }
+
+        .error-box {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #721c24;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-box h4 {
+            font-size: 1.4em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-box p {
+            font-size: 1.1em;
+            line-height: 1.7;
+        }
+
+        .materials {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .materials h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .materials ul {
+            list-style: none;
+        }
+
+        .materials li {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1em;
+        }
+
+        .materials li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .footer h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .footer p {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+
+        .footer a {
+            color: #84fab0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .step {
+                padding: 25px;
+            }
+
+            .step h3 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header class="hero">
-            <span class="hero-tag">QUANTON3D ENGINEERING</span>
-            <h1>Engenharia de Nivelamento</h1>
-            <p>Domine a física da adesão e a precisão sub-milimétrica para resultados de elite.</p>
-        </header>
-
-        <div class="content">
-            <!-- INTRODUÇÃO TÉCNICA -->
-            <div class="intro-section">
-                <div class="intro-text">
-                    <h2>🔬 A Ciência do Contato</h2>
-                    <p style="margin-bottom: 20px;">
-                        O nivelamento em impressoras SLA/DLP não é apenas sobre "estar reto". É sobre gerenciar a <span style="color: var(--primary); font-weight: 700;">Tensão Superficial</span> e a <span style="color: var(--primary); font-weight: 700;">Força de Sucção</span>. 
-                    </p>
-                    <p style="color: var(--text-dim);">
-                        Quando a plataforma desce, ela precisa expulsar a resina para criar uma camada de apenas 50 micras. Se o nivelamento estiver errado por apenas 10 micras, a peça pode se soltar ou sofrer o efeito "elephant foot" (base gorda).
-                    </p>
-                </div>
-                <img src="/images/nivelamento-images/diagrama-ideal.png" alt="Física da Impressão" class="tech-image">
-            </div>
-
-            <!-- EVOLUÇÃO TECNOLÓGICA -->
-            <div class="evolution-box">
-                <h2 class="section-title"><span>🚀</span> A Evolução: Manual vs. Automático</h2>
-                <p style="color: var(--text-dim);">A tecnologia de nivelamento avançou drasticamente nos últimos anos, trazendo mais segurança para o operador.</p>
-                
-                <div class="evolution-grid">
-                    <div class="evo-card">
-                        <h4>⚙️ Nivelamento Manual (Tradicional)</h4>
-                        <p style="font-size: 0.95rem; color: var(--text-dim);">Baseado no torque dos parafusos e na resistência do papel. Exige "feeling" do operador e calibração periódica. É o método mais preciso quando bem executado.</p>
-                    </div>
-                    <div class="evo-card">
-                        <h4>🤖 Nivelamento Automático (Smart)</h4>
-                        <p style="font-size: 0.95rem; color: var(--text-dim);">Máquinas modernas (como Anycubic M5s ou Elegoo Saturn 4) usam sensores de carga e piezoelétricos. Elas medem a pressão real da plataforma contra o LCD e compensam falhas eletronicamente.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PROTOCOLO MASTER -->
-            <h2 class="section-title"><span>💎</span> Protocolo Master de Calibração</h2>
-            
-            <div class="master-steps">
-                <div class="master-card">
-                    <span class="step-tag">FASE 1</span>
-                    <h3>Sanitização de Precisão</h3>
-                    <img src="/images/nivelamento-images/impressora-resina.jpg" alt="Limpeza">
-                    <p style="font-size: 0.95rem; color: var(--text-dim);">Resíduos microscópicos de resina curada na tela LCD são os maiores inimigos. Use álcool isopropílico 99% e certifique-se de que a plataforma está mecanicamente "solta" antes de descer.</p>
-                </div>
-
-                <div class="master-card">
-                    <span class="step-tag">FASE 2</span>
-                    <h3>Ajuste de Torque Dinâmico</h3>
-                    <img src="/images/nivelamento-images/papel-teste.jpg" alt="Ajuste">
-                    <p style="font-size: 0.95rem; color: var(--text-dim);">O segredo está no aperto em cruz. Nunca aperte um parafuso totalmente de uma vez. Vá girando em 1/4 de volta em cada um até que a plataforma esteja travada e paralela ao LCD.</p>
-                </div>
-
-                <div class="master-card">
-                    <span class="step-tag">FASE 3</span>
-                    <h3>Validação Óptica</h3>
-                    <img src="/images/nivelamento-images/papel-impressora.jpg" alt="Validação">
-                    <p style="font-size: 0.95rem; color: var(--text-dim);">Faça o teste do "arrasto" nos quatro cantos. A resistência deve ser idêntica. Se um canto estiver mais leve, a plataforma está inclinada e a falha de impressão ocorrerá naquele quadrante.</p>
-                </div>
-            </div>
-
-            <!-- CIÊNCIA APLICADA -->
-            <div class="science-box">
-                <h4>🧪 O Pulo do Gato: Viscosidade e Temperatura</h4>
-                <p style="color: var(--text-dim);">
-                    Sabia que a temperatura da resina altera o nivelamento? Em dias frios, a resina fica mais espessa (viscosa) e oferece mais resistência. <span style="color: var(--accent); font-weight: 700;">Dica de Elite:</span> Aqueça levemente a plataforma antes de nivelar para garantir que o metal se expanda para sua posição real de trabalho.
-                </p>
-            </div>
+        <div class="header">
+            <div class="logo">🔬 QUANTON3D</div>
+            <h1>🎯 Guia Completo de Nivelamento</h1>
+            <p>Impressoras 3D de Resina LCD/SLA/DLP</p>
         </div>
 
-        <footer class="footer">
-            <h2>QUANTON3D • ELITE RESINS</h2>
-            <p>Liderando a revolução da impressão 3D de alta performance.</p>
-            <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.5;">© 2025 QUANTON3D - DOCUMENTO TÉCNICO DE ENGENHARIA</p>
-        </footer>
+        <div class="content">
+            <div class="intro">
+                <h2>📋 Por que o Nivelamento é Crucial em Impressoras de Resina?</h2>
+                <p>O nivelamento correto da plataforma de construção é o fundamento de toda impressão 3D de resina bem-sucedida. Diferente das impressoras FDM, nas impressoras de resina LCD/SLA/DLP a plataforma desce e pressiona contra a tela LCD, onde a luz UV cura a resina camada por camada. Uma plataforma mal nivelada resulta em falhas de adesão, peças incompletas, desperdício de resina e tempo perdido. Este guia detalhado vai te ensinar o processo completo, passo a passo, com fotos ilustrativas para garantir impressões perfeitas!</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ ATENÇÃO IMPORTANTE</h3>
+                <p>Um nivelamento incorreto é a causa número 1 de falhas em impressões de resina. Dedique tempo e atenção a este processo. Refaça o nivelamento a cada 10-15 impressões ou sempre que notar problemas de adesão! A tela LCD é delicada - nunca pressione com força excessiva!</p>
+            </div>
+
+            <div class="materials">
+                <h3>🛠️ Materiais Necessários</h3>
+                <ul>
+                    <li>1 folha de papel sulfite A4 (75-90g/m²)</li>
+                    <li>Chave Allen (geralmente fornecida com a impressora)</li>
+                    <li>Pano de microfibra ou papel toalha</li>
+                    <li>Álcool isopropílico 99% (para limpeza)</li>
+                    <li>Luvas descartáveis de nitrilo</li>
+                    <li>Boa iluminação</li>
+                </ul>
+            </div>
+
+            <!-- PASSO 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Preparação e Limpeza da Tela LCD</h3>
+                <img src="images/impressora-resina.jpg" alt="Impressora de resina" class="step-image">
+                <div class="step-description">
+                    <p>Antes de iniciar o nivelamento, é fundamental preparar adequadamente a impressora de resina:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Desligue a impressora</strong> e remova o tanque de resina (VAT) com cuidado - nunca nivele com resina dentro!</li>
+                    <li><strong>Limpe a tela LCD</strong> com álcool isopropílico e pano de microfibra - remova qualquer resíduo de resina curada ou marcas de dedo</li>
+                    <li><strong>Limpe a plataforma de construção</strong> com álcool isopropílico - certifique-se de que está completamente seca e livre de resina</li>
+                    <li><strong>Verifique se não há resina curada</strong> na superfície da tela ou na plataforma - qualquer resíduo compromete o nivelamento</li>
+                    <li><strong>Ligue a impressora</strong> após a limpeza completa</li>
+                </ul>
+                <div class="tip-box">
+                    <h4>💡 Dica Profissional</h4>
+                    <p>Use sempre luvas ao manusear resina, mesmo curada. A tela LCD é extremamente delicada - nunca use objetos pontiagudos, abrasivos ou pressione com força. Pressione suavemente com o pano de microfibra em movimentos circulares.</p>
+                </div>
+            </div>
+
+            <!-- PASSO 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Soltar os Parafusos da Plataforma de Construção</h3>
+                <img src="images/anycubic-mono.jpg" alt="Plataforma de construção" class="step-image">
+                <div class="step-description">
+                    <p>A plataforma de construção das impressoras de resina possui parafusos que permitem o ajuste fino do nivelamento:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Localize os parafusos</strong> - geralmente são 4 parafusos nas laterais ou na parte superior da plataforma de construção</li>
+                    <li><strong>Use a chave Allen apropriada</strong> fornecida com sua impressora (geralmente 2.5mm ou 3mm)</li>
+                    <li><strong>Afrouxe os parafusos</strong> em sentido anti-horário - não remova completamente, apenas solte o suficiente para a plataforma ter uma leve folga</li>
+                    <li><strong>Verifique o movimento</strong> - a plataforma deve ter uma leve folga para ajuste, mas não deve estar completamente solta</li>
+                </ul>
+                <div class="warning-box">
+                    <h3>⚠️ CUIDADO</h3>
+                    <p>Não solte demais os parafusos! Eles devem estar apenas levemente frouxos. Se soltar muito, a plataforma pode cair ou desalinhar completamente durante o processo de nivelamento.</p>
+                </div>
+            </div>
+
+            <!-- PASSO 3 -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Posicionar o Papel e Executar "Home" ou "Z=0"</h3>
+                <img src="images/papel-impressora.jpg" alt="Papel para nivelamento" class="step-image">
+                <div class="step-description">
+                    <p>O papel sulfite funciona como um calibrador de espessura preciso para impressoras de resina:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Pegue uma folha de papel sulfite A4</strong> comum (75-90g/m²) - não use papel muito fino ou muito grosso</li>
+                    <li><strong>Dobre o papel ao meio UMA VEZ</strong> - isso cria uma espessura de aproximadamente 0.2mm, ideal para impressoras de resina LCD</li>
+                    <li><strong>Coloque o papel dobrado</strong> no centro da tela LCD, sobre a área de impressão - certifique-se de que está bem posicionado</li>
+                    <li><strong>Acesse o menu da impressora</strong> e procure pela opção "Tools", "Ferramentas" ou "Manutenção"</li>
+                    <li><strong>Selecione "Home", "Z=0" ou "Set Home"</strong> - isso fará a plataforma descer até a posição inicial (Z zero)</li>
+                    <li><strong>Aguarde</strong> a plataforma descer completamente e pressionar o papel contra a tela LCD</li>
+                </ul>
+                <div class="tip-box">
+                    <h4>💡 Dica Profissional</h4>
+                    <p>Para impressoras de resina, use o papel dobrado APENAS UMA VEZ (não duas como em FDM). A distância entre a plataforma e a tela deve ser mínima para garantir boa adesão. Use sempre papel sulfite novo e limpo - papel usado ou amassado compromete a precisão!</p>
+                </div>
+            </div>
+
+            <!-- PASSO 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Ajuste Fino da Pressão sobre a Tela LCD</h3>
+                <img src="images/papel-teste.jpg" alt="Teste do papel" class="step-image">
+                <div class="step-description">
+                    <p>Este é o momento crítico do nivelamento - o ajuste da pressão correta sobre a tela LCD:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Com a plataforma pressionando o papel</strong> contra a tela LCD, tente puxar o papel suavemente</li>
+                    <li><strong>Pressão ideal:</strong> O papel deve estar bem preso, com resistência moderada ao puxar - você deve sentir fricção mas conseguir puxar com esforço</li>
+                    <li><strong>Se o papel sair muito fácil:</strong> A plataforma está muito alta - a impressão não vai aderir. Pressione levemente a plataforma para baixo</li>
+                    <li><strong>Se o papel não sair de jeito nenhum ou rasgar:</strong> A plataforma está muito baixa - risco de danificar a tela LCD! Levante ligeiramente</li>
+                    <li><strong>Teste em diferentes pontos:</strong> Puxe o papel no centro, nas bordas e nos cantos para garantir uniformidade em toda a tela</li>
+                    <li><strong>Ajuste fino:</strong> Se necessário, levante a plataforma, reposicione o papel e execute "Home" novamente até encontrar a pressão perfeita</li>
+                </ul>
+                <div class="error-box">
+                    <h4>❌ Erros Comuns em Impressoras de Resina</h4>
+                    <p><strong>Muito apertado:</strong> Pode danificar permanentemente a tela LCD (cara para substituir!) e causar problemas de separação das camadas.<br>
+                    <strong>Muito solto:</strong> Peças não aderem à plataforma e ficam grudadas na tela LCD ou no filme FEP do tanque.</p>
+                </div>
+            </div>
+
+            <!-- PASSO 5 -->
+            <div class="step">
+                <div class="step-number">5</div>
+                <h3>Apertar os Parafusos em Padrão de Cruz</h3>
+                <img src="images/photon-nivelamento.jpg" alt="Apertar parafusos" class="step-image">
+                <div class="step-description">
+                    <p>Após encontrar a pressão ideal, é hora de fixar a plataforma de construção:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Mantenha a pressão</strong> na plataforma enquanto aperta os parafusos - não deixe a plataforma se mover</li>
+                    <li><strong>Aperte em padrão de cruz:</strong> Primeiro um parafuso, depois o oposto diagonalmente - isso garante nivelamento uniforme</li>
+                    <li><strong>Aperte gradualmente:</strong> Não aperte um parafuso completamente de uma vez - alterne entre eles em pequenos incrementos</li>
+                    <li><strong>Aperto firme mas não excessivo:</strong> Os parafusos devem estar bem fixos, mas sem força exagerada que possa entortar a plataforma</li>
+                    <li><strong>ANTES de remover o papel:</strong> Verifique se todos os parafusos estão bem apertados e a plataforma não se move</li>
+                </ul>
+                <div class="warning-box">
+                    <h3>⚠️ IMPORTANTE</h3>
+                    <p>Apertar os parafusos de forma desigual pode desalinhar a plataforma! Sempre use o padrão em cruz e aperte gradualmente todos os parafusos. Um lado mais apertado que o outro causa falhas de adesão parcial.</p>
+                </div>
+            </div>
+
+            <!-- PASSO 6 -->
+            <div class="step">
+                <div class="step-number">6</div>
+                <h3>Teste Final e Verificação do Nivelamento</h3>
+                <img src="images/elegoo-saturn.jpg" alt="Teste final" class="step-image">
+                <div class="step-description">
+                    <p>Após apertar todos os parafusos, faça a verificação final do nivelamento:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Remova o papel cuidadosamente</strong> puxando-o para fora sem forçar a plataforma</li>
+                    <li><strong>Levante a plataforma</strong> usando o menu da impressora (Move Z Up ou subir eixo Z)</li>
+                    <li><strong>Recoloque o papel</strong> na tela LCD e execute "Home" ou "Z=0" novamente</li>
+                    <li><strong>Teste a resistência:</strong> O papel deve ter exatamente a mesma resistência de antes do aperto dos parafusos</li>
+                    <li><strong>Se a resistência mudou:</strong> Os parafusos alteraram o nivelamento - repita todo o processo desde o passo 2</li>
+                    <li><strong>Se está igual:</strong> Parabéns! Seu nivelamento está perfeito e pronto para imprimir!</li>
+                </ul>
+                <div class="tip-box">
+                    <h4>💡 Dica Profissional</h4>
+                    <p>Faça SEMPRE este teste de verificação! É extremamente comum o nivelamento mudar ligeiramente ao apertar os parafusos em impressoras de resina. Melhor gastar 2 minutos verificando do que perder horas com impressões falhadas e resina desperdiçada.</p>
+                </div>
+            </div>
+
+            <!-- PASSO 7 -->
+            <div class="step">
+                <div class="step-number">7</div>
+                <h3>Finalização e Primeira Impressão de Teste</h3>
+                <div class="step-description">
+                    <p>Com o nivelamento concluído, prepare-se para sua primeira impressão:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Remova o papel</strong> completamente da tela LCD - não deixe resíduos</li>
+                    <li><strong>Limpe a tela novamente</strong> com álcool isopropílico para remover qualquer marca de dedo ou resíduo do papel</li>
+                    <li><strong>Recoloque o tanque de resina (VAT)</strong> com cuidado, certificando-se de que está bem encaixado e nivelado</li>
+                    <li><strong>Verifique o filme FEP</strong> do tanque - deve estar limpo, transparente e sem rasgos ou resina curada</li>
+                    <li><strong>Adicione resina</strong> ao tanque até o nível recomendado pelo fabricante (geralmente entre as marcas MIN e MAX)</li>
+                    <li><strong>Execute um teste de impressão:</strong> Imprima um cubo de calibração, torre de exposição ou o arquivo de teste fornecido pelo fabricante</li>
+                    <li><strong>Observe as primeiras camadas:</strong> Elas devem aderir perfeitamente à plataforma sem falhas</li>
+                </ul>
+                <div class="tip-box">
+                    <h4>💡 Dica Profissional</h4>
+                    <p>Sempre faça uma impressão de teste após nivelar! Um pequeno cubo de calibração de 2-3 minutos pode confirmar que tudo está perfeito antes de iniciar impressões longas e complexas. Isso economiza tempo, resina e evita frustrações!</p>
+                </div>
+            </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="step">
+                <div class="step-number">?</div>
+                <h3>🔧 Solução de Problemas Comuns em Impressoras de Resina</h3>
+                <div class="step-description">
+                    <p>Se você está tendo problemas mesmo após o nivelamento correto, confira estas soluções específicas para impressoras de resina:</p>
+                </div>
+                
+                <div class="error-box">
+                    <h4>❌ Problema: Peça não adere à plataforma de construção</h4>
+                    <p><strong>Soluções:</strong><br>
+                    • Refaça o nivelamento com pressão um pouco maior no papel (papel mais preso)<br>
+                    • Limpe a plataforma com álcool e lixe levemente com lixa 220-400 para criar textura<br>
+                    • Aumente o tempo de exposição das camadas base (de 30s para 40-50s)<br>
+                    • Aumente o número de camadas base (de 5 para 8-10 camadas)<br>
+                    • Verifique se a resina não está vencida, muito fria (ideal 20-25°C) ou contaminada<br>
+                    • Agite bem a resina antes de usar - pigmentos podem ter sedimentado</p>
+                </div>
+
+                <div class="error-box">
+                    <h4>❌ Problema: Peça adere mas fica grudada na tela LCD ou no FEP</h4>
+                    <p><strong>Soluções:</strong><br>
+                    • Plataforma muito alta - refaça o nivelamento com mais pressão<br>
+                    • Aumente o tempo de exposição das camadas base<br>
+                    • Aumente a velocidade de elevação (lift speed) para 60-80mm/min<br>
+                    • Aumente a distância de elevação (lift distance) para 6-8mm<br>
+                    • Verifique se o filme FEP não está muito apertado ou muito frouxo<br>
+                    • Limpe o FEP com álcool - resíduos causam adesão excessiva</p>
+                </div>
+
+                <div class="error-box">
+                    <h4>❌ Problema: Adesão irregular (adere em alguns pontos, falha em outros)</h4>
+                    <p><strong>Soluções:</strong><br>
+                    • A plataforma não está nivelada uniformemente - refaça o processo completo<br>
+                    • Teste a resistência do papel em todos os cantos durante o nivelamento<br>
+                    • Verifique se a plataforma não está empenada ou danificada<br>
+                    • Certifique-se de que a tela LCD está perfeitamente limpa e sem resina curada<br>
+                    • Verifique se o eixo Z está lubrificado e se move suavemente<br>
+                    • Teste a tela LCD no menu da impressora - pode haver pixels mortos</p>
+                </div>
+
+                <div class="error-box">
+                    <h4>❌ Problema: Linhas ou marcas nas primeiras camadas</h4>
+                    <p><strong>Soluções:</strong><br>
+                    • Resina curada na tela LCD - limpe completamente com álcool<br>
+                    • Filme FEP arranhado ou com resina curada - substitua o FEP<br>
+                    • Tela LCD danificada - teste no menu e substitua se necessário<br>
+                    • Partículas de resina curada flutuando - filtre a resina antes de usar</p>
+                </div>
+
+                <div class="tip-box">
+                    <h4>💡 Quando Refazer o Nivelamento em Impressoras de Resina</h4>
+                    <p>• A cada 10-15 impressões (recomendado)<br>
+                    • Após mover ou transportar a impressora<br>
+                    • Quando notar qualquer problema de adesão<br>
+                    • Após trocar o tanque de resina, filme FEP ou a tela LCD<br>
+                    • Se a impressora ficou muito tempo parada (mais de 1 mês)<br>
+                    • Após quedas de energia durante impressão<br>
+                    • Ao trocar de tipo de resina (flexível, rígida, etc)</p>
+                </div>
+            </div>
+
+            <!-- MANUTENÇÃO -->
+            <div class="step">
+                <div class="step-number">🔧</div>
+                <h3>Manutenção Preventiva para Impressoras de Resina</h3>
+                <div class="step-description">
+                    <p>Mantenha sua impressora de resina sempre em perfeitas condições:</p>
+                </div>
+                <ul class="step-list">
+                    <li><strong>Limpeza da tela LCD:</strong> Limpe com álcool isopropílico e microfibra após cada impressão - resina curada danifica a tela</li>
+                    <li><strong>Verificação do filme FEP:</strong> Inspecione regularmente se há rasgos, opacidade ou resina curada - substitua quando necessário</li>
+                    <li><strong>Verificação dos parafusos:</strong> Confira se estão firmes antes de cada impressão importante - vibração pode afrouxá-los</li>
+                    <li><strong>Lubrificação do eixo Z:</strong> Lubrifique o trilho linear Z a cada 20-30 impressões com graxa apropriada (PTFE ou lítio)</li>
+                    <li><strong>Inspeção da tela LCD:</strong> Teste regularmente no menu da impressora - pixels mortos aparecem como pontos pretos</li>
+                    <li><strong>Limpeza da plataforma:</strong> Lave com água e sabão após cada impressão, seque bem e passe álcool</li>
+                    <li><strong>Calibração periódica:</strong> Refaça o nivelamento preventivamente a cada 10 impressões, não apenas quando houver problemas</li>
+                    <li><strong>Ambiente controlado:</strong> Mantenha a impressora em local com temperatura estável (20-25°C) e protegida de luz solar direta</li>
+                    <li><strong>Filtragem da resina:</strong> Sempre filtre a resina ao devolver para o frasco - partículas curadas causam falhas</li>
+                    <li><strong>Proteção da tela:</strong> Quando não estiver usando, deixe o tanque de resina instalado para proteger a tela LCD de poeira e luz</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <h3>🔬 Quanton3D - Resinas UV de Alta Performance</h3>
+            <p>Precisa de ajuda com sua impressora de resina? Entre em contato conosco!</p>
+            <p>📱 WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a></p>
+            <p>📧 Email: <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p>
+            <p>🌐 Site: <a href="https://axtonronei.online">axtonronei.online</a></p>
+            <br>
+            <p style="font-size: 0.9em; opacity: 0.8;">© 2024 Quanton3D - Todos os direitos reservados</p>
+            <p style="font-size: 0.85em; opacity: 0.7; margin-top: 10px;">Guia específico para impressoras 3D de resina LCD/SLA/DLP</p>
+        </div>
     </div>
 </body>
 </html>
