@@ -400,7 +400,10 @@ Potência UV: ${resultado.potenciaUV || "-"}
           </div>
 
           <nav className="main-nav">
+            <button type="button" onClick={() => scrollToSection("produtos")}>Produtos</button>
+            <button type="button" onClick={() => scrollToSection("servicos")}>Serviços</button>
             <button type="button" onClick={() => scrollToSection("parametros")}>Informações Técnicas</button>
+            <button type="button" onClick={() => scrollToSection("calculadoras")}>Calculadoras</button>
             <button type="button" onClick={() => setMostrarCadastro(true)}>Cliente</button>
           </nav>
         </div>
@@ -434,6 +437,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
         <h2>Colabore com sua experiência de configuração</h2>
         <p>Envie uma foto da peça e os tempos usados no Chitubox para ajudar a Quanton3D a melhorar a base técnica.</p>
         <div className="experience-actions">
+          <button type="button" onClick={() => setActiveModal("galeria")}>📷 Compartilhar minhas configurações</button>
           <button type="button" onClick={abrirParceiroModal}>🤝 Quero ser parceiro</button>
         </div>
       </section>
@@ -442,6 +446,52 @@ Potência UV: ${resultado.potenciaUV || "-"}
         <div className="stat-card"><span>Total de parâmetros</span><strong>{parametros.length}</strong></div>
         <div className="stat-card"><span>Resinas cadastradas</span><strong>{resinas.length}</strong></div>
         <div className="stat-card"><span>Impressoras/modelos</span><strong>{totalImpressoras}</strong></div>
+      </section>
+
+      <section id="produtos" className="panel">
+        <div className="panel-header">
+          <div>
+            <span className="section-label">Catálogo Elite</span>
+            <h2>Nossas Resinas</h2>
+            <p>Conheça a linha completa de resinas Quanton3D para cada aplicação.</p>
+          </div>
+        </div>
+        <div className="empty-state">
+          <p>O catálogo de produtos será carregado aqui em breve.</p>
+        </div>
+      </section>
+
+      <section id="servicos" className="panel">
+        <div className="panel-header">
+          <div>
+            <span className="section-label">Ecossistema Q3D</span>
+            <h2>Serviços e Suporte</h2>
+            <p>Além de resinas, oferecemos consultoria e suporte técnico especializado.</p>
+          </div>
+        </div>
+        <div className="empty-state">
+          <p>A lista de serviços será detalhada aqui em breve.</p>
+        </div>
+      </section>
+
+      <section id="calculadoras" className="panel">
+        <div className="panel-header">
+          <div>
+            <span className="section-label">Ferramentas de Precisão</span>
+            <h2>Calculadoras Técnicas</h2>
+            <p>Otimize seu tempo de impressão e consumo de material.</p>
+          </div>
+        </div>
+        <div className="selector-grid">
+          <div className="field clickable-card" onClick={() => setActiveModal("calc_exp")}>
+            <span>Calculadora de Exposição</span>
+            <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Ajuste fino baseado na temperatura e modelo.</p>
+          </div>
+          <div className="field clickable-card" onClick={() => setActiveModal("calc_vol")}>
+            <span>Calculadora de Volume</span>
+            <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Estime o custo real da sua peça.</p>
+          </div>
+        </div>
       </section>
 
       <section id="parametros" className="panel">
@@ -586,7 +636,14 @@ function GuideModal({ guide, onClose }) {
 }
 
 function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
-  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada" };
+  const titles = { 
+    contato: "Fale Conosco", 
+    sobre: "Sobre a Quanton3D", 
+    formulacao: "Formulação Personalizada",
+    galeria: "Galeria e Configurações",
+    calc_exp: "Calculadora de Exposição",
+    calc_vol: "Calculadora de Volume"
+  };
   return (
     <div className="modal-backdrop">
       <section className="site-modal">
@@ -597,7 +654,19 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "contato" && <ContatoContent cliente={cliente} />}
         {type === "sobre" && <SobreContent abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />}
         {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
+        {type === "galeria" && <GaleriaContent />}
+        {type === "calc_exp" && <CalculadoraExposicao />}
+        {type === "calc_vol" && <CalculadoraVolume />}
       </section>
+    </div>
+  );
+}
+
+function GaleriaContent() {
+  return (
+    <div className="modal-rich-content">
+      <p>A galeria será integrada na próxima fase para receber imagem, resina, impressora, parâmetros e dados do cliente.</p>
+      <div className="notice-box">O botão já está conectado visualmente. Falta ligar upload + MongoDB.</div>
     </div>
   );
 }
