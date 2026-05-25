@@ -9,8 +9,6 @@ import "./App.css";
 
 const ORIGENS = [
   "Instagram",
-  "Facebook",
-  "TikTok",
   "YouTube",
   "Google / Pesquisa",
   "Indicação de amigo",
@@ -20,13 +18,6 @@ const ORIGENS = [
 ];
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
-
-const SOCIAL_LINKS = [
-  { label: "Instagram", href: "https://www.instagram.com/quanton3d" },
-  { label: "Facebook", href: "https://www.facebook.com/quanton3d" },
-  { label: "TikTok", href: "https://www.tiktok.com/@quanton3d" },
-  { label: "YouTube", href: "https://www.youtube.com/@quanton3d" },
-];
 
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
@@ -38,7 +29,7 @@ const SERVICE_BUTTONS = [
   { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao" },
   { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao" },
   { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
-  { label: "PARÂMETROS DE IMPRESSÃO", kind: "scroll", id: "parametros" },
+  { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
 ];
 
 const GUIDES = {
@@ -48,7 +39,7 @@ const GUIDES = {
   },
   fatiadores: {
     title: "Configuração de Fatiadores",
-    file: "/guias/guia-configuracao-fatiador.html",
+    file: "/guias/guia-configuracao-fatiadores.html",
   },
   calibracao: {
     title: "Calibração de Resina",
@@ -56,7 +47,7 @@ const GUIDES = {
   },
   manutencao: {
     title: "Manutenção de Impressora",
-    file: "/guias/guia-manutencao-maquina.html",
+    file: "/guias/guia-manutencao-impressora.html",
   },
   otimizacao: {
     title: "Otimização e Pós-processamento",
@@ -70,6 +61,10 @@ const GUIDES = {
     title: "Parceiros Quanton3D",
     file: "/guias/parceiros-quanton3d.html",
   },
+  parametrosDetalhados: {
+    title: "Parâmetros detalhados Chitubox",
+    file: "/guias/secao-parametros-detalhados.html",
+  },
 };
 
 function App() {
@@ -77,11 +72,11 @@ function App() {
   const [resinaSelecionada, setResinaSelecionada] = useState("");
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
   const [resultado, setResultado] = useState(null);
-  const [mostrarAdminUnificado, setMostrarAdminUnificado] = useState(false);
-  const [mostrarBotTicket, setMostrarBotTicket] = useState(false);
+  
   const [cliente, setCliente] = useState(null);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
   const [mostrarCadastro, setMostrarCadastro] = useState(false);
+  const [mostrarAdminUnificado, setMostrarAdminUnificado] = useState(false);
 
   const [formCliente, setFormCliente] = useState({
     nome: "",
@@ -125,7 +120,7 @@ function App() {
       const salvo = localStorage.getItem("quanton3d_cliente");
       if (!salvo) return null;
       const clienteSalvo = JSON.parse(salvo);
-      if (clienteSalvo?.nome) {
+      if (clienteSalvo?.nome && clienteSalvo?.telefone) {
         setCliente(clienteSalvo);
         setFormCliente({
           nome: clienteSalvo.nome || "",
@@ -144,19 +139,46 @@ function App() {
   function aceitarPrivacidade() {
     localStorage.setItem("quanton3d_privacidade_aceita", "true");
     setMostrarPrivacidade(false);
-    if (!cliente) {
+    const clienteLocal = carregarClienteLocal();
+    if (!clienteLocal) {
       setMostrarCadastro(true);
     }
+  }
+
+  function limparTexto(valor) {
+    return String(valor || "").trim();
+  }
+
+  function corrigirNomeResina(nome) {
+    const valor = limparTexto(nome);
+    return valor
+      .replace(/^FERRO\s*70\/30\b/i, "IRON 70/30")
+      .replace(/^FERRO\s*7030\b/i, "IRON 7030")
+      .replace(/^FERRO\b/i, "IRON")
+      .replace(/^Iron\b/i, "IRON")
+      .replace(/^iron\b/i, "IRON");
+  }
+
+  function chaveResina(nome) {
+    return corrigirNomeResina(nome).toUpperCase();
   }
 
   async function carregarParametros() {
     try {
       setCarregando(true);
+      setErro("");
       const resposta = await api.get("/parametros");
-      setParametros(resposta.data.parametros || []);
+      const lista = resposta.data.parametros || [];
+      const listaCorrigida = lista.map((item) => ({
+        ...item,
+        resina: corrigirNomeResina(item.resina),
+        impressora: limparTexto(item.impressora),
+        marca: limparTexto(item.marca),
+      }));
+      setParametros(listaCorrigida);
     } catch (error) {
       console.error("Erro ao carregar parâmetros:", error);
-      setErro("Erro ao carregar base técnica.");
+      setErro("Não foi possível carregar os parâmetros do backend.");
     } finally {
       setCarregando(false);
     }
@@ -164,21 +186,34 @@ function App() {
 
   const resinas = useMemo(() => {
     const unicas = new Set();
-    parametros.forEach((item) => item.resina && unicas.add(item.resina));
-    return Array.from(unicas).sort();
+    parametros.forEach((item) => {
+      if (item.resina) unicas.add(corrigirNomeResina(item.resina));
+    });
+    return Array.from(unicas).sort((a, b) => a.localeCompare(b));
   }, [parametros]);
 
   const impressoras = useMemo(() => {
     if (!resinaSelecionada) return [];
     const unicas = new Set();
     parametros.forEach((item) => {
-      if (item.resina === resinaSelecionada && item.impressora) {
+      if (chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora) {
         const label = item.marca ? `${item.marca} - ${item.impressora}` : item.impressora;
         unicas.add(label);
       }
     });
-    return Array.from(unicas).sort();
+    return Array.from(unicas).sort((a, b) => a.localeCompare(b));
   }, [parametros, resinaSelecionada]);
+
+  const totalImpressoras = useMemo(() => {
+    const unicas = new Set();
+    parametros.forEach((item) => {
+      if (item.impressora) {
+        const chave = `${item.marca || ""}-${item.impressora}`;
+        unicas.add(chave);
+      }
+    });
+    return unicas.size;
+  }, [parametros]);
 
   function selecionarResina(valor) {
     setResinaSelecionada(valor);
@@ -190,11 +225,12 @@ function App() {
     setImpressoraSelecionada(valor);
     const nomeModelo = valor.includes(" - ") ? valor.split(" - ").slice(1).join(" - ") : valor;
     const marcaModelo = valor.includes(" - ") ? valor.split(" - ")[0] : "";
-    const encontrado = parametros.find((item) => 
-      item.resina === resinaSelecionada && 
-      item.impressora === nomeModelo && 
-      (!marcaModelo || item.marca === marcaModelo)
-    );
+    const encontrado = parametros.find((item) => {
+      const mesmaResina = chaveResina(item.resina) === chaveResina(resinaSelecionada);
+      const mesmaImpressora = item.impressora === nomeModelo;
+      const mesmaMarca = !marcaModelo || item.marca === marcaModelo;
+      return mesmaResina && mesmaImpressora && mesmaMarca;
+    });
     setResultado(encontrado || null);
   }
 
@@ -202,15 +238,19 @@ function App() {
     event.preventDefault();
     setErroCadastro("");
     setSucessoCadastro("");
-    
-    if (!formCliente.nome || !formCliente.telefone || !formCliente.email) {
-      setErroCadastro("Preencha os campos obrigatórios.");
+    const payload = {
+      nome: limparTexto(formCliente.nome),
+      telefone: limparTexto(formCliente.telefone),
+      email: limparTexto(formCliente.email),
+      origem: limparTexto(formCliente.origem),
+    };
+    if (!payload.nome || !payload.telefone || !payload.email || !payload.origem) {
+      setErroCadastro("Preencha todos os campos obrigatórios.");
       return;
     }
-
     try {
       setSalvandoCliente(true);
-      const resposta = await api.post("/clientes", formCliente);
+      const resposta = await api.post("/clientes", payload);
       const clienteSalvo = resposta.data.cliente;
       if (clienteSalvo) {
         localStorage.setItem("quanton3d_cliente", JSON.stringify(clienteSalvo));
@@ -231,9 +271,6 @@ function App() {
   function executarAcao(item) {
     if (item.kind === "guide") {
       setActiveGuide(GUIDES[item.id]);
-    } else if (item.kind === "scroll") {
-      const el = document.getElementById(item.id);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
     } else if (item.kind === "modal") {
       if (item.id === "contato") setMostrarContatoMensagem(true);
       else setActiveModal(item.id);
@@ -242,211 +279,358 @@ function App() {
     }
   }
 
+  function abrirGuia(id) {
+    setActiveGuide(GUIDES[id]);
+    setActiveModal(null);
+  }
+
+  function abrirParceiroModal() {
+    setMostrarParceiroModal(true);
+    setActiveModal(null);
+  }
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function copiarParametros() {
+    if (!resultado) return;
+    const texto = `
+Resina: ${corrigirNomeResina(resultado.resina)}
+Marca: ${resultado.marca || "-"}
+Impressora: ${resultado.impressora || "-"}
+Altura de camada: ${resultado.alturaCamada || "-"}
+Camadas base: ${resultado.camadasBase || "-"}
+Exposição normal: ${resultado.exposicaoNormal || "-"}
+Exposição base: ${resultado.exposicaoBase || "-"}
+Retardo UV: ${resultado.retardoUV || "-"}
+Retardo UV base: ${resultado.retardoUVBase || "-"}
+Descanso antes da elevação: ${resultado.descansoAntesElevacao || "-"}
+Descanso após a elevação: ${resultado.descansoAposElevacao || "-"}
+Descanso após a retração: ${resultado.descansoAposRetracao || "-"}
+Potência UV: ${resultado.potenciaUV || "-"}
+`.trim();
+    navigator.clipboard.writeText(texto);
+    alert("Parâmetros copiados.");
+  }
+
   return (
     <main className="app-shell">
       {mostrarPrivacidade && (
-        <div className="modal-backdrop">
-          <section className="site-modal privacy-modal" style={{ maxWidth: "600px" }}>
-            <div className="guide-header">
-              <div><span className="section-label">Quanton3D</span><h2>Privacidade e Termos</h2></div>
-            </div>
-            <div className="modal-rich-content" style={{ padding: "20px" }}>
-              <p>Para acessar nossa base técnica e suporte, coletamos dados básicos de contato. Ao continuar, você concorda com nossa política de uso.</p>
-              <div className="privacy-text-box" style={{ background: "#f8fafc", padding: "15px", borderRadius: "10px", border: "1px solid #e2e8f0", fontSize: "0.9rem", maxHeight: "250px", overflowY: "auto", margin: "15px 0" }}>
-                <strong>1. Coleta de Dados:</strong> Solicitamos seu nome, e-mail e WhatsApp para identificar seu acesso e permitir suporte técnico personalizado.<br/><br/>
-                <strong>2. Uso das Informações:</strong> Seus dados são usados exclusivamente para melhorar sua experiência com as resinas Quanton3D e manter seu histórico de suporte.<br/><br/>
-                <strong>3. Segurança:</strong> A Quanton3D não compartilha seus dados com terceiros. Suas informações são armazenadas de forma segura.<br/><br/>
-                <strong>4. Consentimento:</strong> Ao clicar em aceitar, você autoriza o processamento desses dados para as finalidades descritas.
-              </div>
-              <button type="button" className="submit-registration" onClick={aceitarPrivacidade}>Aceitar e Continuar</button>
-            </div>
-          </section>
-        </div>
+        <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />
       )}
 
       {mostrarCadastro && !mostrarPrivacidade && (
-        <div className="modal-backdrop">
-          <section className="site-modal register-modal" style={{ maxWidth: "500px" }}>
-            <div className="guide-header">
-              <div><span className="section-label">Acesso Elite</span><h2>Identificação</h2></div>
-              <button type="button" onClick={() => setMostrarCadastro(false)}>✕</button>
-            </div>
-            <div className="modal-rich-content" style={{ padding: "20px" }}>
-              <p>Olá! Identifique-se para liberar o acesso total aos guias e parâmetros da Quanton3D.</p>
-              {erroCadastro && <div className="modal-error">{erroCadastro}</div>}
-              {sucessoCadastro && <div className="modal-success">{sucessoCadastro}</div>}
-              <form onSubmit={salvarCliente} className="form-grid" style={{ gridTemplateColumns: "1fr" }}>
-                <label><span>Seu Nome *</span><input required value={formCliente.nome} onChange={(e) => setFormCliente({...formCliente, nome: e.target.value})} placeholder="Ex.: João Silva" /></label>
-                <label><span>WhatsApp *</span><input required value={formCliente.telefone} onChange={(e) => setFormCliente({...formCliente, telefone: e.target.value})} placeholder="Ex.: 31 99999-9999" /></label>
-                <label><span>E-mail *</span><input required type="email" value={formCliente.email} onChange={(e) => setFormCliente({...formCliente, email: e.target.value})} placeholder="Ex.: joao@email.com" /></label>
-                <label><span>Como nos conheceu?</span>
-                  <select value={formCliente.origem} onChange={(e) => setFormCliente({...formCliente, origem: e.target.value})}>
-                    {ORIGENS.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </label>
-                <button type="submit" className="submit-registration" disabled={salvandoCliente}>{salvandoCliente ? "Salvando..." : "Liberar Acesso"}</button>
-              </form>
-            </div>
-          </section>
-        </div>
-      )}
-
-      {activeGuide && (
-        <div className="modal-backdrop">
-          <section className="guide-modal">
-            <div className="guide-header">
-              <div><span className="section-label">Guia Técnico</span><h2>{activeGuide.title}</h2></div>
-              <button type="button" onClick={() => setActiveGuide(null)}>Fechar</button>
-            </div>
-            <iframe src={activeGuide.file} title={activeGuide.title} className="guide-frame"></iframe>
-          </section>
-        </div>
-      )}
-
-      <ContactMessageModal aberto={mostrarContatoMensagem} aoFechar={() => setMostrarContatoMensagem(false)} cliente={cliente} />
-      <AdminUnifiedPanel aberto={mostrarAdminUnificado} aoFechar={() => setMostrarAdminUnificado(false)} />
-      <BotTicketModal aberto={mostrarBotTicket} aoFechar={() => setMostrarBotTicket(false)} cliente={cliente} resinas={resinas} impressoras={impressoras} />
-      
-      {activeModal && (
-        <SiteModal 
-          type={activeModal} 
-          cliente={cliente} 
-          onClose={() => setActiveModal(null)} 
-          abrirGuia={(id) => setActiveGuide(GUIDES[id])} 
-          abrirParceiroModal={() => setMostrarParceiroModal(true)}
-          resinas={resinas}
-          impressoras={impressoras}
+        <CadastroInicial
+          formCliente={formCliente}
+          salvandoCliente={salvandoCliente}
+          erroCadastro={erroCadastro}
+          sucessoCadastro={sucessoCadastro}
+          setFormCliente={setFormCliente}
+          salvarCliente={salvarCliente}
+          onClose={() => setMostrarCadastro(false)}
         />
       )}
 
-      <PartnerRequestModal aberto={mostrarParceiroModal} aoFechar={() => setMostrarParceiroModal(false)} cliente={cliente} />
+      {activeGuide && (
+        <GuideModal guide={activeGuide} onClose={() => setActiveGuide(null)} />
+      )}
+
+      <ContactMessageModal
+        aberto={mostrarContatoMensagem}
+        aoFechar={() => setMostrarContatoMensagem(false)}
+        cliente={cliente}
+      />
+
+      {activeModal && (
+        <SiteModal
+          type={activeModal}
+          cliente={cliente}
+          onClose={() => setActiveModal(null)}
+          abrirGuia={abrirGuia}
+          abrirParceiroModal={abrirParceiroModal}
+          setMostrarBotTicket={setActiveModal}
+        />
+      )}
+
+      <PartnerRequestModal
+        aberto={mostrarParceiroModal}
+        aoFechar={() => setMostrarParceiroModal(false)}
+        cliente={cliente}
+      />
+
+      {activeModal === "bot" && (
+        <BotTicketModal 
+          aberto={true} 
+          aoFechar={() => setActiveModal(null)} 
+          cliente={cliente} 
+        />
+      )}
+
+      {mostrarAdminUnificado && (
+        <AdminUnifiedPanel aoFechar={() => setMostrarAdminUnificado(false)} />
+      )}
 
       <header className="site-header">
         <div className="header-inner">
-          <div className="brand">
+          <div className="brand" onClick={() => {
+            const count = parseInt(localStorage.getItem("admin_clicks") || "0") + 1;
+            localStorage.setItem("admin_clicks", count);
+            if (count >= 5) {
+              setMostrarAdminUnificado(true);
+              localStorage.setItem("admin_clicks", "0");
+            }
+          }} style={{ cursor: "pointer" }}>
             <div className="brand-mark">Q3D</div>
-            <div><h1>Quanton3D</h1><p>Resinas UV de Alta Performance</p></div>
+            <div>
+              <h1 translate="no">Quanton3D</h1>
+              <p>Resinas UV SLA/DLP de Alta Performance</p>
+            </div>
           </div>
+
           <nav className="main-nav">
-            <button type="button" onClick={() => document.getElementById("produtos").scrollIntoView({behavior:"smooth"})}>Produtos</button>
-            <button type="button" onClick={() => document.getElementById("servicos").scrollIntoView({behavior:"smooth"})}>Serviços</button>
-            <button type="button" onClick={() => document.getElementById("parametros").scrollIntoView({behavior:"smooth"})}>Parâmetros</button>
-            <button type="button" onClick={() => setMostrarAdminUnificado(true)}>Admin</button>
+            <button type="button" onClick={() => scrollToSection("parametros")}>Informações Técnicas</button>
             <button type="button" onClick={() => setMostrarCadastro(true)}>Cliente</button>
           </nav>
         </div>
       </header>
 
-      {cliente && <div className="client-chip"><strong>Cliente:</strong> {cliente.nome}</div>}
+      {cliente && (
+        <div className="client-chip">
+          <strong>Cliente ativo:</strong> {cliente.nome} • {cliente.telefone}
+        </div>
+      )}
 
       <section className="hero-home">
         <div className="assistant-card">
           <div className="bot-face">🤖</div>
-          <button type="button" onClick={() => setMostrarBotTicket(true)}>Falar com o Bot 🤖</button>
+          <button type="button" onClick={() => setActiveModal("bot")}>
+            Clique para falar comigo! 🤖
+          </button>
         </div>
+
         <div className="home-actions">
-          {SERVICE_BUTTONS.map(btn => (
-            <button key={btn.label} type="button" onClick={() => executarAcao(btn)}>{btn.label}</button>
+          {SERVICE_BUTTONS.map((item) => (
+            <button key={item.label} type="button" onClick={() => executarAcao(item)}>
+              {item.label}
+            </button>
           ))}
         </div>
       </section>
 
+      <section className="experience-section">
+        <span className="section-label">Colaboração técnica</span>
+        <h2>Colabore com sua experiência de configuração</h2>
+        <p>Envie uma foto da peça e os tempos usados no Chitubox para ajudar a Quanton3D a melhorar a base técnica.</p>
+        <div className="experience-actions">
+          <button type="button" onClick={abrirParceiroModal}>🤝 Quero ser parceiro</button>
+        </div>
+      </section>
+
+      <section className="stats-grid">
+        <div className="stat-card"><span>Total de parâmetros</span><strong>{parametros.length}</strong></div>
+        <div className="stat-card"><span>Resinas cadastradas</span><strong>{resinas.length}</strong></div>
+        <div className="stat-card"><span>Impressoras/modelos</span><strong>{totalImpressoras}</strong></div>
+      </section>
+
       <section id="parametros" className="panel">
         <div className="panel-header">
-          <div><span className="section-label">Consulta</span><h2>Parâmetros Técnicos</h2></div>
-          <button type="button" onClick={carregarParametros}>Atualizar</button>
+          <div>
+            <span className="section-label">Consulta rápida</span>
+            <h2>Parâmetros de impressão</h2>
+            <p>Selecione a resina e a impressora para ver as configurações recomendadas.</p>
+          </div>
+          <div className="panel-actions">
+            {carregando && <span className="loading-pill">Carregando...</span>}
+            <button type="button" onClick={carregarParametros}>Atualizar</button>
+          </div>
         </div>
+
+        {erro && <div className="error-box">{erro}</div>}
+
         <div className="selector-grid">
-          <label className="field"><span>Resina</span>
-            <select value={resinaSelecionada} onChange={(e) => selecionarResina(e.target.value)}>
-              <option value="">Selecione</option>
-              {resinas.map(r => <option key={r} value={r}>{r}</option>)}
+          <label className="field resin-field">
+            <span>1. Selecione a Resina</span>
+            <select value={resinaSelecionada} onChange={(e) => selecionarResina(e.target.value)} disabled={carregando} className="notranslate">
+              <option value="">Selecione a resina</option>
+              {resinas.map((resina) => <option key={resina} value={resina}>{resina}</option>)}
             </select>
           </label>
-          <label className="field"><span>Impressora</span>
-            <select value={impressoraSelecionada} onChange={(e) => selecionarImpressora(e.target.value)} disabled={!resinaSelecionada}>
-              <option value="">Selecione</option>
-              {impressoras.map(i => <option key={i} value={i}>{i}</option>)}
+
+          <label className="field printer-field">
+            <span>2. Selecione a Impressora</span>
+            <select value={impressoraSelecionada} onChange={(e) => selecionarImpressora(e.target.value)} disabled={!resinaSelecionada || impressoras.length === 0} className="notranslate">
+              <option value="">{resinaSelecionada ? "Selecione a impressora" : "Escolha uma resina primeiro"}</option>
+              {impressoras.map((impressora) => <option key={impressora} value={impressora}>{impressora}</option>)}
             </select>
           </label>
         </div>
+
+        {!resultado && (
+          <div className="empty-state">
+            <h3>Selecione resina e impressora</h3>
+            <p>Os parâmetros técnicos aparecerão aqui automaticamente.</p>
+          </div>
+        )}
+
         {resultado && (
           <div className="result-card">
-            <h3>{resultado.resina} - {resultado.impressora}</h3>
+            <div className="result-header">
+              <div>
+                <span className="section-label">Resultado encontrado</span>
+                <h3>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
+              </div>
+              <button type="button" onClick={copiarParametros}>Copiar parâmetros</button>
+            </div>
+
             <div className="params-grid">
-              <div className="param-item"><span>Exposição</span><strong>{resultado.exposicaoNormal}s</strong></div>
-              <div className="param-item"><span>Camada</span><strong>{resultado.alturaCamada}mm</strong></div>
-              <div className="param-item"><span>Exp. Base</span><strong>{resultado.exposicaoBase}s</strong></div>
-              <div className="param-item"><span>Camadas Base</span><strong>{resultado.camadasBase}</strong></div>
+              <ParamItem label="Altura Camada" value={resultado.alturaCamada} />
+              <ParamItem label="Exposição Normal" value={resultado.exposicaoNormal} />
+              <ParamItem label="Exposição Base" value={resultado.exposicaoBase} />
+              <ParamItem label="Camadas Base" value={resultado.camadasBase} />
+              <ParamItem label="Retardo UV" value={resultado.retardoUV} />
+              <ParamItem label="Retardo UV Base" value={resultado.retardoUVBase} />
+              <ParamItem label="Descanso Antes Elev." value={resultado.descansoAntesElevacao} />
+              <ParamItem label="Descanso Após Elev." value={resultado.descansoAposElevacao} />
+              <ParamItem label="Descanso Após Retrac." value={resultado.descansoAposRetracao} />
+              <ParamItem label="Potência UV" value={resultado.potenciaUV} />
+              <ParamItem label="Lift Distance" value={resultado.liftDistance} />
+              <ParamItem label="Lift Speed" value={resultado.liftSpeed} />
+              <ParamItem label="Retract Speed" value={resultado.retractSpeed} />
             </div>
           </div>
         )}
       </section>
-
-      <section id="calculadoras"><Ferramentas /></section>
-
-      <section id="servicos" className="content-section">
-        <h2>Suporte e Serviços</h2>
-        <div className="cards-grid">
-          <div className="info-card clickable-card" onClick={() => setActiveModal("formulacao")}><h3>Formulações</h3><p>Cores e propriedades sob medida.</p></div>
-          <div className="info-card clickable-card" onClick={() => setActiveGuide(GUIDES.nivelamento)}><h3>Treinamento</h3><p>Guias técnicos de engenharia.</p></div>
-          <div className="info-card clickable-card" onClick={() => setMostrarBotTicket(true)}><h3>Diagnóstico</h3><p>Bot inteligente para falhas.</p></div>
-        </div>
-      </section>
-
-      <footer className="site-footer">
-        <p>© 2025 Quanton3D • Elite Technical Support</p>
-        <div className="social-footer">
-          {SOCIAL_LINKS.map(link => <a key={link.label} href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}
-        </div>
-      </footer>
     </main>
   );
 }
 
-function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, resinas, impressoras }) {
-  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada" };
+function PrivacidadeModal({ aceitarPrivacidade }) {
+  const [confirmouAceite, setConfirmouAceite] = useState(false);
   return (
     <div className="modal-backdrop">
-      <section className="site-modal">
-        <div className="guide-header">
-          <h2>{titles[type] || "Informações"}</h2>
-          <button type="button" onClick={onClose}>Fechar</button>
+      <section className="registration-modal privacy-modal">
+        <div className="modal-header">
+          <div className="modal-icon">🔒</div>
+          <div><h2>Privacidade e Termos</h2><p>Como cuidamos dos seus dados na Quanton3D.</p></div>
         </div>
-        <div className="modal-rich-content" style={{ padding: "20px" }}>
-          {type === "sobre" && (
-            <div className="modal-action-grid">
-              <button type="button" onClick={() => abrirGuia("parceiros")}>Ver Parceiros</button>
-              <button type="button" onClick={() => abrirGuia("diagnostico")}>Guia de Diagnóstico</button>
-              <button type="button" onClick={abrirParceiroModal}>Quero ser Parceiro</button>
-            </div>
-          )}
-          {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
+        <div className="privacy-content">
+          <h3>1. Coleta de Dados</h3><p>Solicitamos nome, e-mail e WhatsApp para suporte técnico personalizado.</p>
+          <h3>2. Uso das Informações</h3><p>Dados usados apenas para melhorar sua experiência e histórico de suporte.</p>
+          <h3>3. Segurança</h3><p>Não compartilhamos dados com terceiros. Armazenamento seguro.</p>
         </div>
+        <label className="privacy-accept-row">
+          <input type="checkbox" checked={confirmouAceite} onChange={(e) => setConfirmouAceite(e.target.checked)} />
+          <span>Li e aceito o Termo de Privacidade.</span>
+        </label>
+        <button type="button" className="submit-registration" disabled={!confirmouAceite} onClick={aceitarPrivacidade}>Aceitar e continuar</button>
       </section>
     </div>
   );
 }
 
-function FormulacaoContent({ cliente }) {
-  const [form, setForm] = useState({ nome: cliente?.nome || "", telefone: cliente?.telefone || "", aplicacao: "" });
-  const [sucesso, setSucesso] = useState("");
-  const enviar = async (e) => {
-    e.preventDefault();
-    try {
-      await api.post("/formulacoes", form);
-      setSucesso("Pedido enviado com sucesso!");
-      setTimeout(() => setSucesso(""), 3000);
-    } catch { alert("Erro ao enviar."); }
-  };
+function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, sucessoCadastro, setFormCliente, salvarCliente, onClose }) {
   return (
-    <form onSubmit={enviar} className="form-grid" style={{ gridTemplateColumns: "1fr" }}>
-      {sucesso && <div className="modal-success">{sucesso}</div>}
-      <label><span>Nome</span><input value={form.nome} onChange={e => setForm({...form, nome: e.target.value})} /></label>
-      <label><span>WhatsApp</span><input value={form.telefone} onChange={e => setForm({...form, telefone: e.target.value})} /></label>
-      <label><span>Aplicação</span><textarea value={form.aplicacao} onChange={e => setForm({...form, aplicacao: e.target.value})} /></label>
-      <button type="submit" className="submit-registration">Enviar Pedido</button>
-    </form>
+    <div className="modal-backdrop">
+      <form className="registration-modal" onSubmit={salvarCliente}>
+        <div className="modal-header">
+          <div className="modal-icon">👥</div>
+          <div><h2>Seja bem-vindo!</h2><p>Identifique-se para liberar o suporte técnico.</p></div>
+          <button type="button" onClick={onClose} style={{ background: "none", border: "none", color: "white", cursor: "pointer" }}>✕</button>
+        </div>
+        {erroCadastro && <div className="modal-error">{erroCadastro}</div>}
+        {sucessoCadastro && <div className="modal-success">{sucessoCadastro}</div>}
+        <div className="form-grid">
+          <label><span>Seu Nome *</span><input required value={formCliente.nome} onChange={(e) => setFormCliente({...formCliente, nome: e.target.value})} placeholder="Digite seu nome" /></label>
+          <label><span>WhatsApp *</span><input required value={formCliente.telefone} onChange={(e) => setFormCliente({...formCliente, telefone: e.target.value})} placeholder="DDD + número" /></label>
+          <label><span>E-mail *</span><input required type="email" value={formCliente.email} onChange={(e) => setFormCliente({...formCliente, email: e.target.value})} placeholder="seu@email.com" /></label>
+          <label><span>Como nos conheceu? *</span>
+            <select value={formCliente.origem} onChange={(e) => setFormCliente({...formCliente, origem: e.target.value})}>
+              {ORIGENS.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </label>
+        </div>
+        <button className="submit-registration" type="submit" disabled={salvandoCliente}>{salvandoCliente ? "Salvando..." : "Entrar no Suporte Técnico"}</button>
+      </form>
+    </div>
+  );
+}
+
+function GuideModal({ guide, onClose }) {
+  return (
+    <div className="modal-backdrop">
+      <section className="guide-modal">
+        <div className="guide-header">
+          <div><span className="section-label">Guia técnico</span><h2>{guide.title}</h2></div>
+          <button type="button" onClick={onClose}>Fechar</button>
+        </div>
+        <iframe title={guide.title} src={guide.file} className="guide-frame" />
+      </section>
+    </div>
+  );
+}
+
+function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
+  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada" };
+  return (
+    <div className="modal-backdrop">
+      <section className="site-modal">
+        <div className="guide-header">
+          <div><span className="section-label">Quanton3D</span><h2>{titles[type] || "Informações"}</h2></div>
+          <button type="button" onClick={onClose}>Fechar</button>
+        </div>
+        {type === "contato" && <ContatoContent cliente={cliente} />}
+        {type === "sobre" && <SobreContent abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />}
+        {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
+      </section>
+    </div>
+  );
+}
+
+function ContatoContent({ cliente }) {
+  return (
+    <div className="modal-rich-content">
+      <p>Olá {cliente?.nome || "cliente"}, escolha uma forma de atendimento.</p>
+      <div className="modal-action-grid">
+        <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="modal-btn">Chamar no WhatsApp</a>
+        <a href="mailto:atendimento@quanton3d.com.br" className="modal-btn">Enviar e-mail</a>
+      </div>
+    </div>
+  );
+}
+
+function SobreContent({ abrirGuia, abrirParceiroModal }) {
+  return (
+    <div className="modal-rich-content">
+      <p>A Quanton3D é especializada em resinas UV SLA/DLP/LCD e suporte técnico para impressão 3D.</p>
+      <div className="modal-action-grid">
+        <button type="button" onClick={() => abrirGuia("parceiros")}>Ver parceiros e cursos</button>
+        <button type="button" onClick={() => abrirGuia("diagnostico")}>Guia de diagnóstico</button>
+        <button type="button" onClick={abrirParceiroModal}>Quero ser parceiro</button>
+      </div>
+    </div>
+  );
+}
+
+function FormulacaoContent({ cliente }) {
+  return (
+    <div className="modal-rich-content">
+      <p>Pedido de formulação personalizada para cliente: <strong>{cliente?.nome || "não identificado"}</strong>.</p>
+      <p>Envie sua necessidade técnica e entraremos em contato.</p>
+      <div className="modal-action-grid">
+        <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="modal-btn">Falar com especialista</a>
+      </div>
+    </div>
+  );
+}
+
+function ParamItem({ label, value }) {
+  return (
+    <div className="param-item">
+      <span>{label}</span>
+      <strong translate="no">{value || "-"}</strong>
+    </div>
   );
 }
 

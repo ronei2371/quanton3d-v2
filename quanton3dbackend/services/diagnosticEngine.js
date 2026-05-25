@@ -572,9 +572,28 @@ function scoreProblem(problem, inputText) {
   return score;
 }
 
+function ruleBasedAnswer(message = "") {
+  const t = String(message).toLowerCase();
+  if (/pneu|pneus|borracha/.test(t))
+    return "Para pneu de carrinho, a melhor escolha é a Resina FLEXFORM, porque a peça precisa de flexibilidade e deformação controlada. Não recomendo IRON como primeira opção para pneu; IRON é para resistência mecânica/impacto em peças mais rígidas.";
+  if (/personagem|miniatura|action figure|boneco/.test(t) && /resist|mecan/.test(t))
+    return "Para personagens com resistência mecânica, recomendo a Resina IRON. Ela é mais indicada para peças rígidas que precisam aguentar manuseio, impacto e detalhes estruturais. FLEXFORM só faria sentido em partes flexíveis.";
+  if (/suporte|suportes/.test(t) && /(duro|difícil|dificil|tirar|remover|grudado|quebra)/.test(t))
+    return "Suporte muito duro de tirar normalmente vem de exposição normal alta, ponta de suporte grossa ou cura final forte demais. Reduza a exposição normal em 0,2s a 0,5s, use suporte light/medium, diminua a ponta do suporte e remova antes da cura final.";
+  if (/^elegoo\s*$/i.test(String(message).trim()))
+    return "Qual modelo exato da Elegoo? Exemplo: Mars 3, Saturn 2, Saturn 3 Ultra. Sem o modelo eu não devo assumir parâmetros.";
+  return null;
+}
+
 function detectProblem(problemInput, descriptionInput) {
   const catalog = flattenProblemCatalog();
   const combined = `${problemInput || ""} ${descriptionInput || ""}`.trim();
+
+  const legacyAnswer = ruleBasedAnswer(combined);
+  if (legacyAnswer) {
+    const item = catalog.find((i) => i.id === "outro_problema");
+    return { ...item, legacyAnswer, score: 999 };
+  }
 
   let best = null;
   for (const item of catalog) {
@@ -831,6 +850,9 @@ function buildFinalAnswer({
   usedFields,
   relevantInputs,
 }) {
+  if (detectedProblem?.legacyAnswer) {
+    return detectedProblem.legacyAnswer;
+  }
   const parts = [];
   parts.push(`Diagnóstico provável: ${detectedProblem?.label || "Problema não classificado"} (${confidence}% de confiança).`);
 
