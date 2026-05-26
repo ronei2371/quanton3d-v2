@@ -1234,19 +1234,17 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
 function FormulacaoContent({ cliente }) {
   return (
     <div className="modal-rich-content">
-      <p>
-        Pedido de formulação personalizada para cliente:{" "}
-        <strong>{cliente?.nome || "não identificado"}</strong>.
-      </p>
-
-      <p>
-        Esta tela será ligada ao MongoDB na próxima fase para salvar telefone,
-        e-mail, cor, aplicação, dureza, flexibilidade, resistência e observações.
-      </p>
-
-      <div className="notice-box">
-        Próximo passo: formulário real de formulação + painel admin.
-      </div>
+      <p>Solicite uma resina com propriedades específicas para sua aplicação industrial, odontológica ou artística.</p>
+      <form className="modal-form-layout" style={{marginTop: "20px"}}>
+        <div className="form-grid">
+          <label><span>Aplicação</span><input placeholder="Ex.: Guia Cirúrgico, Pneu RC" /></label>
+          <label><span>Cor desejada</span><input placeholder="Ex.: Transparente, Preto Fosco" /></label>
+          <label><span>Dureza / Flexibilidade</span><input placeholder="Ex.: Shore 80A, Rígida" /></label>
+          <label><span>Resistência Térmica</span><input placeholder="Ex.: Até 100°C" /></label>
+          <label className="partner-grid-full"><span>Observações Adicionais</span><textarea rows="3" placeholder="Descreva detalhadamente sua necessidade técnica." /></label>
+        </div>
+        <button type="button" className="submit-registration" style={{marginTop: "15px"}}>Solicitar Estudo de Viabilidade</button>
+      </form>
     </div>
   );
 }
@@ -1275,13 +1273,19 @@ function QualidadeContent({ abrirGuia }) {
 function GaleriaContent() {
   return (
     <div className="modal-rich-content">
-      <p>
-        A galeria será integrada na próxima fase para receber imagem, resina,
-        impressora, parâmetros e dados do cliente.
-      </p>
-
-      <div className="notice-box">
-        O botão já está conectado visualmente. Falta ligar upload + MongoDB.
+      <p>Compartilhe fotos de suas peças impressas com resinas Quanton3D para ajudar outros usuários e divulgar seu trabalho.</p>
+      <form className="modal-form-layout" style={{marginTop: "20px"}}>
+        <div className="form-grid">
+          <label><span>Resina usada</span><input placeholder="Ex.: Iron Cinza" /></label>
+          <label><span>Impressora</span><input placeholder="Ex.: Anycubic Mono" /></label>
+          <label className="partner-grid-full"><span>Fotos da peça</span><input type="file" multiple accept="image/*" /></label>
+          <label className="partner-grid-full"><span>Observações / Parâmetros</span><textarea rows="3" placeholder="Conte-nos os parâmetros usados e o resultado." /></label>
+        </div>
+        <button type="button" className="submit-registration" style={{marginTop: "15px"}}>Enviar para Galeria</button>
+      </form>
+    </div>
+  );
+}ongoDB.
       </div>
     </div>
   );

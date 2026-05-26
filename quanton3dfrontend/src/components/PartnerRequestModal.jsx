@@ -81,14 +81,14 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
     setErro("");
     setSucesso("");
 
-    if (
-      !String(form.nome || "").trim() ||
-      !String(form.telefone || "").trim() ||
-      !String(form.email || "").trim() ||
-      !String(form.titulo || "").trim() ||
-      !String(form.descricao || "").trim()
-    ) {
-      setErro("Preencha nome, telefone, e-mail, título e descrição.");
+    const nomeLimpo = String(form.nome || "").trim();
+    const telefoneLimpo = String(form.telefone || "").trim();
+    const emailLimpo = String(form.email || "").trim();
+    const tituloLimpo = String(form.titulo || "").trim();
+    const descricaoLimpo = String(form.descricao || "").trim();
+
+    if (!nomeLimpo || !telefoneLimpo || !emailLimpo || !tituloLimpo || !descricaoLimpo) {
+      setErro("Preencha todos os campos obrigatórios (*)");
       return;
     }
 
