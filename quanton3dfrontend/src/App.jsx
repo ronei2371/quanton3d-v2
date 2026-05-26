@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "./api";
 import "./App.css";
 import ContactMessageModal from "./components/ContactMessageModal";
@@ -406,12 +406,12 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         </div>
         {type === "contato" && <ContatoContent cliente={cliente} />}
         {type === "sobre" && <SobreContent abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />}
-        {type === "formulacao" && <FormulacaoContent />}
-        {type === "galeria" && <GaleriaContent />}
+        {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
+        {type === "galeria" && <GaleriaContent cliente={cliente} />}
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
-        {type === "bot" && <BotContent />}
+        {type === "bot" && <BotContent cliente={cliente} />}
       </section>
     </div>
   );
@@ -442,34 +442,76 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
   );
 }
 
-function FormulacaoContent() {
+function FormulacaoContent({ cliente }) {
+  const [form, setForm] = useState({ aplicacao: "", cor: "", observacao: "" });
+  const [enviando, setEnviando] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
+
+  async function enviar() {
+    try {
+      setEnviando(true);
+      await api.post("/formulacoes", { ...form, clienteId: cliente?._id });
+      setSucesso(true);
+    } catch (err) {
+      alert("Erro ao enviar pedido.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  if (sucesso) return <div className="modal-success">Pedido enviado com sucesso!</div>;
+
   return (
     <div className="modal-rich-content">
       <p>Solicite uma resina com propriedades específicas.</p>
-      <form className="modal-form-layout" style={{marginTop: "20px"}}>
+      <div className="modal-form-layout" style={{marginTop: "20px"}}>
         <div className="form-grid">
-          <label><span>Aplicação</span><input placeholder="Ex.: Guia Cirúrgico" /></label>
-          <label><span>Cor</span><input placeholder="Ex.: Transparente" /></label>
-          <label className="partner-grid-full"><textarea rows="3" placeholder="Descreva sua necessidade." /></label>
+          <label><span>Aplicação</span><input value={form.aplicacao} onChange={(e) => setForm({...form, aplicacao: e.target.value})} placeholder="Ex.: Guia Cirúrgico" /></label>
+          <label><span>Cor</span><input value={form.cor} onChange={(e) => setForm({...form, cor: e.target.value})} placeholder="Ex.: Transparente" /></label>
+          <label className="partner-grid-full"><textarea rows="3" value={form.observacao} onChange={(e) => setForm({...form, observacao: e.target.value})} placeholder="Descreva sua necessidade." /></label>
         </div>
-        <button type="button" className="submit-registration">Solicitar Estudo</button>
-      </form>
+        <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Solicitar Estudo"}</button>
+      </div>
     </div>
   );
 }
 
-function GaleriaContent() {
+function GaleriaContent({ cliente }) {
+  const [form, setForm] = useState({ resina: "", observacao: "" });
+  const [fotos, setFotos] = useState([]);
+  const [enviando, setEnviando] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
+
+  async function enviar() {
+    try {
+      setEnviando(true);
+      const formData = new FormData();
+      formData.append("resina", form.resina);
+      formData.append("observacao", form.observacao);
+      formData.append("clienteId", cliente?._id);
+      fotos.forEach(f => formData.append("fotos", f));
+      await api.post("/galeria", formData);
+      setSucesso(true);
+    } catch (err) {
+      alert("Erro ao enviar para galeria.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  if (sucesso) return <div className="modal-success">Fotos enviadas com sucesso!</div>;
+
   return (
     <div className="modal-rich-content">
       <p>Compartilhe fotos de suas peças impressas.</p>
-      <form className="modal-form-layout" style={{marginTop: "20px"}}>
+      <div className="modal-form-layout" style={{marginTop: "20px"}}>
         <div className="form-grid">
-          <label><span>Resina</span><input placeholder="Ex.: Iron Cinza" /></label>
-          <label className="partner-grid-full"><input type="file" multiple accept="image/*" /></label>
-          <label className="partner-grid-full"><textarea rows="3" placeholder="Parâmetros usados." /></label>
+          <label><span>Resina</span><input value={form.resina} onChange={(e) => setForm({...form, resina: e.target.value})} placeholder="Ex.: Iron Cinza" /></label>
+          <label className="partner-grid-full"><input type="file" multiple accept="image/*" onChange={(e) => setFotos(Array.from(e.target.files))} /></label>
+          <label className="partner-grid-full"><textarea rows="3" value={form.observacao} onChange={(e) => setForm({...form, observacao: e.target.value})} placeholder="Parâmetros usados." /></label>
         </div>
-        <button type="button" className="submit-registration">Enviar para Galeria</button>
-      </form>
+        <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Enviar para Galeria"}</button>
+      </div>
     </div>
   );
 }
@@ -485,10 +527,44 @@ function QualidadeContent({ abrirGuia }) {
   );
 }
 
-function BotContent() {
+function BotContent({ cliente }) {
+  const [mensagens, setMensagens] = useState([{ text: `Olá ${cliente?.nome || ""}, sou o assistente técnico da Quanton3D. Como posso te ajudar hoje?`, isBot: true }]);
+  const [input, setInput] = useState("");
+  const [pensando, setPensando] = useState(false);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [mensagens]);
+
+  async function enviar() {
+    if (!input.trim() || pensando) return;
+    const userMsg = input;
+    setInput("");
+    setMensagens(prev => [...prev, { text: userMsg, isBot: false }]);
+    setPensando(true);
+    try {
+      const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
+      setMensagens(prev => [...prev, { text: res.data.data.reply, isBot: true }]);
+    } catch (err) {
+      setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
+    } finally {
+      setPensando(false);
+    }
+  }
+
   return (
-    <div className="modal-rich-content">
-      <p>O bot está sendo religado com novas regras de inteligência.</p>
+    <div className="bot-chat-container">
+      <div className="chat-messages" ref={scrollRef}>
+        {mensagens.map((m, i) => (
+          <div key={i} className={`message-bubble ${m.isBot ? "bot" : "user"}`}>{m.text}</div>
+        ))}
+        {pensando && <div className="message-bubble bot thinking">Analisando base técnica...</div>}
+      </div>
+      <div className="chat-input-row">
+        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." />
+        <button onClick={enviar} disabled={pensando}>Enviar</button>
+      </div>
     </div>
   );
 }
