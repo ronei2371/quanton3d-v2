@@ -490,7 +490,7 @@ function GaleriaContent({ cliente }) {
       formData.append("observacao", form.observacao);
       formData.append("clienteId", cliente?._id);
       fotos.forEach(f => formData.append("fotos", f));
-      await api.post("/galeria", formData);
+      await api.post("/gallery", formData);
       setSucesso(true);
     } catch (err) {
       alert("Erro ao enviar para galeria.");
