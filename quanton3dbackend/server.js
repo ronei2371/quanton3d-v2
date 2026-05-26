@@ -1,7 +1,12 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import contactMessagesRoutes from "./routes/contactMessages.js";
 import clientesRoutes from "./routes/clientes.js";
 import partnerRequestsRoutes from "./routes/partnerRequests.js";
@@ -44,7 +49,11 @@ app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 app.use("/uploads", express.static("uploads"));
 app.use("/api/bot-tickets", botTicketsRoutes);
 
-app.get("/", (_req, res) => {
+// Servir arquivos estáticos do Frontend
+const frontendBuildPath = path.join(__dirname, "../quanton3dfrontend/dist");
+app.use(express.static(frontendBuildPath));
+
+app.get("/api-status", (_req, res) => {
   res.json({
     success: true,
     message: "Quanton3D Final Backend online",
@@ -67,6 +76,12 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact-messages", contactMessagesRoutes);
+
+// Rota coringa para o Frontend (Single Page Application)
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api/")) return next();
+  res.sendFile(path.join(frontendBuildPath, "index.html"));
+});
 
 app.use((err, _req, res, _next) => {
   console.error("[SERVER]", err);
