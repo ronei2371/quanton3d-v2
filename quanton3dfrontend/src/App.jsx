@@ -443,7 +443,7 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
 }
 
 function FormulacaoContent({ cliente }) {
-  const [form, setForm] = useState({ aplicacao: "", cor: "", observacao: "" });
+  const [form, setForm] = useState({ caracteristica: "", cor: "", detalhes: "" });
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
 
@@ -466,9 +466,9 @@ function FormulacaoContent({ cliente }) {
       <p>Solicite uma resina com propriedades específicas.</p>
       <div className="modal-form-layout" style={{marginTop: "20px"}}>
         <div className="form-grid">
-          <label><span>Aplicação</span><input value={form.aplicacao} onChange={(e) => setForm({...form, aplicacao: e.target.value})} placeholder="Ex.: Guia Cirúrgico" /></label>
+          <label><span>Aplicação</span><input value={form.caracteristica} onChange={(e) => setForm({...form, caracteristica: e.target.value})} placeholder="Ex.: Guia Cirúrgico" /></label>
           <label><span>Cor</span><input value={form.cor} onChange={(e) => setForm({...form, cor: e.target.value})} placeholder="Ex.: Transparente" /></label>
-          <label className="partner-grid-full"><textarea rows="3" value={form.observacao} onChange={(e) => setForm({...form, observacao: e.target.value})} placeholder="Descreva sua necessidade." /></label>
+          <label className="partner-grid-full"><textarea rows="3" value={form.detalhes} onChange={(e) => setForm({...form, detalhes: e.target.value})} placeholder="Descreva sua necessidade." /></label>
         </div>
         <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Solicitar Estudo"}</button>
       </div>
