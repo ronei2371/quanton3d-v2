@@ -115,6 +115,8 @@ const PartnerRequestSchema = new mongoose.Schema(
   }
 );
 
+PartnerRequestSchema.index({ status: 1, createdAt: -1 });
+
 const PartnerRequest =
   mongoose.models.PartnerRequest ||
   mongoose.model("PartnerRequest", PartnerRequestSchema);
