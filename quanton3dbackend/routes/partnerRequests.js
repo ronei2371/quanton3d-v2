@@ -76,19 +76,24 @@ router.post("/", (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const status = limparTexto(req.query.status);
+    const limite = Math.min(
+      300,
+      Math.max(1, Number.parseInt(req.query.limit, 10) || 100)
+    );
     const filtro = {};
 
     if (status && ["pendente", "aprovado", "rejeitado"].includes(status)) {
       filtro.status = status;
     }
 
-    const solicitacoes = await PartnerRequest.find(filtro).sort({
-      createdAt: -1,
-    });
+    const [total, solicitacoes] = await Promise.all([
+      PartnerRequest.countDocuments(filtro),
+      PartnerRequest.find(filtro).sort({ createdAt: -1 }).limit(limite).lean(),
+    ]);
 
     return res.json({
       success: true,
-      total: solicitacoes.length,
+      total,
       partnerRequests: solicitacoes,
     });
   } catch (error) {
@@ -103,11 +108,14 @@ router.get("/", async (req, res) => {
 
 router.get("/public/aprovados", async (req, res) => {
   try {
-    const parceiros = await PartnerRequest.find({
-      status: "aprovado",
-    }).sort({
-      updatedAt: -1,
-    });
+    const limite = Math.min(
+      300,
+      Math.max(1, Number.parseInt(req.query.limit, 10) || 100)
+    );
+    const parceiros = await PartnerRequest.find({ status: "aprovado" })
+      .sort({ updatedAt: -1 })
+      .limit(limite)
+      .lean();
 
     return res.json({
       success: true,
