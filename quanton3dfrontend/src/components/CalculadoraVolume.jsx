@@ -91,7 +91,9 @@ export default function CalculadoraVolume() {
         setCarregando(true);
         setErro("");
         const resposta = await api.get("/parametros");
-        const lista = Array.isArray(resposta.data?.parametros)
+        const lista = Array.isArray(resposta.data?.data)
+          ? resposta.data.data
+          : Array.isArray(resposta.data?.parametros)
           ? resposta.data.parametros
           : Array.isArray(resposta.data)
           ? resposta.data
