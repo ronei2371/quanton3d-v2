@@ -50,6 +50,26 @@ function getPrivacidadeAceita() {
   return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
 }
 
+ codex/fix-integration-errors-and-improve-performance-ptith1
+function limparTexto(valor) {
+  return String(valor || "").trim();
+}
+
+function corrigirNomeResina(nome) {
+  return limparTexto(nome)
+    .replace(/^FERRO\s*70\/30\b/i, "IRON 70/30")
+    .replace(/^FERRO\s*7030\b/i, "IRON 7030")
+    .replace(/^FERRO\b/i, "IRON")
+    .replace(/^Iron\b/i, "IRON")
+    .replace(/^iron\b/i, "IRON");
+}
+
+function chaveResina(nome) {
+  return corrigirNomeResina(nome).toUpperCase();
+}
+
+
+ main
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
   fatiadores: { title: "Configuração de Fatiadores", file: "/guias/guia-configuracao-fatiadores.html" },
@@ -83,15 +103,26 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
+ codex/fix-integration-errors-and-improve-performance-ptith1
+
   useEffect(() => {
     carregarParametros();
   }, []);
+ main
 
   async function carregarParametros() {
     try {
       setCarregando(true);
+      setErro("");
       const res = await api.get("/parametros");
-      setParametros(res.data.data || []);
+      const lista = res.data?.data || res.data?.parametros || [];
+      const listaCorrigida = lista.map((item) => ({
+        ...item,
+        resina: corrigirNomeResina(item.resina),
+        impressora: limparTexto(item.impressora),
+        marca: limparTexto(item.marca),
+      }));
+      setParametros(listaCorrigida);
     } catch (err) {
       console.error("Erro ao carregar parâmetros:", err);
       setErro("Não foi possível carregar os parâmetros técnicos.");
@@ -99,14 +130,30 @@ function App() {
       setCarregando(false);
     }
   }
+  useEffect(() => {
+    const carregamentoInicial = setTimeout(carregarParametros, 0);
+    return () => clearTimeout(carregamentoInicial);
+  }, []);
 
-  const resinas = [...new Set(parametros.map((p) => p.resina))].sort();
-  const impressoras = parametros
-    .filter((p) => p.resina === resinaSelecionada)
-    .map((p) => p.impressora)
-    .sort();
 
-  const totalImpressoras = [...new Set(parametros.map((p) => p.impressora))].length;
+  const resinas = Array.from(
+    new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))
+  ).sort((a, b) => a.localeCompare(b));
+
+  const impressoras = Array.from(
+    new Set(
+      parametros
+        .filter((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora)
+        .map((item) => (item.marca ? `${item.marca} - ${item.impressora}` : item.impressora))
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
+  const totalImpressoras = new Set(
+    parametros
+      .filter((item) => item.impressora)
+      .map((item) => `${item.marca || ""}-${item.impressora}`)
+  ).size;
+
 
   function selecionarResina(nome) {
     setResinaSelecionada(nome);
@@ -114,15 +161,17 @@ function App() {
     setResultado(null);
   }
 
-  function selecionarImpressora(nome) {
-    setImpressoraSelecionada(nome);
-    const p = parametros.find((item) => item.resina === resinaSelecionada && item.impressora === nome);
+  function selecionarImpressora(valor) {
+    setImpressoraSelecionada(valor);
+    const nomeModelo = valor.includes(" - ") ? valor.split(" - ").slice(1).join(" - ") : valor;
+    const marcaModelo = valor.includes(" - ") ? valor.split(" - ")[0] : "";
+    const p = parametros.find((item) => {
+      const mesmaResina = chaveResina(item.resina) === chaveResina(resinaSelecionada);
+      const mesmaImpressora = item.impressora === nomeModelo;
+      const mesmaMarca = !marcaModelo || item.marca === marcaModelo;
+      return mesmaResina && mesmaImpressora && mesmaMarca;
+    });
     setResultado(p || null);
-  }
-
-  function corrigirNomeResina(nome) {
-    if (!nome) return "";
-    return nome.toUpperCase();
   }
 
   function aceitarPrivacidade() {
@@ -199,7 +248,25 @@ function App() {
 
   function copiarParametros() {
     if (!resultado) return;
-    const texto = `Parâmetros Quanton3D\nResina: ${corrigirNomeResina(resultado.resina)}\nImpressora: ${resultado.impressora}\nExposição: ${resultado.exposicaoNormal}s`;
+    const texto = `
+Parâmetros Quanton3D
+Cliente: ${cliente?.nome || "-"}
+WhatsApp: ${cliente?.telefone || "-"}
+E-mail: ${cliente?.email || "-"}
+Resina: ${corrigirNomeResina(resultado.resina)}
+Marca: ${resultado.marca || "-"}
+Impressora: ${resultado.impressora || "-"}
+Altura de camada: ${resultado.alturaCamada || "-"}
+Camadas base: ${resultado.camadasBase || "-"}
+Exposição normal: ${resultado.exposicaoNormal || "-"}
+Exposição base: ${resultado.exposicaoBase || "-"}
+Retardo UV: ${resultado.retardoUV || "-"}
+Retardo UV base: ${resultado.retardoUVBase || "-"}
+Descanso antes da elevação: ${resultado.descansoAntesElevacao || "-"}
+Descanso após a elevação: ${resultado.descansoAposElevacao || "-"}
+Descanso após a retração: ${resultado.descansoAposRetracao || "-"}
+Potência UV: ${resultado.potenciaUV || "-"}
+    `.trim();
     navigator.clipboard.writeText(texto);
     alert("Parâmetros copiados.");
   }
@@ -341,18 +408,25 @@ function App() {
           </label>
           <label className="field printer-field">
             <span>2. Selecione a Impressora</span>
-            <select value={impressoraSelecionada} onChange={(e) => selecionarImpressora(e.target.value)} disabled={!resinaSelecionada}>
+            <select value={impressoraSelecionada} onChange={(e) => selecionarImpressora(e.target.value)} disabled={!resinaSelecionada || impressoras.length === 0}>
               <option value="">{resinaSelecionada ? "Selecione a impressora" : "Escolha uma resina primeiro"}</option>
               {impressoras.map((i) => <option key={i} value={i}>{i}</option>)}
             </select>
           </label>
         </div>
 
+        {!resultado && (
+          <div className="empty-state">
+            <h3>Selecione resina e impressora</h3>
+            <p>Os parâmetros técnicos aparecerão aqui automaticamente.</p>
+          </div>
+        )}
+
         {resultado && (
           <div className="result-card">
             <div className="result-header">
-              <h3>{corrigirNomeResina(resultado.resina)} + {resultado.impressora}</h3>
-              <button type="button" onClick={copiarParametros}>Copiar</button>
+              <h3>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
+              <button type="button" onClick={copiarParametros}>Copiar parâmetros</button>
             </div>
             <div className="params-grid">
               <ParamItem label="Altura de Camada" value={resultado.alturaCamada} />
