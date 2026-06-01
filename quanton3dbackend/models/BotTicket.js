@@ -114,6 +114,8 @@ const BotTicketSchema = new mongoose.Schema(
   }
 );
 
+BotTicketSchema.index({ status: 1, createdAt: -1 });
+
 const BotTicket =
   mongoose.models.BotTicket ||
   mongoose.model("BotTicket", BotTicketSchema);
