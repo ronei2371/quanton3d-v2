@@ -53,6 +53,10 @@ function getPrivacidadeAceita() {
   return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
 }
 
+ codex/fix-integration-errors-and-improve-performance-634k08
+
+ codex/fix-integration-errors-and-improve-performance-ptith1
+ main
 function limparTexto(valor) {
   return String(valor || "").trim();
 }
@@ -70,6 +74,11 @@ function chaveResina(nome) {
   return corrigirNomeResina(nome).toUpperCase();
 }
 
+codex/fix-integration-errors-and-improve-performance-634k08
+
+
+ main
+ main
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
   fatiadores: { title: "Configuração de Fatiadores", file: "/guias/guia-configuracao-fatiadores.html" },
@@ -103,6 +112,15 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
+ codex/fix-integration-errors-and-improve-performance-634k08
+
+ codex/fix-integration-errors-and-improve-performance-ptith1
+
+  useEffect(() => {
+    carregarParametros();
+  }, []);
+ main
+ main
 
   async function carregarParametros() {
     try {
