@@ -30,6 +30,9 @@ const SERVICE_BUTTONS = [
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
   { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao" },
+  { label: "GABARITO QUANTON3D", kind: "guide", id: "calibracaoQuanton3D" },
+  { label: "DIAGNÓSTICO DE FALHAS", kind: "guide", id: "diagnostico" },
+  { label: "SUPORTES E POSICIONAMENTO", kind: "guide", id: "suportes" },
   { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao" },
   { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
   { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
@@ -50,7 +53,10 @@ function getPrivacidadeAceita() {
   return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
 }
 
+ codex/fix-integration-errors-and-improve-performance-634k08
+
  codex/fix-integration-errors-and-improve-performance-ptith1
+ main
 function limparTexto(valor) {
   return String(valor || "").trim();
 }
@@ -68,7 +74,10 @@ function chaveResina(nome) {
   return corrigirNomeResina(nome).toUpperCase();
 }
 
+codex/fix-integration-errors-and-improve-performance-634k08
 
+
+ main
  main
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
@@ -103,11 +112,14 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
+ codex/fix-integration-errors-and-improve-performance-634k08
+
  codex/fix-integration-errors-and-improve-performance-ptith1
 
   useEffect(() => {
     carregarParametros();
   }, []);
+ main
  main
 
   async function carregarParametros() {
@@ -369,7 +381,11 @@ Potência UV: ${resultado.potenciaUV || "-"}
           <ServiceLine title="Nivelamento de plataforma" onClick={() => abrirGuia("nivelamento")} />
           <ServiceLine title="Configuração de fatiador" onClick={() => abrirGuia("fatiadores")} />
           <ServiceLine title="Calibração de resina" onClick={() => abrirGuia("calibracao")} />
+          <ServiceLine title="Gabarito Quanton3D" onClick={() => abrirGuia("calibracaoQuanton3D")} />
+          <ServiceLine title="Diagnóstico de problemas" onClick={() => abrirGuia("diagnostico")} />
+          <ServiceLine title="Posicionamento de suportes" onClick={() => abrirGuia("suportes")} />
           <ServiceLine title="Manutenção de máquina" onClick={() => abrirGuia("manutencao")} />
+          <ServiceLine title="Otimização e pós-processamento" onClick={() => abrirGuia("otimizacao")} />
         </div>
       </section>
 
