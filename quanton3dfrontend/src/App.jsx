@@ -6,9 +6,21 @@ import PartnerRequestModal from "./components/PartnerRequestModal";
 import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
 
-const WHATSAPP_URL = "https://wa.me/553183340053";
+const WHATSAPP_URL = "https://wa.me/553132716935";
+const SOCIAL_LINKS = [
+  { label: "Instagram", url: "https://www.instagram.com/quanton3d" },
+  { label: "YouTube", url: "https://www.youtube.com/@quanton3d" },
+];
 
-const ORIGENS = ["Instagram", "YouTube", "Indicação", "Google", "Outros"];
+const ORIGENS = [
+  "Instagram",
+  "YouTube",
+  "Google / Pesquisa",
+  "Indicação de amigo",
+  "Mercado Livre / Shopee",
+  "Já sou cliente",
+  "Outros",
+];
 
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
@@ -22,6 +34,21 @@ const SERVICE_BUTTONS = [
   { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
   { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
 ];
+
+
+function getClienteSalvo() {
+  try {
+    const salvo = localStorage.getItem("quanton3d_cliente");
+    return salvo ? JSON.parse(salvo) : null;
+  } catch (err) {
+    console.error("Erro ao ler cliente salvo:", err);
+    return null;
+  }
+}
+
+function getPrivacidadeAceita() {
+  return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
+}
 
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
@@ -37,13 +64,15 @@ const GUIDES = {
 };
 
 function App() {
+  const [clienteSalvoInicial] = useState(() => getClienteSalvo());
+  const [privacidadeAceitaInicial] = useState(() => getPrivacidadeAceita());
   const [parametros, setParametros] = useState([]);
   const [resinaSelecionada, setResinaSelecionada] = useState("");
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
   const [resultado, setResultado] = useState(null);
-  const [cliente, setCliente] = useState(null);
-  const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
-  const [mostrarCadastro, setMostrarCadastro] = useState(false);
+  const [cliente, setCliente] = useState(clienteSalvoInicial);
+  const [mostrarPrivacidade, setMostrarPrivacidade] = useState(!privacidadeAceitaInicial);
+  const [mostrarCadastro, setMostrarCadastro] = useState(privacidadeAceitaInicial && !clienteSalvoInicial);
   const [formCliente, setFormCliente] = useState({ nome: "", telefone: "", email: "", origem: "Instagram" });
   const [salvandoCliente, setSalvandoCliente] = useState(false);
   const [erroCadastro, setErroCadastro] = useState("");
@@ -55,12 +84,6 @@ function App() {
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
   useEffect(() => {
-    const salvo = localStorage.getItem("quanton3d_cliente");
-    if (salvo) {
-      setCliente(JSON.parse(salvo));
-    } else {
-      setMostrarPrivacidade(true);
-    }
     carregarParametros();
   }, []);
 
@@ -103,7 +126,17 @@ function App() {
   }
 
   function aceitarPrivacidade() {
+    localStorage.setItem("quanton3d_privacidade_aceita", "true");
     setMostrarPrivacidade(false);
+    setMostrarCadastro(!cliente);
+  }
+
+  function abrirCadastro() {
+    setErroCadastro("");
+    if (!getPrivacidadeAceita()) {
+      setMostrarPrivacidade(true);
+      return;
+    }
     setMostrarCadastro(true);
   }
 
@@ -210,7 +243,7 @@ function App() {
             <button type="button" onClick={() => scrollToSection("servicos")}>Serviços</button>
             <button type="button" onClick={() => scrollToSection("parametros")}>Informações Técnicas</button>
             <button type="button" onClick={() => scrollToSection("calculadoras")}>Calculadoras</button>
-            <button type="button" onClick={() => setMostrarCadastro(true)}>Cliente</button>
+            <button type="button" onClick={abrirCadastro}>Cliente</button>
           </nav>
         </div>
       </header>
@@ -332,27 +365,82 @@ function App() {
           </div>
         )}
       </section>
+
+      <footer className="site-footer">
+        <span>Quanton3D © Suporte técnico e resinas UV de alta performance.</span>
+        <div className="footer-social-links">
+          {SOCIAL_LINKS.map((link) => (
+            <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
+          ))}
+        </div>
+      </footer>
     </main>
   );
 }
 
 function PrivacidadeModal({ aceitarPrivacidade }) {
-  const [confirmou, setConfirmou] = useState(false);
+  const [confirmouAceite, setConfirmouAceite] = useState(false);
   return (
     <div className="modal-backdrop">
-      <section className="registration-modal">
-        <h2>Privacidade e Termos</h2>
-        <div className="privacy-content" style={{maxHeight: "300px", overflowY: "auto", margin: "15px 0", padding: "10px", background: "rgba(0,0,0,0.2)", borderRadius: "8px", fontSize: "0.9rem"}}>
-          <p>Para acessar nossa base técnica e suporte, coletamos dados básicos de contato. Ao continuar, você concorda com nossa política de uso.</p>
-          <p>1. Coleta: Nome, WhatsApp e E-mail.</p>
-          <p>2. Uso: Suporte técnico e informações sobre resinas.</p>
-          <p>3. Segurança: Seus dados estão protegidos em nosso banco de dados.</p>
+      <section className="privacy-modal">
+        <div className="modal-icon">🔐</div>
+        <h2>Termo de Privacidade e Consentimento</h2>
+        <p>
+          Antes de acessar o suporte técnico da Quanton3D, leia com atenção este termo.
+          Ao continuar, você declara estar ciente sobre como seus dados poderão ser usados
+          para atendimento, suporte técnico e melhoria dos serviços.
+        </p>
+        <div className="privacy-content">
+          <h3>1. Dados que poderão ser coletados</h3>
+          <p>
+            A Quanton3D poderá coletar e armazenar dados informados por você, incluindo
+            nome, WhatsApp, e-mail, origem do contato, data e horário de acesso, mensagens
+            enviadas no atendimento, dúvidas técnicas, resina utilizada, impressora utilizada,
+            parâmetros de impressão, pedidos de formulação personalizada e imagens ou fotos
+            enviadas voluntariamente para análise técnica.
+          </p>
+          <h3>2. Finalidade do uso dos dados</h3>
+          <p>
+            Os dados serão utilizados para liberar o acesso ao suporte técnico, responder dúvidas
+            sobre resinas e impressão 3D, analisar problemas relatados, manter histórico de atendimento,
+            acompanhar solicitações, organizar pedidos de formulação, melhorar a base de conhecimento
+            da Quanton3D e permitir contato comercial relacionado aos serviços solicitados pelo próprio usuário.
+          </p>
+          <h3>3. Uso de imagens enviadas</h3>
+          <p>
+            Caso você envie fotos de peças, falhas de impressão, configurações ou resultados obtidos,
+            essas imagens poderão ser usadas para análise técnica, orientação de parâmetros e melhoria
+            do suporte. Imagens não serão publicadas em galeria pública sem autorização ou aprovação específica.
+          </p>
+          <h3>4. Compartilhamento e segurança</h3>
+          <p>
+            A Quanton3D não deve vender seus dados pessoais. As informações poderão ser armazenadas
+            em sistemas necessários para funcionamento do site, banco de dados, atendimento e ferramentas
+            técnicas usadas para prestar suporte. Serão adotadas medidas razoáveis para proteger os dados
+            contra acesso não autorizado, perda, alteração ou uso indevido.
+          </p>
+          <h3>5. Histórico e melhoria do atendimento</h3>
+          <p>
+            As conversas, perguntas, avaliações de respostas e informações técnicas poderão ser mantidas
+            para melhorar a qualidade do suporte, evitar perda de contexto e permitir que a equipe Quanton3D
+            acompanhe melhor cada caso.
+          </p>
+          <h3>6. Direitos do usuário</h3>
+          <p>
+            Você poderá solicitar acesso, correção, atualização ou exclusão dos seus dados pessoais,
+            quando aplicável. Também poderá pedir esclarecimentos sobre o uso das informações fornecidas.
+          </p>
+          <h3>7. Consentimento</h3>
+          <p>
+            Ao marcar a opção abaixo e continuar, você confirma que leu este termo e autoriza a Quanton3D
+            a tratar seus dados para as finalidades descritas acima.
+          </p>
         </div>
-        <label style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "20px", cursor: "pointer"}}>
-          <input type="checkbox" checked={confirmou} onChange={(e) => setConfirmou(e.target.checked)} />
-          <span>Li e aceito os termos de privacidade.</span>
+        <label className="privacy-accept-row">
+          <input type="checkbox" checked={confirmouAceite} onChange={(e) => setConfirmouAceite(e.target.checked)} />
+          <span>Li e aceito o Termo de Privacidade e autorizo o uso dos meus dados para atendimento, suporte técnico e serviços relacionados à Quanton3D.</span>
         </label>
-        <button className="submit-registration" disabled={!confirmou} onClick={aceitarPrivacidade}>Aceitar e Continuar</button>
+        <button className="submit-registration" disabled={!confirmouAceite} onClick={aceitarPrivacidade}>Aceitar e continuar</button>
       </section>
     </div>
   );
@@ -362,20 +450,28 @@ function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCl
   return (
     <div className="modal-backdrop">
       <form className="registration-modal" onSubmit={salvarCliente}>
-        <h2>Identificação de Acesso</h2>
-        <p>Olá! Identifique-se para liberar o acesso total aos guias e parâmetros da Quanton3D.</p>
+        <h2>Seja bem-vindo!</h2>
+        <p>Identifique-se para liberar o suporte técnico especializado.</p>
         {erroCadastro && <div className="modal-error">{erroCadastro}</div>}
         <div className="form-grid">
-          <label><span>Seu Nome</span><input value={formCliente.nome} onChange={(e) => alterarCliente("nome", e.target.value)} placeholder="Ex.: João Silva" /></label>
-          <label><span>WhatsApp</span><input value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="Ex.: 31 99999-9999" /></label>
-          <label><span>E-mail</span><input value={formCliente.email} onChange={(e) => alterarCliente("email", e.target.value)} placeholder="Ex.: joao@email.com" /></label>
+          <label><span>Seu Nome</span><input value={formCliente.nome} onChange={(e) => alterarCliente("nome", e.target.value)} placeholder="Digite seu nome" /></label>
+          <label><span>WhatsApp</span><input value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="DDD + número" /></label>
+          <label><span>E-mail</span><input value={formCliente.email} onChange={(e) => alterarCliente("email", e.target.value)} placeholder="seu@email.com" /></label>
           <label><span>Como nos conheceu?</span>
             <select value={formCliente.origem} onChange={(e) => alterarCliente("origem", e.target.value)}>
               {ORIGENS.map((o) => <option key={o} value={o}>{o}</option>)}
             </select>
           </label>
         </div>
-        <button className="submit-registration" type="submit" disabled={salvandoCliente}>{salvandoCliente ? "Salvando..." : "Liberar Acesso"}</button>
+        <div className="social-box">
+          <strong>Siga a Quanton3D nas redes</strong>
+          <div>
+            {SOCIAL_LINKS.map((link) => (
+              <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
+            ))}
+          </div>
+        </div>
+        <button className="submit-registration" type="submit" disabled={salvandoCliente}>{salvandoCliente ? "Salvando..." : "Entrar no Suporte Técnico"}</button>
       </form>
     </div>
   );
@@ -443,7 +539,7 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
 }
 
 function FormulacaoContent({ cliente }) {
-  const [form, setForm] = useState({ aplicacao: "", cor: "", observacao: "" });
+  const [form, setForm] = useState({ caracteristica: "", cor: "", detalhes: "" });
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
 
@@ -453,6 +549,7 @@ function FormulacaoContent({ cliente }) {
       await api.post("/formulacoes", { ...form, clienteId: cliente?._id });
       setSucesso(true);
     } catch (err) {
+      console.error("Erro ao enviar pedido de formulação:", err);
       alert("Erro ao enviar pedido.");
     } finally {
       setEnviando(false);
@@ -466,9 +563,9 @@ function FormulacaoContent({ cliente }) {
       <p>Solicite uma resina com propriedades específicas.</p>
       <div className="modal-form-layout" style={{marginTop: "20px"}}>
         <div className="form-grid">
-          <label><span>Aplicação</span><input value={form.aplicacao} onChange={(e) => setForm({...form, aplicacao: e.target.value})} placeholder="Ex.: Guia Cirúrgico" /></label>
+          <label><span>Aplicação</span><input value={form.caracteristica} onChange={(e) => setForm({...form, caracteristica: e.target.value})} placeholder="Ex.: Guia Cirúrgico" /></label>
           <label><span>Cor</span><input value={form.cor} onChange={(e) => setForm({...form, cor: e.target.value})} placeholder="Ex.: Transparente" /></label>
-          <label className="partner-grid-full"><textarea rows="3" value={form.observacao} onChange={(e) => setForm({...form, observacao: e.target.value})} placeholder="Descreva sua necessidade." /></label>
+          <label className="partner-grid-full"><textarea rows="3" value={form.detalhes} onChange={(e) => setForm({...form, detalhes: e.target.value})} placeholder="Descreva sua necessidade." /></label>
         </div>
         <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Solicitar Estudo"}</button>
       </div>
@@ -490,9 +587,10 @@ function GaleriaContent({ cliente }) {
       formData.append("observacao", form.observacao);
       formData.append("clienteId", cliente?._id);
       fotos.forEach(f => formData.append("fotos", f));
-      await api.post("/galeria", formData);
+      await api.post("/gallery", formData);
       setSucesso(true);
     } catch (err) {
+      console.error("Erro ao enviar para galeria:", err);
       alert("Erro ao enviar para galeria.");
     } finally {
       setEnviando(false);
@@ -547,6 +645,7 @@ function BotContent({ cliente }) {
       const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
       setMensagens(prev => [...prev, { text: res.data.data.reply, isBot: true }]);
     } catch (err) {
+      console.error("Erro ao conversar com bot:", err);
       setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
     } finally {
       setPensando(false);
