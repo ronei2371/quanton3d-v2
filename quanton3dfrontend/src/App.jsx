@@ -53,6 +53,9 @@ function getPrivacidadeAceita() {
   return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
 }
 
+ codex/fix-integration-errors-and-improve-performance-kld7r4
+// App.jsx canônico: qualquer marcador de branch/codex deve ser removido antes do deploy.
+
  codex/fix-integration-errors-and-improve-performance-czzsv9
 // App.jsx canônico: qualquer marcador de branch/codex deve ser removido antes do deploy.
 
@@ -65,6 +68,7 @@ function getPrivacidadeAceita() {
  codex/fix-integration-errors-and-improve-performance-634k08
 
  codex/fix-integration-errors-and-improve-performance-ptith1
+ main
  main
  main
  main
@@ -86,6 +90,8 @@ function chaveResina(nome) {
   return corrigirNomeResina(nome).toUpperCase();
 }
 
+ codex/fix-integration-errors-and-improve-performance-kld7r4
+
  codex/fix-integration-errors-and-improve-performance-czzsv9
 
  codex/fix-integration-errors-and-improve-performance-5gey7w
@@ -95,6 +101,7 @@ codex/fix-integration-errors-and-improve-performance-fzpgye
 codex/fix-integration-errors-and-improve-performance-634k08
 
 
+ main
  main
  main
  main
@@ -133,6 +140,8 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
+ codex/fix-integration-errors-and-improve-performance-kld7r4
+
  codex/fix-integration-errors-and-improve-performance-czzsv9
 
  codex/fix-integration-errors-and-improve-performance-5gey7w
@@ -146,6 +155,7 @@ function App() {
   useEffect(() => {
     carregarParametros();
   }, []);
+ main
  main
  main
  main
@@ -181,6 +191,17 @@ function App() {
   const resinas = Array.from(
     new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))
   ).sort((a, b) => a.localeCompare(b));
+ codex/fix-integration-errors-and-improve-performance-kld7r4
+
+  const impressoras = Array.from(
+    new Set(
+      parametros
+        .filter((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora)
+        .map((item) => (item.marca ? `${item.marca} - ${item.impressora}` : item.impressora))
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
+
  codex/fix-integration-errors-and-improve-performance-czzsv9
 
   const impressoras = Array.from(
@@ -236,12 +257,16 @@ function App() {
   ).sort((a, b) => a.localeCompare(b));
 
  main
+ main
   const totalImpressoras = new Set(
     parametros
       .filter((item) => item.impressora)
       .map((item) => `${item.marca || ""}-${item.impressora}`)
   ).size;
 
+ codex/fix-integration-errors-and-improve-performance-kld7r4
+
+ main
  main
  main
 
