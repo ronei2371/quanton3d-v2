@@ -8,11 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
- codex/fix-integration-errors-and-improve-performance-kld7r4
     "prebuild": "node -e \"const fs=require('fs');const p='src/App.jsx';let s=fs.readFileSync(p,'utf8').replace(/\\r\\n/g,'\\n');s=s.split('\\n').filter(l=>!/^[ \\t]*(codex\\/|<<<<<<<|=======|>>>>>>>|main[ \\t]*$)/.test(l)).join('\\n');const marker='export default App;';const i=s.indexOf(marker);if(i!==-1)s=s.slice(0,i+marker.length);fs.writeFileSync(p,s.trimEnd()+'\\n');\""
-
-    "prebuild": "node -e \"const fs=require('fs');const p='src/App.jsx';let s=fs.readFileSync(p,'utf8');const c=s.split(/\\r?\\n/).filter(l=>!/^[ \\t]*(codex\\/|<<<<<<<|=======|>>>>>>>|main[ \\t]*$)/.test(l)).join('\\n');if(c!==s)fs.writeFileSync(p,c+'\\n');\""
- main
   },
   "dependencies": {
     "axios": "^1.15.2",
