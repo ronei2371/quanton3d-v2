@@ -47,19 +47,24 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const status = limparTexto(req.query.status);
+    const limite = Math.min(
+      300,
+      Math.max(1, Number.parseInt(req.query.limit, 10) || 100)
+    );
     const filtro = {};
 
     if (status && ["nova", "lida", "respondida", "arquivada"].includes(status)) {
       filtro.status = status;
     }
 
-    const mensagens = await ContactMessage.find(filtro).sort({
-      createdAt: -1,
-    });
+    const [total, mensagens] = await Promise.all([
+      ContactMessage.countDocuments(filtro),
+      ContactMessage.find(filtro).sort({ createdAt: -1 }).limit(limite).lean(),
+    ]);
 
     return res.json({
       success: true,
-      total: mensagens.length,
+      total,
       contactMessages: mensagens,
     });
   } catch (error) {

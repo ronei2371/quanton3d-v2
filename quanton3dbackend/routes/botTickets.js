@@ -97,6 +97,10 @@ router.post("/", (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const status = limparTexto(req.query.status);
+    const limite = Math.min(
+      300,
+      Math.max(1, Number.parseInt(req.query.limit, 10) || 100)
+    );
     const filtro = {};
 
     if (
@@ -108,13 +112,14 @@ router.get("/", async (req, res) => {
       filtro.status = status;
     }
 
-    const tickets = await BotTicket.find(filtro).sort({
-      createdAt: -1,
-    });
+    const [total, tickets] = await Promise.all([
+      BotTicket.countDocuments(filtro),
+      BotTicket.find(filtro).sort({ createdAt: -1 }).limit(limite).lean(),
+    ]);
 
     return res.json({
       success: true,
-      total: tickets.length,
+      total,
       botTickets: tickets,
     });
   } catch (error) {

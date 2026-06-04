@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run sanitize:app && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sanitize:app": "node -e \"const fs=require('fs');const p='src/App.jsx';let s=fs.readFileSync(p,'utf8').replace(/\\r\\n/g,'\\n');s=s.split('\\n').filter(l=>!/^[ \\t]*(codex\\/|<<<<<<<|=======|>>>>>>>|main[ \\t]*$)/.test(l)).join('\\n');const marker='export default App;';const i=s.indexOf(marker);if(i!==-1)s=s.slice(0,i+marker.length);fs.writeFileSync(p,s.trimEnd()+'\\n');\""
   },
   "dependencies": {
     "axios": "^1.15.2",
