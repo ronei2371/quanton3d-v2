@@ -53,7 +53,7 @@ function getPrivacidadeAceita() {
   return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
 }
 
-// App.jsx canônico: qualquer marcador de branch/codex deve ser removido antes do deploy.
+// App.jsx canônico limpo para deploy estável.
 function limparTexto(valor) {
   return String(valor || "").trim();
 }
