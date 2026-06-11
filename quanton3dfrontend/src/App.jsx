@@ -646,22 +646,119 @@ function FormulacaoContent({ cliente }) {
   );
 }
 
+const CAMPOS_CONFIGURACAO_GALERIA = [
+  { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
+  { name: "camadasBase", label: "Camadas de base", placeholder: "Ex.: 4" },
+  { name: "exposicaoNormal", label: "Tempo exposição", placeholder: "Ex.: 2,100 s" },
+  { name: "exposicaoBase", label: "Tempo exposição base", placeholder: "Ex.: 37,000 s" },
+  { name: "contagemTransicao", label: "Contagem de transição", placeholder: "Ex.: 0" },
+  { name: "tipoTransicao", label: "Tipo de transição", placeholder: "Ex.: Linear" },
+  { name: "retardoDesligarUV", label: "Retardo desligar UV", placeholder: "Ex.: 2,000 s" },
+  { name: "distElevacaoInferior", label: "Dist. elevação inferior", placeholder: "Ex.: 11,000 mm" },
+  { name: "distElevacao", label: "Distância elevação", placeholder: "Ex.: 11,000 mm" },
+  { name: "distRetracao", label: "Distância de retração", placeholder: "Ex.: 11,000 mm" },
+  { name: "velElevacaoInferior", label: "Vel. elevação inferior", placeholder: "Ex.: 140,000 mm/min" },
+  { name: "velElevacao", label: "Vel. elevação", placeholder: "Ex.: 140,000 mm/min" },
+  { name: "velRetracaoInferior", label: "Vel. retração inferior", placeholder: "Ex.: 135,000 mm/min" },
+  { name: "velRetracao", label: "Vel. retração", placeholder: "Ex.: 135,000 mm/min" },
+];
+
+function criarConfiguracaoVazia() {
+  return CAMPOS_CONFIGURACAO_GALERIA.reduce((acc, campo) => {
+    acc[campo.name] = "";
+    return acc;
+  }, {});
+}
+
 function GaleriaContent({ cliente }) {
-  const [form, setForm] = useState({ resina: "", observacao: "" });
-  const [fotos, setFotos] = useState([]);
+  const [aba, setAba] = useState("enviar");
+  const [form, setForm] = useState({
+    resina: "",
+    impressora: "",
+    observacao: "",
+    parametros: criarConfiguracaoVazia(),
+  });
+  const [foto, setFoto] = useState(null);
+  const [itens, setItens] = useState([]);
+  const [carregandoItens, setCarregandoItens] = useState(false);
+  const [erroItens, setErroItens] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
 
-  async function enviar() {
+  useEffect(() => {
+    if (aba !== "ver") return undefined;
+
+    let ativo = true;
+
+    async function carregarGaleria() {
+      try {
+        setCarregandoItens(true);
+        setErroItens("");
+        const resposta = await api.get("/gallery");
+        const lista = Array.isArray(resposta.data?.data) ? resposta.data.data : [];
+        if (ativo) setItens(lista);
+      } catch (err) {
+        console.error("Erro ao carregar galeria aprovada:", err);
+        if (ativo) setErroItens("Não foi possível carregar as fotos aprovadas agora.");
+      } finally {
+        if (ativo) setCarregandoItens(false);
+      }
+    }
+
+    carregarGaleria();
+
+    return () => {
+      ativo = false;
+    };
+  }, [aba]);
+
+  function alterar(campo, valor) {
+    setForm((atual) => ({ ...atual, [campo]: valor }));
+  }
+
+  function alterarParametro(campo, valor) {
+    setForm((atual) => ({
+      ...atual,
+      parametros: {
+        ...atual.parametros,
+        [campo]: valor,
+      },
+    }));
+  }
+
+  async function enviar(event) {
+    event.preventDefault();
+
+    if (!form.resina.trim() || !form.impressora.trim() || !foto) {
+      alert("Preencha a resina, a impressora e envie uma foto do trabalho.");
+      return;
+    }
+
     try {
       setEnviando(true);
       const formData = new FormData();
+      formData.append("nome", cliente?.nome || "");
+      formData.append("telefone", cliente?.telefone || "");
+      formData.append("email", cliente?.email || "");
       formData.append("resina", form.resina);
+      formData.append("impressora", form.impressora);
       formData.append("observacao", form.observacao);
-      formData.append("clienteId", cliente?._id);
-      fotos.forEach(f => formData.append("fotos", f));
+      formData.append("clienteId", cliente?._id || cliente?.id || "");
+      formData.append("fotos", foto);
+
+      Object.entries(form.parametros).forEach(([campo, valor]) => {
+        formData.append(`parametros.${campo}`, valor);
+      });
+
       await api.post("/gallery", formData);
       setSucesso(true);
+      setForm({
+        resina: "",
+        impressora: "",
+        observacao: "",
+        parametros: criarConfiguracaoVazia(),
+      });
+      setFoto(null);
     } catch (err) {
       console.error("Erro ao enviar para galeria:", err);
       alert("Erro ao enviar para galeria.");
@@ -670,19 +767,125 @@ function GaleriaContent({ cliente }) {
     }
   }
 
-  if (sucesso) return <div className="modal-success">Fotos enviadas com sucesso!</div>;
-
   return (
-    <div className="modal-rich-content">
-      <p>Compartilhe fotos de suas peças impressas.</p>
-      <div className="modal-form-layout" style={{marginTop: "20px"}}>
-        <div className="form-grid">
-          <label><span>Resina</span><input value={form.resina} onChange={(e) => setForm({...form, resina: e.target.value})} placeholder="Ex.: Iron Cinza" /></label>
-          <label className="partner-grid-full"><input type="file" multiple accept="image/*" onChange={(e) => setFotos(Array.from(e.target.files))} /></label>
-          <label className="partner-grid-full"><textarea rows="3" value={form.observacao} onChange={(e) => setForm({...form, observacao: e.target.value})} placeholder="Parâmetros usados." /></label>
-        </div>
-        <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Enviar para Galeria"}</button>
+    <div className="modal-rich-content gallery-content">
+      <p>
+        Envie uma foto real da peça e os campos de configuração usados no Chitubox.
+        O envio fica pendente até aprovação no painel administrativo.
+      </p>
+
+      <div className="gallery-tabs" role="tablist" aria-label="Galeria e configurações">
+        <button
+          type="button"
+          className={aba === "enviar" ? "active" : ""}
+          onClick={() => setAba("enviar")}
+        >
+          📷 Enviar configuração
+        </button>
+        <button
+          type="button"
+          className={aba === "ver" ? "active" : ""}
+          onClick={() => setAba("ver")}
+        >
+          Ver fotos de clientes e configurações
+        </button>
       </div>
+
+      {aba === "enviar" ? (
+        <form className="modal-form-layout" style={{ marginTop: "20px" }} onSubmit={enviar}>
+          {sucesso ? (
+            <div className="modal-success">
+              Enviado com sucesso! A foto e as configurações aguardam aprovação antes de aparecerem para outros clientes.
+            </div>
+          ) : null}
+
+          <div className="form-grid gallery-form-grid">
+            <label>
+              <span>Resina usada *</span>
+              <input
+                value={form.resina}
+                onChange={(e) => alterar("resina", e.target.value)}
+                placeholder="Ex.: IRON Cinza"
+              />
+            </label>
+            <label>
+              <span>Impressora *</span>
+              <input
+                value={form.impressora}
+                onChange={(e) => alterar("impressora", e.target.value)}
+                placeholder="Ex.: Anycubic Photon M3 Max"
+              />
+            </label>
+            <label className="partner-grid-full">
+              <span>Foto do trabalho feito *</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFoto(e.target.files?.[0] || null)}
+              />
+            </label>
+          </div>
+
+          <div className="gallery-config-box">
+            <h3>Configurações do Chitubox</h3>
+            <p>Preencha os campos que aparecem na aba Imprimir. Deixe em branco o que você não souber.</p>
+            <div className="form-grid gallery-settings-grid">
+              {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => (
+                <label key={campo.name}>
+                  <span>{campo.label}</span>
+                  <input
+                    value={form.parametros[campo.name]}
+                    onChange={(e) => alterarParametro(campo.name, e.target.value)}
+                    placeholder={campo.placeholder}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <label className="gallery-observation">
+            <span>Observações para o próximo cliente</span>
+            <textarea
+              rows="4"
+              value={form.observacao}
+              onChange={(e) => alterar("observacao", e.target.value)}
+              placeholder="Ex.: temperatura do ambiente, suporte usado, se a peça saiu perfeita ou precisou ajuste."
+            />
+          </label>
+
+          <button type="submit" className="submit-registration" disabled={enviando}>
+            {enviando ? "Enviando..." : "Enviar para aprovação"}
+          </button>
+        </form>
+      ) : (
+        <div className="gallery-approved-list">
+          {carregandoItens ? <div className="gallery-empty">Carregando fotos aprovadas...</div> : null}
+          {erroItens ? <div className="modal-error">{erroItens}</div> : null}
+          {!carregandoItens && !erroItens && itens.length === 0 ? (
+            <div className="gallery-empty">
+              Ainda não há fotos aprovadas. Assim que o painel administrativo for ajustado,
+              as configurações aprovadas aparecerão aqui para consulta dos próximos clientes.
+            </div>
+          ) : null}
+
+          {itens.map((item) => (
+            <article className="gallery-approved-card" key={item._id || item.imagem}>
+              {item.imagem ? <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} /> : null}
+              <div>
+                <h3>{item.resina || "Resina não informada"}</h3>
+                <p>{item.impressora || "Impressora não informada"}</p>
+                {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
+                <div className="gallery-param-list">
+                  {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
+                    const valor = item.parametros?.[campo.name];
+                    return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                  })}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

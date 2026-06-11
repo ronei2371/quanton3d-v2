@@ -130,20 +130,32 @@ export default function CalculadoraExposicao() {
   }, [parametros, resinaSelecionada]);
 
   useEffect(() => {
-    if (!opcoesResina.length) return;
-    if (!opcoesResina.some((item) => item.value === resinaSelecionada)) {
-      setResinaSelecionada(opcoesResina[0].value);
+    if (!opcoesResina.length) return undefined;
+    if (opcoesResina.some((item) => item.value === resinaSelecionada)) {
+      return undefined;
     }
+
+    const ajusteSelecao = setTimeout(() => {
+      setResinaSelecionada(opcoesResina[0].value);
+    }, 0);
+
+    return () => clearTimeout(ajusteSelecao);
   }, [opcoesResina, resinaSelecionada]);
 
   useEffect(() => {
-    if (!opcoesImpressora.length) {
-      setImpressoraSelecionada("");
-      return;
+    const impressoraValida = opcoesImpressora.some(
+      (item) => item.value === impressoraSelecionada
+    );
+
+    if (opcoesImpressora.length && impressoraValida) {
+      return undefined;
     }
-    if (!opcoesImpressora.some((item) => item.value === impressoraSelecionada)) {
-      setImpressoraSelecionada(opcoesImpressora[0].value);
-    }
+
+    const ajusteSelecao = setTimeout(() => {
+      setImpressoraSelecionada(opcoesImpressora[0]?.value || "");
+    }, 0);
+
+    return () => clearTimeout(ajusteSelecao);
   }, [opcoesImpressora, impressoraSelecionada]);
 
   const receitaBase = useMemo(() => {
@@ -157,10 +169,15 @@ export default function CalculadoraExposicao() {
   }, [parametros, resinaSelecionada, impressoraSelecionada]);
 
   useEffect(() => {
-    if (!receitaBase) return;
+    if (!receitaBase) return undefined;
     const camadaBase = numero(receitaBase.alturaCamada, 0.05);
     const idx = CAMADAS.findIndex((item) => Math.abs(item - camadaBase) < 0.001);
-    setLayerIdx(idx >= 0 ? idx : 4);
+
+    const ajusteCamada = setTimeout(() => {
+      setLayerIdx(idx >= 0 ? idx : 4);
+    }, 0);
+
+    return () => clearTimeout(ajusteCamada);
   }, [receitaBase]);
 
   const resultado = useMemo(() => {
