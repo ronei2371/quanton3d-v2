@@ -104,8 +104,17 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
+ codex/revise-code-to-identify-errors-y4xdq2
 
 
+
+codex/revise-code-to-identify-errors-s1mcto
+
+codex/revise-code-to-identify-errors-9rfnjr
+
+ main
+main
+ main
   async function carregarParametros() {
     try {
       setCarregando(true);
@@ -791,6 +800,13 @@ function GaleriaContent({ cliente }) {
         >
           Ver fotos de clientes e configurações
         </button>
+ codex/revise-code-to-identify-errors-y4xdq2
+
+ codex/revise-code-to-identify-errors-s1mcto
+
+ codex/revise-code-to-identify-errors-9rfnjr
+ main
+main
       </div>
 
       {aba === "enviar" ? (
@@ -1100,7 +1116,109 @@ function AdminGaleriaContent() {
             </div>
           </article>
         ))}
+ codex/revise-code-to-identify-errors-y4xdq2
+
+ codex/revise-code-to-identify-errors-s1mcto
+
+main
+ main
       </div>
+
+      {aba === "enviar" ? (
+        <form className="modal-form-layout" style={{ marginTop: "20px" }} onSubmit={enviar}>
+          {sucesso ? (
+            <div className="modal-success">
+              Enviado com sucesso! A foto e as configurações aguardam aprovação antes de aparecerem para outros clientes.
+            </div>
+          ) : null}
+
+          <div className="form-grid gallery-form-grid">
+            <label>
+              <span>Resina usada *</span>
+              <input
+                value={form.resina}
+                onChange={(e) => alterar("resina", e.target.value)}
+                placeholder="Ex.: IRON Cinza"
+              />
+            </label>
+            <label>
+              <span>Impressora *</span>
+              <input
+                value={form.impressora}
+                onChange={(e) => alterar("impressora", e.target.value)}
+                placeholder="Ex.: Anycubic Photon M3 Max"
+              />
+            </label>
+            <label className="partner-grid-full">
+              <span>Foto do trabalho feito *</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFoto(e.target.files?.[0] || null)}
+              />
+            </label>
+          </div>
+
+          <div className="gallery-config-box">
+            <h3>Configurações do Chitubox</h3>
+            <p>Preencha os campos que aparecem na aba Imprimir. Deixe em branco o que você não souber.</p>
+            <div className="form-grid gallery-settings-grid">
+              {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => (
+                <label key={campo.name}>
+                  <span>{campo.label}</span>
+                  <input
+                    value={form.parametros[campo.name]}
+                    onChange={(e) => alterarParametro(campo.name, e.target.value)}
+                    placeholder={campo.placeholder}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <label className="gallery-observation">
+            <span>Observações para o próximo cliente</span>
+            <textarea
+              rows="4"
+              value={form.observacao}
+              onChange={(e) => alterar("observacao", e.target.value)}
+              placeholder="Ex.: temperatura do ambiente, suporte usado, se a peça saiu perfeita ou precisou ajuste."
+            />
+          </label>
+
+          <button type="submit" className="submit-registration" disabled={enviando}>
+            {enviando ? "Enviando..." : "Enviar para aprovação"}
+          </button>
+        </form>
+      ) : (
+        <div className="gallery-approved-list">
+          {carregandoItens ? <div className="gallery-empty">Carregando fotos aprovadas...</div> : null}
+          {erroItens ? <div className="modal-error">{erroItens}</div> : null}
+          {!carregandoItens && !erroItens && itens.length === 0 ? (
+            <div className="gallery-empty">
+              Ainda não há fotos aprovadas. Assim que o painel administrativo for ajustado,
+              as configurações aprovadas aparecerão aqui para consulta dos próximos clientes.
+            </div>
+          ) : null}
+
+          {itens.map((item) => (
+            <article className="gallery-approved-card" key={item._id || item.imagem}>
+              {item.imagem ? <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} /> : null}
+              <div>
+                <h3>{item.resina || "Resina não informada"}</h3>
+                <p>{item.impressora || "Impressora não informada"}</p>
+                {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
+                <div className="gallery-param-list">
+                  {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
+                    const valor = item.parametros?.[campo.name];
+                    return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                  })}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
