@@ -104,9 +104,12 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
+codex/revise-code-to-identify-errors-s1mcto
+
 codex/revise-code-to-identify-errors-9rfnjr
 
  main
+main
   async function carregarParametros() {
     try {
       setCarregando(true);
@@ -792,7 +795,10 @@ function GaleriaContent({ cliente }) {
         >
           Ver fotos de clientes e configurações
         </button>
+ codex/revise-code-to-identify-errors-s1mcto
+
  codex/revise-code-to-identify-errors-9rfnjr
+ main
       </div>
 
       {aba === "enviar" ? (
@@ -1102,7 +1108,8 @@ function AdminGaleriaContent() {
             </div>
           </article>
         ))}
-=======
+ codex/revise-code-to-identify-errors-s1mcto
+
 main
       </div>
 

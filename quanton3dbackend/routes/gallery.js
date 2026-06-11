@@ -3,7 +3,10 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
+ codex/revise-code-to-identify-errors-s1mcto
+
 codex/revise-code-to-identify-errors-9rfnjr
+ main
 import {
   aprovarGalleryItem,
   criarGalleryItem,
@@ -11,8 +14,11 @@ import {
   listarGalleryItemsAdmin,
   recusarGalleryItem,
 } from '../controllers/galleryController.js';
+ codex/revise-code-to-identify-errors-s1mcto
+
 
 import { criarGalleryItem, listarGalleryItems, aprovarGalleryItem } from '../controllers/galleryController.js';
+ main
  main
 
 const router = express.Router();
@@ -72,12 +78,18 @@ function normalizarPayload(req, _res, next) {
 
 router.post('/', upload.array('fotos', 5), normalizarPayload, criarGalleryItem);
 router.get('/', listarGalleryItems);
+ codex/revise-code-to-identify-errors-s1mcto
+router.get('/admin', authAdmin, listarGalleryItemsAdmin);
+router.patch('/:id/aprovar', authAdmin, aprovarGalleryItem);
+router.patch('/:id/recusar', authAdmin, recusarGalleryItem);
+
  codex/revise-code-to-identify-errors-9rfnjr
 router.get('/admin', authAdmin, listarGalleryItemsAdmin);
 router.patch('/:id/aprovar', authAdmin, aprovarGalleryItem);
 router.patch('/:id/recusar', authAdmin, recusarGalleryItem);
 
 router.patch('/:id/aprovar', authAdmin, aprovarGalleryItem);
+main
 main
 
 export default router;
