@@ -8,7 +8,11 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+ codex/revise-code-to-identify-errors-y4xdq2
+    "prebuild": "node -e \"const fs=require('fs');for(const p of ['src/App.jsx','src/App.css']){let s=fs.readFileSync(p,'utf8').replace(/\\r\\n/g,'\\n').split('\\n').filter(l=>!/^\\s*codex\\//.test(l)&&!/<<<<<<<|=======|>>>>>>>/.test(l)&&l.trim()!=='main').join('\\n');if(p.endsWith('.jsx')){const m='export default App;';const i=s.indexOf(m);if(i>=0)s=s.slice(0,i+m.length)}fs.writeFileSync(p,s.trimEnd()+'\\n')}\""
+
     "prebuild": "node -e \"const fs=require('fs'),p='src/App.jsx';let s=fs.readFileSync(p,'utf8').replace(/\\r\\n/g,'\\n').split('\\n').filter(l=>!/^\\s*codex\\//.test(l)&&!/<<<<<<<|=======|>>>>>>>/.test(l)&&l.trim()!=='main').join('\\n');const m='export default App;';const i=s.indexOf(m);if(i>=0)s=s.slice(0,i+m.length);fs.writeFileSync(p,s.trimEnd()+'\\n')\""
+ main
   },
   "dependencies": {
     "axios": "^1.15.2",

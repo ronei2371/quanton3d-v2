@@ -3,9 +3,12 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
+ codex/revise-code-to-identify-errors-y4xdq2
+
  codex/revise-code-to-identify-errors-s1mcto
 
 codex/revise-code-to-identify-errors-9rfnjr
+ main
  main
 import {
   aprovarGalleryItem,
@@ -14,10 +17,13 @@ import {
   listarGalleryItemsAdmin,
   recusarGalleryItem,
 } from '../controllers/galleryController.js';
+codex/revise-code-to-identify-errors-y4xdq2
+
  codex/revise-code-to-identify-errors-s1mcto
 
 
 import { criarGalleryItem, listarGalleryItems, aprovarGalleryItem } from '../controllers/galleryController.js';
+ main
  main
  main
 
@@ -78,6 +84,10 @@ function normalizarPayload(req, _res, next) {
 
 router.post('/', upload.array('fotos', 5), normalizarPayload, criarGalleryItem);
 router.get('/', listarGalleryItems);
+ codex/revise-code-to-identify-errors-y4xdq2
+router.get('/admin', authAdmin, listarGalleryItemsAdmin);
+router.patch('/:id/aprovar', authAdmin, aprovarGalleryItem);
+router.patch('/:id/recusar', authAdmin, recusarGalleryItem);
  codex/revise-code-to-identify-errors-s1mcto
 router.get('/admin', authAdmin, listarGalleryItemsAdmin);
 router.patch('/:id/aprovar', authAdmin, aprovarGalleryItem);
@@ -91,5 +101,6 @@ router.patch('/:id/recusar', authAdmin, recusarGalleryItem);
 router.patch('/:id/aprovar', authAdmin, aprovarGalleryItem);
 main
 main
+ main
 
 export default router;
