@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prebuild": "node -e \"const fs=require('fs'),p='src/App.jsx';let s=fs.readFileSync(p,'utf8').replace(/\\r\\n/g,'\\n').split('\\n').filter(l=>!/fix-integration-errors-and-improve-performance|<<<<<<<|=======|>>>>>>>/.test(l)&&l.trim()!=='main').join('\\n');const m='export default App;';const i=s.indexOf(m);if(i>=0)s=s.slice(0,i+m.length);fs.writeFileSync(p,s.trimEnd()+'\\n')\""
+    "prebuild": "node scripts/clean-build-artifacts.cjs"
   },
   "dependencies": {
     "axios": "^1.15.2",
