@@ -440,8 +440,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
           </div>
         )}
       </section>
-
-      <footer className="site-footer">
+            <footer className="site-footer">
         <span>Quanton3D © Suporte técnico e resinas UV de alta performance.</span>
         <div className="footer-social-links">
           {SOCIAL_LINKS.map((link) => (
@@ -567,7 +566,7 @@ function GuideModal({ guide, onClose }) {
 }
 
 function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
-  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada", galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes", admGaleria: "ADM Galeria", qualidade: "Alta Qualidade", calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume", bot: "Bot Quanton3D" };
+
   return (
     <div className="modal-backdrop">
       <section className="site-modal">
@@ -579,7 +578,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "sobre" && <SobreContent abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />}
         {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
         {type === "galeria" && <GaleriaContent cliente={cliente} />}
-        {type === "galeriaPublica" && <GaleriaContent cliente={cliente} initialAba="ver" ocultarAbas />}
+
         {type === "admGaleria" && <AdminGaleriaContent />}
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
         {type === "calc_exp" && <CalculadoraExposicao />}
@@ -674,8 +673,7 @@ function criarConfiguracaoVazia() {
   }, {});
 }
 
-function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false }) {
-  const [aba, setAba] = useState(initialAba);
+
   const [form, setForm] = useState({
     resina: "",
     impressora: "",
@@ -774,7 +772,7 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
   return (
     <div className="modal-rich-content gallery-content">
       <p>
-        {ocultarAbas
+
           ? "Veja fotos aprovadas de clientes e configurações reais usadas no Chitubox para comparar resina, impressora e parâmetros."
           : "Envie uma foto real da peça e os campos de configuração usados no Chitubox. O envio fica pendente até aprovação no painel administrativo."}
       </p>
@@ -892,6 +890,123 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
             </article>
           ))}
         </div>
+
+        Envie uma foto real da peça e os campos de configuração usados no Chitubox.
+        O envio fica pendente até aprovação no painel administrativo.
+      </p>
+
+      <div className="gallery-tabs" role="tablist" aria-label="Galeria e configurações">
+        <button
+          type="button"
+          className={aba === "enviar" ? "active" : ""}
+          onClick={() => setAba("enviar")}
+        >
+          📷 Enviar configuração
+        </button>
+        <button
+          type="button"
+          className={aba === "ver" ? "active" : ""}
+          onClick={() => setAba("ver")}
+        >
+          Ver fotos de clientes e configurações
+        </button>
+      </div>
+
+      {aba === "enviar" ? (
+        <form className="modal-form-layout" style={{ marginTop: "20px" }} onSubmit={enviar}>
+          {sucesso ? (
+            <div className="modal-success">
+              Enviado com sucesso! A foto e as configurações aguardam aprovação antes de aparecerem para outros clientes.
+            </div>
+          ) : null}
+
+          <div className="form-grid gallery-form-grid">
+            <label>
+              <span>Resina usada *</span>
+              <input
+                value={form.resina}
+                onChange={(e) => alterar("resina", e.target.value)}
+                placeholder="Ex.: IRON Cinza"
+              />
+            </label>
+            <label>
+              <span>Impressora *</span>
+              <input
+                value={form.impressora}
+                onChange={(e) => alterar("impressora", e.target.value)}
+                placeholder="Ex.: Anycubic Photon M3 Max"
+              />
+            </label>
+            <label className="partner-grid-full">
+              <span>Foto do trabalho feito *</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFoto(e.target.files?.[0] || null)}
+              />
+            </label>
+          </div>
+
+          <div className="gallery-config-box">
+            <h3>Configurações do Chitubox</h3>
+            <p>Preencha os campos que aparecem na aba Imprimir. Deixe em branco o que você não souber.</p>
+            <div className="form-grid gallery-settings-grid">
+              {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => (
+                <label key={campo.name}>
+                  <span>{campo.label}</span>
+                  <input
+                    value={form.parametros[campo.name]}
+                    onChange={(e) => alterarParametro(campo.name, e.target.value)}
+                    placeholder={campo.placeholder}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <label className="gallery-observation">
+            <span>Observações para o próximo cliente</span>
+            <textarea
+              rows="4"
+              value={form.observacao}
+              onChange={(e) => alterar("observacao", e.target.value)}
+              placeholder="Ex.: temperatura do ambiente, suporte usado, se a peça saiu perfeita ou precisou ajuste."
+            />
+          </label>
+
+          <button type="submit" className="submit-registration" disabled={enviando}>
+            {enviando ? "Enviando..." : "Enviar para aprovação"}
+          </button>
+        </form>
+      ) : (
+        <div className="gallery-approved-list">
+          {carregandoItens ? <div className="gallery-empty">Carregando fotos aprovadas...</div> : null}
+          {erroItens ? <div className="modal-error">{erroItens}</div> : null}
+          {!carregandoItens && !erroItens && itens.length === 0 ? (
+            <div className="gallery-empty">
+              Ainda não há fotos aprovadas. Assim que o painel administrativo for ajustado,
+              as configurações aprovadas aparecerão aqui para consulta dos próximos clientes.
+            </div>
+          ) : null}
+
+          {itens.map((item) => (
+            <article className="gallery-approved-card" key={item._id || item.imagem}>
+              {item.imagem ? <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} /> : null}
+              <div>
+                <h3>{item.resina || "Resina não informada"}</h3>
+                <p>{item.impressora || "Impressora não informada"}</p>
+                {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
+                <div className="gallery-param-list">
+                  {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
+                    const valor = item.parametros?.[campo.name];
+                    return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                  })}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+ main
       )}
     </div>
   );
@@ -1103,12 +1218,7 @@ function AdminGaleriaContent() {
                 </button>
               </div>
             </div>
-          </article>
-        ))}
-      </div>
-    </div>
-  );
-}
+
 
 function QualidadeContent({ abrirGuia }) {
   return (

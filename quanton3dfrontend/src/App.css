@@ -1,4 +1,3 @@
-
 :root {
   font-family: Inter, Arial, Helvetica, sans-serif;
   color: #eaf7ff;
@@ -903,7 +902,6 @@ a {
   }
 }
 
-
 .experience-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1275,4 +1273,3 @@ a {
   .admin-client-grid {
     grid-template-columns: 1fr;
   }
-}
