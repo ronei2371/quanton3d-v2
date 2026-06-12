@@ -800,12 +800,7 @@ function GaleriaContent({ cliente }) {
         >
           Ver fotos de clientes e configurações
         </button>
- codex/revise-code-to-identify-errors-y4xdq2
 
- codex/revise-code-to-identify-errors-s1mcto
-
- codex/revise-code-to-identify-errors-9rfnjr
- main
 main
       </div>
 
