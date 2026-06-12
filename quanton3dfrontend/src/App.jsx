@@ -877,3 +877,312 @@ function GaleriaContent({ cliente }) {
                 <p>{item.impressora || "Impressora não informada"}</p>
                 {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
                 <div className="gallery-param-list">
+                  {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
+                    const valor = item.parametros?.[campo.name];
+                    return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                  })}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function formatarDataHora(data) {
+  if (!data) return "-";
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(data));
+}
+
+function AdminGaleriaContent() {
+  const [credenciais, setCredenciais] = useState({ user: "", password: "" });
+  const [token, setToken] = useState(() => localStorage.getItem("quanton3d_admin_token") || "");
+  const [filtros, setFiltros] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
+  const [itens, setItens] = useState([]);
+  const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [salvandoId, setSalvandoId] = useState("");
+
+  async function entrar(event) {
+    event.preventDefault();
+    setErro("");
+
+    try {
+      setCarregando(true);
+      const resposta = await api.post("/admin/login", credenciais);
+      const novoToken = resposta.data?.token || "";
+
+      if (!novoToken) {
+        setErro("Login administrativo não retornou token.");
+        return;
+      }
+
+      localStorage.setItem("quanton3d_admin_token", novoToken);
+      setToken(novoToken);
+    } catch (err) {
+      console.error("Erro no login administrativo:", err);
+      setErro(err?.response?.data?.error || "Credenciais administrativas inválidas.");
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  const carregarItens = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      setCarregando(true);
+      setErro("");
+      const resposta = await api.get("/gallery/admin", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: filtros,
+      });
+      setItens(Array.isArray(resposta.data?.data) ? resposta.data.data : []);
+    } catch (err) {
+      console.error("Erro ao carregar galeria administrativa:", err);
+      if (err?.response?.status === 401) {
+        localStorage.removeItem("quanton3d_admin_token");
+        setToken("");
+      }
+      setErro(err?.response?.data?.error || "Não foi possível carregar a galeria administrativa.");
+    } finally {
+      setCarregando(false);
+    }
+  }, [filtros, token]);
+
+  useEffect(() => {
+    if (!token) return undefined;
+
+    const busca = setTimeout(carregarItens, 0);
+    return () => clearTimeout(busca);
+  }, [carregarItens, token]);
+
+  function alterarFiltro(campo, valor) {
+    setFiltros((atual) => ({ ...atual, [campo]: valor }));
+  }
+
+  async function atualizarStatus(id, acao) {
+    try {
+      setSalvandoId(id);
+      setErro("");
+      await api.patch(`/gallery/${id}/${acao}`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await carregarItens();
+    } catch (err) {
+      console.error(`Erro ao ${acao} item da galeria:`, err);
+      setErro(err?.response?.data?.error || "Não foi possível atualizar este item.");
+    } finally {
+      setSalvandoId("");
+    }
+  }
+
+  function sair() {
+    localStorage.removeItem("quanton3d_admin_token");
+    setToken("");
+    setItens([]);
+  }
+
+  if (!token) {
+    return (
+      <form className="admin-gallery-login" onSubmit={entrar}>
+        <p>Entre com o usuário administrativo para aprovar ou recusar fotos da galeria.</p>
+        {erro ? <div className="modal-error">{erro}</div> : null}
+        <label>
+          <span>Usuário</span>
+          <input
+            value={credenciais.user}
+            onChange={(e) => setCredenciais((atual) => ({ ...atual, user: e.target.value }))}
+            autoComplete="username"
+          />
+        </label>
+        <label>
+          <span>Senha</span>
+          <input
+            type="password"
+            value={credenciais.password}
+            onChange={(e) => setCredenciais((atual) => ({ ...atual, password: e.target.value }))}
+            autoComplete="current-password"
+          />
+        </label>
+        <button type="submit" className="submit-registration" disabled={carregando}>
+          {carregando ? "Entrando..." : "Entrar no ADM"}
+        </button>
+      </form>
+    );
+  }
+
+  return (
+    <div className="admin-gallery-panel">
+      <div className="admin-gallery-toolbar">
+        <label>
+          <span>Status</span>
+          <select value={filtros.status} onChange={(e) => alterarFiltro("status", e.target.value)}>
+            <option value="pendente">Pendentes</option>
+            <option value="aprovado">Aprovados</option>
+            <option value="recusado">Recusados</option>
+            <option value="todos">Todos</option>
+          </select>
+        </label>
+        <label>
+          <span>Data inicial</span>
+          <input type="date" value={filtros.dataInicio} onChange={(e) => alterarFiltro("dataInicio", e.target.value)} />
+        </label>
+        <label>
+          <span>Data final</span>
+          <input type="date" value={filtros.dataFim} onChange={(e) => alterarFiltro("dataFim", e.target.value)} />
+        </label>
+        <button type="button" onClick={carregarItens} disabled={carregando}>
+          {carregando ? "Carregando..." : "Atualizar"}
+        </button>
+        <button type="button" className="admin-gallery-logout" onClick={sair}>Sair</button>
+      </div>
+
+      {erro ? <div className="modal-error">{erro}</div> : null}
+      {!carregando && itens.length === 0 ? (
+        <div className="gallery-empty">Nenhum envio encontrado para os filtros selecionados.</div>
+      ) : null}
+
+      <div className="admin-gallery-list">
+        {itens.map((item) => (
+          <article className="admin-gallery-card" key={item._id}>
+            {item.imagem ? <img src={item.imagem} alt={`Envio de ${item.nome || "cliente"}`} /> : null}
+            <div className="admin-gallery-card-body">
+              <div className="admin-gallery-card-head">
+                <div>
+                  <strong>{item.nome || "Cliente sem nome"}</strong>
+                  <span>{formatarDataHora(item.createdAt)}</span>
+                </div>
+                <span className={`admin-status admin-status-${item.status || "pendente"}`}>{item.status || "pendente"}</span>
+              </div>
+
+              <div className="admin-client-grid">
+                <span><strong>Telefone:</strong> {item.telefone || "-"}</span>
+                <span><strong>E-mail:</strong> {item.email || "-"}</span>
+                <span><strong>Resina:</strong> {item.resina || "-"}</span>
+                <span><strong>Impressora:</strong> {item.impressora || "-"}</span>
+              </div>
+
+              {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
+
+              <div className="gallery-param-list">
+                {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
+                  const valor = item.parametros?.[campo.name];
+                  return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                })}
+              </div>
+
+              <div className="admin-gallery-actions">
+                <button
+                  type="button"
+                  className="approve"
+                  onClick={() => atualizarStatus(item._id, "aprovar")}
+                  disabled={salvandoId === item._id || item.status === "aprovado"}
+                >
+                  Aprovar
+                </button>
+                <button
+                  type="button"
+                  className="reject"
+                  onClick={() => atualizarStatus(item._id, "recusar")}
+                  disabled={salvandoId === item._id || item.status === "recusado"}
+                >
+                  Não aprovar
+                </button>
+              </div>
+            </div>
+                      </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function QualidadeContent({ abrirGuia }) {
+  return (
+    <div className="modal-rich-content">
+      <div className="modal-action-grid">
+        <button type="button" onClick={() => abrirGuia("otimizacao")}>Otimização</button>
+        <button type="button" onClick={() => abrirGuia("calibracaoQuanton3D")}>Calibração Q3D</button>
+      </div>
+    </div>
+  );
+}
+
+function BotContent({ cliente }) {
+  const [mensagens, setMensagens] = useState([{ text: `Olá ${cliente?.nome || ""}, sou o assistente técnico da Quanton3D. Como posso te ajudar hoje?`, isBot: true }]);
+  const [input, setInput] = useState("");
+  const [pensando, setPensando] = useState(false);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [mensagens]);
+
+  async function enviar() {
+    if (!input.trim() || pensando) return;
+    const userMsg = input;
+    setInput("");
+    setMensagens(prev => [...prev, { text: userMsg, isBot: false }]);
+    setPensando(true);
+    try {
+      const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
+      setMensagens(prev => [...prev, { text: res.data.data.reply, isBot: true }]);
+    } catch (err) {
+      console.error("Erro ao conversar com bot:", err);
+      setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
+    } finally {
+      setPensando(false);
+    }
+  }
+
+  return (
+    <div className="bot-chat-container">
+      <div className="chat-messages" ref={scrollRef}>
+        {mensagens.map((m, i) => (
+          <div key={i} className={`message-bubble ${m.isBot ? "bot" : "user"}`}>{m.text}</div>
+        ))}
+        {pensando && <div className="message-bubble bot thinking">Analisando base técnica...</div>}
+      </div>
+      <div className="chat-input-row">
+        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." />
+        <button onClick={enviar} disabled={pensando}>Enviar</button>
+      </div>
+    </div>
+  );
+}
+
+function ParamItem({ label, value }) {
+  return (
+    <div className="param-item">
+      <span>{label}</span>
+      <strong>{value || "-"}</strong>
+    </div>
+  );
+}
+
+function InfoCard({ title, text, onClick }) {
+  return (
+    <button type="button" className="info-card clickable-card" onClick={onClick}>
+      <h3>{title}</h3>
+      <p>{text}</p>
+    </button>
+  );
+}
+
+function ServiceLine({ title, onClick }) {
+  return (
+    <button type="button" className="service-line" onClick={onClick}>
+      <span>✓</span>
+      <strong>{title}</strong>
+    </button>
+  );
+}
+
+export default App;
