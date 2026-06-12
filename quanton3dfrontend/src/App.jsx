@@ -439,3 +439,441 @@ Potência UV: ${resultado.potenciaUV || "-"}
           </div>
         )}
       </section>
+            <footer className="site-footer">
+        <span>Quanton3D © Suporte técnico e resinas UV de alta performance.</span>
+        <div className="footer-social-links">
+          {SOCIAL_LINKS.map((link) => (
+            <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
+          ))}
+        </div>
+      </footer>
+    </main>
+  );
+}
+
+function PrivacidadeModal({ aceitarPrivacidade }) {
+  const [confirmouAceite, setConfirmouAceite] = useState(false);
+  return (
+    <div className="modal-backdrop">
+      <section className="privacy-modal">
+        <div className="modal-icon">🔐</div>
+        <h2>Termo de Privacidade e Consentimento</h2>
+        <p>
+          Antes de acessar o suporte técnico da Quanton3D, leia com atenção este termo.
+          Ao continuar, você declara estar ciente sobre como seus dados poderão ser usados
+          para atendimento, suporte técnico e melhoria dos serviços.
+        </p>
+        <div className="privacy-content">
+          <h3>1. Dados que poderão ser coletados</h3>
+          <p>
+            A Quanton3D poderá coletar e armazenar dados informados por você, incluindo
+            nome, WhatsApp, e-mail, origem do contato, data e horário de acesso, mensagens
+            enviadas no atendimento, dúvidas técnicas, resina utilizada, impressora utilizada,
+            parâmetros de impressão, pedidos de formulação personalizada e imagens ou fotos
+            enviadas voluntariamente para análise técnica.
+          </p>
+          <h3>2. Finalidade do uso dos dados</h3>
+          <p>
+            Os dados serão utilizados para liberar o acesso ao suporte técnico, responder dúvidas
+            sobre resinas e impressão 3D, analisar problemas relatados, manter histórico de atendimento,
+            acompanhar solicitações, organizar pedidos de formulação, melhorar a base de conhecimento
+            da Quanton3D e permitir contato comercial relacionado aos serviços solicitados pelo próprio usuário.
+          </p>
+          <h3>3. Uso de imagens enviadas</h3>
+          <p>
+            Caso você envie fotos de peças, falhas de impressão, configurações ou resultados obtidos,
+            essas imagens poderão ser usadas para análise técnica, orientação de parâmetros e melhoria
+            do suporte. Imagens não serão publicadas em galeria pública sem autorização ou aprovação específica.
+          </p>
+          <h3>4. Compartilhamento e segurança</h3>
+          <p>
+            A Quanton3D não deve vender seus dados pessoais. As informações poderão ser armazenadas
+            em sistemas necessários para funcionamento do site, banco de dados, atendimento e ferramentas
+            técnicas usadas para prestar suporte. Serão adotadas medidas razoáveis para proteger os dados
+            contra acesso não autorizado, perda, alteração ou uso indevido.
+          </p>
+          <h3>5. Histórico e melhoria do atendimento</h3>
+          <p>
+            As conversas, perguntas, avaliações de respostas e informações técnicas poderão ser mantidas
+            para melhorar a qualidade do suporte, evitar perda de contexto e permitir que a equipe Quanton3D
+            acompanhe melhor cada caso.
+          </p>
+          <h3>6. Direitos do usuário</h3>
+          <p>
+            Você poderá solicitar acesso, correção, atualização ou exclusão dos seus dados pessoais,
+            quando aplicável. Também poderá pedir esclarecimentos sobre o uso das informações fornecidas.
+          </p>
+          <h3>7. Consentimento</h3>
+          <p>
+            Ao marcar a opção abaixo e continuar, você confirma que leu este termo e autoriza a Quanton3D
+            a tratar seus dados para as finalidades descritas acima.
+          </p>
+        </div>
+        <label className="privacy-accept-row">
+          <input type="checkbox" checked={confirmouAceite} onChange={(e) => setConfirmouAceite(e.target.checked)} />
+          <span>Li e aceito o Termo de Privacidade e autorizo o uso dos meus dados para atendimento, suporte técnico e serviços relacionados à Quanton3D.</span>
+        </label>
+        <button className="submit-registration" disabled={!confirmouAceite} onClick={aceitarPrivacidade}>Aceitar e continuar</button>
+      </section>
+    </div>
+  );
+}
+
+function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCliente, salvarCliente }) {
+  return (
+    <div className="modal-backdrop">
+      <form className="registration-modal" onSubmit={salvarCliente}>
+        <h2>Seja bem-vindo!</h2>
+        <p>Identifique-se para liberar o suporte técnico especializado.</p>
+        {erroCadastro && <div className="modal-error">{erroCadastro}</div>}
+        <div className="form-grid">
+          <label><span>Seu Nome</span><input value={formCliente.nome} onChange={(e) => alterarCliente("nome", e.target.value)} placeholder="Digite seu nome" /></label>
+          <label><span>WhatsApp</span><input value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="DDD + número" /></label>
+          <label><span>E-mail</span><input value={formCliente.email} onChange={(e) => alterarCliente("email", e.target.value)} placeholder="seu@email.com" /></label>
+          <label><span>Como nos conheceu?</span>
+            <select value={formCliente.origem} onChange={(e) => alterarCliente("origem", e.target.value)}>
+              {ORIGENS.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </label>
+        </div>
+        <div className="social-box">
+          <strong>Siga a Quanton3D nas redes</strong>
+          <div>
+            {SOCIAL_LINKS.map((link) => (
+              <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
+            ))}
+          </div>
+        </div>
+        <button className="submit-registration" type="submit" disabled={salvandoCliente}>{salvandoCliente ? "Salvando..." : "Entrar no Suporte Técnico"}</button>
+      </form>
+    </div>
+  );
+}
+
+function GuideModal({ guide, onClose }) {
+  return (
+    <div className="modal-backdrop">
+      <section className="guide-modal">
+        <div className="guide-header">
+          <h2>{guide.title}</h2>
+          <button type="button" onClick={onClose}>Fechar</button>
+        </div>
+        <iframe title={guide.title} src={guide.file} className="guide-frame" />
+      </section>
+    </div>
+  );
+}
+
+function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
+  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada", galeria: "Galeria e Configurações", admGaleria: "ADM Galeria", qualidade: "Alta Qualidade", calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume", bot: "Bot Quanton3D" };
+  return (
+    <div className="modal-backdrop">
+      <section className="site-modal">
+        <div className="guide-header">
+          <h2>{titles[type] || "Informações"}</h2>
+          <button type="button" onClick={onClose}>Fechar</button>
+        </div>
+        {type === "contato" && <ContatoContent cliente={cliente} />}
+        {type === "sobre" && <SobreContent abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />}
+        {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
+        {type === "galeria" && <GaleriaContent cliente={cliente} />}
+        {type === "admGaleria" && <AdminGaleriaContent />}
+        {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
+        {type === "calc_exp" && <CalculadoraExposicao />}
+        {type === "calc_vol" && <CalculadoraVolume />}
+        {type === "bot" && <BotContent cliente={cliente} />}
+      </section>
+    </div>
+  );
+}
+
+function ContatoContent() {
+  return (
+    <div className="modal-rich-content">
+      <p>Escolha uma forma de atendimento especializado.</p>
+      <div className="modal-action-grid">
+        <a href={WHATSAPP_URL} target="_blank" rel="noreferrer">WhatsApp</a>
+        <a href="mailto:atendimento@quanton3d.com.br">E-mail</a>
+      </div>
+    </div>
+  );
+}
+
+function SobreContent({ abrirGuia, abrirParceiroModal }) {
+  return (
+    <div className="modal-rich-content">
+      <p>A Quanton3D é especialista em resinas UV de alta performance.</p>
+      <div className="modal-action-grid">
+        <button type="button" onClick={() => abrirGuia("parceiros")}>Ver parceiros</button>
+        <button type="button" onClick={() => abrirGuia("diagnostico")}>Guia de diagnóstico</button>
+        <button type="button" onClick={abrirParceiroModal}>Quero ser parceiro</button>
+      </div>
+    </div>
+  );
+}
+
+function FormulacaoContent({ cliente }) {
+  const [form, setForm] = useState({ caracteristica: "", cor: "", detalhes: "" });
+  const [enviando, setEnviando] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
+
+  async function enviar() {
+    try {
+      setEnviando(true);
+      await api.post("/formulacoes", { ...form, clienteId: cliente?._id });
+      setSucesso(true);
+    } catch (err) {
+      console.error("Erro ao enviar pedido de formulação:", err);
+      alert("Erro ao enviar pedido.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  if (sucesso) return <div className="modal-success">Pedido enviado com sucesso!</div>;
+
+  return (
+    <div className="modal-rich-content">
+      <p>Solicite uma resina com propriedades específicas.</p>
+      <div className="modal-form-layout" style={{marginTop: "20px"}}>
+        <div className="form-grid">
+          <label><span>Aplicação</span><input value={form.caracteristica} onChange={(e) => setForm({...form, caracteristica: e.target.value})} placeholder="Ex.: Guia Cirúrgico" /></label>
+          <label><span>Cor</span><input value={form.cor} onChange={(e) => setForm({...form, cor: e.target.value})} placeholder="Ex.: Transparente" /></label>
+          <label className="partner-grid-full"><textarea rows="3" value={form.detalhes} onChange={(e) => setForm({...form, detalhes: e.target.value})} placeholder="Descreva sua necessidade." /></label>
+        </div>
+        <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Solicitar Estudo"}</button>
+      </div>
+    </div>
+  );
+}
+
+const CAMPOS_CONFIGURACAO_GALERIA = [
+  { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
+  { name: "camadasBase", label: "Camadas de base", placeholder: "Ex.: 4" },
+  { name: "exposicaoNormal", label: "Tempo exposição", placeholder: "Ex.: 2,100 s" },
+  { name: "exposicaoBase", label: "Tempo exposição base", placeholder: "Ex.: 37,000 s" },
+  { name: "contagemTransicao", label: "Contagem de transição", placeholder: "Ex.: 0" },
+  { name: "tipoTransicao", label: "Tipo de transição", placeholder: "Ex.: Linear" },
+  { name: "retardoDesligarUV", label: "Retardo desligar UV", placeholder: "Ex.: 2,000 s" },
+  { name: "distElevacaoInferior", label: "Dist. elevação inferior", placeholder: "Ex.: 11,000 mm" },
+  { name: "distElevacao", label: "Distância elevação", placeholder: "Ex.: 11,000 mm" },
+  { name: "distRetracao", label: "Distância de retração", placeholder: "Ex.: 11,000 mm" },
+  { name: "velElevacaoInferior", label: "Vel. elevação inferior", placeholder: "Ex.: 140,000 mm/min" },
+  { name: "velElevacao", label: "Vel. elevação", placeholder: "Ex.: 140,000 mm/min" },
+  { name: "velRetracaoInferior", label: "Vel. retração inferior", placeholder: "Ex.: 135,000 mm/min" },
+  { name: "velRetracao", label: "Vel. retração", placeholder: "Ex.: 135,000 mm/min" },
+];
+
+function criarConfiguracaoVazia() {
+  return CAMPOS_CONFIGURACAO_GALERIA.reduce((acc, campo) => {
+    acc[campo.name] = "";
+    return acc;
+  }, {});
+}
+
+function GaleriaContent({ cliente }) {
+  const [aba, setAba] = useState("enviar");
+  const [form, setForm] = useState({
+    resina: "",
+    impressora: "",
+    observacao: "",
+    parametros: criarConfiguracaoVazia(),
+  });
+  const [foto, setFoto] = useState(null);
+  const [itens, setItens] = useState([]);
+  const [carregandoItens, setCarregandoItens] = useState(false);
+  const [erroItens, setErroItens] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
+
+  useEffect(() => {
+    if (aba !== "ver") return undefined;
+
+    let ativo = true;
+
+    async function carregarGaleria() {
+      try {
+        setCarregandoItens(true);
+        setErroItens("");
+        const resposta = await api.get("/gallery");
+        const lista = Array.isArray(resposta.data?.data) ? resposta.data.data : [];
+        if (ativo) setItens(lista);
+      } catch (err) {
+        console.error("Erro ao carregar galeria aprovada:", err);
+        if (ativo) setErroItens("Não foi possível carregar as fotos aprovadas agora.");
+      } finally {
+        if (ativo) setCarregandoItens(false);
+      }
+    }
+
+    carregarGaleria();
+
+    return () => {
+      ativo = false;
+    };
+  }, [aba]);
+
+  function alterar(campo, valor) {
+    setForm((atual) => ({ ...atual, [campo]: valor }));
+  }
+
+  function alterarParametro(campo, valor) {
+    setForm((atual) => ({
+      ...atual,
+      parametros: {
+        ...atual.parametros,
+        [campo]: valor,
+      },
+    }));
+  }
+
+  async function enviar(event) {
+    event.preventDefault();
+
+    if (!form.resina.trim() || !form.impressora.trim() || !foto) {
+      alert("Preencha a resina, a impressora e envie uma foto do trabalho.");
+      return;
+    }
+
+    try {
+      setEnviando(true);
+      const formData = new FormData();
+      formData.append("nome", cliente?.nome || "");
+      formData.append("telefone", cliente?.telefone || "");
+      formData.append("email", cliente?.email || "");
+      formData.append("resina", form.resina);
+      formData.append("impressora", form.impressora);
+      formData.append("observacao", form.observacao);
+      formData.append("clienteId", cliente?._id || cliente?.id || "");
+      formData.append("fotos", foto);
+
+      Object.entries(form.parametros).forEach(([campo, valor]) => {
+        formData.append(`parametros.${campo}`, valor);
+      });
+
+      await api.post("/gallery", formData);
+      setSucesso(true);
+      setForm({
+        resina: "",
+        impressora: "",
+        observacao: "",
+        parametros: criarConfiguracaoVazia(),
+      });
+      setFoto(null);
+    } catch (err) {
+      console.error("Erro ao enviar para galeria:", err);
+      alert("Erro ao enviar para galeria.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <div className="modal-rich-content gallery-content">
+      <p>
+        Envie uma foto real da peça e os campos de configuração usados no Chitubox.
+        O envio fica pendente até aprovação no painel administrativo.
+      </p>
+
+      <div className="gallery-tabs" role="tablist" aria-label="Galeria e configurações">
+        <button
+          type="button"
+          className={aba === "enviar" ? "active" : ""}
+          onClick={() => setAba("enviar")}
+        >
+          📷 Enviar configuração
+        </button>
+        <button
+          type="button"
+          className={aba === "ver" ? "active" : ""}
+          onClick={() => setAba("ver")}
+        >
+          Ver fotos de clientes e configurações
+        </button>
+      </div>
+
+      {aba === "enviar" ? (
+        <form className="modal-form-layout" style={{ marginTop: "20px" }} onSubmit={enviar}>
+          {sucesso ? (
+            <div className="modal-success">
+              Enviado com sucesso! A foto e as configurações aguardam aprovação antes de aparecerem para outros clientes.
+            </div>
+          ) : null}
+
+          <div className="form-grid gallery-form-grid">
+            <label>
+              <span>Resina usada *</span>
+              <input
+                value={form.resina}
+                onChange={(e) => alterar("resina", e.target.value)}
+                placeholder="Ex.: IRON Cinza"
+              />
+            </label>
+            <label>
+              <span>Impressora *</span>
+              <input
+                value={form.impressora}
+                onChange={(e) => alterar("impressora", e.target.value)}
+                placeholder="Ex.: Anycubic Photon M3 Max"
+              />
+            </label>
+            <label className="partner-grid-full">
+              <span>Foto do trabalho feito *</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFoto(e.target.files?.[0] || null)}
+              />
+            </label>
+          </div>
+
+          <div className="gallery-config-box">
+            <h3>Configurações do Chitubox</h3>
+            <p>Preencha os campos que aparecem na aba Imprimir. Deixe em branco o que você não souber.</p>
+            <div className="form-grid gallery-settings-grid">
+              {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => (
+                <label key={campo.name}>
+                  <span>{campo.label}</span>
+                  <input
+                    value={form.parametros[campo.name]}
+                    onChange={(e) => alterarParametro(campo.name, e.target.value)}
+                    placeholder={campo.placeholder}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <label className="gallery-observation">
+            <span>Observações para o próximo cliente</span>
+            <textarea
+              rows="4"
+              value={form.observacao}
+              onChange={(e) => alterar("observacao", e.target.value)}
+              placeholder="Ex.: temperatura do ambiente, suporte usado, se a peça saiu perfeita ou precisou ajuste."
+            />
+          </label>
+
+          <button type="submit" className="submit-registration" disabled={enviando}>
+            {enviando ? "Enviando..." : "Enviar para aprovação"}
+          </button>
+        </form>
+      ) : (
+        <div className="gallery-approved-list">
+          {carregandoItens ? <div className="gallery-empty">Carregando fotos aprovadas...</div> : null}
+          {erroItens ? <div className="modal-error">{erroItens}</div> : null}
+          {!carregandoItens && !erroItens && itens.length === 0 ? (
+            <div className="gallery-empty">
+              Ainda não há fotos aprovadas. Assim que o painel administrativo for ajustado,
+              as configurações aprovadas aparecerão aqui para consulta dos próximos clientes.
+            </div>
+          ) : null}
+
+          {itens.map((item) => (
+            <article className="gallery-approved-card" key={item._id || item.imagem}>
+              {item.imagem ? <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} /> : null}
+              <div>
+                <h3>{item.resina || "Resina não informada"}</h3>
+                <p>{item.impressora || "Impressora não informada"}</p>
+                {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
+                <div className="gallery-param-list">
