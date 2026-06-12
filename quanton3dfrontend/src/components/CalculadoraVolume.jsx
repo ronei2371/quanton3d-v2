@@ -128,10 +128,16 @@ export default function CalculadoraVolume() {
   }, [parametros]);
 
   useEffect(() => {
-    if (!opcoesResina.length) return;
-    if (!opcoesResina.some((item) => item.value === resinaSelecionada)) {
-      setResinaSelecionada(opcoesResina[0].value);
+    if (!opcoesResina.length) return undefined;
+    if (opcoesResina.some((item) => item.value === resinaSelecionada)) {
+      return undefined;
     }
+
+    const ajusteSelecao = setTimeout(() => {
+      setResinaSelecionada(opcoesResina[0].value);
+    }, 0);
+
+    return () => clearTimeout(ajusteSelecao);
   }, [opcoesResina, resinaSelecionada]);
 
   const resultado = useMemo(() => {
