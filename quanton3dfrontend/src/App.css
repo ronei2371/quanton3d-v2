@@ -1,4 +1,3 @@
-
 :root {
   font-family: Inter, Arial, Helvetica, sans-serif;
   color: #eaf7ff;
@@ -903,7 +902,6 @@ a {
   }
 }
 
-
 .experience-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1121,8 +1119,6 @@ a {
   }
 }
 
-main
-
 .admin-gallery-login,
 .admin-gallery-panel {
   display: grid;
@@ -1278,9 +1274,3 @@ main
     grid-template-columns: 1fr;
   }
 }
- codex/revise-code-to-identify-errors-y4xdq2
-
- codex/revise-code-to-identify-errors-s1mcto
- main
-main
- main
