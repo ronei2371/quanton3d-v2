@@ -44,18 +44,22 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
   const [sucesso, setSucesso] = useState("");
 
   useEffect(() => {
-    if (!aberto) return;
+    if (!aberto) return undefined;
 
-    setForm({
-      ...estadoInicial,
-      nome: cliente?.nome || "",
-      telefone: cliente?.telefone || "",
-      email: cliente?.email || "",
-    });
+    const resetModal = setTimeout(() => {
+      setForm({
+        ...estadoInicial,
+        nome: cliente?.nome || "",
+        telefone: cliente?.telefone || "",
+        email: cliente?.email || "",
+      });
 
-    setFotos([]);
-    setErro("");
-    setSucesso("");
+      setFotos([]);
+      setErro("");
+      setSucesso("");
+    }, 0);
+
+    return () => clearTimeout(resetModal);
   }, [aberto, cliente]);
 
   const nomesFotos = useMemo(() => {
