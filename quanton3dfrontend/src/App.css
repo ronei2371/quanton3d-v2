@@ -856,7 +856,7 @@ a {
   .contact-section {
     grid-template-columns: 1fr;
   }
-}
+
 
 @media (max-width: 760px) {
   .header-inner,
@@ -900,7 +900,7 @@ a {
     width: calc(100vw - 18px);
     height: calc(100vh - 18px);
   }
-}
+
 
 .experience-actions {
   display: flex;
@@ -976,7 +976,7 @@ a {
   .partner-form-actions .submit-registration {
     width: 100%;
   }
-}
+
 
 .gallery-tabs {
   display: grid;
@@ -1117,7 +1117,7 @@ a {
   .gallery-approved-card {
     grid-template-columns: 1fr;
   }
-}
+
 
 .admin-gallery-login,
 .admin-gallery-panel {
