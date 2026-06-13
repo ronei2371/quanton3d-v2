@@ -4,7 +4,7 @@
   background: #02040b;
 }
 
-* {
+ {
   box-sizing: border-box;
 }
 
@@ -968,7 +968,7 @@ a {
 }
 
 @media (max-width: 760px) {
-  .partner-form-actions {
+  .partner-form-actions 
     flex-direction: column;
   }
 
@@ -1114,7 +1114,7 @@ a {
 @media (max-width: 760px) {
   .gallery-tabs,
   .gallery-settings-grid,
-  .gallery-approved-card {
+  .gallery-approved-card 
     grid-template-columns: 1fr;
   }
 
