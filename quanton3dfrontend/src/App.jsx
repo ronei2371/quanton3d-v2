@@ -104,6 +104,29 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
+  const aplicarRotaNegocio = useCallback((pathname) => {
+    if (pathname === "/produtos") {
+      setActiveModal(null);
+      setActiveGuide(null);
+      setTimeout(() => {
+        const el = document.getElementById("produtos");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 0);
+      return;
+    }
+
+    if (pathname === "/elio") {
+      setActiveGuide(null);
+      setActiveModal("bot");
+      return;
+    }
+
+    if (pathname === "/galeria") {
+      setActiveGuide(null);
+      setActiveModal("galeriaPublica");
+    }
+  }, []);
+
 
 
   async function carregarParametros() {
@@ -131,6 +154,17 @@ function App() {
     const carregamentoInicial = setTimeout(carregarParametros, 0);
     return () => clearTimeout(carregamentoInicial);
   }, []);
+
+  useEffect(() => {
+    aplicarRotaNegocio(window.location.pathname);
+
+    function aoVoltarHistorico() {
+      aplicarRotaNegocio(window.location.pathname);
+    }
+
+    window.addEventListener("popstate", aoVoltarHistorico);
+    return () => window.removeEventListener("popstate", aoVoltarHistorico);
+  }, [aplicarRotaNegocio]);
 
   const resinas = Array.from(
     new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))
@@ -241,6 +275,12 @@ function App() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+
+  function navegarParaRotaNegocio(pathname) {
+    window.history.pushState({}, "", pathname);
+    aplicarRotaNegocio(pathname);
+  }
+
   function copiarParametros() {
     if (!resultado) return;
     const texto = `
@@ -301,10 +341,12 @@ Potência UV: ${resultado.potenciaUV || "-"}
             </div>
           </div>
           <nav className="main-nav">
-            <button type="button" onClick={() => scrollToSection("produtos")}>Produtos</button>
+            <button type="button" onClick={() => navegarParaRotaNegocio("/produtos")}>Produtos</button>
             <button type="button" onClick={() => scrollToSection("servicos")}>Serviços</button>
             <button type="button" onClick={() => scrollToSection("parametros")}>Informações Técnicas</button>
             <button type="button" onClick={() => scrollToSection("calculadoras")}>Calculadoras</button>
+            <button type="button" onClick={() => navegarParaRotaNegocio("/elio")}>Elio</button>
+            <button type="button" onClick={() => navegarParaRotaNegocio("/galeria")}>Galeria</button>
             <button type="button" onClick={() => setActiveModal("admGaleria")}>ADM Galeria</button>
             <button type="button" onClick={abrirCadastro}>Cliente</button>
           </nav>
@@ -335,7 +377,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
         <p>Envie uma foto da peça e os tempos usados no Chitubox para ajudar a Quanton3D a melhorar a base técnica.</p>
         <div className="experience-actions">
           <button type="button" onClick={() => setActiveModal("galeria")}>📷 Compartilhar minhas configurações</button>
-          <button type="button" onClick={() => setActiveModal("galeriaPublica")}>🖼️ Ver configurações e fotos de clientes</button>
+          <button type="button" onClick={() => navegarParaRotaNegocio("/galeria")}>🖼️ Ver configurações e fotos de clientes</button>
           <button type="button" onClick={abrirParceiroModal}>🤝 Quero ser parceiro</button>
         </div>
       </section>
@@ -574,7 +616,7 @@ const titles = {
   qualidade: "Qualidade e suporte técnico",
   calc_exp: "Calculadora de exposição",
   calc_vol: "Calculadora de volume",
-  bot: "Assistente Quanton3D",
+  bot: "Elio Chat",
 };
 
 function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
