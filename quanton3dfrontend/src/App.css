@@ -4,7 +4,7 @@
   background: #02040b;
 }
 
- {
+* {
   box-sizing: border-box;
 }
 
@@ -968,7 +968,7 @@ a {
 }
 
 @media (max-width: 760px) {
-  .partner-form-actions 
+  .partner-form-actions {
     flex-direction: column;
   }
 
@@ -976,7 +976,7 @@ a {
   .partner-form-actions .submit-registration {
     width: 100%;
   }
-
+}
 
 .gallery-tabs {
   display: grid;
@@ -1100,9 +1100,12 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
+.gallery-param-list li,
 .gallery-param-list span {
   padding: 7px 10px;
   border-radius: 999px;
@@ -1114,10 +1117,10 @@ a {
 @media (max-width: 760px) {
   .gallery-tabs,
   .gallery-settings-grid,
-  .gallery-approved-card 
+  .gallery-approved-card {
     grid-template-columns: 1fr;
   }
-
+}
 
 .admin-gallery-login,
 .admin-gallery-panel {
@@ -1273,4 +1276,4 @@ a {
   .admin-client-grid {
     grid-template-columns: 1fr;
   }
-
+}
