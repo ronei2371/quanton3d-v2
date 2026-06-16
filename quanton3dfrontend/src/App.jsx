@@ -1087,7 +1087,8 @@ function BotContent({ cliente }) {
     setPensando(true);
     try {
       const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
-      setMensagens(prev => [...prev, { text: res.data.data.reply, isBot: true }]);
+      const respostaBot = res.data?.reply || res.data?.data?.reply || "Não consegui responder agora.";
+      setMensagens(prev => [...prev, { text: respostaBot, isBot: true }]);
     } catch (err) {
       console.error("Erro ao conversar com bot:", err);
       setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
@@ -1105,7 +1106,7 @@ function BotContent({ cliente }) {
         {pensando && <div className="message-bubble bot thinking">Analisando base técnica...</div>}
       </div>
       <div className="chat-input-row">
-        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." />
+        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." />
         <button onClick={enviar} disabled={pensando}>Enviar</button>
       </div>
     </div>
