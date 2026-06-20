@@ -22,6 +22,18 @@ const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024, files: 5 
 function normalizarPayload(req, _res, next) {
   if (!req.body) req.body = {};
 
+  const parametros = {};
+  for (const [key, value] of Object.entries(req.body)) {
+    if (key.startsWith('parametros.')) {
+      parametros[key.replace('parametros.', '')] = value;
+      delete req.body[key];
+    }
+  }
+
+  if (Object.keys(parametros).length > 0) {
+    req.body.parametros = parametros;
+  }
+
   if (Array.isArray(req.files) && req.files.length > 0) {
     req.body.imagem = `/uploads/gallery/${req.files[0].filename}`;
   }
