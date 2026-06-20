@@ -1,12 +1,12 @@
 import GalleryItem from '../models/GalleryItem.js';
 
 export async function criarGalleryItem(req, res) {
-  const item = await GalleryItem.create(req.body || {});
+  const item = await GalleryItem.create({ ...(req.body || {}), status: 'pendente' });
   return res.status(201).json({ success: true, data: item });
 }
 
 export async function listarGalleryItems(_req, res) {
-  const items = await GalleryItem.find()
+  const items = await GalleryItem.find({ status: 'aprovado' })
     .sort({ createdAt: -1 })
     .limit(200)
     .lean();

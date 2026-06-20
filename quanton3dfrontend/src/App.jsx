@@ -5,6 +5,7 @@ import ContactMessageModal from "./components/ContactMessageModal";
 import PartnerRequestModal from "./components/PartnerRequestModal";
 import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
+import GaleriaContent from "./components/GaleriaContent";
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
@@ -806,47 +807,6 @@ function FormulacaoContent({ cliente }) {
           <label className="partner-grid-full"><textarea rows="3" value={form.detalhes} onChange={(e) => setForm({...form, detalhes: e.target.value})} placeholder="Descreva sua necessidade." /></label>
         </div>
         <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Solicitar Estudo"}</button>
-      </div>
-    </div>
-  );
-}
-
-function GaleriaContent({ cliente }) {
-  const [form, setForm] = useState({ resina: "", observacao: "" });
-  const [fotos, setFotos] = useState([]);
-  const [enviando, setEnviando] = useState(false);
-  const [sucesso, setSucesso] = useState(false);
-
-  async function enviar() {
-    try {
-      setEnviando(true);
-      const formData = new FormData();
-      formData.append("resina", form.resina);
-      formData.append("observacao", form.observacao);
-      formData.append("clienteId", cliente?._id);
-      fotos.forEach(f => formData.append("fotos", f));
-      await api.post("/gallery", formData);
-      setSucesso(true);
-    } catch (err) {
-      console.error("Erro ao enviar para galeria:", err);
-      alert("Erro ao enviar para galeria.");
-    } finally {
-      setEnviando(false);
-    }
-  }
-
-  if (sucesso) return <div className="modal-success">Fotos enviadas com sucesso!</div>;
-
-  return (
-    <div className="modal-rich-content">
-      <p>Compartilhe fotos de suas peças impressas.</p>
-      <div className="modal-form-layout" style={{marginTop: "20px"}}>
-        <div className="form-grid">
-          <label><span>Resina</span><input value={form.resina} onChange={(e) => setForm({...form, resina: e.target.value})} placeholder="Ex.: Iron Cinza" /></label>
-          <label className="partner-grid-full"><input type="file" multiple accept="image/*" onChange={(e) => setFotos(Array.from(e.target.files))} /></label>
-          <label className="partner-grid-full"><textarea rows="3" value={form.observacao} onChange={(e) => setForm({...form, observacao: e.target.value})} placeholder="Parâmetros usados." /></label>
-        </div>
-        <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Enviar para Galeria"}</button>
       </div>
     </div>
   );
