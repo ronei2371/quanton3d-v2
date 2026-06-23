@@ -387,6 +387,10 @@ Potência UV: ${resultado.potenciaUV || "-"}
             <span>Calculadora de Volume</span>
             <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Estime o custo real da sua peça.</p>
           </div>
+          <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
+            <span>Compensação de Tolerância</span>
+            <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Calcule o X/Y Offset para Chitubox e Lychee.</p>
+          </div>
         </div>
       </section>
 
@@ -575,6 +579,7 @@ const titles = {
   qualidade: "Qualidade e suporte técnico",
   calc_exp: "Calculadora de exposição",
   calc_vol: "Calculadora de volume",
+  calc_tolerancia: "Compensação de tolerância",
   bot: "Assistente Quanton3D",
 };
 
@@ -596,8 +601,105 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
+        {type === "calc_tolerancia" && <CalculadoraTolerancia />}
         {type === "bot" && <BotContent cliente={cliente} />}
       </section>
+    </div>
+  );
+}
+
+
+function formatarMm(valor) {
+  const numero = Number(valor);
+  if (!Number.isFinite(numero)) return "";
+  return `${numero.toFixed(3).replace(".", ",")} mm`;
+}
+
+function CalculadoraTolerancia() {
+  const [externo, setExterno] = useState({ teorica: "", real: "", resultado: null, erro: "" });
+  const [interno, setInterno] = useState({ teorica: "", real: "", resultado: null, erro: "" });
+
+  function alterar(tipo, campo, valor) {
+    const setter = tipo === "externo" ? setExterno : setInterno;
+    setter((atual) => ({ ...atual, [campo]: valor, erro: "" }));
+  }
+
+  function validar(teorica, real) {
+    const medidaTeorica = Number(String(teorica).replace(",", "."));
+    const medidaReal = Number(String(real).replace(",", "."));
+    if (!Number.isFinite(medidaTeorica) || !Number.isFinite(medidaReal)) {
+      return { erro: "Informe as duas medidas em milímetros para calcular." };
+    }
+    return { medidaTeorica, medidaReal };
+  }
+
+  function calcularExterno() {
+    const validacao = validar(externo.teorica, externo.real);
+    if (validacao.erro) {
+      setExterno((atual) => ({ ...atual, resultado: null, erro: validacao.erro }));
+      return;
+    }
+    const erro = validacao.medidaReal - validacao.medidaTeorica;
+    setExterno((atual) => ({ ...atual, resultado: -(erro / 2), erro: "" }));
+  }
+
+  function calcularInterno() {
+    const validacao = validar(interno.teorica, interno.real);
+    if (validacao.erro) {
+      setInterno((atual) => ({ ...atual, resultado: null, erro: validacao.erro }));
+      return;
+    }
+    const erro = validacao.medidaTeorica - validacao.medidaReal;
+    setInterno((atual) => ({ ...atual, resultado: erro / 2, erro: "" }));
+  }
+
+  function limparCampos() {
+    setExterno({ teorica: "", real: "", resultado: null, erro: "" });
+    setInterno({ teorica: "", real: "", resultado: null, erro: "" });
+  }
+
+  return (
+    <div className="modal-rich-content">
+      <p>Use esta calculadora para definir a compensação X/Y Offset no fatiador dividindo o erro por 2, porque a variação acontece nas duas extremidades da parede.</p>
+      <div className="selector-grid" style={{ marginTop: "20px" }}>
+        <ToleranceCard
+          title="Cálculo Externo — campo a"
+          description="Paredes de fora, dentes e pinos macho. Fórmula: Resultado = -((Medida Real - Medida Teórica) / 2)."
+          valores={externo}
+          tipo="externo"
+          onChange={alterar}
+          onCalculate={calcularExterno}
+          buttonLabel="Calcular Compensação Externa"
+        />
+        <ToleranceCard
+          title="Cálculo Interno — campo b"
+          description="Furos, encaixes e troquel fêmea. Fórmula: Resultado = (Medida Teórica - Medida Real) / 2."
+          valores={interno}
+          tipo="interno"
+          onChange={alterar}
+          onCalculate={calcularInterno}
+          buttonLabel="Calcular Compensação Interna"
+        />
+      </div>
+      <button type="button" className="submit-registration" style={{ marginTop: "18px" }} onClick={limparCampos}>Limpar Campos</button>
+      <div className="notice-box">
+        Se a peça saiu maior, o campo 'a' (externo) encolhe o arquivo digitando o valor negativo. O campo 'b' (interno) serve para reabrir os furos que fecharam com a luz.
+      </div>
+    </div>
+  );
+}
+
+function ToleranceCard({ title, description, valores, tipo, onChange, onCalculate, buttonLabel }) {
+  return (
+    <div className="field">
+      <span>{title}</span>
+      <p style={{ margin: 0, color: "#9fb4c7", lineHeight: 1.5 }}>{description}</p>
+      <label><span style={{ fontSize: "0.92rem" }}>Medida Teórica do Arquivo STL (mm)</span><input type="number" step="0.001" value={valores.teorica} onChange={(e) => onChange(tipo, "teorica", e.target.value)} placeholder="Ex.: 10,000" /></label>
+      <label><span style={{ fontSize: "0.92rem" }}>Medida Real no Paquímetro (mm)</span><input type="number" step="0.001" value={valores.real} onChange={(e) => onChange(tipo, "real", e.target.value)} placeholder="Ex.: 10,140" /></label>
+      <button type="button" className="submit-registration" onClick={onCalculate}>{buttonLabel}</button>
+      <div className={valores.erro ? "modal-error" : "modal-success"}>
+        {valores.erro || (valores.resultado === null ? "O resultado aparecerá aqui." : `Compensação: ${formatarMm(valores.resultado)}`)}
+      </div>
     </div>
   );
 }
