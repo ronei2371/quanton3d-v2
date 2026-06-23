@@ -1274,3 +1274,62 @@ a {
     grid-template-columns: 1fr;
   }
 }
+/* Correção visual da galeria pública — fotos inteiras e parâmetros legíveis */
+.gallery-approved-card {
+  grid-template-columns: 1fr;
+}
+
+.gallery-approved-card img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #0f172a;
+}
+
+.gallery-param-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gallery-param-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.88rem;
+}
+
+.gallery-param-list li strong {
+  color: #0f172a;
+}
+
+.gallery-param-list li span {
+  color: #1d4ed8;
+  font-weight: 800;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .gallery-param-list {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-param-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .gallery-param-list li span {
+    text-align: left;
+  }
+}
