@@ -1333,3 +1333,82 @@ a {
     text-align: left;
   }
 }
+/* Correção do tamanho do modal da galeria para remover barra horizontal */
+.site-modal {
+  width: min(94vw, 980px);
+  max-width: 94vw;
+  overflow-x: hidden;
+}
+
+.site-modal .guide-header {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.site-modal .guide-header h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.modal-rich-content,
+.gallery-content,
+.gallery-approved-list,
+.gallery-approved-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.gallery-approved-card > div {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.gallery-approved-card img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.gallery-param-list {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.gallery-param-list li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .site-modal {
+    width: 96vw;
+    max-width: 96vw;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .site-modal .guide-header {
+    align-items: flex-start;
+  }
+
+  .site-modal .guide-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .gallery-approved-card img {
+    max-height: 62vh;
+  }
+}
