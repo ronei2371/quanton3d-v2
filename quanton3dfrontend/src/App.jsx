@@ -629,8 +629,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
 function formatarMm(valor) {
   const numero = Number(valor);
   if (!Number.isFinite(numero)) return "";
-  const sinal = numero > 0 ? "+" : "";
-  return `${sinal}${numero.toFixed(3).replace(".", ",")} mm`;
+  return `${numero.toFixed(3).replace(".", ",")} mm`;
 }
 
 function CalculadoraTolerancia() {
@@ -712,8 +711,8 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
     <div className="field">
       <span>{title}</span>
       <p style={{ margin: 0, color: "#9fb4c7", lineHeight: 1.5 }}>{description}</p>
-      <label><span style={{ fontSize: "0.92rem" }}>Medida Teórica do Arquivo STL (mm)</span><input type="text" inputMode="decimal" value={valores.teorica} onChange={(e) => onChange(tipo, "teorica", e.target.value)} placeholder="Ex.: 10,000" /></label>
-      <label><span style={{ fontSize: "0.92rem" }}>Medida Real no Paquímetro (mm)</span><input type="text" inputMode="decimal" value={valores.real} onChange={(e) => onChange(tipo, "real", e.target.value)} placeholder="Ex.: 10,140" /></label>
+      <label><span style={{ fontSize: "0.92rem" }}>Medida Teórica do Arquivo STL (mm)</span><input type="number" step="0.001" value={valores.teorica} onChange={(e) => onChange(tipo, "teorica", e.target.value)} placeholder="Ex.: 10,000" /></label>
+      <label><span style={{ fontSize: "0.92rem" }}>Medida Real no Paquímetro (mm)</span><input type="number" step="0.001" value={valores.real} onChange={(e) => onChange(tipo, "real", e.target.value)} placeholder="Ex.: 10,140" /></label>
       <button type="button" className="submit-registration" onClick={onCalculate}>{buttonLabel}</button>
       <div className={valores.erro ? "modal-error" : "modal-success"}>
         {valores.erro || (valores.resultado === null ? "O resultado aparecerá aqui." : `Compensação: ${formatarMm(valores.resultado)}`)}
