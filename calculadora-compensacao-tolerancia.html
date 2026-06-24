@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de Compensação de Tolerância</title>
+  <style>
+    :root {
+      --bg: #eef5ff;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #607086;
+      --primary: #2563eb;
+      --primary-2: #d946ef;
+      --border: #dbe6f5;
+      --success: #047857;
+      --danger: #b45309;
+      --shadow: 0 22px 60px rgba(15, 23, 42, 0.13);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 30rem),
+        radial-gradient(circle at bottom right, rgba(217, 70, 239, 0.14), transparent 34rem),
+        linear-gradient(135deg, #f8fbff 0%, var(--bg) 100%);
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: #1d4ed8;
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 24px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.25;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: #344054;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      min-height: 52px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      background: #fbfdff;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.13);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+    }
+
+    .secondary {
+      color: #1d4ed8;
+      background: #eff6ff;
+      border: 1px solid rgba(37, 99, 235, 0.18);
+    }
+
+    .result {
+      min-height: 98px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f8fbff;
+      border: 1px dashed #b6c7df;
+    }
+
+    .result strong {
+      display: block;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      display: block;
+      color: var(--success);
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-weight: 950;
+      letter-spacing: -0.04em;
+    }
+
+    .message {
+      margin-top: 6px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .message.error {
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    .help {
+      margin-top: 20px;
+      padding: 22px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(37, 99, 235, 0.18);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .help h2 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+    }
+
+    .help p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    @media (max-width: 780px) {
+      main {
+        width: min(100% - 20px, 1120px);
+        padding: 24px 0;
+      }
+
+      .calculator-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero" aria-labelledby="titulo">
+      <span class="badge">Laboratório de Prótese Odontológica</span>
+      <h1 id="titulo">Calculadora de Compensação de Tolerância</h1>
+      <p class="subtitle">Calcule o X/Y Offset para Chitubox ou Lychee dividindo o erro por 2, pois a expansão ou contração da resina atua nas duas extremidades da parede.</p>
+    </section>
+
+    <section class="calculator-grid" aria-label="Calculadoras de compensação">
+      <article class="card">
+        <div>
+          <h2>Seção 1: Cálculo Externo — campo “a”</h2>
+          <p>Paredes de fora, dentes e pinos macho.</p>
+        </div>
+
+        <label>
+          Medida Teórica do Arquivo STL (em mm)
+          <input id="externo-teorica" type="text" inputmode="decimal" placeholder="Ex.: 20,000" autocomplete="off" />
+        </label>
+
+        <label>
+          Medida Real no Paquímetro da peça impressa (em mm)
+          <input id="externo-real" type="text" inputmode="decimal" placeholder="Ex.: 20,140" autocomplete="off" />
+        </label>
+
+        <div class="actions">
+          <button class="primary" type="button" onclick="calcularExterno()">Calcular Compensação Externa</button>
+        </div>
+
+        <div class="result" aria-live="polite">
+          <strong>Resultado para o campo “a”</strong>
+          <span id="externo-valor" class="value">—</span>
+          <div id="externo-msg" class="message">Informe as duas medidas positivas e clique em calcular.</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div>
+          <h2>Seção 2: Cálculo Interno — campo “b”</h2>
+          <p>Furos, encaixes e troquel fêmea.</p>
+        </div>
+
+        <label>
+          Medida Teórica do Arquivo STL (em mm)
+          <input id="interno-teorica" type="text" inputmode="decimal" placeholder="Ex.: 10,000" autocomplete="off" />
+        </label>
+
+        <label>
+          Medida Real no Paquímetro da peça impressa (em mm)
+          <input id="interno-real" type="text" inputmode="decimal" placeholder="Ex.: 9,860" autocomplete="off" />
+        </label>
+
+        <div class="actions">
+          <button class="primary" type="button" onclick="calcularInterno()">Calcular Compensação Interna</button>
+        </div>
+
+        <div class="result" aria-live="polite">
+          <strong>Resultado para o campo “b”</strong>
+          <span id="interno-valor" class="value">—</span>
+          <div id="interno-msg" class="message">Informe as duas medidas positivas e clique em calcular.</div>
+        </div>
+      </article>
+    </section>
+
+    <div class="actions" style="justify-content:center; margin-top:20px;">
+      <button class="secondary" type="button" onclick="limparCampos()">Limpar Campos</button>
+    </div>
+
+    <section class="help">
+      <h2>Ajuda rápida</h2>
+      <p>Se a peça saiu maior, o campo 'a' (externo) encolhe o arquivo digitando o valor negativo. O campo 'b' (interno) serve para reabrir os furos que fecharam com a luz.</p>
+    </section>
+  </main>
+
+  <script>
+    function normalizarMedida(valor) {
+      const texto = String(valor || "").trim().replace(/\s/g, "");
+      if (!texto) return NaN;
+      const normalizado = texto.includes(",") ? texto.replace(/\./g, "").replace(",", ".") : texto;
+      const numero = Number(normalizado);
+      return Number.isFinite(numero) && numero >= 0 ? numero : NaN;
+    }
+
+    function formatarMm(valor) {
+      const sinal = valor > 0 ? "" : "";
+      return `${sinal}${valor.toFixed(3).replace(".", ",")} mm`;
+    }
+
+    function mostrarResultado(prefixo, valor, mensagem) {
+      document.getElementById(`${prefixo}-valor`).textContent = formatarMm(valor);
+      const msg = document.getElementById(`${prefixo}-msg`);
+      msg.textContent = mensagem;
+      msg.classList.remove("error");
+    }
+
+    function mostrarErro(prefixo, mensagem) {
+      document.getElementById(`${prefixo}-valor`).textContent = "—";
+      const msg = document.getElementById(`${prefixo}-msg`);
+      msg.textContent = mensagem;
+      msg.classList.add("error");
+    }
+
+    function calcularExterno() {
+      const teorica = normalizarMedida(document.getElementById("externo-teorica").value);
+      const real = normalizarMedida(document.getElementById("externo-real").value);
+
+      if (!Number.isFinite(teorica) || !Number.isFinite(real)) {
+        mostrarErro("externo", "Informe medidas positivas válidas. Exemplo: 20,000 e 20,140.");
+        return;
+      }
+
+      const erro = real - teorica;
+      const resultado = -(erro / 2);
+      const mensagem = resultado < 0
+        ? "A peça saiu maior que o STL. Use este valor negativo no campo 'a'."
+        : "A peça saiu menor que o STL. Use este valor positivo no campo 'a'.";
+
+      mostrarResultado("externo", resultado, mensagem);
+    }
+
+    function calcularInterno() {
+      const teorica = normalizarMedida(document.getElementById("interno-teorica").value);
+      const real = normalizarMedida(document.getElementById("interno-real").value);
+
+      if (!Number.isFinite(teorica) || !Number.isFinite(real)) {
+        mostrarErro("interno", "Informe medidas positivas válidas. Exemplo: 10,000 e 9,860.");
+        return;
+      }
+
+      const erro = teorica - real;
+      const resultado = erro / 2;
+      const mensagem = resultado >= 0
+        ? "Use este valor no campo 'b' para compensar o fechamento interno."
+        : "O encaixe/furo saiu maior que o STL; revise o sinal antes de aplicar no fatiador.";
+
+      mostrarResultado("interno", resultado, mensagem);
+    }
+
+    function limparCampos() {
+      for (const id of ["externo-teorica", "externo-real", "interno-teorica", "interno-real"]) {
+        document.getElementById(id).value = "";
+      }
+      document.getElementById("externo-valor").textContent = "—";
+      document.getElementById("interno-valor").textContent = "—";
+      document.getElementById("externo-msg").textContent = "Informe as duas medidas positivas e clique em calcular.";
+      document.getElementById("interno-msg").textContent = "Informe as duas medidas positivas e clique em calcular.";
+      document.getElementById("externo-msg").classList.remove("error");
+      document.getElementById("interno-msg").classList.remove("error");
+    }
+  </script>
+</body>
+</html>
