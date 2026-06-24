@@ -3,21 +3,9 @@ services:
     name: quanton3d-v2
     runtime: node
     buildCommand: >-
-      npm install --prefix quanton3dbackend && npm install --prefix quanton3dfrontend && cd quanton3dfrontend && node -e 'const fs=require("fs");for(const f of ["src/App.jsx","src/App.css"]){let s=fs.readFileSync(f,"utf8").replace(/\r\n/g,"\n").split("\n").filter(l=>!/^\s*codex\//.test(l)&&!/<<<<<<<|=======|>>>>>>>/.test(l)&&l.trim()!=="main").join("\n");if(f.endsWith(".jsx")){const ex="export default App;";const xi=s.indexOf(ex);if(xi>=0)s=s.slice(0,xi+ex.length);const a=s.indexOf("  const impressoras = Array.from(");const b=s.indexOf("  function selecionarResina",a);if(a>=0&&b>a){const block=`  const impressoras = Array.from(
-    new Set(
-      parametros
-        .filter((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora)
-        .map((item) => (item.marca ? item.marca + " - " + item.impressora : item.impressora))
-    )
-  ).sort((a, b) => a.localeCompare(b));
-
-  const totalImpressoras = new Set(
-    parametros
-      .filter((item) => item.impressora)
-      .map((item) => (item.marca || "") + "-" + item.impressora)
-  ).size;
-
-`;s=s.slice(0,a)+block+s.slice(b)}}fs.writeFileSync(f,s.trimEnd()+"\n")}' && npm run build
+      npm install --prefix quanton3dbackend &&
+      npm install --prefix quanton3dfrontend &&
+      npm run build --prefix quanton3dfrontend
     startCommand: npm start --prefix quanton3dbackend
     envVars:
       - key: NODE_ENV
@@ -36,6 +24,12 @@ services:
         sync: false
       - key: ADMIN_SECRET
         sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DEEPSEEK_BASE_URL
+        value: https://api.deepseek.com
+      - key: DEEPSEEK_CHAT_MODEL
+        value: deepseek-chat
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_CHAT_MODEL
