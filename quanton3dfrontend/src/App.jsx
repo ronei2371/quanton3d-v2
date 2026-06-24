@@ -61,6 +61,15 @@ function limparTexto(valor) {
   return String(valor || "").trim();
 }
 
+function somenteDigitos(valor) {
+  return limparTexto(valor).replace(/\D/g, "");
+}
+
+function whatsappValido(valor) {
+  const digitos = somenteDigitos(valor);
+  return digitos.length === 10 || digitos.length === 11;
+}
+
 function corrigirNomeResina(nome) {
   return limparTexto(nome)
     .replace(/^FERRO\s*70\/30\b/i, "IRON 70/30")
@@ -197,6 +206,10 @@ function App() {
     setErroCadastro("");
     if (!formCliente.nome || !formCliente.telefone || !formCliente.email) {
       setErroCadastro("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    if (!whatsappValido(formCliente.telefone)) {
+      setErroCadastro("Informe um WhatsApp válido com DDD. Exemplo: 31999999999.");
       return;
     }
     try {
@@ -537,7 +550,7 @@ function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCl
         {erroCadastro && <div className="modal-error">{erroCadastro}</div>}
         <div className="form-grid">
           <label><span>Seu Nome</span><input value={formCliente.nome} onChange={(e) => alterarCliente("nome", e.target.value)} placeholder="Digite seu nome" /></label>
-          <label><span>WhatsApp</span><input value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="DDD + número" /></label>
+          <label><span>WhatsApp</span><input type="tel" inputMode="numeric" value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="DDD + número" /></label>
           <label><span>E-mail</span><input value={formCliente.email} onChange={(e) => alterarCliente("email", e.target.value)} placeholder="seu@email.com" /></label>
           <label><span>Como nos conheceu?</span>
             <select value={formCliente.origem} onChange={(e) => alterarCliente("origem", e.target.value)}>
