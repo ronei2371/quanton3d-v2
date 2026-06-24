@@ -10,6 +10,10 @@ const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
   { label: "Instagram", url: "https://www.instagram.com/quanton3d" },
   { label: "YouTube", url: "https://www.youtube.com/@quanton3d" },
+  { label: "TikTok", url: "https://www.tiktok.com/@quanton3d" },
+  { label: "Facebook", url: "https://www.facebook.com/quanton3d" },
+  { label: "Site", url: "https://www.quanton3d.com.br" },
+  { label: "Mercado Livre", url: "https://www.mercadolivre.com.br/loja/quanton-3d?item_id=MLB5481847898&category_id=MLB1648&official_store_id=152142&client=recoview-selleritems&recos_listing=true" },
 ];
 
 const ORIGENS = [
