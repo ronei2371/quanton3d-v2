@@ -5,11 +5,16 @@ import ContactMessageModal from "./components/ContactMessageModal";
 import PartnerRequestModal from "./components/PartnerRequestModal";
 import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
+import CalculadoraTolerancia from "./components/CalculadoraTolerancia";
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
   { label: "Instagram", url: "https://www.instagram.com/quanton3d" },
   { label: "YouTube", url: "https://www.youtube.com/@quanton3d" },
+  { label: "TikTok", url: "https://www.tiktok.com/@quanton3d" },
+  { label: "Facebook", url: "https://www.facebook.com/quanton3d" },
+  { label: "Site", url: "https://www.quanton3d.com.br" },
+  { label: "Mercado Livre", url: "https://www.mercadolivre.com.br/loja/quanton-3d?item_id=MLB5481847898&category_id=MLB1648&official_store_id=152142&client=recoview-selleritems&recos_listing=true" },
 ];
 
 const ORIGENS = [
@@ -55,6 +60,15 @@ function getPrivacidadeAceita() {
 
 function limparTexto(valor) {
   return String(valor || "").trim();
+}
+
+function somenteDigitos(valor) {
+  return limparTexto(valor).replace(/\D/g, "");
+}
+
+function whatsappValido(valor) {
+  const digitos = somenteDigitos(valor);
+  return digitos.length === 10 || digitos.length === 11;
 }
 
 function corrigirNomeResina(nome) {
@@ -193,6 +207,10 @@ function App() {
     setErroCadastro("");
     if (!formCliente.nome || !formCliente.telefone || !formCliente.email) {
       setErroCadastro("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    if (!whatsappValido(formCliente.telefone)) {
+      setErroCadastro("Informe um WhatsApp válido com DDD. Exemplo: 31999999999.");
       return;
     }
     try {
@@ -387,6 +405,10 @@ Potência UV: ${resultado.potenciaUV || "-"}
             <span>Calculadora de Volume</span>
             <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Estime o custo real da sua peça.</p>
           </div>
+          <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
+            <span>Compensação de Tolerância</span>
+            <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Calcule o X/Y Offset para Chitubox e Lychee.</p>
+          </div>
         </div>
       </section>
 
@@ -529,7 +551,7 @@ function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCl
         {erroCadastro && <div className="modal-error">{erroCadastro}</div>}
         <div className="form-grid">
           <label><span>Seu Nome</span><input value={formCliente.nome} onChange={(e) => alterarCliente("nome", e.target.value)} placeholder="Digite seu nome" /></label>
-          <label><span>WhatsApp</span><input value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="DDD + número" /></label>
+          <label><span>WhatsApp</span><input type="tel" inputMode="numeric" value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="DDD + número" /></label>
           <label><span>E-mail</span><input value={formCliente.email} onChange={(e) => alterarCliente("email", e.target.value)} placeholder="seu@email.com" /></label>
           <label><span>Como nos conheceu?</span>
             <select value={formCliente.origem} onChange={(e) => alterarCliente("origem", e.target.value)}>
@@ -575,6 +597,7 @@ const titles = {
   qualidade: "Qualidade e suporte técnico",
   calc_exp: "Calculadora de exposição",
   calc_vol: "Calculadora de volume",
+  calc_tolerancia: "Compensação de tolerância",
   bot: "Assistente Quanton3D",
 };
 
@@ -596,11 +619,13 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
+        {type === "calc_tolerancia" && <CalculadoraTolerancia />}
         {type === "bot" && <BotContent cliente={cliente} />}
       </section>
     </div>
   );
 }
+
 
 function ContatoContent() {
   return (
@@ -1025,7 +1050,7 @@ function BotContent({ cliente }) {
     setPensando(true);
     try {
       const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
-      setMensagens(prev => [...prev, { text: res.data.data.reply, isBot: true }]);
+      setMensagens(prev => [...prev, { text: res.data.reply, isBot: true }]);
     } catch (err) {
       console.error("Erro ao conversar com bot:", err);
       setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
