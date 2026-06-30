@@ -19,36 +19,6 @@ function client() {
     });
 }
 
-function chatErrorResponse(error) {
-    const status = Number(error?.status || error?.response?.status || 500);
-
-    if (status === 401 || status === 403) {
-        return {
-            status: 503,
-            error: 'Assistente temporariamente indisponível. Nossa equipe técnica já foi acionada.'
-        };
-    }
-
-    if (status === 429) {
-        return {
-            status: 429,
-            error: 'O assistente está recebendo muitas solicitações agora. Tente novamente em alguns instantes.'
-        };
-    }
-
-    if (status >= 500 || error?.code === 'ETIMEDOUT' || error?.name === 'TimeoutError') {
-        return {
-            status: 503,
-            error: 'Não consegui consultar o assistente agora. Tente novamente em instantes.'
-        };
-    }
-
-    return {
-        status: 500,
-        error: 'Erro interno no servidor de chat. Tente novamente em instantes.'
-    };
-}
-
 router.post('/', async (req, res) => {
     try {
         const { message = '', image = null } = req.body || {};
@@ -70,21 +40,18 @@ router.post('/', async (req, res) => {
         // DeepSeek R1/V3 geralmente usa o modelo configurado no Render
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-chat';
 
-        const completion = await client().chat.completions.create(
-            {
-                model: model,
-                temperature: 0.2,
-                max_tokens: 1000,
-                messages: [
-                    { 
-                        role: 'system', 
-                        content: 'Você é o técnico especialista da Quanton3D. Responda de forma curta, prática e técnica. Fale sobre as resinas IRON (resistente) e FLEXFORM (flexível) quando apropriado. Seja direto.' 
-                    },
-                    { role: 'user', content: text }
-                ]
-            },
-            { timeout: 20000 }
-        );
+        const completion = await client().chat.completions.create({
+            model: model,
+            temperature: 0.2,
+            max_tokens: 1000,
+            messages: [
+                { 
+                    role: 'system', 
+                    content: 'Você é o técnico especialista da Quanton3D. Responda de forma curta, prática e técnica. Fale sobre as resinas IRON (resistente) e FLEXFORM (flexível) quando apropriado. Seja direto.' 
+                },
+                { role: 'user', content: text }
+            ]
+        });
 
         res.json({
             success: true,
@@ -94,8 +61,7 @@ router.post('/', async (req, res) => {
 
     } catch (e) {
         console.error('[CHAT ERROR]', e);
-        const { status, error } = chatErrorResponse(e);
-        res.status(status).json({ success: false, error });
+        res.status(500).json({ success: false, error: e.message || 'Erro interno no servidor de chat' });
     }
 });
 

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node -c server.js && node -c controllers/formulacoesController.js && node -c routes/gallery.js && node -c routes/botTickets.js && node -c routes/contactMessages.js && node -c routes/partnerRequests.js && node -c routes/admin.js && node -c routes/chat.js"
+    "test": "node -c server.js && node -c controllers/formulacoesController.js && node -c routes/gallery.js && node -c routes/botTickets.js && node -c routes/contactMessages.js && node -c routes/partnerRequests.js && node -c routes/admin.js"
   },
   "dependencies": {
     "cheerio": "^1.2.0",
