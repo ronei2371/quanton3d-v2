@@ -130,7 +130,7 @@ function App() {
               <p>Estime o consumo de resina do projeto.</p>
             </div>
             <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
-              <span>Compensação de tolerância</span>
+              <span>Compensação de Tolerância</span>
               <p>Ajuste X/Y Offset para encaixes perfeitos.</p>
             </div>
           </div>
@@ -178,7 +178,7 @@ function Modal({ type, onClose, cliente, onRegistrationSuccess, abrirGuia, abrir
     formulacao: "Formulação Personalizada",
     calc_exp: "Calculadora de Exposição",
     calc_vol: "Calculadora de Volume",
-    calc_tolerancia: "Compensação de tolerância",
+    calc_tolerancia: "Compensação de Tolerância",
     bot: "Assistente Técnico Quanton3D",
   };
 
