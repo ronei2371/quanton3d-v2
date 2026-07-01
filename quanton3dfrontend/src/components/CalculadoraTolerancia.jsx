@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 /**
  * Normaliza o input do usuário para número, aceitando vírgula ou ponto decimal.
