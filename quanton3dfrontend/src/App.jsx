@@ -6,6 +6,7 @@ import PartnerRequestModal from "./components/PartnerRequestModal";
 import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
 import CalculadoraTolerancia from "./components/CalculadoraTolerancia";
+import CalculadoraCustos from "./components/CalculadoraCustos";
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
@@ -28,6 +29,7 @@ const SERVICE_BUTTONS = [
   { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
   { label: "CALCULADORA DE TOLERÂNCIA", kind: "modal", id: "calc_tolerancia" },
+  { label: "CALCULADORA DE CUSTOS", kind: "modal", id: "calc_custos" },
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
@@ -569,7 +571,7 @@ function GuideModal({ guide, onClose }) {
 }
 
 function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
-  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada", galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes", admGaleria: "ADM Galeria", qualidade: "Alta Qualidade", calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume", calc_tolerancia: "Calculadora de Tolerância", bot: "Bot Quanton3D" };
+  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada", galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes", admGaleria: "ADM Galeria", qualidade: "Alta Qualidade", calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume", calc_tolerancia: "Calculadora de Tolerância", calc_custos: "Calculadora de Custos e Orçamentos", bot: "Bot Quanton3D" };
   return (
     <div className="modal-backdrop">
       <section className="site-modal">
@@ -587,6 +589,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
         {type === "calc_tolerancia" && <CalculadoraTolerancia />}
+        {type === "calc_custos" && <CalculadoraCustos />}
         {type === "bot" && <BotContent cliente={cliente} />}
       </section>
     </div>
