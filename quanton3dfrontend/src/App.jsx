@@ -13,17 +13,7 @@ const SOCIAL_LINKS = [
   { label: "Instagram", url: "https://www.instagram.com/quanton3d" },
   { label: "YouTube", url: "https://www.youtube.com/@quanton3d" },
 ];
-
-const ORIGENS = [
-  "Instagram",
-  "YouTube",
-  "Google / Pesquisa",
-  "Indicação de amigo",
-  "Mercado Livre / Shopee",
-  "Já sou cliente",
-  "Outros",
-];
-
+const ORIGENS = ["Instagram","YouTube","Google / Pesquisa","Indicação de amigo","Mercado Livre / Shopee","Já sou cliente","Outros"];
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
@@ -34,40 +24,6 @@ const SERVICE_BUTTONS = [
   { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
   { label: "COMPARTILHAR CONFIGURAÇÕES", kind: "modal", id: "galeria" },
 ];
-
-
-function getClienteSalvo() {
-  try {
-    const salvo = localStorage.getItem("quanton3d_cliente");
-    return salvo ? JSON.parse(salvo) : null;
-  } catch (err) {
-    console.error("Erro ao ler cliente salvo:", err);
-    return null;
-  }
-}
-
-function getPrivacidadeAceita() {
-  return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
-}
-
-function limparTexto(valor) {
-  return String(valor || "").trim();
-}
-
-function corrigirNomeResina(nome) {
-  return limparTexto(nome)
-    .replace(/^FERRO\s*70\/30\b/i, "IRON 70/30")
-    .replace(/^FERRO\s*7030\b/i, "IRON 7030")
-    .replace(/^FERRO\b/i, "IRON")
-    .replace(/^Iron\b/i, "IRON")
-    .replace(/^iron\b/i, "IRON");
-}
-
-function chaveResina(nome) {
-  return corrigirNomeResina(nome).toUpperCase();
-}
-
-
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
   fatiadores: { title: "Configuração de Fatiadores", file: "/guias/guia-configuracao-fatiadores.html" },
@@ -80,6 +36,54 @@ const GUIDES = {
   parceiros: { title: "Parceiros Quanton3D", file: "/guias/parceiros-quanton3d.html" },
   parametrosDetalhados: { title: "Parâmetros detalhados Chitubox", file: "/guias/secao-parametros-detalhados.html" },
 };
+const CAMPOS_CONFIGURACAO_GALERIA = [
+  { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
+  { name: "camadasBase", label: "Camadas de base", placeholder: "Ex.: 4" },
+  { name: "exposicaoNormal", label: "Tempo exposição", placeholder: "Ex.: 2,100 s" },
+  { name: "exposicaoBase", label: "Tempo exposição base", placeholder: "Ex.: 37,000 s" },
+  { name: "contagemTransicao", label: "Contagem de transição", placeholder: "Ex.: 0" },
+  { name: "tipoTransicao", label: "Tipo de transição", placeholder: "Ex.: Linear" },
+  { name: "retardoDesligarUV", label: "Retardo desligar UV", placeholder: "Ex.: 2,000 s" },
+  { name: "distElevacaoInferior", label: "Dist. elevação inferior", placeholder: "Ex.: 11,000 mm" },
+  { name: "distElevacao", label: "Distância elevação", placeholder: "Ex.: 11,000 mm" },
+  { name: "distRetracao", label: "Distância de retração", placeholder: "Ex.: 11,000 mm" },
+  { name: "velElevacaoInferior", label: "Vel. elevação inferior", placeholder: "Ex.: 140,000 mm/min" },
+  { name: "velElevacao", label: "Vel. elevação", placeholder: "Ex.: 140,000 mm/min" },
+  { name: "velRetracaoInferior", label: "Vel. retração inferior", placeholder: "Ex.: 135,000 mm/min" },
+  { name: "velRetracao", label: "Vel. retração", placeholder: "Ex.: 135,000 mm/min" },
+];
+
+function getClienteSalvo() {
+  try { const s = localStorage.getItem("quanton3d_cliente"); return s ? JSON.parse(s) : null; } catch { return null; }
+}
+function getPrivacidadeAceita() {
+  return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
+}
+function limparTexto(valor) { return String(valor || "").trim(); }
+function corrigirNomeResina(nome) {
+  return limparTexto(nome)
+    .replace(/^FERRO\s*70\/30\b/i, "IRON 70/30")
+    .replace(/^FERRO\s*7030\b/i, "IRON 7030")
+    .replace(/^FERRO\b/i, "IRON")
+    .replace(/^Iron\b/i, "IRON")
+    .replace(/^iron\b/i, "IRON");
+}
+function chaveResina(nome) { return corrigirNomeResina(nome).toUpperCase(); }
+function criarConfiguracaoVazia() {
+  return CAMPOS_CONFIGURACAO_GALERIA.reduce((acc, campo) => { acc[campo.name] = ""; return acc; }, {});
+}
+function formatarDataHora(data) {
+  if (!data) return "-";
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data));
+}
+function formatarMarkdown(texto) {
+  return texto
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, "<code style=\"background:rgba(255,255,255,0.12);padding:2px 6px;border-radius:4px;font-size:0.88em\">$1</code>")
+    .replace(/\n{2,}/g, "</p><p style=\"margin:8px 0\">")
+    .replace(/\n/g, "<br/>");
+}
 
 function App() {
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
@@ -101,97 +105,43 @@ function App() {
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
 
-
-
   async function carregarParametros() {
     try {
-      setCarregando(true);
-      setErro("");
+      setCarregando(true); setErro("");
       const res = await api.get("/parametros");
       const lista = res.data?.data || res.data?.parametros || [];
-      const listaCorrigida = lista.map((item) => ({
+      setParametros(lista.map((item) => ({
         ...item,
         resina: corrigirNomeResina(item.resina),
         impressora: limparTexto(item.impressora),
         marca: limparTexto(item.marca),
-      }));
-      setParametros(listaCorrigida);
+      })));
     } catch (err) {
       console.error("Erro ao carregar parâmetros:", err);
       setErro("Não foi possível carregar os parâmetros técnicos.");
-    } finally {
-      setCarregando(false);
-    }
+    } finally { setCarregando(false); }
   }
 
-  useEffect(() => {
-    const carregamentoInicial = setTimeout(carregarParametros, 0);
-    return () => clearTimeout(carregamentoInicial);
-  }, []);
+  useEffect(() => { const t = setTimeout(carregarParametros, 0); return () => clearTimeout(t); }, []);
 
-  const resinas = Array.from(
-    new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b));
+  const resinas = Array.from(new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+  const impressoras = Array.from(new Set(parametros.filter((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora).map((item) => item.marca ? `${item.marca} - ${item.impressora}` : item.impressora))).sort((a, b) => a.localeCompare(b));
+  const totalImpressoras = new Set(parametros.filter((item) => item.impressora).map((item) => `${item.marca || ""}-${item.impressora}`)).size;
 
-  const impressoras = Array.from(
-    new Set(
-      parametros
-        .filter((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora)
-        .map((item) => (item.marca ? `${item.marca} - ${item.impressora}` : item.impressora))
-    )
-  ).sort((a, b) => a.localeCompare(b));
-
-  const totalImpressoras = new Set(
-    parametros
-      .filter((item) => item.impressora)
-      .map((item) => `${item.marca || ""}-${item.impressora}`)
-  ).size;
-
-  function selecionarResina(nome) {
-    setResinaSelecionada(nome);
-    setImpressoraSelecionada("");
-    setResultado(null);
-  }
-
+  function selecionarResina(nome) { setResinaSelecionada(nome); setImpressoraSelecionada(""); setResultado(null); }
   function selecionarImpressora(valor) {
     setImpressoraSelecionada(valor);
     const nomeModelo = valor.includes(" - ") ? valor.split(" - ").slice(1).join(" - ") : valor;
     const marcaModelo = valor.includes(" - ") ? valor.split(" - ")[0] : "";
-    const p = parametros.find((item) => {
-      const mesmaResina = chaveResina(item.resina) === chaveResina(resinaSelecionada);
-      const mesmaImpressora = item.impressora === nomeModelo;
-      const mesmaMarca = !marcaModelo || item.marca === marcaModelo;
-      return mesmaResina && mesmaImpressora && mesmaMarca;
-    });
+    const p = parametros.find((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora === nomeModelo && (!marcaModelo || item.marca === marcaModelo));
     setResultado(p || null);
   }
-
-  function aceitarPrivacidade() {
-    localStorage.setItem("quanton3d_privacidade_aceita", "true");
-    setMostrarPrivacidade(false);
-    setMostrarCadastro(!cliente);
-  }
-
-  function abrirCadastro() {
-    setErroCadastro("");
-    if (!getPrivacidadeAceita()) {
-      setMostrarPrivacidade(true);
-      return;
-    }
-    setMostrarCadastro(true);
-  }
-
-  function alterarCliente(campo, valor) {
-    setFormCliente((atual) => ({ ...atual, [campo]: valor }));
-  }
-
+  function aceitarPrivacidade() { localStorage.setItem("quanton3d_privacidade_aceita", "true"); setMostrarPrivacidade(false); setMostrarCadastro(!cliente); }
+  function abrirCadastro() { setErroCadastro(""); if (!getPrivacidadeAceita()) { setMostrarPrivacidade(true); return; } setMostrarCadastro(true); }
+  function alterarCliente(campo, valor) { setFormCliente((a) => ({ ...a, [campo]: valor })); }
   async function salvarCliente(e) {
-    e.preventDefault();
-    setErroCadastro("");
-    if (!formCliente.nome || !formCliente.telefone || !formCliente.email) {
-      setErroCadastro("Preencha todos os campos obrigatórios.");
-      return;
-    }
+    e.preventDefault(); setErroCadastro("");
+    if (!formCliente.nome || !formCliente.telefone || !formCliente.email) { setErroCadastro("Preencha todos os campos obrigatórios."); return; }
     try {
       setSalvandoCliente(true);
       const res = await api.post("/clientes", formCliente);
@@ -199,66 +149,21 @@ function App() {
       setCliente(novoCliente);
       localStorage.setItem("quanton3d_cliente", JSON.stringify(novoCliente));
       setMostrarCadastro(false);
-    } catch (err) {
-      console.error("Erro ao salvar cliente:", err);
-      setErroCadastro("Erro ao realizar cadastro.");
-    } finally {
-      setSalvandoCliente(false);
-    }
+    } catch (err) { console.error("Erro ao salvar cliente:", err); setErroCadastro("Erro ao realizar cadastro."); }
+    finally { setSalvandoCliente(false); }
   }
-
   function executarAcao(item) {
-    if (item.kind === "guide") {
-      setActiveGuide(GUIDES[item.id]);
-      return;
-    }
-    if (item.kind === "modal" && item.id === "contato") {
-      setMostrarContatoMensagem(true);
-      return;
-    }
-    if (item.kind === "modal") {
-      setActiveModal(item.id);
-      return;
-    }
-    if (item.kind === "whatsapp") {
-      window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
-    }
+    if (item.kind === "guide") { setActiveGuide(GUIDES[item.id]); return; }
+    if (item.kind === "modal" && item.id === "contato") { setMostrarContatoMensagem(true); return; }
+    if (item.kind === "modal") { setActiveModal(item.id); return; }
+    if (item.kind === "whatsapp") { window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer"); }
   }
-
-  function abrirGuia(id) {
-    setActiveGuide(GUIDES[id]);
-  }
-
-  function abrirParceiroModal() {
-    setMostrarParceiroModal(true);
-  }
-
-  function scrollToSection(id) {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
+  function abrirGuia(id) { setActiveGuide(GUIDES[id]); }
+  function abrirParceiroModal() { setMostrarParceiroModal(true); }
+  function scrollToSection(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }
   function copiarParametros() {
     if (!resultado) return;
-    const texto = `
-Parâmetros Quanton3D
-Cliente: ${cliente?.nome || "-"}
-WhatsApp: ${cliente?.telefone || "-"}
-E-mail: ${cliente?.email || "-"}
-Resina: ${corrigirNomeResina(resultado.resina)}
-Marca: ${resultado.marca || "-"}
-Impressora: ${resultado.impressora || "-"}
-Altura de camada: ${resultado.alturaCamada || "-"}
-Camadas base: ${resultado.camadasBase || "-"}
-Exposição normal: ${resultado.exposicaoNormal || "-"}
-Exposição base: ${resultado.exposicaoBase || "-"}
-Retardo UV: ${resultado.retardoUV || "-"}
-Retardo UV base: ${resultado.retardoUVBase || "-"}
-Descanso antes da elevação: ${resultado.descansoAntesElevacao || "-"}
-Descanso após a elevação: ${resultado.descansoAposElevacao || "-"}
-Descanso após a retração: ${resultado.descansoAposRetracao || "-"}
-Potência UV: ${resultado.potenciaUV || "-"}
-    `.trim();
+    const texto = `Parâmetros Quanton3D\nCliente: ${cliente?.nome || "-"}\nWhatsApp: ${cliente?.telefone || "-"}\nE-mail: ${cliente?.email || "-"}\nResina: ${corrigirNomeResina(resultado.resina)}\nMarca: ${resultado.marca || "-"}\nImpressora: ${resultado.impressora || "-"}\nAltura de camada: ${resultado.alturaCamada || "-"}\nCamadas base: ${resultado.camadasBase || "-"}\nExposição normal: ${resultado.exposicaoNormal || "-"}\nExposição base: ${resultado.exposicaoBase || "-"}\nRetardo UV: ${resultado.retardoUV || "-"}\nPotência UV: ${resultado.potenciaUV || "-"}`.trim();
     navigator.clipboard.writeText(texto);
     alert("Parâmetros copiados.");
   }
@@ -267,24 +172,12 @@ Potência UV: ${resultado.potenciaUV || "-"}
     <main className="app-shell">
       {mostrarPrivacidade && <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />}
       {mostrarCadastro && !mostrarPrivacidade && (
-        <CadastroInicial
-          formCliente={formCliente}
-          salvandoCliente={salvandoCliente}
-          erroCadastro={erroCadastro}
-          alterarCliente={alterarCliente}
-          salvarCliente={salvarCliente}
-        />
+        <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} />
       )}
       {activeGuide && <GuideModal guide={activeGuide} onClose={() => setActiveGuide(null)} />}
       <ContactMessageModal aberto={mostrarContatoMensagem} aoFechar={() => setMostrarContatoMensagem(false)} cliente={cliente} />
       {activeModal && (
-        <SiteModal
-          type={activeModal}
-          cliente={cliente}
-          onClose={() => setActiveModal(null)}
-          abrirGuia={abrirGuia}
-          abrirParceiroModal={abrirParceiroModal}
-        />
+        <SiteModal type={activeModal} cliente={cliente} onClose={() => setActiveModal(null)} abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />
       )}
       <PartnerRequestModal aberto={mostrarParceiroModal} aoFechar={() => setMostrarParceiroModal(false)} cliente={cliente} />
 
@@ -292,18 +185,17 @@ Potência UV: ${resultado.potenciaUV || "-"}
         <div className="header-inner">
           <div className="brand">
             <div className="brand-mark">Q3D</div>
-            <div>
-              <h1 translate="no">Quanton3D</h1>
-              <p>Resinas UV SLA/DLP de Alta Performance</p>
-            </div>
+            <div><h1 translate="no">Quanton3D</h1><p>Resinas UV SLA/DLP de Alta Performance</p></div>
           </div>
           <nav className="main-nav">
             <button type="button" onClick={() => scrollToSection("produtos")}>Produtos</button>
             <button type="button" onClick={() => scrollToSection("servicos")}>Serviços</button>
-            <button type="button" onClick={() => scrollToSection("parametros")}>Informações Técnicas</button>
+            <button type="button" onClick={() => scrollToSection("parametros")}>Inf. Técnicas</button>
             <button type="button" onClick={() => scrollToSection("calculadoras")}>Calculadoras</button>
-            <button type="button" onClick={() => setActiveModal("admGaleria")}>ADM Galeria</button>
-            <button type="button" onClick={abrirCadastro}>Cliente</button>
+            <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
+            <button type="button" onClick={abrirCadastro}>
+              {cliente ? `👤 ${cliente.nome.split(" ")[0]}` : "Cliente"}
+            </button>
           </nav>
         </div>
       </header>
@@ -311,6 +203,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
       {cliente && (
         <div className="client-chip">
           <strong>Cliente ativo:</strong> {cliente.nome} • {cliente.telefone}
+          <button type="button" onClick={abrirCadastro} style={{ marginLeft: "12px", fontSize: "0.75rem", padding: "2px 8px" }}>Atualizar dados</button>
         </div>
       )}
 
@@ -334,6 +227,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
           <button type="button" onClick={() => setActiveModal("galeria")}>📷 Compartilhar minhas configurações</button>
           <button type="button" onClick={() => setActiveModal("galeriaPublica")}>🖼️ Ver configurações e fotos de clientes</button>
           <button type="button" onClick={abrirParceiroModal}>🤝 Quero ser parceiro</button>
+          <button type="button" onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
         </div>
       </section>
 
@@ -378,13 +272,29 @@ Potência UV: ${resultado.potenciaUV || "-"}
         <div className="selector-grid">
           <div className="field clickable-card" onClick={() => setActiveModal("calc_exp")}>
             <span>Calculadora de Exposição</span>
-            <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Ajuste fino baseado na temperatura.</p>
+            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Ajuste fino baseado na temperatura.</p>
           </div>
           <div className="field clickable-card" onClick={() => setActiveModal("calc_vol")}>
             <span>Calculadora de Volume</span>
-            <p style={{fontSize: "0.85rem", color: "#9fb4c7"}}>Estime o custo real da sua peça.</p>
+            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Estime o custo real da sua peça.</p>
+          </div>
+          <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
+            <span>Calculadora de Tolerância</span>
+            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Compensação X/Y para encaixes perfeitos.</p>
+          </div>
+          <div className="field clickable-card" onClick={() => setActiveModal("calc_custos")}>
+            <span>Calculadora de Custos</span>
+            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Precifique seu job com margem real.</p>
           </div>
         </div>
+      </section>
+
+      <section id="formulacao" className="panel">
+        <div className="panel-header">
+          <div><span className="section-label">Formulação personalizada</span><h2>Precisa de uma resina com comportamento específico?</h2></div>
+        </div>
+        <p style={{ color: "#9fb4c7", marginBottom: "16px" }}>Desenvolvemos formulações sob medida para aplicações odontológicas, industriais, joalheria, ortopedia e muito mais.</p>
+        <button type="button" className="submit-registration" onClick={() => setActiveModal("formulacao")}>Solicitar formulação personalizada</button>
       </section>
 
       <section id="parametros" className="panel">
@@ -412,14 +322,7 @@ Potência UV: ${resultado.potenciaUV || "-"}
             </select>
           </label>
         </div>
-
-        {!resultado && (
-          <div className="empty-state">
-            <h3>Selecione resina e impressora</h3>
-            <p>Os parâmetros técnicos aparecerão aqui automaticamente.</p>
-          </div>
-        )}
-
+        {!resultado && <div className="empty-state"><h3>Selecione resina e impressora</h3><p>Os parâmetros técnicos aparecerão aqui automaticamente.</p></div>}
         {resultado && (
           <div className="result-card">
             <div className="result-header">
@@ -438,12 +341,25 @@ Potência UV: ${resultado.potenciaUV || "-"}
         )}
       </section>
 
+      <section id="contato" className="panel">
+        <div className="panel-header">
+          <div><span className="section-label">Contato</span><h2>Atendimento Quanton3D</h2></div>
+        </div>
+        <p style={{ color: "#9fb4c7", marginBottom: "16px" }}>
+          {cliente ? `Cliente ativo: ${cliente.nome}. O atendimento técnico usará seu cadastro para manter histórico.` : "Identifique-se para um atendimento mais personalizado."}
+        </p>
+        <div className="experience-actions">
+          <button type="button" onClick={abrirCadastro}>{cliente ? "Atualizar meus dados" : "Identificar-me"}</button>
+          <button type="button" onClick={() => setMostrarContatoMensagem(true)}>Fale conosco</button>
+          <button type="button" onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
+          <button type="button" onClick={() => window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer")}>WhatsApp</button>
+        </div>
+      </section>
+
       <footer className="site-footer">
         <span>Quanton3D © Suporte técnico e resinas UV de alta performance.</span>
         <div className="footer-social-links">
-          {SOCIAL_LINKS.map((link) => (
-            <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
-          ))}
+          {SOCIAL_LINKS.map((link) => <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>)}
         </div>
       </footer>
     </main>
@@ -457,60 +373,24 @@ function PrivacidadeModal({ aceitarPrivacidade }) {
       <section className="privacy-modal">
         <div className="modal-icon">🔐</div>
         <h2>Termo de Privacidade e Consentimento</h2>
-        <p>
-          Antes de acessar o suporte técnico da Quanton3D, leia com atenção este termo.
-          Ao continuar, você declara estar ciente sobre como seus dados poderão ser usados
-          para atendimento, suporte técnico e melhoria dos serviços.
-        </p>
+        <p>Antes de acessar o suporte técnico da Quanton3D, leia com atenção este termo.</p>
         <div className="privacy-content">
           <h3>1. Dados que poderão ser coletados</h3>
-          <p>
-            A Quanton3D poderá coletar e armazenar dados informados por você, incluindo
-            nome, WhatsApp, e-mail, origem do contato, data e horário de acesso, mensagens
-            enviadas no atendimento, dúvidas técnicas, resina utilizada, impressora utilizada,
-            parâmetros de impressão, pedidos de formulação personalizada e imagens ou fotos
-            enviadas voluntariamente para análise técnica.
-          </p>
+          <p>A Quanton3D poderá coletar nome, WhatsApp, e-mail, origem do contato, mensagens enviadas, dúvidas técnicas, resina/impressora utilizada, parâmetros de impressão, pedidos de formulação e imagens enviadas voluntariamente.</p>
           <h3>2. Finalidade do uso dos dados</h3>
-          <p>
-            Os dados serão utilizados para liberar o acesso ao suporte técnico, responder dúvidas
-            sobre resinas e impressão 3D, analisar problemas relatados, manter histórico de atendimento,
-            acompanhar solicitações, organizar pedidos de formulação, melhorar a base de conhecimento
-            da Quanton3D e permitir contato comercial relacionado aos serviços solicitados pelo próprio usuário.
-          </p>
+          <p>Os dados serão utilizados para liberar o acesso ao suporte técnico, responder dúvidas, manter histórico de atendimento, organizar pedidos de formulação e melhorar a base de conhecimento da Quanton3D.</p>
           <h3>3. Uso de imagens enviadas</h3>
-          <p>
-            Caso você envie fotos de peças, falhas de impressão, configurações ou resultados obtidos,
-            essas imagens poderão ser usadas para análise técnica, orientação de parâmetros e melhoria
-            do suporte. Imagens não serão publicadas em galeria pública sem autorização ou aprovação específica.
-          </p>
+          <p>Imagens poderão ser usadas para análise técnica. Não serão publicadas sem autorização específica.</p>
           <h3>4. Compartilhamento e segurança</h3>
-          <p>
-            A Quanton3D não deve vender seus dados pessoais. As informações poderão ser armazenadas
-            em sistemas necessários para funcionamento do site, banco de dados, atendimento e ferramentas
-            técnicas usadas para prestar suporte. Serão adotadas medidas razoáveis para proteger os dados
-            contra acesso não autorizado, perda, alteração ou uso indevido.
-          </p>
-          <h3>5. Histórico e melhoria do atendimento</h3>
-          <p>
-            As conversas, perguntas, avaliações de respostas e informações técnicas poderão ser mantidas
-            para melhorar a qualidade do suporte, evitar perda de contexto e permitir que a equipe Quanton3D
-            acompanhe melhor cada caso.
-          </p>
-          <h3>6. Direitos do usuário</h3>
-          <p>
-            Você poderá solicitar acesso, correção, atualização ou exclusão dos seus dados pessoais,
-            quando aplicável. Também poderá pedir esclarecimentos sobre o uso das informações fornecidas.
-          </p>
-          <h3>7. Consentimento</h3>
-          <p>
-            Ao marcar a opção abaixo e continuar, você confirma que leu este termo e autoriza a Quanton3D
-            a tratar seus dados para as finalidades descritas acima.
-          </p>
+          <p>A Quanton3D não vende seus dados. Medidas razoáveis serão adotadas para proteger as informações.</p>
+          <h3>5. Direitos do usuário</h3>
+          <p>Você poderá solicitar acesso, correção ou exclusão dos seus dados pessoais a qualquer momento.</p>
+          <h3>6. Consentimento</h3>
+          <p>Ao marcar a opção abaixo, você confirma que leu este termo e autoriza a Quanton3D a tratar seus dados.</p>
         </div>
         <label className="privacy-accept-row">
           <input type="checkbox" checked={confirmouAceite} onChange={(e) => setConfirmouAceite(e.target.checked)} />
-          <span>Li e aceito o Termo de Privacidade e autorizo o uso dos meus dados para atendimento, suporte técnico e serviços relacionados à Quanton3D.</span>
+          <span>Li e aceito o Termo de Privacidade e autorizo o uso dos meus dados.</span>
         </label>
         <button className="submit-registration" disabled={!confirmouAceite} onClick={aceitarPrivacidade}>Aceitar e continuar</button>
       </section>
@@ -537,11 +417,7 @@ function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCl
         </div>
         <div className="social-box">
           <strong>Siga a Quanton3D nas redes</strong>
-          <div>
-            {SOCIAL_LINKS.map((link) => (
-              <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
-            ))}
-          </div>
+          <div>{SOCIAL_LINKS.map((link) => <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>)}</div>
         </div>
         <button className="submit-registration" type="submit" disabled={salvandoCliente}>{salvandoCliente ? "Salvando..." : "Entrar no Suporte Técnico"}</button>
       </form>
@@ -553,10 +429,7 @@ function GuideModal({ guide, onClose }) {
   return (
     <div className="modal-backdrop">
       <section className="guide-modal">
-        <div className="guide-header">
-          <h2>{guide.title}</h2>
-          <button type="button" onClick={onClose}>Fechar</button>
-        </div>
+        <div className="guide-header"><h2>{guide.title}</h2><button type="button" onClick={onClose}>Fechar</button></div>
         <iframe title={guide.title} src={guide.file} className="guide-frame" />
       </section>
     </div>
@@ -564,7 +437,14 @@ function GuideModal({ guide, onClose }) {
 }
 
 function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
-  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada", galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes", admGaleria: "ADM Galeria", qualidade: "Alta Qualidade", calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume", calc_tolerancia: "Calculadora de Tolerância", calc_custos: "Calculadora de Custos e Orçamentos", bot: "Bot Quanton3D" };
+  const titles = {
+    contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada",
+    galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes",
+    adm: "Painel Administrativo", qualidade: "Alta Qualidade",
+    calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume",
+    calc_tolerancia: "Calculadora de Tolerância", calc_custos: "Calculadora de Custos e Orçamentos",
+    bot: "Bot Quanton3D", chamado: "Chamado Técnico",
+  };
   return (
     <div className="modal-backdrop">
       <section className="site-modal">
@@ -577,13 +457,14 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
         {type === "galeria" && <GaleriaContent cliente={cliente} ocultarAbas />}
         {type === "galeriaPublica" && <GaleriaContent cliente={cliente} initialAba="ver" ocultarAbas />}
-        {type === "admGaleria" && <AdminGaleriaContent />}
+        {type === "adm" && <AdminContent />}
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
         {type === "calc_tolerancia" && <CalculadoraTolerancia />}
         {type === "calc_custos" && <CalculadoraCustos />}
         {type === "bot" && <BotContent cliente={cliente} />}
+        {type === "chamado" && <ChamadoTecnicoContent cliente={cliente} />}
       </section>
     </div>
   );
@@ -604,7 +485,7 @@ function ContatoContent() {
 function SobreContent({ abrirGuia, abrirParceiroModal }) {
   return (
     <div className="modal-rich-content">
-      <p>A Quanton3D é especialista em resinas UV de alta performance.</p>
+      <p>A Quanton3D é especialista em resinas UV de alta performance com mais de 20 anos de experiência em fabricação.</p>
       <div className="modal-action-grid">
         <button type="button" onClick={() => abrirGuia("parceiros")}>Ver parceiros</button>
         <button type="button" onClick={() => abrirGuia("diagnostico")}>Guia de diagnóstico</button>
@@ -618,30 +499,23 @@ function FormulacaoContent({ cliente }) {
   const [form, setForm] = useState({ caracteristica: "", cor: "", detalhes: "" });
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
-
   async function enviar() {
     try {
       setEnviando(true);
       await api.post("/formulacoes", { ...form, clienteId: cliente?._id });
       setSucesso(true);
-    } catch (err) {
-      console.error("Erro ao enviar pedido de formulação:", err);
-      alert("Erro ao enviar pedido.");
-    } finally {
-      setEnviando(false);
-    }
+    } catch (err) { console.error("Erro ao enviar formulação:", err); alert("Erro ao enviar pedido."); }
+    finally { setEnviando(false); }
   }
-
-  if (sucesso) return <div className="modal-success">Pedido enviado com sucesso!</div>;
-
+  if (sucesso) return <div className="modal-success">Pedido enviado com sucesso! Nossa equipe entrará em contato.</div>;
   return (
     <div className="modal-rich-content">
-      <p>Solicite uma resina com propriedades específicas.</p>
-      <div className="modal-form-layout" style={{marginTop: "20px"}}>
+      <p>Solicite uma resina com propriedades específicas para sua aplicação.</p>
+      <div className="modal-form-layout" style={{ marginTop: "20px" }}>
         <div className="form-grid">
-          <label><span>Aplicação</span><input value={form.caracteristica} onChange={(e) => setForm({...form, caracteristica: e.target.value})} placeholder="Ex.: Guia Cirúrgico" /></label>
-          <label><span>Cor</span><input value={form.cor} onChange={(e) => setForm({...form, cor: e.target.value})} placeholder="Ex.: Transparente" /></label>
-          <label className="partner-grid-full"><textarea rows="3" value={form.detalhes} onChange={(e) => setForm({...form, detalhes: e.target.value})} placeholder="Descreva sua necessidade." /></label>
+          <label><span>Aplicação</span><input value={form.caracteristica} onChange={(e) => setForm({ ...form, caracteristica: e.target.value })} placeholder="Ex.: Guia Cirúrgico, Joalheria, Industrial" /></label>
+          <label><span>Cor desejada</span><input value={form.cor} onChange={(e) => setForm({ ...form, cor: e.target.value })} placeholder="Ex.: Transparente, Branco, Rosa" /></label>
+          <label className="partner-grid-full"><span>Detalhes da necessidade</span><textarea rows="4" value={form.detalhes} onChange={(e) => setForm({ ...form, detalhes: e.target.value })} placeholder="Descreva a aplicação, propriedades desejadas (flexibilidade, resistência, biocompatibilidade), volume estimado..." /></label>
         </div>
         <button type="button" className="submit-registration" onClick={enviar} disabled={enviando}>{enviando ? "Enviando..." : "Solicitar Estudo"}</button>
       </div>
@@ -649,38 +523,70 @@ function FormulacaoContent({ cliente }) {
   );
 }
 
-const CAMPOS_CONFIGURACAO_GALERIA = [
-  { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
-  { name: "camadasBase", label: "Camadas de base", placeholder: "Ex.: 4" },
-  { name: "exposicaoNormal", label: "Tempo exposição", placeholder: "Ex.: 2,100 s" },
-  { name: "exposicaoBase", label: "Tempo exposição base", placeholder: "Ex.: 37,000 s" },
-  { name: "contagemTransicao", label: "Contagem de transição", placeholder: "Ex.: 0" },
-  { name: "tipoTransicao", label: "Tipo de transição", placeholder: "Ex.: Linear" },
-  { name: "retardoDesligarUV", label: "Retardo desligar UV", placeholder: "Ex.: 2,000 s" },
-  { name: "distElevacaoInferior", label: "Dist. elevação inferior", placeholder: "Ex.: 11,000 mm" },
-  { name: "distElevacao", label: "Distância elevação", placeholder: "Ex.: 11,000 mm" },
-  { name: "distRetracao", label: "Distância de retração", placeholder: "Ex.: 11,000 mm" },
-  { name: "velElevacaoInferior", label: "Vel. elevação inferior", placeholder: "Ex.: 140,000 mm/min" },
-  { name: "velElevacao", label: "Vel. elevação", placeholder: "Ex.: 140,000 mm/min" },
-  { name: "velRetracaoInferior", label: "Vel. retração inferior", placeholder: "Ex.: 135,000 mm/min" },
-  { name: "velRetracao", label: "Vel. retração", placeholder: "Ex.: 135,000 mm/min" },
-];
+function ChamadoTecnicoContent({ cliente }) {
+  const PROBLEMAS = ["Peça não adere à plataforma","Peça adere demais / não solta","Delaminação (camadas separando)","Warping / empenamento","Suporte difícil de remover","Peça porosa ou com buracos","Linhas visíveis entre camadas","FEP danificado","Outro problema"];
+  const [form, setForm] = useState({ problema: "", resina: "", impressora: "", descricao: "" });
+  const [fotos, setFotos] = useState([]);
+  const [enviando, setEnviando] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
+  const [erro, setErro] = useState("");
 
-function criarConfiguracaoVazia() {
-  return CAMPOS_CONFIGURACAO_GALERIA.reduce((acc, campo) => {
-    acc[campo.name] = "";
-    return acc;
-  }, {});
+  async function enviar(e) {
+    e.preventDefault();
+    if (!form.problema || !form.resina || !form.impressora) { setErro("Preencha problema, resina e impressora."); return; }
+    try {
+      setEnviando(true); setErro("");
+      const formData = new FormData();
+      formData.append("clienteId", cliente?._id || "");
+      formData.append("nome", cliente?.nome || "");
+      formData.append("telefone", cliente?.telefone || "");
+      formData.append("email", cliente?.email || "");
+      formData.append("problema", form.problema);
+      formData.append("resina", form.resina);
+      formData.append("impressora", form.impressora);
+      formData.append("descricao", form.descricao);
+      fotos.forEach((foto) => formData.append("fotos", foto));
+      await api.post("/bot-tickets", formData);
+      setSucesso(true);
+    } catch (err) { console.error("Erro ao abrir chamado:", err); setErro("Erro ao enviar chamado. Tente novamente."); }
+    finally { setEnviando(false); }
+  }
+
+  if (sucesso) return (
+    <div className="modal-success" style={{ textAlign: "center", padding: "32px" }}>
+      <div style={{ fontSize: "2rem", marginBottom: "12px" }}>✅</div>
+      <h3>Chamado registrado com sucesso!</h3>
+      <p>Nossa equipe técnica analisará seu caso e entrará em contato pelo WhatsApp.</p>
+    </div>
+  );
+
+  return (
+    <div className="modal-rich-content">
+      <p>Descreva o problema com sua impressão e nossa equipe técnica vai analisar e responder.</p>
+      <form style={{ marginTop: "16px" }} onSubmit={enviar}>
+        {erro && <div className="modal-error">{erro}</div>}
+        <div className="form-grid">
+          <label><span>Tipo de problema *</span>
+            <select value={form.problema} onChange={(e) => setForm({ ...form, problema: e.target.value })}>
+              <option value="">Selecione o problema</option>
+              {PROBLEMAS.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </label>
+          <label><span>Resina usada *</span><input value={form.resina} onChange={(e) => setForm({ ...form, resina: e.target.value })} placeholder="Ex.: IRON Cinza" /></label>
+          <label><span>Impressora *</span><input value={form.impressora} onChange={(e) => setForm({ ...form, impressora: e.target.value })} placeholder="Ex.: Elegoo Mars 4 Ultra" /></label>
+          <label className="partner-grid-full"><span>Descrição detalhada</span><textarea rows="4" value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} placeholder="Descreva o problema: quando começou, parâmetros usados, temperatura ambiente, o que já tentou..." /></label>
+          <label className="partner-grid-full"><span>Fotos do problema (até 4)</span><input type="file" accept="image/*" multiple onChange={(e) => setFotos(Array.from(e.target.files || []).slice(0, 4))} /></label>
+        </div>
+        {fotos.length > 0 && <p style={{ color: "#9fb4c7", fontSize: "0.85rem" }}>{fotos.length} foto(s) selecionada(s): {fotos.map(f => f.name).join(", ")}</p>}
+        <button type="submit" className="submit-registration" disabled={enviando} style={{ marginTop: "16px" }}>{enviando ? "Enviando chamado..." : "Abrir Chamado Técnico"}</button>
+      </form>
+    </div>
+  );
 }
 
 function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false }) {
   const [aba, setAba] = useState(initialAba);
-  const [form, setForm] = useState({
-    resina: "",
-    impressora: "",
-    observacao: "",
-    parametros: criarConfiguracaoVazia(),
-  });
+  const [form, setForm] = useState({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia() });
   const [foto, setFoto] = useState(null);
   const [itens, setItens] = useState([]);
   const [carregandoItens, setCarregandoItens] = useState(false);
@@ -690,53 +596,26 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
 
   useEffect(() => {
     if (aba !== "ver") return undefined;
-
     let ativo = true;
-
     async function carregarGaleria() {
       try {
-        setCarregandoItens(true);
-        setErroItens("");
+        setCarregandoItens(true); setErroItens("");
         const resposta = await api.get("/gallery");
         const lista = Array.isArray(resposta.data?.data) ? resposta.data.data : [];
         if (ativo) setItens(lista);
-      } catch (err) {
-        console.error("Erro ao carregar galeria aprovada:", err);
-        if (ativo) setErroItens("Não foi possível carregar as fotos aprovadas agora.");
-      } finally {
-        if (ativo) setCarregandoItens(false);
-      }
+      } catch (err) { console.error("Erro ao carregar galeria:", err); if (ativo) setErroItens("Não foi possível carregar as fotos aprovadas agora."); }
+      finally { if (ativo) setCarregandoItens(false); }
     }
-
     carregarGaleria();
-
-    return () => {
-      ativo = false;
-    };
+    return () => { ativo = false; };
   }, [aba]);
 
-  function alterar(campo, valor) {
-    setForm((atual) => ({ ...atual, [campo]: valor }));
-  }
-
-  function alterarParametro(campo, valor) {
-    setForm((atual) => ({
-      ...atual,
-      parametros: {
-        ...atual.parametros,
-        [campo]: valor,
-      },
-    }));
-  }
+  function alterar(campo, valor) { setForm((a) => ({ ...a, [campo]: valor })); }
+  function alterarParametro(campo, valor) { setForm((a) => ({ ...a, parametros: { ...a.parametros, [campo]: valor } })); }
 
   async function enviar(event) {
     event.preventDefault();
-
-    if (!form.resina.trim() || !form.impressora.trim() || !foto) {
-      alert("Preencha a resina, a impressora e envie uma foto do trabalho.");
-      return;
-    }
-
+    if (!form.resina.trim() || !form.impressora.trim() || !foto) { alert("Preencha a resina, a impressora e envie uma foto."); return; }
     try {
       setEnviando(true);
       const formData = new FormData();
@@ -746,143 +625,58 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
       formData.append("resina", form.resina);
       formData.append("impressora", form.impressora);
       formData.append("observacao", form.observacao);
-      formData.append("clienteId", cliente?._id || cliente?.id || "");
+      formData.append("clienteId", cliente?._id || "");
       formData.append("fotos", foto);
-
-      Object.entries(form.parametros).forEach(([campo, valor]) => {
-        formData.append(`parametros.${campo}`, valor);
-      });
-
+      Object.entries(form.parametros).forEach(([campo, valor]) => formData.append(`parametros.${campo}`, valor));
       await api.post("/gallery", formData);
       setSucesso(true);
-      setForm({
-        resina: "",
-        impressora: "",
-        observacao: "",
-        parametros: criarConfiguracaoVazia(),
-      });
+      setForm({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia() });
       setFoto(null);
-    } catch (err) {
-      console.error("Erro ao enviar para galeria:", err);
-      alert("Erro ao enviar para galeria.");
-    } finally {
-      setEnviando(false);
-    }
+    } catch (err) { console.error("Erro ao enviar para galeria:", err); alert("Erro ao enviar para galeria."); }
+    finally { setEnviando(false); }
   }
-
-  const visualizacaoPublica = aba === "ver" && ocultarAbas;
 
   return (
     <div className="modal-rich-content gallery-content">
-      <p>
-        {visualizacaoPublica
-          ? "Veja fotos aprovadas de clientes e configurações reais usadas no Chitubox para comparar resina, impressora e parâmetros."
-          : "Envie uma foto real da peça e os campos de configuração usados no Chitubox. O envio fica pendente até aprovação no painel administrativo."}
-      </p>
-
-      {!ocultarAbas ? (
-        <div className="gallery-tabs" role="tablist" aria-label="Galeria e configurações">
-          <button
-            type="button"
-            className={aba === "enviar" ? "active" : ""}
-            onClick={() => setAba("enviar")}
-          >
-            📷 Enviar configuração
-          </button>
-          <button
-            type="button"
-            className={aba === "ver" ? "active" : ""}
-            onClick={() => setAba("ver")}
-          >
-            Ver fotos de clientes e configurações
-          </button>
+      <p>{aba === "ver" && ocultarAbas ? "Veja fotos aprovadas de clientes e configurações reais." : "Envie uma foto real da peça e as configurações do Chitubox."}</p>
+      {!ocultarAbas && (
+        <div className="gallery-tabs" role="tablist">
+          <button type="button" className={aba === "enviar" ? "active" : ""} onClick={() => setAba("enviar")}>📷 Enviar configuração</button>
+          <button type="button" className={aba === "ver" ? "active" : ""} onClick={() => setAba("ver")}>Ver fotos de clientes</button>
         </div>
-      ) : null}
-
+      )}
       {aba === "enviar" ? (
         <form className="modal-form-layout" style={{ marginTop: "20px" }} onSubmit={enviar}>
-          {sucesso ? (
-            <div className="modal-success">
-              Enviado com sucesso! A foto e as configurações aguardam aprovação antes de aparecerem para outros clientes.
-            </div>
-          ) : null}
-
+          {sucesso && <div className="modal-success">Enviado! Aguarda aprovação para aparecer para outros clientes.</div>}
           <div className="form-grid gallery-form-grid">
-            <label>
-              <span>Resina usada *</span>
-              <input
-                value={form.resina}
-                onChange={(e) => alterar("resina", e.target.value)}
-                placeholder="Ex.: IRON Cinza"
-              />
-            </label>
-            <label>
-              <span>Impressora *</span>
-              <input
-                value={form.impressora}
-                onChange={(e) => alterar("impressora", e.target.value)}
-                placeholder="Ex.: Anycubic Photon M3 Max"
-              />
-            </label>
-            <label className="partner-grid-full">
-              <span>Foto do trabalho feito *</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFoto(e.target.files?.[0] || null)}
-              />
-            </label>
+            <label><span>Resina usada *</span><input value={form.resina} onChange={(e) => alterar("resina", e.target.value)} placeholder="Ex.: IRON Cinza" /></label>
+            <label><span>Impressora *</span><input value={form.impressora} onChange={(e) => alterar("impressora", e.target.value)} placeholder="Ex.: Anycubic Photon M3 Max" /></label>
+            <label className="partner-grid-full"><span>Foto do trabalho *</span><input type="file" accept="image/*" onChange={(e) => setFoto(e.target.files?.[0] || null)} /></label>
           </div>
-
           <div className="gallery-config-box">
             <h3>Configurações do Chitubox</h3>
-            <p>Preencha os campos que aparecem na aba Imprimir. Deixe em branco o que você não souber.</p>
+            <p>Preencha o que souber. Deixe em branco o que não souber.</p>
             <div className="form-grid gallery-settings-grid">
               {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => (
-                <label key={campo.name}>
-                  <span>{campo.label}</span>
-                  <input
-                    value={form.parametros[campo.name]}
-                    onChange={(e) => alterarParametro(campo.name, e.target.value)}
-                    placeholder={campo.placeholder}
-                  />
-                </label>
+                <label key={campo.name}><span>{campo.label}</span><input value={form.parametros[campo.name]} onChange={(e) => alterarParametro(campo.name, e.target.value)} placeholder={campo.placeholder} /></label>
               ))}
             </div>
           </div>
-
-          <label className="gallery-observation">
-            <span>Observações para o próximo cliente</span>
-            <textarea
-              rows="4"
-              value={form.observacao}
-              onChange={(e) => alterar("observacao", e.target.value)}
-              placeholder="Ex.: temperatura do ambiente, suporte usado, se a peça saiu perfeita ou precisou ajuste."
-            />
-          </label>
-
-          <button type="submit" className="submit-registration" disabled={enviando}>
-            {enviando ? "Enviando..." : "Enviar para aprovação"}
-          </button>
+          <label className="gallery-observation"><span>Observações para o próximo cliente</span><textarea rows="4" value={form.observacao} onChange={(e) => alterar("observacao", e.target.value)} placeholder="Ex.: temperatura ambiente, suporte usado, ajustes que fez..." /></label>
+          <button type="submit" className="submit-registration" disabled={enviando}>{enviando ? "Enviando..." : "Enviar para aprovação"}</button>
         </form>
       ) : (
         <div className="gallery-approved-list">
-          {carregandoItens ? <div className="gallery-empty">Carregando fotos aprovadas...</div> : null}
-          {erroItens ? <div className="modal-error">{erroItens}</div> : null}
-          {!carregandoItens && !erroItens && itens.length === 0 ? (
-            <div className="gallery-empty">
-              Ainda não há fotos aprovadas. Assim que o painel administrativo for ajustado,
-              as configurações aprovadas aparecerão aqui para consulta dos próximos clientes.
-            </div>
-          ) : null}
-
+          {carregandoItens && <div className="gallery-empty">Carregando fotos aprovadas...</div>}
+          {erroItens && <div className="modal-error">{erroItens}</div>}
+          {!carregandoItens && !erroItens && itens.length === 0 && <div className="gallery-empty">Ainda não há fotos aprovadas.</div>}
           {itens.map((item) => (
             <article className="gallery-approved-card" key={item._id || item.imagem}>
-              {item.imagem ? <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} /> : null}
+              {item.imagem && <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} />}
               <div>
                 <h3>{item.resina || "Resina não informada"}</h3>
                 <p>{item.impressora || "Impressora não informada"}</p>
-                {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
+                {item.observacao && <p className="gallery-note">{item.observacao}</p>}
                 <div className="gallery-param-list">
                   {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
                     const valor = item.parametros?.[campo.name];
@@ -898,215 +692,189 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
   );
 }
 
-function formatarDataHora(data) {
-  if (!data) return "-";
-
-  return new Intl.DateTimeFormat("pt-BR", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date(data));
-}
-
-function AdminGaleriaContent() {
+function AdminContent() {
   const [credenciais, setCredenciais] = useState({ user: "", password: "" });
   const [token, setToken] = useState(() => localStorage.getItem("quanton3d_admin_token") || "");
-  const [filtros, setFiltros] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
-  const [itens, setItens] = useState([]);
+  const [aba, setAba] = useState("galeria");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
+  const [dados, setDados] = useState({ clientes: [], formulacoes: [], parceiros: [], mensagens: [], galeria: [], totais: {} });
+  const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
 
-  async function entrar(event) {
-    event.preventDefault();
-    setErro("");
-
+  async function entrar(e) {
+    e.preventDefault(); setErro("");
     try {
       setCarregando(true);
-      const resposta = await api.post("/admin/login", credenciais);
-      const novoToken = resposta.data?.token || "";
-
-      if (!novoToken) {
-        setErro("Login administrativo não retornou token.");
-        return;
-      }
-
+      const res = await api.post("/admin/login", credenciais);
+      const novoToken = res.data?.token || "";
+      if (!novoToken) { setErro("Login não retornou token."); return; }
       localStorage.setItem("quanton3d_admin_token", novoToken);
       setToken(novoToken);
-    } catch (err) {
-      console.error("Erro no login administrativo:", err);
-      setErro(err?.response?.data?.error || "Credenciais administrativas inválidas.");
-    } finally {
-      setCarregando(false);
-    }
+    } catch (err) { setErro(err?.response?.data?.error || "Credenciais inválidas."); }
+    finally { setCarregando(false); }
   }
 
-  const carregarItens = useCallback(async () => {
+  const carregarDados = useCallback(async () => {
     if (!token) return;
-
     try {
-      setCarregando(true);
-      setErro("");
-      const resposta = await api.get("/gallery/admin", {
-        headers: { Authorization: `Bearer ${token}` },
-        params: filtros,
+      setCarregando(true); setErro("");
+      const headers = { Authorization: `Bearer ${token}` };
+      const [metricas, galeria] = await Promise.all([
+        api.get("/admin/metrics", { headers }),
+        api.get("/gallery/admin", { headers, params: filtroGaleria }),
+      ]);
+      const m = metricas.data;
+      setDados({
+        clientes: m.clientes || [],
+        formulacoes: m.formulacoes || [],
+        parceiros: [],
+        mensagens: [],
+        galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [],
+        totais: m.totals || {},
       });
-      setItens(Array.isArray(resposta.data?.data) ? resposta.data.data : []);
     } catch (err) {
-      console.error("Erro ao carregar galeria administrativa:", err);
-      if (err?.response?.status === 401) {
-        localStorage.removeItem("quanton3d_admin_token");
-        setToken("");
-      }
-      setErro(err?.response?.data?.error || "Não foi possível carregar a galeria administrativa.");
-    } finally {
-      setCarregando(false);
-    }
-  }, [filtros, token]);
+      if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
+      setErro(err?.response?.data?.error || "Erro ao carregar dados.");
+    } finally { setCarregando(false); }
+  }, [token, filtroGaleria]);
 
-  useEffect(() => {
-    if (!token) return undefined;
+  useEffect(() => { if (!token) return; const t = setTimeout(carregarDados, 0); return () => clearTimeout(t); }, [carregarDados, token]);
 
-    const busca = setTimeout(carregarItens, 0);
-    return () => clearTimeout(busca);
-  }, [carregarItens, token]);
-
-  function alterarFiltro(campo, valor) {
-    setFiltros((atual) => ({ ...atual, [campo]: valor }));
-  }
-
-  async function atualizarStatus(id, acao) {
+  async function atualizarGaleria(id, acao) {
     try {
       setSalvandoId(id);
-      setErro("");
-      await api.patch(`/gallery/${id}/${acao}`, null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      await carregarItens();
-    } catch (err) {
-      console.error(`Erro ao ${acao} item da galeria:`, err);
-      setErro(err?.response?.data?.error || "Não foi possível atualizar este item.");
-    } finally {
-      setSalvandoId("");
-    }
+      await api.patch(`/gallery/${id}/${acao}`, null, { headers: { Authorization: `Bearer ${token}` } });
+      await carregarDados();
+    } catch (err) { setErro(err?.response?.data?.error || "Erro ao atualizar item."); }
+    finally { setSalvandoId(""); }
   }
 
-  function sair() {
-    localStorage.removeItem("quanton3d_admin_token");
-    setToken("");
-    setItens([]);
-  }
+  function sair() { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
 
   if (!token) {
     return (
       <form className="admin-gallery-login" onSubmit={entrar}>
-        <p>Entre com o usuário administrativo para aprovar ou recusar fotos da galeria.</p>
-        {erro ? <div className="modal-error">{erro}</div> : null}
-        <label>
-          <span>Usuário</span>
-          <input
-            value={credenciais.user}
-            onChange={(e) => setCredenciais((atual) => ({ ...atual, user: e.target.value }))}
-            autoComplete="username"
-          />
-        </label>
-        <label>
-          <span>Senha</span>
-          <input
-            type="password"
-            value={credenciais.password}
-            onChange={(e) => setCredenciais((atual) => ({ ...atual, password: e.target.value }))}
-            autoComplete="current-password"
-          />
-        </label>
-        <button type="submit" className="submit-registration" disabled={carregando}>
-          {carregando ? "Entrando..." : "Entrar no ADM"}
-        </button>
+        <p>Painel administrativo Quanton3D. Entre com suas credenciais.</p>
+        {erro && <div className="modal-error">{erro}</div>}
+        <label><span>Usuário</span><input value={credenciais.user} onChange={(e) => setCredenciais((a) => ({ ...a, user: e.target.value }))} autoComplete="username" /></label>
+        <label><span>Senha</span><input type="password" value={credenciais.password} onChange={(e) => setCredenciais((a) => ({ ...a, password: e.target.value }))} autoComplete="current-password" /></label>
+        <button type="submit" className="submit-registration" disabled={carregando}>{carregando ? "Entrando..." : "Entrar no ADM"}</button>
       </form>
     );
   }
 
+  const ABAS = [
+    { id: "galeria", label: `📸 Galeria (${dados.totais.gallery || 0})` },
+    { id: "clientes", label: `👥 Clientes (${dados.totais.clientes || 0})` },
+    { id: "formulacoes", label: `🧪 Formulações (${dados.totais.formulacoes || 0})` },
+  ];
+
   return (
     <div className="admin-gallery-panel">
-      <div className="admin-gallery-toolbar">
-        <label>
-          <span>Status</span>
-          <select value={filtros.status} onChange={(e) => alterarFiltro("status", e.target.value)}>
-            <option value="pendente">Pendentes</option>
-            <option value="aprovado">Aprovados</option>
-            <option value="recusado">Recusados</option>
-            <option value="todos">Todos</option>
-          </select>
-        </label>
-        <label>
-          <span>Data inicial</span>
-          <input type="date" value={filtros.dataInicio} onChange={(e) => alterarFiltro("dataInicio", e.target.value)} />
-        </label>
-        <label>
-          <span>Data final</span>
-          <input type="date" value={filtros.dataFim} onChange={(e) => alterarFiltro("dataFim", e.target.value)} />
-        </label>
-        <button type="button" onClick={carregarItens} disabled={carregando}>
-          {carregando ? "Carregando..." : "Atualizar"}
-        </button>
-        <button type="button" className="admin-gallery-logout" onClick={sair}>Sair</button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          {ABAS.map((a) => (
+            <button key={a.id} type="button" onClick={() => setAba(a.id)}
+              style={{ padding: "8px 14px", borderRadius: "10px", border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.3)", background: aba === a.id ? "rgba(79,209,255,0.15)" : "rgba(255,255,255,0.05)", color: "white", cursor: "pointer", fontWeight: aba === a.id ? "900" : "normal" }}>
+              {a.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button type="button" onClick={carregarDados} disabled={carregando} style={{ padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(255,255,255,0.05)", color: "white", cursor: "pointer" }}>{carregando ? "⏳" : "🔄"}</button>
+          <button type="button" onClick={sair} style={{ padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff6b6b", cursor: "pointer" }}>Sair</button>
+        </div>
       </div>
 
-      {erro ? <div className="modal-error">{erro}</div> : null}
-      {!carregando && itens.length === 0 ? (
-        <div className="gallery-empty">Nenhum envio encontrado para os filtros selecionados.</div>
-      ) : null}
+      {erro && <div className="modal-error">{erro}</div>}
 
-      <div className="admin-gallery-list">
-        {itens.map((item) => (
-          <article className="admin-gallery-card" key={item._id}>
-            {item.imagem ? <img src={item.imagem} alt={`Envio de ${item.nome || "cliente"}`} /> : null}
-            <div className="admin-gallery-card-body">
-              <div className="admin-gallery-card-head">
-                <div>
-                  <strong>{item.nome || "Cliente sem nome"}</strong>
-                  <span>{formatarDataHora(item.createdAt)}</span>
+      {aba === "galeria" && (
+        <div>
+          <div className="admin-gallery-toolbar" style={{ marginBottom: "12px" }}>
+            <label><span>Status</span>
+              <select value={filtroGaleria.status} onChange={(e) => setFiltroGaleria((a) => ({ ...a, status: e.target.value }))}>
+                <option value="pendente">Pendentes</option>
+                <option value="aprovado">Aprovados</option>
+                <option value="recusado">Recusados</option>
+                <option value="todos">Todos</option>
+              </select>
+            </label>
+            <label><span>Data inicial</span><input type="date" value={filtroGaleria.dataInicio} onChange={(e) => setFiltroGaleria((a) => ({ ...a, dataInicio: e.target.value }))} /></label>
+            <label><span>Data final</span><input type="date" value={filtroGaleria.dataFim} onChange={(e) => setFiltroGaleria((a) => ({ ...a, dataFim: e.target.value }))} /></label>
+          </div>
+          {!carregando && dados.galeria.length === 0 && <div className="gallery-empty">Nenhum envio para os filtros selecionados.</div>}
+          <div className="admin-gallery-list">
+            {dados.galeria.map((item) => (
+              <article className="admin-gallery-card" key={item._id}>
+                {item.imagem && <img src={item.imagem} alt={`Envio de ${item.nome || "cliente"}`} />}
+                <div className="admin-gallery-card-body">
+                  <div className="admin-gallery-card-head">
+                    <div><strong>{item.nome || "Sem nome"}</strong><span>{formatarDataHora(item.createdAt)}</span></div>
+                    <span className={`admin-status admin-status-${item.status || "pendente"}`}>{item.status || "pendente"}</span>
+                  </div>
+                  <div className="admin-client-grid">
+                    <span><strong>Tel:</strong> {item.telefone || "-"}</span>
+                    <span><strong>Email:</strong> {item.email || "-"}</span>
+                    <span><strong>Resina:</strong> {item.resina || "-"}</span>
+                    <span><strong>Impressora:</strong> {item.impressora || "-"}</span>
+                  </div>
+                  {item.observacao && <p className="gallery-note">{item.observacao}</p>}
+                  <div className="gallery-param-list">
+                    {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
+                      const valor = item.parametros?.[campo.name];
+                      return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                    })}
+                  </div>
+                  <div className="admin-gallery-actions">
+                    <button type="button" className="approve" onClick={() => atualizarGaleria(item._id, "aprovar")} disabled={salvandoId === item._id || item.status === "aprovado"}>✅ Aprovar</button>
+                    <button type="button" className="reject" onClick={() => atualizarGaleria(item._id, "recusar")} disabled={salvandoId === item._id || item.status === "recusado"}>❌ Recusar</button>
+                  </div>
                 </div>
-                <span className={`admin-status admin-status-${item.status || "pendente"}`}>{item.status || "pendente"}</span>
-              </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
 
-              <div className="admin-client-grid">
-                <span><strong>Telefone:</strong> {item.telefone || "-"}</span>
-                <span><strong>E-mail:</strong> {item.email || "-"}</span>
-                <span><strong>Resina:</strong> {item.resina || "-"}</span>
-                <span><strong>Impressora:</strong> {item.impressora || "-"}</span>
+      {aba === "clientes" && (
+        <div>
+          {dados.clientes.length === 0 && <div className="gallery-empty">Nenhum cliente cadastrado.</div>}
+          <div style={{ display: "grid", gap: "10px" }}>
+            {dados.clientes.map((c) => (
+              <div key={c._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "12px", background: "rgba(255,255,255,0.04)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <strong>{c.nome || "Sem nome"}</strong>
+                  <small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", fontSize: "0.85rem", color: "#9fb4c7" }}>
+                  <span>📱 {c.telefone || "-"}</span>
+                  <span>📧 {c.email || "-"}</span>
+                  <span>🔗 {c.origem || "-"}</span>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-              {item.observacao ? <p className="gallery-note">{item.observacao}</p> : null}
-
-              <div className="gallery-param-list">
-                {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
-                  const valor = item.parametros?.[campo.name];
-                  return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
-                })}
+      {aba === "formulacoes" && (
+        <div>
+          {dados.formulacoes.length === 0 && <div className="gallery-empty">Nenhuma formulação solicitada.</div>}
+          <div style={{ display: "grid", gap: "10px" }}>
+            {dados.formulacoes.map((f) => (
+              <div key={f._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "12px", background: "rgba(255,255,255,0.04)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <strong>{f.caracteristica || "Sem aplicação"}</strong>
+                  <small style={{ color: "#9fb4c7" }}>{formatarDataHora(f.createdAt)}</small>
+                </div>
+                <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: "4px 0" }}>Cor: {f.cor || "-"}</p>
+                {f.detalhes && <p style={{ color: "#d3e4f8", fontSize: "0.85rem", margin: "4px 0" }}>{f.detalhes}</p>}
               </div>
-
-              <div className="admin-gallery-actions">
-                <button
-                  type="button"
-                  className="approve"
-                  onClick={() => atualizarStatus(item._id, "aprovar")}
-                  disabled={salvandoId === item._id || item.status === "aprovado"}
-                >
-                  Aprovar
-                </button>
-                <button
-                  type="button"
-                  className="reject"
-                  onClick={() => atualizarStatus(item._id, "recusar")}
-                  disabled={salvandoId === item._id || item.status === "recusado"}
-                >
-                  Não aprovar
-                </button>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1114,108 +882,68 @@ function AdminGaleriaContent() {
 function QualidadeContent({ abrirGuia }) {
   return (
     <div className="modal-rich-content">
+      <p>Conheça nossas resinas e encontre a ideal para sua aplicação.</p>
       <div className="modal-action-grid">
-        <button type="button" onClick={() => abrirGuia("otimizacao")}>Otimização</button>
+        <button type="button" onClick={() => abrirGuia("otimizacao")}>Otimização e pós-processamento</button>
         <button type="button" onClick={() => abrirGuia("calibracaoQuanton3D")}>Calibração Q3D</button>
+        <button type="button" onClick={() => abrirGuia("diagnostico")}>Diagnóstico de problemas</button>
+        <a href="https://quanton3d.com.br/produtos" target="_blank" rel="noreferrer">Ver todas as resinas no site</a>
       </div>
     </div>
   );
 }
 
-function formatarMarkdown(texto) {
-  return texto
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/`(.+?)`/g, "<code style=\"background:rgba(255,255,255,0.12);padding:2px 6px;border-radius:4px;font-size:0.88em\">$1</code>")
-    .replace(/\n{2,}/g, "</p><p style=\"margin:8px 0\">")
-    .replace(/\n/g, "<br/>");
-}
-
 function BotContent({ cliente }) {
-  const [mensagens, setMensagens] = useState([{ text: `Olá ${cliente?.nome || ""}! 👋 Sou o assistente técnico da Quanton3D. Como posso te ajudar hoje?`, isBot: true }]);
+  const [mensagens, setMensagens] = useState([{ text: `Olá ${cliente?.nome || ""}! 👋 Sou o ELIO, assistente técnico da Quanton3D. Como posso te ajudar hoje?`, isBot: true }]);
   const [input, setInput] = useState("");
   const [pensando, setPensando] = useState(false);
   const scrollRef = useRef(null);
 
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [mensagens]);
+  useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [mensagens]);
 
   async function enviar() {
     if (!input.trim() || pensando) return;
     const userMsg = input;
     setInput("");
-    setMensagens(prev => [...prev, { text: userMsg, isBot: false }]);
+    setMensagens((prev) => [...prev, { text: userMsg, isBot: false }]);
     setPensando(true);
     try {
       const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
-      setMensagens(prev => [...prev, { text: reply, isBot: true }]);
+      setMensagens((prev) => [...prev, { text: reply, isBot: true }]);
     } catch (err) {
       console.error("Erro ao conversar com bot:", err);
-      setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
-    } finally {
-      setPensando(false);
-    }
+      setMensagens((prev) => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
+    } finally { setPensando(false); }
   }
 
   return (
     <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "65vh" }}>
       <div className="chat-messages" ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
         {mensagens.map((m, i) => (
-          <div
-            key={i}
-            className={`message-bubble ${m.isBot ? "bot" : "user"}`}
-            style={{
-              alignSelf: m.isBot ? "flex-start" : "flex-end",
-              maxWidth: "85%",
-              padding: "10px 14px",
-              borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px",
-              background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)",
-              border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)",
-              color: "#eaf3ff",
-              fontSize: "0.92rem",
-              lineHeight: 1.55,
-            }}
+          <div key={i} className={`message-bubble ${m.isBot ? "bot" : "user"}`}
+            style={{ alignSelf: m.isBot ? "flex-start" : "flex-end", maxWidth: "85%", padding: "10px 14px", borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px", background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)", border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)", color: "#eaf3ff", fontSize: "0.92rem", lineHeight: 1.55 }}
             dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
           />
         ))}
-        {pensando && (
-          <div style={{ alignSelf: "flex-start", padding: "10px 16px", borderRadius: "4px 18px 18px 18px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.25)", color: "#9fb4c7", fontSize: "0.88rem" }}>
-            ⏳ Analisando base técnica...
-          </div>
-        )}
+        {pensando && <div style={{ alignSelf: "flex-start", padding: "10px 16px", borderRadius: "4px 18px 18px 18px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.25)", color: "#9fb4c7", fontSize: "0.88rem" }}>⏳ Analisando base técnica...</div>}
       </div>
       <div className="chat-input-row" style={{ display: "flex", gap: "10px", padding: "12px 16px", borderTop: "1px solid rgba(113,159,219,0.2)" }}>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && enviar()}
-          placeholder="Tire sua dúvida técnica..."
-          style={{ flex: 1 }}
-        />
-        <button type="button" onClick={enviar} disabled={pensando} style={{ whiteSpace: "nowrap" }}>
-          {pensando ? "..." : "Enviar"}
-        </button>
+        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." style={{ flex: 1 }} />
+        <button type="button" onClick={enviar} disabled={pensando} style={{ whiteSpace: "nowrap" }}>{pensando ? "..." : "Enviar"}</button>
       </div>
     </div>
   );
 }
 
 function ParamItem({ label, value }) {
-  return (
-    <div className="param-item">
-      <span>{label}</span>
-      <strong>{value || "-"}</strong>
-    </div>
-  );
+  return <div className="param-item"><span>{label}</span><strong>{value || "-"}</strong></div>;
 }
 
 function InfoCard({ title, text, onClick }) {
   return (
     <button type="button" className="info-card clickable-card" onClick={onClick}>
-      <h3>{title}</h3>
-      <p>{text}</p>
+      <h3>{title}</h3><p>{text}</p>
     </button>
   );
 }
@@ -1223,8 +951,7 @@ function InfoCard({ title, text, onClick }) {
 function ServiceLine({ title, onClick }) {
   return (
     <button type="button" className="service-line" onClick={onClick}>
-      <span>✓</span>
-      <strong>{title}</strong>
+      <span>✓</span><strong>{title}</strong>
     </button>
   );
 }
