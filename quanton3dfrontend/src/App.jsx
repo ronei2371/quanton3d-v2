@@ -698,9 +698,10 @@ function AdminContent() {
   const [aba, setAba] = useState("galeria");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
-  const [dados, setDados] = useState({ clientes: [], formulacoes: [], parceiros: [], mensagens: [], galeria: [], totais: {} });
+  const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], totais: {} });
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
+  const [diagnostico, setDiagnostico] = useState({});
 
   async function entrar(e) {
     e.preventDefault(); setErro("");
@@ -708,10 +709,10 @@ function AdminContent() {
       setCarregando(true);
       const res = await api.post("/admin/login", credenciais);
       const novoToken = res.data?.token || "";
-      if (!novoToken) { setErro("Login não retornou token."); return; }
+      if (!novoToken) { setErro("Login nao retornou token."); return; }
       localStorage.setItem("quanton3d_admin_token", novoToken);
       setToken(novoToken);
-    } catch (err) { setErro(err?.response?.data?.error || "Credenciais inválidas."); }
+    } catch (err) { setErro(err?.response?.data?.error || "Credenciais invalidas."); }
     finally { setCarregando(false); }
   }
 
@@ -719,22 +720,17 @@ function AdminContent() {
     if (!token) return;
     try {
       setCarregando(true); setErro("");
-      const headers = { Authorization: `Bearer ${token}` };
-      const [metricas, galeria, chamados] = await Promise.all([
+      const headers = { Authorization: "Bearer " + token };
+      const [metricas, galeria] = await Promise.all([
         api.get("/admin/metrics", { headers }),
         api.get("/gallery/admin", { headers, params: filtroGaleria }),
-        api.get("/bot-tickets", { headers }),
       ]);
       const m = metricas.data;
-      setDados({
-        clientes: m.clientes || [],
-        formulacoes: m.formulacoes || [],
-        parceiros: [],
-        mensagens: [],
-        galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [],
-        chamados: Array.isArray(chamados.data?.botTickets) ? chamados.data.botTickets : [],
-        totais: m.totals || {},
-      });
+      let chamados = [];
+      try { const r = await api.get("/bot-tickets", { headers }); chamados = Array.isArray(r.data?.botTickets) ? r.data.botTickets : []; } catch (_) {}
+      let mensagens = [];
+      try { const r = await api.get("/contact-messages", { headers }); mensagens = Array.isArray(r.data?.messages) ? r.data.messages : []; } catch (_) {}
+      setDados({ clientes: m.clientes || [], formulacoes: m.formulacoes || [], chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
       setErro(err?.response?.data?.error || "Erro ao carregar dados.");
@@ -743,181 +739,209 @@ function AdminContent() {
 
   useEffect(() => { if (!token) return; const t = setTimeout(carregarDados, 0); return () => clearTimeout(t); }, [carregarDados, token]);
 
-  async function atualizarGaleria(id, acao) {
+  async function atualizarGaleria(id, acao, extra) {
     try {
       setSalvandoId(id);
-      await api.patch(`/gallery/${id}/${acao}`, null, { headers: { Authorization: `Bearer ${token}` } });
+      await api.patch("/gallery/" + id + "/" + acao, extra || null, { headers: { Authorization: "Bearer " + token } });
       await carregarDados();
-    } catch (err) { setErro(err?.response?.data?.error || "Erro ao atualizar item."); }
+    } catch (err) { setErro(err?.response?.data?.error || "Erro ao atualizar."); }
     finally { setSalvandoId(""); }
   }
 
   function sair() { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
+
+  const CARD = ({ children }) => (
+    <div style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>{children}</div>
+  );
+  const BADGE = ({ status }) => {
+    const cor = ["aprovado","fechado","resolvido"].includes(status) ? "#49e68b" : status === "recusado" ? "#ff6b6b" : status === "respondido" ? "#4fd1ff" : "#ffd166";
+    return <span style={{ fontSize: "0.75rem", padding: "2px 10px", borderRadius: "999px", border: "1px solid " + cor + "44", background: cor + "18", color: cor, fontWeight: 800 }}>{status || "pendente"}</span>;
+  };
 
   if (!token) {
     return (
       <form className="admin-gallery-login" onSubmit={entrar}>
         <p>Painel administrativo Quanton3D. Entre com suas credenciais.</p>
         {erro && <div className="modal-error">{erro}</div>}
-        <label><span>Usuário</span><input value={credenciais.user} onChange={(e) => setCredenciais((a) => ({ ...a, user: e.target.value }))} autoComplete="username" /></label>
+        <label><span>Usuario</span><input value={credenciais.user} onChange={(e) => setCredenciais((a) => ({ ...a, user: e.target.value }))} autoComplete="username" /></label>
         <label><span>Senha</span><input type="password" value={credenciais.password} onChange={(e) => setCredenciais((a) => ({ ...a, password: e.target.value }))} autoComplete="current-password" /></label>
         <button type="submit" className="submit-registration" disabled={carregando}>{carregando ? "Entrando..." : "Entrar no ADM"}</button>
       </form>
     );
   }
 
-  const ABAS = [
-    { id: "galeria", label: "Galeria" },
-    { id: "clientes", label: "Clientes" },
-    { id: "formulacoes", label: "Formulacoes" },
-    { id: "chamados", label: "Chamados" },
+  const ABAS_ADM = [
+    { id: "galeria", label: "Galeria (" + dados.galeria.length + ")" },
+    { id: "clientes", label: "Clientes (" + dados.clientes.length + ")" },
+    { id: "formulacoes", label: "Formulacoes (" + dados.formulacoes.length + ")" },
+    { id: "chamados", label: "Chamados (" + dados.chamados.length + ")" },
+    { id: "mensagens", label: "Mensagens (" + dados.mensagens.length + ")" },
   ];
 
   return (
     <div className="admin-gallery-panel">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          {ABAS.map((a) => (
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          {ABAS_ADM.map((a) => (
             <button key={a.id} type="button" onClick={() => setAba(a.id)}
-              style={{ padding: "8px 14px", borderRadius: "10px", border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.3)", background: aba === a.id ? "rgba(79,209,255,0.15)" : "rgba(255,255,255,0.05)", color: "white", cursor: "pointer", fontWeight: aba === a.id ? "900" : "normal" }}>
+              style={{ padding: "7px 13px", borderRadius: "10px", fontSize: "0.82rem", border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.3)", background: aba === a.id ? "rgba(79,209,255,0.15)" : "rgba(255,255,255,0.05)", color: aba === a.id ? "#4fd1ff" : "white", cursor: "pointer", fontWeight: aba === a.id ? "900" : "normal" }}>
               {a.label}
             </button>
           ))}
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
-          <button type="button" onClick={carregarDados} disabled={carregando} style={{ padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(255,255,255,0.05)", color: "white", cursor: "pointer" }}>{carregando ? "⏳" : "🔄"}</button>
-          <button type="button" onClick={sair} style={{ padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff6b6b", cursor: "pointer" }}>Sair</button>
+          <button type="button" onClick={carregarDados} disabled={carregando} style={{ padding: "7px 13px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(255,255,255,0.05)", color: "white", cursor: "pointer", fontSize: "0.82rem" }}>{carregando ? "..." : "Atualizar"}</button>
+          <button type="button" onClick={sair} style={{ padding: "7px 13px", borderRadius: "10px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff6b6b", cursor: "pointer", fontSize: "0.82rem" }}>Sair</button>
         </div>
       </div>
-
       {erro && <div className="modal-error">{erro}</div>}
+      {carregando && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "20px" }}>Carregando...</div>}
 
       {aba === "galeria" && (
         <div>
-          <div className="admin-gallery-toolbar" style={{ marginBottom: "12px" }}>
-            <label><span>Status</span>
-              <select value={filtroGaleria.status} onChange={(e) => setFiltroGaleria((a) => ({ ...a, status: e.target.value }))}>
-                <option value="pendente">Pendentes</option>
-                <option value="aprovado">Aprovados</option>
-                <option value="recusado">Recusados</option>
-                <option value="todos">Todos</option>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "14px", alignItems: "flex-end" }}>
+            <label style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7" }}>Status
+              <select value={filtroGaleria.status} onChange={(e) => setFiltroGaleria((a) => ({ ...a, status: e.target.value }))} style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.82rem" }}>
+                <option value="pendente">Pendentes</option><option value="aprovado">Aprovados</option><option value="recusado">Recusados</option><option value="todos">Todos</option>
               </select>
             </label>
-            <label><span>Data inicial</span><input type="date" value={filtroGaleria.dataInicio} onChange={(e) => setFiltroGaleria((a) => ({ ...a, dataInicio: e.target.value }))} /></label>
-            <label><span>Data final</span><input type="date" value={filtroGaleria.dataFim} onChange={(e) => setFiltroGaleria((a) => ({ ...a, dataFim: e.target.value }))} /></label>
+            <label style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7" }}>Data inicial
+              <input type="date" value={filtroGaleria.dataInicio} onChange={(e) => setFiltroGaleria((a) => ({ ...a, dataInicio: e.target.value }))} style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.82rem" }} />
+            </label>
+            <label style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7" }}>Data final
+              <input type="date" value={filtroGaleria.dataFim} onChange={(e) => setFiltroGaleria((a) => ({ ...a, dataFim: e.target.value }))} style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.82rem" }} />
+            </label>
+            <button type="button" onClick={carregarDados} style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.1)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.82rem" }}>Filtrar</button>
           </div>
           {!carregando && dados.galeria.length === 0 && <div className="gallery-empty">Nenhum envio para os filtros selecionados.</div>}
-          <div className="admin-gallery-list">
-            {dados.galeria.map((item) => (
-              <article className="admin-gallery-card" key={item._id}>
-                {item.imagem && <img src={item.imagem} alt={`Envio de ${item.nome || "cliente"}`} />}
-                <div className="admin-gallery-card-body">
-                  <div className="admin-gallery-card-head">
-                    <div><strong>{item.nome || "Sem nome"}</strong><span>{formatarDataHora(item.createdAt)}</span></div>
-                    <span className={`admin-status admin-status-${item.status || "pendente"}`}>{item.status || "pendente"}</span>
+          {dados.galeria.map((item) => (
+            <CARD key={item._id}>
+              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+                {item.imagem && <img src={item.imagem} alt="envio" style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "10px", flexShrink: 0, border: "1px solid rgba(113,159,219,0.2)" }} />}
+                <div style={{ flex: 1, minWidth: "180px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
+                    <strong>{item.nome || "Sem nome"}</strong>
+                    <div style={{ display: "flex", gap: "6px", alignItems: "center" }}><BADGE status={item.status} /><small style={{ color: "#9fb4c7", fontSize: "0.75rem" }}>{formatarDataHora(item.createdAt)}</small></div>
                   </div>
-                  <div className="admin-client-grid">
-                    <span><strong>Tel:</strong> {item.telefone || "-"}</span>
-                    <span><strong>Email:</strong> {item.email || "-"}</span>
-                    <span><strong>Resina:</strong> {item.resina || "-"}</span>
-                    <span><strong>Impressora:</strong> {item.impressora || "-"}</span>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7", marginBottom: "8px" }}>
+                    <span>Tel: {item.telefone || "-"}</span><span>Email: {item.email || "-"}</span>
+                    <span>Resina: {item.resina || "-"}</span><span>Impressora: {item.impressora || "-"}</span>
                   </div>
-                  {item.observacao && <p className="gallery-note">{item.observacao}</p>}
-                  <div className="gallery-param-list">
+                  {item.observacao && <p style={{ color: "#d3e4f8", fontSize: "0.82rem", margin: "4px 0", fontStyle: "italic" }}>{item.observacao}</p>}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", margin: "6px 0" }}>
                     {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
-                      const valor = item.parametros?.[campo.name];
-                      return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                      const v = item.parametros?.[campo.name];
+                      return v ? <span key={campo.name} style={{ fontSize: "0.72rem", padding: "2px 7px", borderRadius: "6px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.2)", color: "#a8c4e8" }}>{campo.label}: {v}</span> : null;
                     })}
                   </div>
-                  <div className="admin-gallery-actions">
-                    <button type="button" className="approve" onClick={() => atualizarGaleria(item._id, "aprovar")} disabled={salvandoId === item._id || item.status === "aprovado"}>✅ Aprovar</button>
-                    <button type="button" className="reject" onClick={() => atualizarGaleria(item._id, "recusar")} disabled={salvandoId === item._id || item.status === "recusado"}>❌ Recusar</button>
+                  <div style={{ marginTop: "8px", padding: "10px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.12)" }}>
+                    <p style={{ fontSize: "0.75rem", color: "#9fb4c7", margin: "0 0 5px" }}>Diagnostico tecnico (opcional):</p>
+                    <select value={diagnostico[item._id]?.tipo || ""} onChange={(e) => setDiagnostico((d) => ({ ...d, [item._id]: { ...d[item._id], tipo: e.target.value } }))}
+                      style={{ width: "100%", padding: "5px 8px", borderRadius: "7px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.78rem", marginBottom: "5px" }}>
+                      <option value="">Tipo de defeito (opcional)</option>
+                      <option value="descolamento da base">Descolamento da base</option>
+                      <option value="falha de suportes">Falha de suportes</option>
+                      <option value="rachadura ou quebra">Rachadura ou quebra</option>
+                      <option value="delaminacao">Delaminacao entre camadas</option>
+                      <option value="warping ou deformacao">Warping ou deformacao</option>
+                      <option value="problema de superficie">Problema de superficie</option>
+                      <option value="excesso ou falta de cura">Excesso ou falta de cura</option>
+                      <option value="problema de LCD">Problema de LCD</option>
+                      <option value="outro">Outro</option>
+                    </select>
+                    <textarea value={diagnostico[item._id]?.texto || ""} onChange={(e) => setDiagnostico((d) => ({ ...d, [item._id]: { ...d[item._id], texto: e.target.value } }))}
+                      placeholder="Diagnostico e solucao recomendada..." rows={2}
+                      style={{ width: "100%", padding: "5px 8px", borderRadius: "7px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.78rem", resize: "vertical" }} />
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                    <button type="button" onClick={() => atualizarGaleria(item._id, "aprovar", diagnostico[item._id] ? { diagnostico: diagnostico[item._id] } : null)} disabled={salvandoId === item._id || item.status === "aprovado"}
+                      style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#49e68b", cursor: "pointer", fontSize: "0.82rem", fontWeight: 800 }}>Aprovar</button>
+                    <button type="button" onClick={() => atualizarGaleria(item._id, "recusar")} disabled={salvandoId === item._id || item.status === "recusado"}
+                      style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff6b6b", cursor: "pointer", fontSize: "0.82rem", fontWeight: 800 }}>Recusar</button>
                   </div>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            </CARD>
+          ))}
         </div>
       )}
 
       {aba === "clientes" && (
         <div>
-          {dados.clientes.length === 0 && <div className="gallery-empty">Nenhum cliente cadastrado.</div>}
-          <div style={{ display: "grid", gap: "10px" }}>
-            {dados.clientes.map((c) => (
-              <div key={c._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "12px", background: "rgba(255,255,255,0.04)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <strong>{c.nome || "Sem nome"}</strong>
-                  <small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", fontSize: "0.85rem", color: "#9fb4c7" }}>
-                  <span>📱 {c.telefone || "-"}</span>
-                  <span>📧 {c.email || "-"}</span>
-                  <span>🔗 {c.origem || "-"}</span>
-                </div>
+          {dados.clientes.length === 0 && !carregando && <div className="gallery-empty">Nenhum cliente cadastrado.</div>}
+          {dados.clientes.map((c) => (
+            <CARD key={c._id}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", flexWrap: "wrap", gap: "6px" }}>
+                <strong>{c.nome || "Sem nome"}</strong><small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
               </div>
-            ))}
-          </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7" }}>
+                <span>Tel: {c.telefone || "-"}</span><span>Email: {c.email || "-"}</span><span>Origem: {c.origem || "-"}</span>
+              </div>
+            </CARD>
+          ))}
         </div>
       )}
 
       {aba === "formulacoes" && (
         <div>
-          {dados.formulacoes.length === 0 && <div className="gallery-empty">Nenhuma formulação solicitada.</div>}
-          <div style={{ display: "grid", gap: "10px" }}>
-            {dados.formulacoes.map((f) => (
-              <div key={f._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "12px", background: "rgba(255,255,255,0.04)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <strong>{f.caracteristica || "Sem aplicação"}</strong>
-                  <small style={{ color: "#9fb4c7" }}>{formatarDataHora(f.createdAt)}</small>
-                </div>
-                <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: "4px 0" }}>Cor: {f.cor || "-"}</p>
-                {f.detalhes && <p style={{ color: "#d3e4f8", fontSize: "0.85rem", margin: "4px 0" }}>{f.detalhes}</p>}
+          {dados.formulacoes.length === 0 && !carregando && <div className="gallery-empty">Nenhuma formulacao solicitada.</div>}
+          {dados.formulacoes.map((f) => (
+            <CARD key={f._id}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", flexWrap: "wrap", gap: "6px" }}>
+                <strong>{f.caracteristica || "Sem aplicacao"}</strong><small style={{ color: "#9fb4c7" }}>{formatarDataHora(f.createdAt)}</small>
               </div>
-            ))}
-          </div>
+              <p style={{ color: "#9fb4c7", fontSize: "0.82rem", margin: "4px 0" }}>Cor: {f.cor || "-"}</p>
+              {f.detalhes && <p style={{ color: "#d3e4f8", fontSize: "0.82rem", margin: "4px 0" }}>{f.detalhes}</p>}
+            </CARD>
+          ))}
         </div>
       )}
 
       {aba === "chamados" && (
         <div>
-          {(!dados.chamados || dados.chamados.length === 0) && <div className="gallery-empty">Nenhum chamado técnico registrado.</div>}
-          <div style={{ display: "grid", gap: "10px" }}>
-            {(dados.chamados || []).map((c) => (
-              <div key={c._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: "rgba(255,255,255,0.04)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <strong>{c.nome || "Sem nome"}</strong>
-                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.75rem", padding: "2px 8px", borderRadius: "999px", background: c.status === "fechado" ? "rgba(73,230,139,0.15)" : c.status === "respondido" ? "rgba(79,209,255,0.15)" : "rgba(255,209,102,0.15)", color: c.status === "fechado" ? "#49e68b" : c.status === "respondido" ? "#4fd1ff" : "#ffd166" }}>{c.status || "novo"}</span>
-                    <small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
-                  </div>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", fontSize: "0.85rem", color: "#9fb4c7", marginBottom: "8px" }}>
-                  <span>📱 {c.telefone || "-"}</span>
-                  <span>📧 {c.email || "-"}</span>
-                  <span>🧪 {c.resina || "-"}</span>
-                  <span>🖨️ {c.impressora || "-"}</span>
-                </div>
-                <div style={{ background: "rgba(255,107,107,0.08)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "10px", padding: "10px", marginBottom: "8px" }}>
-                  <strong style={{ fontSize: "0.85rem", color: "#ff6b6b" }}>Problema: </strong>
-                  <span style={{ fontSize: "0.85rem", color: "#d3e4f8" }}>{c.problema || "-"}</span>
-                </div>
-                {c.descricao && <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: "4px 0" }}>{c.descricao}</p>}
-                {c.respostaBot && (
-                  <div style={{ background: "rgba(26,115,232,0.1)", border: "1px solid rgba(26,115,232,0.25)", borderRadius: "10px", padding: "10px", marginTop: "8px" }}>
-                    <strong style={{ fontSize: "0.85rem", color: "#4fd1ff" }}>Resposta registrada: </strong>
-                    <span style={{ fontSize: "0.85rem", color: "#d3e4f8" }}>{c.respostaBot}</span>
-                  </div>
-                )}
+          {dados.chamados.length === 0 && !carregando && <div className="gallery-empty">Nenhum chamado tecnico registrado.</div>}
+          {dados.chamados.map((c) => (
+            <CARD key={c._id}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
+                <strong>{c.nome || "Sem nome"}</strong>
+                <div style={{ display: "flex", gap: "6px", alignItems: "center" }}><BADGE status={c.status || "novo"} /><small style={{ color: "#9fb4c7", fontSize: "0.75rem" }}>{formatarDataHora(c.createdAt)}</small></div>
               </div>
-            ))}
-          </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7", marginBottom: "8px" }}>
+                <span>Tel: {c.telefone || "-"}</span><span>Email: {c.email || "-"}</span>
+                <span>Resina: {c.resina || "-"}</span><span>Impressora: {c.impressora || "-"}</span>
+              </div>
+              <div style={{ background: "rgba(255,107,107,0.07)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "8px", padding: "8px", marginBottom: "6px" }}>
+                <strong style={{ fontSize: "0.82rem", color: "#ff6b6b" }}>Problema: </strong>
+                <span style={{ fontSize: "0.82rem", color: "#d3e4f8" }}>{c.problema || "-"}</span>
+              </div>
+              {c.descricao && <p style={{ color: "#9fb4c7", fontSize: "0.82rem" }}>{c.descricao}</p>}
+            </CARD>
+          ))}
+        </div>
+      )}
+
+      {aba === "mensagens" && (
+        <div>
+          {dados.mensagens.length === 0 && !carregando && <div className="gallery-empty">Nenhuma mensagem de contato recebida.</div>}
+          {dados.mensagens.map((m) => (
+            <CARD key={m._id}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
+                <strong>{m.nome || m.clienteNome || "Sem nome"}</strong>
+                <div style={{ display: "flex", gap: "6px", alignItems: "center" }}><BADGE status={m.resolvido ? "resolvido" : "pendente"} /><small style={{ color: "#9fb4c7", fontSize: "0.75rem" }}>{formatarDataHora(m.createdAt)}</small></div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7", marginBottom: "8px" }}>
+                <span>Tel: {m.telefone || "-"}</span><span>Email: {m.email || "-"}</span><span>Assunto: {m.assunto || "-"}</span>
+              </div>
+              {m.mensagem && <div style={{ background: "rgba(26,115,232,0.08)", border: "1px solid rgba(26,115,232,0.2)", borderRadius: "8px", padding: "8px" }}>
+                <p style={{ color: "#d3e4f8", fontSize: "0.82rem", margin: 0 }}>{m.mensagem}</p>
+              </div>}
+            </CARD>
+          ))}
         </div>
       )}
     </div>
   );
 }
-
 function QualidadeContent({ abrirGuia }) {
   return (
     <div className="modal-rich-content">
