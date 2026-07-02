@@ -720,9 +720,10 @@ function AdminContent() {
     try {
       setCarregando(true); setErro("");
       const headers = { Authorization: `Bearer ${token}` };
-      const [metricas, galeria] = await Promise.all([
+      const [metricas, galeria, chamados] = await Promise.all([
         api.get("/admin/metrics", { headers }),
         api.get("/gallery/admin", { headers, params: filtroGaleria }),
+        api.get("/bot-tickets", { headers }),
       ]);
       const m = metricas.data;
       setDados({
@@ -731,6 +732,7 @@ function AdminContent() {
         parceiros: [],
         mensagens: [],
         galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [],
+        chamados: Array.isArray(chamados.data?.botTickets) ? chamados.data.botTickets : [],
         totais: m.totals || {},
       });
     } catch (err) {
@@ -765,9 +767,10 @@ function AdminContent() {
   }
 
   const ABAS = [
-    { id: "galeria", label: `📸 Galeria (${dados.totais.gallery || 0})` },
-    { id: "clientes", label: `👥 Clientes (${dados.totais.clientes || 0})` },
-    { id: "formulacoes", label: `🧪 Formulações (${dados.totais.formulacoes || 0})` },
+    { id: "galeria", label: "📸 Galeria (" + (dados.totais.gallery || 0) + ")" },
+    { id: "clientes", label: "👥 Clientes (" + (dados.totais.clientes || 0) + ")" },
+    { id: "formulacoes", label: "🧪 Formulações (" + (dados.totais.formulacoes || 0) + ")" },
+    { id: "chamados", label: "🔧 Chamados (" + (dados.chamados?.length || 0) + ")" },
   ];
 
   return (
@@ -870,6 +873,42 @@ function AdminContent() {
                 </div>
                 <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: "4px 0" }}>Cor: {f.cor || "-"}</p>
                 {f.detalhes && <p style={{ color: "#d3e4f8", fontSize: "0.85rem", margin: "4px 0" }}>{f.detalhes}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {aba === "chamados" && (
+        <div>
+          {(!dados.chamados || dados.chamados.length === 0) && <div className="gallery-empty">Nenhum chamado técnico registrado.</div>}
+          <div style={{ display: "grid", gap: "10px" }}>
+            {(dados.chamados || []).map((c) => (
+              <div key={c._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: "rgba(255,255,255,0.04)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <strong>{c.nome || "Sem nome"}</strong>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <span style={{ fontSize: "0.75rem", padding: "2px 8px", borderRadius: "999px", background: c.status === "fechado" ? "rgba(73,230,139,0.15)" : c.status === "respondido" ? "rgba(79,209,255,0.15)" : "rgba(255,209,102,0.15)", color: c.status === "fechado" ? "#49e68b" : c.status === "respondido" ? "#4fd1ff" : "#ffd166" }}>{c.status || "novo"}</span>
+                    <small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", fontSize: "0.85rem", color: "#9fb4c7", marginBottom: "8px" }}>
+                  <span>📱 {c.telefone || "-"}</span>
+                  <span>📧 {c.email || "-"}</span>
+                  <span>🧪 {c.resina || "-"}</span>
+                  <span>🖨️ {c.impressora || "-"}</span>
+                </div>
+                <div style={{ background: "rgba(255,107,107,0.08)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "10px", padding: "10px", marginBottom: "8px" }}>
+                  <strong style={{ fontSize: "0.85rem", color: "#ff6b6b" }}>Problema: </strong>
+                  <span style={{ fontSize: "0.85rem", color: "#d3e4f8" }}>{c.problema || "-"}</span>
+                </div>
+                {c.descricao && <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: "4px 0" }}>{c.descricao}</p>}
+                {c.respostaBot && (
+                  <div style={{ background: "rgba(26,115,232,0.1)", border: "1px solid rgba(26,115,232,0.25)", borderRadius: "10px", padding: "10px", marginTop: "8px" }}>
+                    <strong style={{ fontSize: "0.85rem", color: "#4fd1ff" }}>Resposta registrada: </strong>
+                    <span style={{ fontSize: "0.85rem", color: "#d3e4f8" }}>{c.respostaBot}</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
