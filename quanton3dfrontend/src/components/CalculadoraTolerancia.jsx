@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 /**
  * Normaliza o input do usuário para número, aceitando vírgula ou ponto decimal.
@@ -68,6 +68,8 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
 
       <div 
         className={valores.erro ? "modal-error" : "modal-success"}
+        role="status"
+        aria-live="polite"
         style={{ 
           marginTop: "12px", 
           padding: "12px", 
@@ -99,7 +101,7 @@ export default function CalculadoraTolerancia() {
     const vTeorica = normalizarMedida(externo.teorica);
     const vReal = normalizarMedida(externo.real);
 
-    if (isNaN(vTeorica) || isNaN(vReal)) {
+    if (Number.isNaN(vTeorica) || Number.isNaN(vReal)) {
       setExterno((atual) => ({ 
         ...atual, 
         resultado: null, 
@@ -118,7 +120,7 @@ export default function CalculadoraTolerancia() {
     const vTeorica = normalizarMedida(interno.teorica);
     const vReal = normalizarMedida(interno.real);
 
-    if (isNaN(vTeorica) || isNaN(vReal)) {
+    if (Number.isNaN(vTeorica) || Number.isNaN(vReal)) {
       setInterno((atual) => ({ 
         ...atual, 
         resultado: null, 
