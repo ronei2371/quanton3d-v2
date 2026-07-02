@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 /**
  * Normaliza o input do usuário para número, aceitando vírgula ou ponto decimal.
@@ -28,16 +28,25 @@ function formatarMm(valor) {
 }
 
 function ToleranceCard({ title, description, valores, tipo, onChange, onCalculate, buttonLabel }) {
+  const baseId = `tolerancia-${tipo}`;
+  const teoricaId = `${baseId}-teorica`;
+  const realId = `${baseId}-real`;
+  const descricaoId = `${baseId}-descricao`;
+  const resultadoId = `${baseId}-resultado`;
+
   return (
     <div className="field">
       <span style={{ fontWeight: "bold", display: "block", marginBottom: "4px" }}>{title}</span>
-      <p style={{ margin: "0 0 12px 0", color: "#9fb4c7", fontSize: "0.85rem", lineHeight: 1.4 }}>{description}</p>
+      <p id={descricaoId} style={{ margin: "0 0 12px 0", color: "#9fb4c7", fontSize: "0.85rem", lineHeight: 1.4 }}>{description}</p>
       
-      <label>
+      <label htmlFor={teoricaId}>
         <span style={{ fontSize: "0.88rem", display: "block", marginBottom: "4px" }}>Medida Teórica do Arquivo STL (mm)</span>
         <input 
+          id={teoricaId}
           type="text" 
           inputMode="decimal" 
+          autoComplete="off"
+          aria-describedby={`${descricaoId} ${resultadoId}`}
           value={valores.teorica} 
           onChange={(e) => onChange(tipo, "teorica", e.target.value)} 
           placeholder="Ex.: 10,000" 
@@ -45,11 +54,14 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
         />
       </label>
 
-      <label style={{ marginTop: "12px", display: "block" }}>
+      <label htmlFor={realId} style={{ marginTop: "12px", display: "block" }}>
         <span style={{ fontSize: "0.88rem", display: "block", marginBottom: "4px" }}>Medida Real no Paquímetro (mm)</span>
         <input 
+          id={realId}
           type="text" 
           inputMode="decimal" 
+          autoComplete="off"
+          aria-describedby={`${descricaoId} ${resultadoId}`}
           value={valores.real} 
           onChange={(e) => onChange(tipo, "real", e.target.value)} 
           placeholder="Ex.: 10,140" 
@@ -61,13 +73,17 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
         type="button" 
         className="submit-registration" 
         onClick={onCalculate}
+        aria-label={`${buttonLabel} para ${title.toLowerCase()}`}
         style={{ marginTop: "16px", width: "100%" }}
       >
         {buttonLabel}
       </button>
 
       <div 
+        id={resultadoId}
         className={valores.erro ? "modal-error" : "modal-success"}
+        role="status"
+        aria-live="polite"
         style={{ 
           marginTop: "12px", 
           padding: "12px", 
@@ -99,7 +115,7 @@ export default function CalculadoraTolerancia() {
     const vTeorica = normalizarMedida(externo.teorica);
     const vReal = normalizarMedida(externo.real);
 
-    if (isNaN(vTeorica) || isNaN(vReal)) {
+    if (Number.isNaN(vTeorica) || Number.isNaN(vReal)) {
       setExterno((atual) => ({ 
         ...atual, 
         resultado: null, 
@@ -118,7 +134,7 @@ export default function CalculadoraTolerancia() {
     const vTeorica = normalizarMedida(interno.teorica);
     const vReal = normalizarMedida(interno.real);
 
-    if (isNaN(vTeorica) || isNaN(vReal)) {
+    if (Number.isNaN(vTeorica) || Number.isNaN(vReal)) {
       setInterno((atual) => ({ 
         ...atual, 
         resultado: null, 
@@ -171,6 +187,7 @@ export default function CalculadoraTolerancia() {
           type="button" 
           className="submit-registration" 
           onClick={limparCampos}
+          aria-label="Limpar todos os campos da calculadora de tolerância"
           style={{ background: "#34495e", border: "1px solid #2c3e50" }}
         >
           Limpar Campos
