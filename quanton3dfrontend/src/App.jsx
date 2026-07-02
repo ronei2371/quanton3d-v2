@@ -767,10 +767,10 @@ function AdminContent() {
   }
 
   const ABAS = [
-    { id: "galeria", label: "📸 Galeria (" + (dados.totais.gallery || 0) + ")" },
-    { id: "clientes", label: "👥 Clientes (" + (dados.totais.clientes || 0) + ")" },
-    { id: "formulacoes", label: "🧪 Formulações (" + (dados.totais.formulacoes || 0) + ")" },
-    { id: "chamados", label: "🔧 Chamados (" + (dados.chamados?.length || 0) + ")" },
+    { id: "galeria", label: "Galeria" },
+    { id: "clientes", label: "Clientes" },
+    { id: "formulacoes", label: "Formulacoes" },
+    { id: "chamados", label: "Chamados" },
   ];
 
   return (
