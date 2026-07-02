@@ -5,6 +5,7 @@ import ContactMessageModal from "./components/ContactMessageModal";
 import PartnerRequestModal from "./components/PartnerRequestModal";
 import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
+import CalculadoraTolerancia from "./components/CalculadoraTolerancia";
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
@@ -568,7 +569,7 @@ function GuideModal({ guide, onClose }) {
 }
 
 function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
-  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada", galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes", admGaleria: "ADM Galeria", qualidade: "Alta Qualidade", calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume", bot: "Bot Quanton3D" };
+  const titles = { contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada", galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes", admGaleria: "ADM Galeria", qualidade: "Alta Qualidade", calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume", calc_tolerancia: "Calculadora de Tolerância", bot: "Bot Quanton3D" };
   return (
     <div className="modal-backdrop">
       <section className="site-modal">
@@ -585,6 +586,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
+        {type === "calc_tolerancia" && <CalculadoraTolerancia />}
         {type === "bot" && <BotContent cliente={cliente} />}
       </section>
     </div>
