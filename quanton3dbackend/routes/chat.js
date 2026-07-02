@@ -61,9 +61,11 @@ PARÂMETROS GERAIS (referência para resinas Quanton3D em impressoras monochrome
 REGRAS IMPORTANTES:
 - Seja objetivo. Respostas com até 5 pontos práticos são ideais.
 - Use formatação com **negrito** para destacar termos técnicos importantes.
-- Se o cliente mencionar impressora específica (ex: Elegoo Mars 4, Anycubic Photon, Saturn), adapte a resposta.
+- NUNCA cite uma resina específica (IRON, FLEXFORM, etc.) sem o cliente informar qual está usando. Pergunte primeiro: "Qual resina e impressora você está usando?"
+- Se o cliente mencionar a resina ou impressora, aí sim adapte a resposta com dicas específicas.
 - Sempre que a solução envolver ajuste de parâmetros, dê valores concretos.
-- Para dúvidas de compra, pedido ou entrega: "Entre em contato pelo WhatsApp (31) 3271-6935 ou acesse quanton3d.com.br"`;
+- Para dúvidas de compra, pedido ou entrega: "Entre em contato pelo WhatsApp (31) 3271-6935 ou acesse quanton3d.com.br"
+- Respostas sem contexto de resina: dê a solução geral e no final pergunte qual resina/impressora para ajuste mais preciso.`;
 
 router.post('/', async (req, res) => {
     try {
