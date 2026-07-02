@@ -1129,8 +1129,17 @@ function QualidadeContent({ abrirGuia }) {
   );
 }
 
+function formatarMarkdown(texto) {
+  return texto
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, "<code style=\"background:rgba(255,255,255,0.12);padding:2px 6px;border-radius:4px;font-size:0.88em\">$1</code>")
+    .replace(/\n{2,}/g, "</p><p style=\"margin:8px 0\">")
+    .replace(/\n/g, "<br/>");
+}
+
 function BotContent({ cliente }) {
-  const [mensagens, setMensagens] = useState([{ text: `Olá ${cliente?.nome || ""}, sou o assistente técnico da Quanton3D. Como posso te ajudar hoje?`, isBot: true }]);
+  const [mensagens, setMensagens] = useState([{ text: `Olá ${cliente?.nome || ""}! 👋 Sou o assistente técnico da Quanton3D. Como posso te ajudar hoje?`, isBot: true }]);
   const [input, setInput] = useState("");
   const [pensando, setPensando] = useState(false);
   const scrollRef = useRef(null);
@@ -1147,7 +1156,8 @@ function BotContent({ cliente }) {
     setPensando(true);
     try {
       const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
-      setMensagens(prev => [...prev, { text: res.data.data?.reply || res.data.reply || 'Não consegui processar sua dúvida agora.', isBot: true }]);
+      const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
+      setMensagens(prev => [...prev, { text: reply, isBot: true }]);
     } catch (err) {
       console.error("Erro ao conversar com bot:", err);
       setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
@@ -1157,16 +1167,43 @@ function BotContent({ cliente }) {
   }
 
   return (
-    <div className="bot-chat-container">
-      <div className="chat-messages" ref={scrollRef}>
+    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "65vh" }}>
+      <div className="chat-messages" ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
         {mensagens.map((m, i) => (
-          <div key={i} className={`message-bubble ${m.isBot ? "bot" : "user"}`}>{m.text}</div>
+          <div
+            key={i}
+            className={`message-bubble ${m.isBot ? "bot" : "user"}`}
+            style={{
+              alignSelf: m.isBot ? "flex-start" : "flex-end",
+              maxWidth: "85%",
+              padding: "10px 14px",
+              borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px",
+              background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)",
+              border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)",
+              color: "#eaf3ff",
+              fontSize: "0.92rem",
+              lineHeight: 1.55,
+            }}
+            dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
+          />
         ))}
-        {pensando && <div className="message-bubble bot thinking">Analisando base técnica...</div>}
+        {pensando && (
+          <div style={{ alignSelf: "flex-start", padding: "10px 16px", borderRadius: "4px 18px 18px 18px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.25)", color: "#9fb4c7", fontSize: "0.88rem" }}>
+            ⏳ Analisando base técnica...
+          </div>
+        )}
       </div>
-      <div className="chat-input-row">
-        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." />
-        <button onClick={enviar} disabled={pensando}>Enviar</button>
+      <div className="chat-input-row" style={{ display: "flex", gap: "10px", padding: "12px 16px", borderTop: "1px solid rgba(113,159,219,0.2)" }}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && enviar()}
+          placeholder="Tire sua dúvida técnica..."
+          style={{ flex: 1 }}
+        />
+        <button type="button" onClick={enviar} disabled={pensando} style={{ whiteSpace: "nowrap" }}>
+          {pensando ? "..." : "Enviar"}
+        </button>
       </div>
     </div>
   );
