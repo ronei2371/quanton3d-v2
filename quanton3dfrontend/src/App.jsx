@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "./api";
 import "./App.css";
 import ContactMessageModal from "./components/ContactMessageModal";
@@ -6,6 +6,7 @@ import PartnerRequestModal from "./components/PartnerRequestModal";
 import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
 import CalculadoraTolerancia from "./components/CalculadoraTolerancia";
+import CalculadoraCustos from "./components/CalculadoraCustos";
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
@@ -31,6 +32,8 @@ const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
   { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
+  { label: "PLANILHA DE CUSTO", kind: "modal", id: "calc_custos" },
+  { label: "CALCULADORA DE TOLERÂNCIA", kind: "modal", id: "calc_tolerancia" },
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
@@ -48,7 +51,7 @@ function getClienteSalvo() {
   try {
     const salvo = localStorage.getItem("quanton3d_cliente");
     return salvo ? JSON.parse(salvo) : null;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -179,6 +182,7 @@ function Modal({ type, onClose, cliente, onRegistrationSuccess, abrirGuia, abrir
     calc_exp: "Calculadora de Exposição",
     calc_vol: "Calculadora de Volume",
     calc_tolerancia: "Compensação de Tolerância",
+    calc_custos: "Planilha de Custo de Fabricação",
     bot: "Assistente Técnico Quanton3D",
   };
 
@@ -201,6 +205,7 @@ function Modal({ type, onClose, cliente, onRegistrationSuccess, abrirGuia, abrir
               {type === "calc_exp" && <CalculadoraExposicao />}
               {type === "calc_vol" && <CalculadoraVolume />}
               {type === "calc_tolerancia" && <CalculadoraTolerancia />}
+              {type === "calc_custos" && <CalculadoraCustos />}
               {type === "bot" && <BotContent cliente={cliente} />}
             </>
           )}
@@ -245,7 +250,7 @@ function FormulacaoContent({ cliente }) {
     try {
       await api.post("/formulacao", { ...form, clienteId: cliente.id });
       setStatus("Solicitação enviada com sucesso! Entraremos em contato.");
-    } catch (err) {
+    } catch {
       setStatus("Erro ao enviar solicitação. Tente novamente mais tarde.");
     }
   };
@@ -297,7 +302,7 @@ function RegistrationForm({ onSuccess }) {
     try {
       const res = await api.post("/clientes", dados);
       onSuccess(res.data);
-    } catch (err) {
+    } catch {
       setErro("Erro ao realizar cadastro. Tente novamente.");
     }
   };
@@ -370,7 +375,7 @@ function BotContent({ cliente }) {
     try {
       const res = await api.post("/chat", { message: input, clienteId: cliente.id });
       setMessages((prev) => [...prev, { role: "assistant", content: res.data.reply }]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Desculpe, tive um problema técnico. Pode repetir?" }]);
     } finally {
       setLoading(false);
