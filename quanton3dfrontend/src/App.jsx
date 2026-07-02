@@ -26,6 +26,7 @@ const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
   { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
+  { label: "CALCULADORA DE TOLERÂNCIA", kind: "modal", id: "calc_tolerancia" },
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
