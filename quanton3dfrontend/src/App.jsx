@@ -26,20 +26,13 @@ const ORIGENS = [
 
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
-  { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
+  { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
+  { label: "SAIBA MAIS SOBRE NÓS", kind: "modal", id: "sobre" },
   { label: "CALCULADORA DE TOLERÂNCIA", kind: "modal", id: "calc_tolerancia" },
   { label: "CALCULADORA DE CUSTOS", kind: "modal", id: "calc_custos" },
-  { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
-  { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
-  { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
-  { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao" },
-  { label: "GABARITO QUANTON3D", kind: "guide", id: "calibracaoQuanton3D" },
-  { label: "DIAGNÓSTICO DE FALHAS", kind: "guide", id: "diagnostico" },
-  { label: "SUPORTES E POSICIONAMENTO", kind: "guide", id: "suportes" },
-  { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao" },
-  { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
   { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
+  { label: "COMPARTILHAR CONFIGURAÇÕES", kind: "modal", id: "galeria" },
 ];
 
 
