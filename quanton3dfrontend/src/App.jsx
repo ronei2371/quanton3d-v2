@@ -1147,7 +1147,7 @@ function BotContent({ cliente }) {
     setPensando(true);
     try {
       const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
-      setMensagens(prev => [...prev, { text: res.data.data.reply, isBot: true }]);
+      setMensagens(prev => [...prev, { text: res.data.data?.reply || res.data.reply || 'Não consegui processar sua dúvida agora.', isBot: true }]);
     } catch (err) {
       console.error("Erro ao conversar com bot:", err);
       setMensagens(prev => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
