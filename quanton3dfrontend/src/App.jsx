@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "./api";
 import "./App.css";
 import ContactMessageModal from "./components/ContactMessageModal";
@@ -6,6 +6,7 @@ import PartnerRequestModal from "./components/PartnerRequestModal";
 import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
 import CalculadoraTolerancia from "./components/CalculadoraTolerancia";
+import Guide from "./components/Guide";
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
@@ -48,7 +49,7 @@ function getClienteSalvo() {
   try {
     const salvo = localStorage.getItem("quanton3d_cliente");
     return salvo ? JSON.parse(salvo) : null;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -243,9 +244,9 @@ function FormulacaoContent({ cliente }) {
     e.preventDefault();
     setStatus("Enviando...");
     try {
-      await api.post("/formulacao", { ...form, clienteId: cliente.id });
+      await api.post("/formulacao", { ...form, clienteId: cliente?._id || cliente?.id || "" });
       setStatus("Solicitação enviada com sucesso! Entraremos em contato.");
-    } catch (err) {
+    } catch {
       setStatus("Erro ao enviar solicitação. Tente novamente mais tarde.");
     }
   };
@@ -297,7 +298,7 @@ function RegistrationForm({ onSuccess }) {
     try {
       const res = await api.post("/clientes", dados);
       onSuccess(res.data);
-    } catch (err) {
+    } catch {
       setErro("Erro ao realizar cadastro. Tente novamente.");
     }
   };
@@ -368,9 +369,9 @@ function BotContent({ cliente }) {
     setLoading(true);
 
     try {
-      const res = await api.post("/chat", { message: input, clienteId: cliente.id });
+      const res = await api.post("/chat", { message: input, clienteId: cliente?._id || cliente?.id || "" });
       setMessages((prev) => [...prev, { role: "assistant", content: res.data.reply }]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Desculpe, tive um problema técnico. Pode repetir?" }]);
     } finally {
       setLoading(false);
@@ -401,20 +402,5 @@ function BotContent({ cliente }) {
   );
 }
 
-function Guide({ id, onClose }) {
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content wide" onClick={(e) => e.stopPropagation()}>
-        <header className="modal-header">
-          <h2>Guia Técnico</h2>
-          <button type="button" className="close-button" onClick={onClose}>&times;</button>
-        </header>
-        <section className="modal-body">
-          <p>Conteúdo do guia {id} em desenvolvimento.</p>
-        </section>
-      </div>
-    </div>
-  );
-}
 
 export default App;
