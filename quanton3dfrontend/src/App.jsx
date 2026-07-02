@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "./api";
 import "./App.css";
 import ContactMessageModal from "./components/ContactMessageModal";
@@ -31,6 +31,7 @@ const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
   { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
+  { label: "CALCULADORA DE TOLERÂNCIA", kind: "modal", id: "calc_tolerancia" },
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
@@ -48,7 +49,7 @@ function getClienteSalvo() {
   try {
     const salvo = localStorage.getItem("quanton3d_cliente");
     return salvo ? JSON.parse(salvo) : null;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -130,7 +131,7 @@ function App() {
               <p>Estime o consumo de resina do projeto.</p>
             </div>
             <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
-              <span>Compensação de Tolerância</span>
+              <span>Calculadora de Tolerância</span>
               <p>Ajuste X/Y Offset para encaixes perfeitos.</p>
             </div>
           </div>
@@ -178,7 +179,7 @@ function Modal({ type, onClose, cliente, onRegistrationSuccess, abrirGuia, abrir
     formulacao: "Formulação Personalizada",
     calc_exp: "Calculadora de Exposição",
     calc_vol: "Calculadora de Volume",
-    calc_tolerancia: "Compensação de Tolerância",
+    calc_tolerancia: "Calculadora de Tolerância",
     bot: "Assistente Técnico Quanton3D",
   };
 
@@ -245,7 +246,7 @@ function FormulacaoContent({ cliente }) {
     try {
       await api.post("/formulacao", { ...form, clienteId: cliente.id });
       setStatus("Solicitação enviada com sucesso! Entraremos em contato.");
-    } catch (err) {
+    } catch {
       setStatus("Erro ao enviar solicitação. Tente novamente mais tarde.");
     }
   };
@@ -297,7 +298,7 @@ function RegistrationForm({ onSuccess }) {
     try {
       const res = await api.post("/clientes", dados);
       onSuccess(res.data);
-    } catch (err) {
+    } catch {
       setErro("Erro ao realizar cadastro. Tente novamente.");
     }
   };
@@ -370,7 +371,7 @@ function BotContent({ cliente }) {
     try {
       const res = await api.post("/chat", { message: input, clienteId: cliente.id });
       setMessages((prev) => [...prev, { role: "assistant", content: res.data.reply }]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Desculpe, tive um problema técnico. Pode repetir?" }]);
     } finally {
       setLoading(false);
