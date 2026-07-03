@@ -791,7 +791,7 @@ function AdminContent() {
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           {ABAS_ADM.map((a) => (
             <button key={a.id} type="button" onClick={() => setAba(a.id)}
-              style={{ padding: "7px 13px", borderRadius: "10px", fontSize: "0.82rem", border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.3)", background: aba === a.id ? "rgba(79,209,255,0.15)" : "rgba(255,255,255,0.05)", color: aba === a.id ? "#4fd1ff" : "white", cursor: "pointer", fontWeight: aba === a.id ? "900" : "normal" }}>
+              style={{ padding: "8px 14px", borderRadius: "10px", fontSize: "0.82rem", border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.3)", background: aba === a.id ? "rgba(79,209,255,0.15)" : "rgba(255,255,255,0.06)", color: aba === a.id ? "#4fd1ff" : "#eaf3ff", cursor: "pointer", fontWeight: aba === a.id ? "900" : "600", fontFamily: "inherit", WebkitTextFillColor: aba === a.id ? "#4fd1ff" : "#eaf3ff" }}>
               {a.label}
             </button>
           ))}
