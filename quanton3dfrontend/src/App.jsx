@@ -16,13 +16,20 @@ const SOCIAL_LINKS = [
 const ORIGENS = ["Instagram","YouTube","Google / Pesquisa","Indicação de amigo","Mercado Livre / Shopee","Já sou cliente","Outros"];
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
-  { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
+  { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
-  { label: "SAIBA MAIS SOBRE NÓS", kind: "modal", id: "sobre" },
+  { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
+  { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
+  { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
+  { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao" },
+  { label: "GABARITO QUANTON3D", kind: "guide", id: "calibracaoQuanton3D" },
+  { label: "DIAGNÓSTICO DE FALHAS", kind: "guide", id: "diagnostico" },
+  { label: "SUPORTES E POSICIONAMENTO", kind: "guide", id: "suportes" },
+  { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao" },
+  { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
+  { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
   { label: "CALCULADORA DE TOLERÂNCIA", kind: "modal", id: "calc_tolerancia" },
   { label: "CALCULADORA DE CUSTOS", kind: "modal", id: "calc_custos" },
-  { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
-  { label: "COMPARTILHAR CONFIGURAÇÕES", kind: "modal", id: "galeria" },
 ];
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
@@ -222,10 +229,10 @@ function App() {
       <section className="experience-section">
         <span className="section-label">Colaboração técnica</span>
         <h2>Colabore com sua experiência de configuração</h2>
-        <p>Envie uma foto da peça e os tempos usados no Chitubox para ajudar a Quanton3D a melhorar a base técnica.</p>
+        <p>Envie uma foto da peça e os tempos usados no Chitubox para ajudar a Quanton3D a melhorar a base técnica e orientar outros clientes.</p>
         <div className="experience-actions">
           <button type="button" onClick={() => setActiveModal("galeria")}>📷 Compartilhar minhas configurações</button>
-          <button type="button" onClick={() => setActiveModal("galeriaPublica")}>🖼️ Ver configurações e fotos de clientes</button>
+          <button type="button" onClick={() => setActiveModal("galeriaPublica")}>🖼️ Ver fotos de clientes</button>
           <button type="button" onClick={abrirParceiroModal}>🤝 Quero ser parceiro</button>
           <button type="button" onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
         </div>
