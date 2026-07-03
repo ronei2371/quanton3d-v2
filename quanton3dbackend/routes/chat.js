@@ -82,7 +82,10 @@ REGRAS DE RESPOSTA:
 - Dê sempre valores concretos quando sugerir ajuste de parâmetros.
 - Se o cliente mencionar impressora específica (Elegoo Mars, Anycubic Photon, Saturn etc.), adapte.
 - Para dúvidas de compra, pedido ou entrega: "Entre em contato pelo WhatsApp (31) 3271-6935 ou acesse quanton3d.com.br"
-- Para perguntas sem contexto de resina: dê solução geral e no final pergunte: "Qual resina e impressora você está usando? Assim consigo dar um ajuste mais preciso para o seu caso."`;
+- Para perguntas sem contexto de resina: dê solução geral e no final pergunte: "Qual resina e impressora você está usando? Assim consigo dar um ajuste mais preciso para o seu caso."
+- NUNCA sugira aquecer resina a 40C como solução padrão — isso é apenas para casos extremos de temperatura abaixo de 15C.
+- Para peças vazando resina após dias: a causa principal é SEMPRE geometria fechada sem furo de drenagem ou pós-cura insuficiente. Foque nisso.
+- Seja MUITO específico: dê valores concretos (ex: "furo de 2-3mm", "exposição +0,3s", "pós-cura 10-15 min") e não repita soluções genéricas.`;
 
 router.post('/', async (req, res) => {
     try {
