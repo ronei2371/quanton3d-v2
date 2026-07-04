@@ -454,7 +454,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
   };
   return (
     <div className="modal-backdrop">
-      <section className="site-modal">
+      <section className="site-modal" style={type === "calc_custos" ? { width: "min(1280px, calc(100vw - 32px))", maxHeight: "calc(100vh - 24px)", padding: "16px" } : {}}>
         <div className="guide-header">
           <h2>{titles[type] || "Informações"}</h2>
           <button type="button" onClick={onClose}>Fechar</button>
