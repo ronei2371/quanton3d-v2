@@ -1118,13 +1118,36 @@ function QualidadeContent({ abrirGuia }) {
   );
 }
 
+const RESINAS_BOT = [
+  "ALCHEMIST","IRON","IRON 70/30","FLEXFORM","ATHOM DENTAL","ATHOM ALINHADORES",
+  "ATHOM WASHABLE","POSEIDON","PYROBLAST","VULCAN CAST","SPIN","SPARK","LOW SMELL","VELVET SKIN","Não sei / Outra"
+];
+
 function BotContent({ cliente }) {
-  const [mensagens, setMensagens] = useState([{ text: `Olá ${cliente?.nome || ""}! 👋 Sou o ELIO, assistente técnico da Quanton3D. Como posso te ajudar hoje?`, isBot: true }]);
+  const [etapa, setEtapa] = useState("contexto"); // "contexto" | "chat"
+  const [ctx, setCtx] = useState({ resina: "", impressora: "", altura: "0.05" });
+  const [mensagens, setMensagens] = useState([]);
   const [input, setInput] = useState("");
   const [pensando, setPensando] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [mensagens]);
+
+  function iniciarChat() {
+    const resina = ctx.resina || "não informada";
+    const impressora = ctx.impressora.trim() || "não informada";
+    const altura = ctx.altura || "0.05";
+    const ctxTexto = resina !== "não informada" || impressora !== "não informada"
+      ? `Estou usando a resina **${resina}**, impressora **${impressora}**, altura de camada **${altura}mm**.`
+      : "";
+    const boasVindas = `Olá ${cliente?.nome || ""}! 👋 Sou o **ELIO**, assistente técnico da Quanton3D.${ctxTexto ? `
+
+Contexto registrado: ${ctxTexto}` : ""}
+
+Como posso te ajudar hoje?`;
+    setMensagens([{ text: boasVindas, isBot: true }]);
+    setEtapa("chat");
+  }
 
   async function enviar() {
     if (!input.trim() || pensando) return;
@@ -1134,17 +1157,18 @@ function BotContent({ cliente }) {
     setMensagens(novasMensagens);
     setPensando(true);
     try {
-      // Monta histórico para manter contexto da conversa (últimas 8 mensagens)
-      const historico = novasMensagens
-        .slice(-8)
-        .filter(m => m.text)
-        .map(m => ({ role: m.isBot ? "assistant" : "user", content: m.text }));
+      // Injeta contexto da configuração no início do histórico
+      const ctxMsg = ctx.resina || ctx.impressora
+        ? [{ role: "user", content: `Contexto: resina ${ctx.resina || "não informada"}, impressora ${ctx.impressora || "não informada"}, altura camada ${ctx.altura || "0.05"}mm` },
+           { role: "assistant", content: "Contexto registrado. Pode me contar o problema." }]
+        : [];
 
-      const res = await api.post("/chat", {
-        message: userMsg,
-        historico,
-        clienteId: cliente?._id
-      });
+      const historico = [
+        ...ctxMsg,
+        ...novasMensagens.slice(-8).filter(m => m.text).map(m => ({ role: m.isBot ? "assistant" : "user", content: m.text }))
+      ];
+
+      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
       setMensagens((prev) => [...prev, { text: reply, isBot: true }]);
     } catch (err) {
@@ -1153,20 +1177,91 @@ function BotContent({ cliente }) {
     } finally { setPensando(false); }
   }
 
+  if (etapa === "contexto") return (
+    <div style={{ padding: "8px 4px" }}>
+      <div style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+        <p style={{ margin: "0 0 4px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>🤖 ELIO — Assistente Técnico Quanton3D</p>
+        <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.55 }}>
+          Para respostas precisas, informe sua configuração antes de começar. É rápido!
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gap: "14px" }}>
+        <div>
+          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 800, color: "#b8cfe8", marginBottom: "6px" }}>
+            🧪 Qual resina Quanton3D você está usando?
+          </label>
+          <select value={ctx.resina} onChange={e => setCtx(c => ({ ...c, resina: e.target.value }))}
+            style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: ctx.resina ? "#ffffff" : "#8ba3be", fontSize: "0.9rem" }}>
+            <option value="">Selecione a resina (opcional)</option>
+            {RESINAS_BOT.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 800, color: "#b8cfe8", marginBottom: "6px" }}>
+            🖨️ Qual sua impressora? (marca e modelo)
+          </label>
+          <input
+            value={ctx.impressora}
+            onChange={e => setCtx(c => ({ ...c, impressora: e.target.value }))}
+            placeholder="Ex: Elegoo Mars 4 Ultra, Anycubic Photon M3..."
+            style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.9rem" }}
+          />
+        </div>
+
+        <div>
+          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 800, color: "#b8cfe8", marginBottom: "6px" }}>
+            📏 Altura de camada que está usando
+          </label>
+          <select value={ctx.altura} onChange={e => setCtx(c => ({ ...c, altura: e.target.value }))}
+            style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.9rem" }}>
+            <option value="0.01">0.01mm — máxima resolução</option>
+            <option value="0.02">0.02mm — alta resolução</option>
+            <option value="0.03">0.03mm — alta resolução</option>
+            <option value="0.04">0.04mm — resolução média-alta</option>
+            <option value="0.05">0.05mm — padrão recomendado</option>
+            <option value="0.06">0.06mm — padrão</option>
+            <option value="0.08">0.08mm — rápido</option>
+            <option value="0.10">0.10mm — máxima velocidade</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" onClick={iniciarChat}
+        style={{ width: "100%", marginTop: "18px", padding: "14px", borderRadius: "12px", border: 0, background: "linear-gradient(135deg, #2563eb, #7c3aed)", color: "#ffffff", fontWeight: 900, fontSize: "0.95rem", cursor: "pointer", fontFamily: "inherit", boxShadow: "0 8px 24px rgba(37,99,235,0.3)" }}>
+        Iniciar atendimento com o ELIO →
+      </button>
+
+      <button type="button" onClick={iniciarChat}
+        style={{ width: "100%", marginTop: "8px", padding: "10px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.2)", background: "transparent", color: "#8ba3be", fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit" }}>
+        Pular e começar sem informar configuração
+      </button>
+    </div>
+  );
+
   return (
-    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "65vh" }}>
+    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "60vh" }}>
+      {(ctx.resina || ctx.impressora) && (
+        <div style={{ padding: "8px 14px", background: "rgba(79,209,255,0.06)", borderBottom: "1px solid rgba(79,209,255,0.15)", fontSize: "0.78rem", color: "#8ba3be", display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          {ctx.resina && <span>🧪 {ctx.resina}</span>}
+          {ctx.impressora && <span>🖨️ {ctx.impressora}</span>}
+          {ctx.altura && <span>📏 {ctx.altura}mm</span>}
+          <button type="button" onClick={() => setEtapa("contexto")} style={{ marginLeft: "auto", color: "#4fd1ff", background: "none", border: "none", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700 }}>Alterar</button>
+        </div>
+      )}
       <div className="chat-messages" ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
         {mensagens.map((m, i) => (
-          <div key={i} className={`message-bubble ${m.isBot ? "bot" : "user"}`}
+          <div key={i}
             style={{ alignSelf: m.isBot ? "flex-start" : "flex-end", maxWidth: "85%", padding: "10px 14px", borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px", background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)", border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)", color: "#eaf3ff", fontSize: "0.92rem", lineHeight: 1.55 }}
             dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
           />
         ))}
         {pensando && <div style={{ alignSelf: "flex-start", padding: "10px 16px", borderRadius: "4px 18px 18px 18px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.25)", color: "#9fb4c7", fontSize: "0.88rem" }}>⏳ Analisando base técnica...</div>}
       </div>
-      <div className="chat-input-row" style={{ display: "flex", gap: "10px", padding: "12px 16px", borderTop: "1px solid rgba(113,159,219,0.2)" }}>
-        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." style={{ flex: 1 }} />
-        <button type="button" onClick={enviar} disabled={pensando} style={{ whiteSpace: "nowrap" }}>{pensando ? "..." : "Enviar"}</button>
+      <div style={{ display: "flex", gap: "10px", padding: "12px 16px", borderTop: "1px solid rgba(113,159,219,0.2)" }}>
+        <input value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." style={{ flex: 1 }} />
+        <button type="button" onClick={enviar} disabled={pensando} style={{ whiteSpace: "nowrap", padding: "10px 18px", borderRadius: "10px", border: 0, background: "linear-gradient(135deg, #2563eb, #7c3aed)", color: "#fff", fontWeight: 900, cursor: "pointer" }}>{pensando ? "..." : "Enviar"}</button>
       </div>
     </div>
   );
