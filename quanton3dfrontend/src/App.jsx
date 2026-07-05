@@ -1130,10 +1130,21 @@ function BotContent({ cliente }) {
     if (!input.trim() || pensando) return;
     const userMsg = input;
     setInput("");
-    setMensagens((prev) => [...prev, { text: userMsg, isBot: false }]);
+    const novasMensagens = [...mensagens, { text: userMsg, isBot: false }];
+    setMensagens(novasMensagens);
     setPensando(true);
     try {
-      const res = await api.post("/chat", { message: userMsg, clienteId: cliente?._id });
+      // Monta histórico para manter contexto da conversa (últimas 8 mensagens)
+      const historico = novasMensagens
+        .slice(-8)
+        .filter(m => m.text)
+        .map(m => ({ role: m.isBot ? "assistant" : "user", content: m.text }));
+
+      const res = await api.post("/chat", {
+        message: userMsg,
+        historico,
+        clienteId: cliente?._id
+      });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
       setMensagens((prev) => [...prev, { text: reply, isBot: true }]);
     } catch (err) {
