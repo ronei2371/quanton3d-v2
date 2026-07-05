@@ -262,8 +262,6 @@ function App() {
         <div className="experience-actions">
           <button type="button" onClick={() => setActiveModal("galeria")}>📷 Compartilhar minhas configurações</button>
           <button type="button" onClick={() => setActiveModal("galeriaPublica")}>🖼️ Ver fotos de clientes</button>
-          <button type="button" onClick={abrirParceiroModal}>🤝 Quero ser parceiro</button>
-          <button type="button" onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
         </div>
       </section>
 
