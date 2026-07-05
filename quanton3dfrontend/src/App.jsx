@@ -798,6 +798,11 @@ function AdminContent() {
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
   const [diagnostico, setDiagnostico] = useState({});
+  const [novoParam, setNovoParam] = useState({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", liftSpeed:"", retractSpeed:"" });
+  const [salvandoParam, setSalvandoParam] = useState(false);
+  const [msgParam, setMsgParam] = useState("");
+  const [parametrosAdm, setParametrosAdm] = useState([]);
+  const [buscaParam, setBuscaParam] = useState("");
 
   async function entrar(e) {
     e.preventDefault(); setErro("");
@@ -817,10 +822,13 @@ function AdminContent() {
     try {
       setCarregando(true); setErro("");
       const headers = { Authorization: "Bearer " + token };
-      const [metricas, galeria] = await Promise.all([
+      const [metricas, galeria, todosParams] = await Promise.all([
         api.get("/admin/metrics", { headers }),
         api.get("/gallery/admin", { headers, params: filtroGaleria }),
+        api.get("/parametros", { headers }),
       ]);
+      const listaParams = Array.isArray(todosParams.data?.data) ? todosParams.data.data : [];
+      setParametrosAdm(listaParams);
       const m = metricas.data;
       let chamados = [];
       try { const r = await api.get("/bot-tickets", { headers }); chamados = Array.isArray(r.data?.botTickets) ? r.data.botTickets : []; } catch (_) {}
@@ -842,6 +850,26 @@ function AdminContent() {
       await carregarDados();
     } catch (err) { setErro(err?.response?.data?.error || "Erro ao atualizar."); }
     finally { setSalvandoId(""); }
+  }
+
+  async function salvarParametro() {
+    if (!novoParam.resina.trim() || !novoParam.impressora.trim()) { setMsgParam("Resina e impressora são obrigatórias."); return; }
+    try {
+      setSalvandoParam(true); setMsgParam("");
+      await api.post("/parametros", novoParam);
+      setMsgParam("✅ Parâmetro salvo com sucesso!");
+      setNovoParam({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", liftSpeed:"", retractSpeed:"" });
+      await carregarDados();
+    } catch (err) { setMsgParam("❌ Erro ao salvar: " + (err?.response?.data?.error || err.message)); }
+    finally { setSalvandoParam(false); }
+  }
+
+  async function deletarParametro(id) {
+    if (!window.confirm("Confirma exclusão deste parâmetro?")) return;
+    try {
+      await api.delete("/parametros/" + id, { headers: { Authorization: "Bearer " + token } });
+      setParametrosAdm(prev => prev.filter(p => p._id !== id));
+    } catch (err) { setMsgParam("❌ Erro ao excluir."); }
   }
 
   function sair() { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
@@ -867,7 +895,8 @@ function AdminContent() {
   }
 
   const ABAS_ADM = [
-    { id: "metricas", label: "📊 Metricas" },
+    { id: "metricas", label: "Metricas" },
+    { id: "parametros_adm", label: "Parametros" },
     { id: "galeria", label: "Galeria (" + dados.galeria.length + ")" },
     { id: "clientes", label: "Clientes (" + dados.clientes.length + ")" },
     { id: "formulacoes", label: "Formulacoes (" + dados.formulacoes.length + ")" },
@@ -896,8 +925,8 @@ function AdminContent() {
 
       {aba === "metricas" && (
         <div>
-          {/* Cards de resumo */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+          {/* Cards resumo */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "20px" }}>
             {[
               { label: "Clientes cadastrados", valor: dados.totais.clientes || 0, cor: "#4fd1ff" },
               { label: "Formulacoes recebidas", valor: dados.totais.formulacoes || 0, cor: "#b89cff" },
@@ -907,7 +936,7 @@ function AdminContent() {
               { label: "Mensagens de contato", valor: dados.mensagens.length || 0, cor: "#8bd3ff" },
             ].map((item) => (
               <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${item.cor}33`, borderRadius: "14px", padding: "16px", textAlign: "center" }}>
-                <p style={{ margin: "0 0 8px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>{item.label}</p>
+                <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{item.label}</p>
                 <strong style={{ fontSize: "2rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
               </div>
             ))}
@@ -915,84 +944,98 @@ function AdminContent() {
 
           {/* Taxa de conversão */}
           <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-            <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>📈 TAXA DE CONVERSÃO</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>Clientes cadastrados</p>
-                <strong style={{ color: "#eaf3ff", fontSize: "1.4rem" }}>{dados.totais.clientes || 0}</strong>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>Formulações enviadas</p>
-                <strong style={{ color: "#eaf3ff", fontSize: "1.4rem" }}>{dados.totais.formulacoes || 0}</strong>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>Taxa formulação/cliente</p>
-                <strong style={{ color: "#49e68b", fontSize: "1.4rem" }}>
-                  {dados.totais.clientes > 0 ? ((dados.totais.formulacoes / dados.totais.clientes) * 100).toFixed(1) + "%" : "0%"}
-                </strong>
-              </div>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>📈 TAXA DE CONVERSÃO</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "12px" }}>
+              {[
+                { label: "Clientes cadastrados", valor: dados.totais.clientes || 0 },
+                { label: "Formulações enviadas", valor: dados.totais.formulacoes || 0 },
+                { label: "Taxa formulação/cliente", valor: dados.totais.clientes > 0 ? ((dados.totais.formulacoes / dados.totais.clientes) * 100).toFixed(1) + "%" : "0%", verde: true },
+              ].map(item => (
+                <div key={item.label} style={{ textAlign: "center" }}>
+                  <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>{item.label}</p>
+                  <strong style={{ color: item.verde ? "#49e68b" : "#eaf3ff", fontSize: "1.4rem" }}>{item.valor}</strong>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Menções de resinas nos chamados */}
+          {/* Clientes cadastrados — dados completos */}
           <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧪 RESINAS MAIS MENCIONADAS NOS CHAMADOS</p>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>👥 CLIENTES CADASTRADOS — DADOS COMPLETOS</p>
+            {dados.clientes.length === 0
+              ? <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum cliente ainda.</p>
+              : <div style={{ display: "grid", gap: "8px", maxHeight: "300px", overflowY: "auto" }}>
+                  {dados.clientes.map((c, i) => (
+                    <div key={c._id || i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr auto", gap: "8px", alignItems: "center", background: "rgba(79,209,255,0.04)", border: "1px solid rgba(79,209,255,0.12)", borderRadius: "10px", padding: "10px 12px", fontSize: "0.82rem" }}>
+                      <span style={{ color: "#eaf3ff", fontWeight: 700 }}>{c.nome || "-"}</span>
+                      <span style={{ color: "#9fb4c7" }}>📱 {c.telefone || "-"}</span>
+                      <span style={{ color: "#9fb4c7" }}>✉️ {c.email || "-"}</span>
+                      <span style={{ color: "#9fb4c7" }}>🔗 {c.origem || "-"}</span>
+                      <span style={{ color: "#8ba3be", fontSize: "0.72rem", whiteSpace: "nowrap" }}>{formatarDataHora(c.createdAt)}</span>
+                    </div>
+                  ))}
+                </div>
+            }
+          </div>
+
+          {/* Resinas mais mencionadas */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧪 RESINAS MAIS USADAS NOS CHAMADOS</p>
             {(() => {
               const RESINAS_TRACK = ["IRON","FLEXFORM","ALCHEMIST","ATHOM","POSEIDON","PYROBLAST","VULCAN","SPARK","SPIN","LOW SMELL","70/30","VELVET"];
-              const texto = dados.chamados.map(c => `${c.resina || ""} ${c.descricao || ""} ${c.problema || ""}`).join(" ").toUpperCase();
+              const texto = dados.chamados.map(c => `${c.resina || ""} ${c.descricao || ""}`).join(" ").toUpperCase();
               const contagem = RESINAS_TRACK.map(r => ({ resina: r, count: (texto.match(new RegExp(r, "g")) || []).length })).filter(r => r.count > 0).sort((a,b) => b.count - a.count);
-              return contagem.length > 0 ? (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "8px" }}>
-                  {contagem.map(({ resina, count }) => (
-                    <div key={resina} style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "10px", padding: "10px", textAlign: "center" }}>
-                      <strong style={{ color: "#4fd1ff", display: "block", fontSize: "0.82rem" }}>{resina}</strong>
-                      <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}</span>
-                      <span style={{ color: "#9fb4c7", fontSize: "0.72rem", display: "block" }}>mencoes</span>
-                    </div>
-                  ))}
-                </div>
-              ) : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhuma mencao de resina nos chamados ainda.</p>;
+              return contagem.length > 0
+                ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "8px" }}>
+                    {contagem.map(({ resina, count }) => (
+                      <div key={resina} style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "10px", padding: "10px", textAlign: "center" }}>
+                        <strong style={{ color: "#4fd1ff", display: "block", fontSize: "0.82rem" }}>{resina}</strong>
+                        <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}x</span>
+                      </div>
+                    ))}
+                  </div>
+                : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhuma menção ainda.</p>;
             })()}
           </div>
 
-          {/* Problemas mais frequentes nos chamados */}
+          {/* Origem dos clientes */}
           <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🔧 PROBLEMAS MAIS FREQUENTES</p>
-            {(() => {
-              const freq = {};
-              dados.chamados.forEach(c => { if (c.problema) freq[c.problema] = (freq[c.problema] || 0) + 1; });
-              const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
-              return sorted.length > 0 ? (
-                <div style={{ display: "grid", gap: "8px" }}>
-                  {sorted.map(([problema, count]) => (
-                    <div key={problema} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,107,107,0.06)", border: "1px solid rgba(255,107,107,0.15)", borderRadius: "8px", padding: "8px 12px" }}>
-                      <span style={{ color: "#d3e4f8", fontSize: "0.85rem" }}>{problema}</span>
-                      <span style={{ background: "rgba(255,107,107,0.15)", color: "#ff8fab", borderRadius: "999px", padding: "2px 10px", fontSize: "0.78rem", fontWeight: 800 }}>{count}x</span>
-                    </div>
-                  ))}
-                </div>
-              ) : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum chamado registrado ainda.</p>;
-            })()}
-          </div>
-
-          {/* Origens dos clientes */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px" }}>
             <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>📣 ORIGEM DOS CLIENTES</p>
             {(() => {
               const freq = {};
               dados.clientes.forEach(c => { if (c.origem) freq[c.origem] = (freq[c.origem] || 0) + 1; });
               const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
               const cores = ["#4fd1ff","#b89cff","#49e68b","#ffd166","#ff8fab","#8bd3ff"];
-              return sorted.length > 0 ? (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "8px" }}>
-                  {sorted.map(([origem, count], i) => (
-                    <div key={origem} style={{ background: `${cores[i%cores.length]}11`, border: `1px solid ${cores[i%cores.length]}33`, borderRadius: "10px", padding: "10px", textAlign: "center" }}>
-                      <strong style={{ color: cores[i%cores.length], display: "block", fontSize: "0.82rem" }}>{origem}</strong>
-                      <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum cliente cadastrado ainda.</p>;
+              return sorted.length > 0
+                ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "8px" }}>
+                    {sorted.map(([origem, count], i) => (
+                      <div key={origem} style={{ background: cores[i%cores.length]+"11", border: `1px solid ${cores[i%cores.length]}33`, borderRadius: "10px", padding: "10px", textAlign: "center" }}>
+                        <strong style={{ color: cores[i%cores.length], display: "block", fontSize: "0.82rem" }}>{origem}</strong>
+                        <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum cliente ainda.</p>;
+            })()}
+          </div>
+
+          {/* Formulações por aplicação */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px" }}>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧬 FORMULAÇÕES POR APLICAÇÃO</p>
+            {(() => {
+              const freq = {};
+              dados.formulacoes.forEach(f => { const k = f.caracteristica || "Não informado"; freq[k] = (freq[k] || 0) + 1; });
+              const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
+              return sorted.length > 0
+                ? <div style={{ display: "grid", gap: "6px" }}>
+                    {sorted.map(([app, count]) => (
+                      <div key={app} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(184,156,255,0.06)", border: "1px solid rgba(184,156,255,0.15)", borderRadius: "8px", padding: "8px 12px" }}>
+                        <span style={{ color: "#d3e4f8", fontSize: "0.85rem" }}>{app}</span>
+                        <span style={{ background: "rgba(184,156,255,0.15)", color: "#b89cff", borderRadius: "999px", padding: "2px 10px", fontSize: "0.78rem", fontWeight: 800 }}>{count}x</span>
+                      </div>
+                    ))}
+                  </div>
+                : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhuma formulação ainda.</p>;
             })()}
           </div>
         </div>
@@ -1064,6 +1107,89 @@ function AdminContent() {
               </div>
             </CARD>
           ))}
+        </div>
+      )}
+
+      {aba === "parametros_adm" && (
+        <div>
+          {/* Formulário de cadastro */}
+          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "18px", marginBottom: "20px" }}>
+            <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.88rem" }}>➕ CADASTRAR NOVO PARÂMETRO</p>
+            {msgParam && <div style={{ padding: "8px 12px", borderRadius: "8px", marginBottom: "12px", background: msgParam.startsWith("✅") ? "rgba(73,230,139,0.1)" : "rgba(255,107,107,0.1)", border: msgParam.startsWith("✅") ? "1px solid rgba(73,230,139,0.3)" : "1px solid rgba(255,107,107,0.3)", color: msgParam.startsWith("✅") ? "#49e68b" : "#ff8fab", fontSize: "0.85rem" }}>{msgParam}</div>}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+              {[
+                { key: "resina", label: "Resina *", placeholder: "Ex: IRON" },
+                { key: "impressora", label: "Impressora *", placeholder: "Ex: Elegoo Mars 4 Ultra" },
+                { key: "alturaCamada", label: "Altura de camada", placeholder: "Ex: 0.05mm" },
+                { key: "exposicaoNormal", label: "Exposição normal (s)", placeholder: "Ex: 2.1" },
+                { key: "exposicaoBase", label: "Exposição base (s)", placeholder: "Ex: 35" },
+                { key: "camadasBase", label: "Camadas base", placeholder: "Ex: 6" },
+                { key: "liftSpeed", label: "Vel. elevação (mm/min)", placeholder: "Ex: 120" },
+                { key: "retractSpeed", label: "Vel. retração (mm/min)", placeholder: "Ex: 150" },
+              ].map(({ key, label, placeholder }) => (
+                <label key={key} style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>
+                  {label}
+                  <input
+                    value={novoParam[key]}
+                    onChange={e => setNovoParam(p => ({ ...p, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.85rem" }}
+                  />
+                </label>
+              ))}
+            </div>
+            <button type="button" onClick={salvarParametro} disabled={salvandoParam}
+              style={{ width: "100%", padding: "11px", borderRadius: "10px", border: 0, background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", fontSize: "0.9rem" }}>
+              {salvandoParam ? "Salvando..." : "Salvar parâmetro"}
+            </button>
+          </div>
+
+          {/* Busca e lista */}
+          <div style={{ marginBottom: "12px" }}>
+            <input
+              value={buscaParam}
+              onChange={e => setBuscaParam(e.target.value)}
+              placeholder="Buscar por resina ou impressora..."
+              style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.88rem" }}
+            />
+          </div>
+
+          <p style={{ color: "#9fb4c7", fontSize: "0.78rem", marginBottom: "10px" }}>
+            {parametrosAdm.filter(p => !buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase())).length} parâmetro(s) encontrado(s)
+          </p>
+
+          <div style={{ display: "grid", gap: "8px", maxHeight: "450px", overflowY: "auto" }}>
+            {parametrosAdm
+              .filter(p => !buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase()))
+              .map((p) => (
+                <div key={p._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "10px", padding: "10px 12px" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px" }}>
+                      <strong style={{ color: "#4fd1ff", fontSize: "0.88rem" }}>{p.resina}</strong>
+                      <span style={{ color: "#9fb4c7", fontSize: "0.82rem" }}>+</span>
+                      <span style={{ color: "#eaf3ff", fontSize: "0.85rem" }}>{p.impressora}</span>
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                      {[
+                        p.alturaCamada && `📏 ${p.alturaCamada}`,
+                        p.exposicaoNormal && `⚡ ${p.exposicaoNormal}s`,
+                        p.exposicaoBase && `🔆 ${p.exposicaoBase}s base`,
+                        p.camadasBase && `📚 ${p.camadasBase} camadas`,
+                        p.liftSpeed && `⬆️ ${p.liftSpeed}mm/min`,
+                        p.retractSpeed && `⬇️ ${p.retractSpeed}mm/min`,
+                      ].filter(Boolean).map((info, i) => (
+                        <span key={i} style={{ fontSize: "0.72rem", padding: "2px 7px", borderRadius: "6px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.2)", color: "#a8c4e8" }}>{info}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => deletarParametro(p._id)}
+                    style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700, flexShrink: 0 }}>
+                    Excluir
+                  </button>
+                </div>
+              ))
+            }
+          </div>
         </div>
       )}
 
