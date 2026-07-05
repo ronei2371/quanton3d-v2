@@ -18,21 +18,23 @@ const SOCIAL_LINKS = [
   { label: "Site", url: "https://quanton3d.com.br" },
 ];
 const ORIGENS = ["Instagram","YouTube","Google / Pesquisa","Indicação de amigo","Mercado Livre / Shopee","Já sou cliente","Outros"];
+// Botões agrupados por tema
 const SERVICE_BUTTONS = [
-  { label: "FALE CONOSCO", kind: "modal", id: "contato" },
-  { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
-  { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
-  { label: "ABRIR CHAMADO TÉCNICO", kind: "modal", id: "chamado" },
-  { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
-  { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
-  { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
-  { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao" },
-  { label: "GABARITO QUANTON3D", kind: "guide", id: "calibracaoQuanton3D" },
-  { label: "DIAGNÓSTICO DE FALHAS", kind: "guide", id: "diagnostico" },
-  { label: "SUPORTES E POSICIONAMENTO", kind: "guide", id: "suportes" },
-  { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao" },
-  { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
-  { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
+  // Atendimento
+  { label: "FALE CONOSCO", kind: "modal", id: "contato", grupo: "atendimento" },
+  { label: "CHAMADO TÉCNICO", kind: "modal", id: "chamado", grupo: "atendimento" },
+  { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao", grupo: "atendimento" },
+  { label: "WHATSAPP", kind: "whatsapp", grupo: "atendimento" },
+  // Guias técnicos
+  { label: "NIVELAMENTO", kind: "guide", id: "nivelamento", grupo: "guias" },
+  { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores", grupo: "guias" },
+  { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao", grupo: "guias" },
+  { label: "GABARITO QUANTON3D", kind: "guide", id: "calibracaoQuanton3D", grupo: "guias" },
+  { label: "DIAGNÓSTICO DE FALHAS", kind: "guide", id: "diagnostico", grupo: "guias" },
+  { label: "SUPORTES E POSICIONAMENTO", kind: "guide", id: "suportes", grupo: "guias" },
+  { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao", grupo: "guias" },
+  { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao", grupo: "guias" },
+  { label: "SAIBA MAIS SOBRE NÓS", kind: "modal", id: "sobre", grupo: "guias" },
 ];
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
@@ -223,10 +225,28 @@ function App() {
           <div className="bot-face">🦾</div>
           <button type="button" onClick={() => setActiveModal("bot")}>Clique para falar comigo! 🤖</button>
         </div>
-        <div className="home-actions">
-          {SERVICE_BUTTONS.map((item) => (
-            <button key={item.label} type="button" onClick={() => executarAcao(item)}>{item.label}</button>
-          ))}
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
+          {/* Grupo Atendimento */}
+          <div>
+            <p style={{ margin: "0 0 8px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#4fd1ff", textTransform: "uppercase" }}>💬 Atendimento</p>
+            <div className="home-actions" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+              {SERVICE_BUTTONS.filter(b => b.grupo === "atendimento").map((item) => (
+                <button key={item.label} type="button" onClick={() => executarAcao(item)}
+                  style={{ borderColor: item.kind === "whatsapp" ? "rgba(37,211,102,0.4)" : undefined, background: item.kind === "whatsapp" ? "rgba(37,211,102,0.08)" : undefined, color: item.kind === "whatsapp" ? "#25d366" : "#eaf7ff" }}>
+                  {item.kind === "whatsapp" ? "📱 " : ""}{item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Grupo Guias */}
+          <div>
+            <p style={{ margin: "0 0 8px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#b89cff", textTransform: "uppercase" }}>📚 Guias Técnicos</p>
+            <div className="home-actions">
+              {SERVICE_BUTTONS.filter(b => b.grupo === "guias").map((item) => (
+                <button key={item.label} type="button" onClick={() => executarAcao(item)}>{item.label}</button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
