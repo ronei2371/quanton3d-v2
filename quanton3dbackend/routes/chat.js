@@ -21,112 +21,175 @@ function chatErrorResponse(error) {
     return { status: 500, error: 'Erro interno. Tente novamente.' };
 }
 
-// Resinas conhecidas para detectar na mensagem
-const RESINAS_CONHECIDAS = [
-    'alchemist', 'iron', 'flexform', '70/30', '7030', 'athom dental', 'athom alinhadores',
-    'athom washable', 'poseidon', 'pyroblast', 'vulcan cast', 'vulcan', 'spin', 'spark',
-    'low smell', 'lowsmell', 'velvet skin', 'velvet'
-];
+// Mapa de resinas — chave de busca → nome real no banco
+const RESINAS_MAP = {
+    'alchemist': 'ALCHEMIST',
+    'iron 70': 'IRON 70/30',
+    '70/30': 'IRON 70/30',
+    '7030': 'IRON 70/30',
+    'iron': 'IRON',
+    'flexform': 'FLEXFORM',
+    'athom dental': 'ATHOM DENTAL',
+    'athom alinhador': 'ATHOM ALINHADORES',
+    'athom washable': 'ATHOM WASHABLE',
+    'athom': 'ATHOM',
+    'poseidon': 'POSEIDON',
+    'pyroblast': 'PYROBLAST',
+    'vulcan cast': 'VULCAN CAST',
+    'vulcan': 'VULCAN CAST',
+    'spin': 'SPIN',
+    'spark': 'SPARK',
+    'low smell': 'LOW SMELL',
+    'lowsmell': 'LOW SMELL',
+    'velvet skin': 'VELVET SKIN',
+    'velvet': 'VELVET SKIN',
+};
 
-// Impressoras conhecidas para detectar na mensagem
-const IMPRESSORAS_CONHECIDAS = [
-    'mars', 'saturn', 'photon', 'anycubic', 'elegoo', 'phrozen', 'sonic', 'creality',
-    'halot', 'bambu', 'chitubox', 'lychee', 'm5', 'm4', 'm3', 'pro', 'ultra', 'max'
+// Impressoras para detectar
+const IMPRESSORAS = [
+    'mars 4 ultra', 'mars 4', 'mars 3', 'mars 2', 'mars pro', 'mars',
+    'saturn 4 ultra', 'saturn 4', 'saturn 3 ultra', 'saturn 3', 'saturn 2', 'saturn s', 'saturn',
+    'photon mono x 6k', 'photon mono x', 'photon mono m5s', 'photon mono m5', 'photon mono m3 plus', 'photon mono m3', 'photon mono m3 premium', 'photon mono 4k', 'photon mono 2', 'photon mono', 'photon m5s', 'photon m5', 'photon ultra', 'photon',
+    'halot sky', 'halot one pro', 'halot one plus', 'halot one', 'halot max', 'halot',
+    'sonic mega 8k', 'sonic mini 8k', 'sonic mini 4k', 'sonic mini', 'sonic',
+    'ld-006', 'ld-002r', 'ld-002h', 'ld-002',
+    'uniformation gktwo', 'uniformation',
+    'anycubic', 'elegoo', 'phrozen', 'creality',
 ];
 
 function detectarResina(texto) {
     const t = texto.toLowerCase();
-    return RESINAS_CONHECIDAS.find(r => t.includes(r)) || null;
+    // Ordenado do mais específico para o mais genérico
+    for (const [chave] of Object.entries(RESINAS_MAP).sort((a, b) => b[0].length - a[0].length)) {
+        if (t.includes(chave)) return chave;
+    }
+    return null;
 }
 
 function detectarImpressora(texto) {
     const t = texto.toLowerCase();
-    return IMPRESSORAS_CONHECIDAS.find(i => t.includes(i)) || null;
+    for (const imp of IMPRESSORAS) {
+        if (t.includes(imp.toLowerCase())) return imp;
+    }
+    return null;
 }
 
-async function buscarParametrosRAG(texto) {
+// Extrai contexto do histórico completo da conversa
+function extrairContextoHistorico(historico = []) {
+    const textoCompleto = historico.map(m => m.content || '').join(' ');
+    const resina = detectarResina(textoCompleto);
+    const impressora = detectarImpressora(textoCompleto);
+    return { resina, impressora };
+}
+
+async function buscarParametrosRAG(textoAtual, historico = []) {
     try {
-        const resina = detectarResina(texto);
-        const impressora = detectarImpressora(texto);
+        // Detecta resina/impressora na mensagem atual
+        let resina = detectarResina(textoAtual);
+        let impressora = detectarImpressora(textoAtual);
+
+        // Se não achou na mensagem atual, busca no histórico
+        if (!resina || !impressora) {
+            const ctx = extrairContextoHistorico(historico);
+            if (!resina) resina = ctx.resina;
+            if (!impressora) impressora = ctx.impressora;
+        }
 
         if (!resina && !impressora) return null;
 
-        // Monta query flexível
+        // Nome real da resina no banco
+        const nomeResina = resina ? RESINAS_MAP[resina] || resina.toUpperCase() : null;
+
+        // Query precisa — só busca a resina/impressora certa
         const query = {};
-        if (resina) query.resina = { $regex: resina, $options: 'i' };
+        if (nomeResina) query.resina = { $regex: `^${nomeResina}`, $options: 'i' };
         if (impressora) query.impressora = { $regex: impressora, $options: 'i' };
 
         const parametros = await Parametro.find(query).limit(5).lean();
 
-        if (!parametros.length) return null;
+        if (!parametros.length) {
+            // Se não achou com os dois filtros, tenta só pela resina
+            if (nomeResina && impressora) {
+                const somenteResina = await Parametro.find({
+                    resina: { $regex: `^${nomeResina}`, $options: 'i' }
+                }).limit(3).lean();
 
-        // Formata os parâmetros encontrados
-        const linhas = parametros.map(p => {
-            const campos = [
-                `Resina: ${p.resina}`,
-                `Impressora: ${p.impressora}`,
-                p.alturaCamada ? `Altura de camada: ${p.alturaCamada}` : null,
-                p.exposicaoNormal ? `Exposição normal: ${p.exposicaoNormal}s` : null,
-                p.exposicaoBase ? `Exposição base: ${p.exposicaoBase}s` : null,
-                p.camadasBase ? `Camadas base: ${p.camadasBase}` : null,
-                p.liftDistance ? `Distância de elevação: ${p.liftDistance}` : null,
-                p.liftSpeed ? `Velocidade de elevação: ${p.liftSpeed}` : null,
-                p.retractSpeed ? `Velocidade de retração: ${p.retractSpeed}` : null,
-            ].filter(Boolean);
-            return campos.join(' | ');
-        });
+                if (somenteResina.length) {
+                    const linhas = somenteResina.map(p => formatarParametro(p));
+                    return `PARÂMETROS DA RESINA ${nomeResina} (impressora "${impressora}" não encontrada — dados de outras impressoras para referência):\n${linhas.join('\n')}`;
+                }
+            }
+            return null;
+        }
 
-        return `PARÂMETROS REAIS DO BANCO DE DADOS QUANTON3D:\n${linhas.join('\n')}`;
+        const linhas = parametros.map(p => formatarParametro(p));
+        const label = nomeResina && impressora
+            ? `PARÂMETROS REAIS: ${nomeResina} + ${impressora.toUpperCase()}`
+            : nomeResina
+                ? `PARÂMETROS REAIS DA RESINA ${nomeResina}`
+                : `PARÂMETROS REAIS (impressora: ${impressora})`;
+
+        return `${label}:\n${linhas.join('\n')}`;
+
     } catch (err) {
         console.error('[RAG ERROR]', err.message);
         return null;
     }
 }
 
-const SYSTEM_PROMPT = `Você é o ELIO, assistente técnico oficial da Quanton3D, empresa brasileira especializada em resinas UV fotopolimerizáveis para impressão 3D SLA/DLP/LCD, com sede em Belo Horizonte - MG. WhatsApp: (31) 3271-6935. Site: quanton3d.com.br.
+function formatarParametro(p) {
+    return [
+        `Resina: ${p.resina}`,
+        `Impressora: ${p.impressora}`,
+        p.alturaCamada ? `Altura camada: ${p.alturaCamada}` : null,
+        p.exposicaoNormal ? `Exposição normal: ${p.exposicaoNormal}s` : null,
+        p.exposicaoBase ? `Exposição base: ${p.exposicaoBase}s` : null,
+        p.camadasBase ? `Camadas base: ${p.camadasBase}` : null,
+        p.liftDistance ? `Elevação: ${p.liftDistance}` : null,
+        p.liftSpeed ? `Vel. elevação: ${p.liftSpeed}` : null,
+        p.retractSpeed ? `Vel. retração: ${p.retractSpeed}` : null,
+    ].filter(Boolean).join(' | ');
+}
 
-IDENTIDADE:
-- Responda sempre em português brasileiro, de forma direta, técnica e amigável.
-- NUNCA invente parâmetros. Use SEMPRE os valores do banco de dados quando disponíveis.
-- Quando o contexto RAG trouxer parâmetros reais, USE-OS como resposta principal.
-- Não cite outras marcas de resina como solução. Foque nas resinas Quanton3D.
-- Para perguntas sem contexto de resina/impressora: dê solução geral e pergunte qual resina e impressora o cliente usa.
+const SYSTEM_PROMPT = `Você é o ELIO, assistente técnico oficial da Quanton3D. WhatsApp: (31) 3271-6935. Site: quanton3d.com.br.
 
-LINHA COMPLETA DE RESINAS QUANTON3D:
-1. ALCHEMIST — uso geral, ótimo custo-benefício, alta precisão.
-2. IRON — alta resistência mecânica e impacto. Peças funcionais. Tende a aderir mais.
-3. FLEXFORM — flexível e elástica. Juntas, vedações, peças que dobram.
-4. 70/30 — híbrida 70% rígida + 30% flexível. Action figures, engenharia.
-5. ATHOM DENTAL — odontológica para modelos e guias cirúrgicos.
-6. ATHOM ALINHADORES — alinhadores dentários transparentes, thermoforming.
-7. ATHOM WASHABLE — odontológica lavável em água.
-8. POSEIDON — water washable. Sem álcool isopropílico.
-9. PYROBLAST — uso geral, alta precisão. NÃO é castable.
-10. VULCAN CAST — castable premium para joalheria. Queima limpa.
-11. SPIN — grande formato, alta precisão, leve flexibilidade. Shore D 73.
-12. SPARK — alta velocidade. Produção em lote.
-13. LOW SMELL — baixo odor. Sem ventilação adequada.
-14. VELVET SKIN — acabamento aveludado. Bustos e action figures premium.
+REGRAS CRÍTICAS:
+- NUNCA mencione resinas que o cliente NÃO citou. Foque APENAS na resina mencionada.
+- NUNCA invente parâmetros. Use SOMENTE os valores do banco quando disponíveis.
+- Se o contexto RAG trouxer parâmetros, USE-OS como resposta principal.
+- Mantenha o contexto da conversa — lembre do problema que o cliente descreveu.
+- Seja direto e objetivo. Máximo 5 pontos práticos.
+- Use **negrito** para termos importantes.
 
-PROBLEMAS COMUNS:
-- Peça adere demais: Reduza exposição base 15-25%. Aumente Z-offset 0,02-0,05mm.
-- Peça não adere: Aumente exposição base. Verifique nivelamento.
-- Delaminação: Aumente exposição normal. Agite a resina. Temperatura mínima 18°C.
+RESINAS QUANTON3D (só cite se o cliente mencionar):
+ALCHEMIST: uso geral, ótimo custo-benefício.
+IRON: alta resistência mecânica. Tende a aderir mais.
+FLEXFORM: flexível, juntas e vedações.
+70/30: híbrida 70% rígida + 30% flexível.
+ATHOM DENTAL: odontológica, modelos e guias.
+ATHOM ALINHADORES: alinhadores dentários, thermoforming.
+ATHOM WASHABLE: odontológica lavável em água.
+POSEIDON: water washable, sem álcool.
+PYROBLAST: uso geral, alta precisão. NÃO é castable.
+VULCAN CAST: castable premium, joalheria.
+SPIN: grande formato, Shore D 73, leve flexibilidade.
+SPARK: alta velocidade, produção em lote.
+LOW SMELL: baixo odor.
+VELVET SKIN: acabamento aveludado.
+
+PROBLEMAS E SOLUÇÕES:
+- Adere demais: Reduza exposição base 15-25%. Aumente Z-offset 0,02-0,05mm.
+- Não adere: Aumente exposição base. Verifique nivelamento.
+- Delaminação: Aumente exposição normal. Agite bem. Mínimo 18°C.
 - Warping: Reduza exposição base. Mais suportes nas bordas.
 - Suporte difícil: Reduza exposição normal 0,2-0,5s. Use suporte leve.
-- FEP opaco: Troque o FEP imediatamente.
+- FEP opaco: Troque imediatamente.
 - Peça porosa: Resina mal agitada ou vencida.
-- Resina vazando após dias: Furo de drenagem 2-3mm em peças ocas. Pós-cura insuficiente.
-
-REGRAS DE RESPOSTA:
-- Quando houver parâmetros RAG no contexto: USE-OS como resposta principal com destaque.
-- Máximo 5 pontos práticos. Use **negrito** para termos importantes.
-- Dê valores concretos (ex: "reduza 0,3s", "aumente Z-offset 0,05mm").
-- Para dúvidas de compra/entrega: WhatsApp (31) 3271-6935 ou quanton3d.com.br`;
+- Racha após dias: Furo de drenagem 2-3mm em peças ocas. Pós-cura máx 5 min por lado.`;
 
 router.post('/', async (req, res) => {
     try {
-        const { message = '' } = req.body || {};
+        const { message = '', historico = [] } = req.body || {};
         const text = String(message || '').trim();
 
         if (!text) {
@@ -139,50 +202,38 @@ router.post('/', async (req, res) => {
             return res.json({ success: true, reply: rule, source: 'rules' });
         }
 
-        // 2. RAG — buscar parâmetros reais no MongoDB
-        const contextRAG = await buscarParametrosRAG(text);
+        // 2. RAG — busca no MongoDB usando mensagem atual + histórico
+        const contextRAG = await buscarParametrosRAG(text, historico);
         if (contextRAG) {
-            console.log('[RAG] Parâmetros encontrados para:', text.substring(0, 60));
+            console.log('[RAG] Encontrado:', contextRAG.substring(0, 80));
         }
 
-        // 3. Monta prompt com contexto RAG se disponível
-        const systemComContexto = contextRAG
-            ? `${SYSTEM_PROMPT}\n\n--- PARÂMETROS REAIS DO BANCO ---\n${contextRAG}\n---\nIMPORTANTE: Use ESSES parâmetros como resposta principal. São valores REAIS testados. Não liste todas as impressoras — responda sobre a que o cliente mencionou ou pergunte o modelo exato.`
+        // 3. Monta system prompt com RAG
+        const systemFinal = contextRAG
+            ? `${SYSTEM_PROMPT}\n\n--- DADOS DO BANCO ---\n${contextRAG}\n---\nUse ESSES parâmetros na resposta. Não mencione outras resinas além da que está nos dados.`
             : SYSTEM_PROMPT;
 
-        // 4. Monta histórico de conversa (mantém contexto)
-        const { historico = [] } = req.body || {};
+        // 4. Monta histórico de conversa
         const mensagensHistorico = Array.isArray(historico)
             ? historico.slice(-8).filter(m => m.role && m.content)
             : [];
 
-        // Monta messages: system + histórico + mensagem atual
         const messages = [
-            { role: 'system', content: systemComContexto },
-            ...mensagensHistorico.slice(0, -1), // histórico sem a última (que é a msg atual)
+            { role: 'system', content: systemFinal },
+            ...mensagensHistorico.slice(0, -1),
             { role: 'user', content: text }
         ];
 
-        // 5. Chama DeepSeek com histórico completo
+        // 5. Chama DeepSeek
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-chat';
         const completion = await client().chat.completions.create(
-            {
-                model,
-                temperature: contextRAG ? 0.05 : 0.15,
-                max_tokens: 1200,
-                messages
-            },
+            { model, temperature: contextRAG ? 0.05 : 0.15, max_tokens: 1200, messages },
             { timeout: 25000 }
         );
 
         const reply = completion.choices?.[0]?.message?.content || 'Não consegui processar sua dúvida agora.';
 
-        res.json({
-            success: true,
-            reply,
-            source: contextRAG ? 'rag+deepseek' : 'deepseek',
-            ragUsado: !!contextRAG
-        });
+        res.json({ success: true, reply, source: contextRAG ? 'rag+deepseek' : 'deepseek', ragUsado: !!contextRAG });
 
     } catch (e) {
         console.error('[CHAT ERROR]', e);
