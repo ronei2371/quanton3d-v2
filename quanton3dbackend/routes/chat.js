@@ -2,6 +2,7 @@ import express from 'express';
 import OpenAI from 'openai';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Parametro from '../models/Parametro.js';
+import KNOWLEDGE_BASE from '../services/knowledge.js';
 
 const router = express.Router();
 
@@ -152,6 +153,8 @@ function formatarParametro(p) {
 }
 
 const SYSTEM_PROMPT = `Você é o ELIO, assistente técnico oficial da Quanton3D. WhatsApp: (31) 3271-6935. Site: quanton3d.com.br.
+
+${KNOWLEDGE_BASE}
 
 REGRAS CRÍTICAS:
 - NUNCA mencione resinas que o cliente NÃO citou. Foque APENAS na resina mencionada.
