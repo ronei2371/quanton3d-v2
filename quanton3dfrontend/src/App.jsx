@@ -349,10 +349,10 @@ function App() {
           {cliente ? `Cliente ativo: ${cliente.nome}. O atendimento técnico usará seu cadastro para manter histórico.` : "Identifique-se para um atendimento mais personalizado."}
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem" }} onClick={abrirCadastro}>{cliente ? "Atualizar meus dados" : "Identificar-me"}</button>
-          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem" }} onClick={() => setMostrarContatoMensagem(true)}>Fale conosco</button>
-          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem" }} onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
-          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", background: "rgba(37,211,102,0.12)", border: "1px solid rgba(37,211,102,0.35)", color: "#25d366" }} onClick={() => window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer")}>WhatsApp</button>
+          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.1)", color: "#eaf3ff", cursor: "pointer", fontFamily: "inherit" }} onClick={abrirCadastro}>{cliente ? "Atualizar meus dados" : "Identificar-me"}</button>
+          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.1)", color: "#eaf3ff", cursor: "pointer", fontFamily: "inherit" }} onClick={() => setMostrarContatoMensagem(true)}>Fale conosco</button>
+          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.1)", color: "#eaf3ff", cursor: "pointer", fontFamily: "inherit" }} onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
+          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(37,211,102,0.4)", background: "rgba(37,211,102,0.12)", color: "#25d366", cursor: "pointer", fontFamily: "inherit" }} onClick={() => window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer")}>WhatsApp</button>
         </div>
       </section>
 
