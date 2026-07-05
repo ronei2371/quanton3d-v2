@@ -181,8 +181,14 @@ a { color: inherit; text-decoration: none; }
   height: 170px;
   display: grid;
   place-items: center;
-  font-size: 5.5rem;
-  filter: drop-shadow(0 0 28px rgba(79,209,255,0.5));
+  font-size: 5rem;
+  filter: drop-shadow(0 0 32px rgba(79,209,255,0.7));
+  animation: botFloat 3s ease-in-out infinite;
+}
+
+@keyframes botFloat {
+  0%, 100% { transform: translateY(0px); filter: drop-shadow(0 0 28px rgba(79,209,255,0.6)); }
+  50% { transform: translateY(-10px); filter: drop-shadow(0 0 44px rgba(127,90,240,0.7)); }
 }
 
 .assistant-card button {
