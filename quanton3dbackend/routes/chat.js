@@ -1,91 +1,128 @@
 import express from 'express';
 import OpenAI from 'openai';
 import { ruleBasedAnswer } from '../services/aiRules.js';
+import Parametro from '../models/Parametro.js';
 
 const router = express.Router();
 
 function client() {
     const apiKey = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY;
     const baseURL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
-    if (!apiKey) throw new Error('Chave de API não configurada no Render');
+    if (!apiKey) throw new Error('Chave de API não configurada');
     return new OpenAI({ apiKey, baseURL });
 }
 
 function chatErrorResponse(error) {
     const status = Number(error?.status || error?.response?.status || 500);
-    if (status === 401 || status === 403) return { status: 503, error: 'Assistente temporariamente indisponível. Nossa equipe técnica já foi acionada.' };
-    if (status === 402) return { status: 503, error: 'Limite de uso atingido. Entre em contato com a Quanton3D pelo WhatsApp (31) 3271-6935.' };
-    if (status === 429) return { status: 429, error: 'O assistente está recebendo muitas solicitações agora. Tente novamente em instantes.' };
-    if (status >= 500 || error?.code === 'ETIMEDOUT' || error?.name === 'TimeoutError') return { status: 503, error: 'Não consegui consultar o assistente agora. Tente novamente em instantes.' };
-    return { status: 500, error: 'Erro interno no servidor de chat. Tente novamente em instantes.' };
+    if (status === 401 || status === 403) return { status: 503, error: 'Assistente temporariamente indisponível.' };
+    if (status === 402) return { status: 503, error: 'Limite de uso atingido. Entre em contato pelo WhatsApp (31) 3271-6935.' };
+    if (status === 429) return { status: 429, error: 'Muitas solicitações. Tente novamente em instantes.' };
+    if (status >= 500 || error?.code === 'ETIMEDOUT') return { status: 503, error: 'Não consegui consultar o assistente agora. Tente novamente.' };
+    return { status: 500, error: 'Erro interno. Tente novamente.' };
+}
+
+// Resinas conhecidas para detectar na mensagem
+const RESINAS_CONHECIDAS = [
+    'alchemist', 'iron', 'flexform', '70/30', '7030', 'athom dental', 'athom alinhadores',
+    'athom washable', 'poseidon', 'pyroblast', 'vulcan cast', 'vulcan', 'spin', 'spark',
+    'low smell', 'lowsmell', 'velvet skin', 'velvet'
+];
+
+// Impressoras conhecidas para detectar na mensagem
+const IMPRESSORAS_CONHECIDAS = [
+    'mars', 'saturn', 'photon', 'anycubic', 'elegoo', 'phrozen', 'sonic', 'creality',
+    'halot', 'bambu', 'chitubox', 'lychee', 'm5', 'm4', 'm3', 'pro', 'ultra', 'max'
+];
+
+function detectarResina(texto) {
+    const t = texto.toLowerCase();
+    return RESINAS_CONHECIDAS.find(r => t.includes(r)) || null;
+}
+
+function detectarImpressora(texto) {
+    const t = texto.toLowerCase();
+    return IMPRESSORAS_CONHECIDAS.find(i => t.includes(i)) || null;
+}
+
+async function buscarParametrosRAG(texto) {
+    try {
+        const resina = detectarResina(texto);
+        const impressora = detectarImpressora(texto);
+
+        if (!resina && !impressora) return null;
+
+        // Monta query flexível
+        const query = {};
+        if (resina) query.resina = { $regex: resina, $options: 'i' };
+        if (impressora) query.impressora = { $regex: impressora, $options: 'i' };
+
+        const parametros = await Parametro.find(query).limit(5).lean();
+
+        if (!parametros.length) return null;
+
+        // Formata os parâmetros encontrados
+        const linhas = parametros.map(p => {
+            const campos = [
+                `Resina: ${p.resina}`,
+                `Impressora: ${p.impressora}`,
+                p.alturaCamada ? `Altura de camada: ${p.alturaCamada}` : null,
+                p.exposicaoNormal ? `Exposição normal: ${p.exposicaoNormal}s` : null,
+                p.exposicaoBase ? `Exposição base: ${p.exposicaoBase}s` : null,
+                p.camadasBase ? `Camadas base: ${p.camadasBase}` : null,
+                p.liftDistance ? `Distância de elevação: ${p.liftDistance}` : null,
+                p.liftSpeed ? `Velocidade de elevação: ${p.liftSpeed}` : null,
+                p.retractSpeed ? `Velocidade de retração: ${p.retractSpeed}` : null,
+            ].filter(Boolean);
+            return campos.join(' | ');
+        });
+
+        return `PARÂMETROS REAIS DO BANCO DE DADOS QUANTON3D:\n${linhas.join('\n')}`;
+    } catch (err) {
+        console.error('[RAG ERROR]', err.message);
+        return null;
+    }
 }
 
 const SYSTEM_PROMPT = `Você é o ELIO, assistente técnico oficial da Quanton3D, empresa brasileira especializada em resinas UV fotopolimerizáveis para impressão 3D SLA/DLP/LCD, com sede em Belo Horizonte - MG. WhatsApp: (31) 3271-6935. Site: quanton3d.com.br.
 
 IDENTIDADE:
 - Responda sempre em português brasileiro, de forma direta, técnica e amigável.
-- NUNCA invente informações. Se não souber, diga: "Para esse caso específico, recomendo falar com nossa equipe pelo WhatsApp (31) 3271-6935."
+- NUNCA invente parâmetros. Use SEMPRE os valores do banco de dados quando disponíveis.
+- Quando o contexto RAG trouxer parâmetros reais, USE-OS como resposta principal.
 - Não cite outras marcas de resina como solução. Foque nas resinas Quanton3D.
-- NUNCA cite uma resina específica sem o cliente informar qual está usando. Pergunte: "Qual resina e impressora você está usando?"
-- Para perguntas gerais: dê a solução técnica genérica e no final pergunte qual resina/impressora para ajuste mais preciso.
+- Para perguntas sem contexto de resina/impressora: dê solução geral e pergunte qual resina e impressora o cliente usa.
 
-LINHA COMPLETA DE RESINAS QUANTON3D (descrições oficiais do site quanton3d.com.br):
+LINHA COMPLETA DE RESINAS QUANTON3D:
+1. ALCHEMIST — uso geral, ótimo custo-benefício, alta precisão.
+2. IRON — alta resistência mecânica e impacto. Peças funcionais. Tende a aderir mais.
+3. FLEXFORM — flexível e elástica. Juntas, vedações, peças que dobram.
+4. 70/30 — híbrida 70% rígida + 30% flexível. Action figures, engenharia.
+5. ATHOM DENTAL — odontológica para modelos e guias cirúrgicos.
+6. ATHOM ALINHADORES — alinhadores dentários transparentes, thermoforming.
+7. ATHOM WASHABLE — odontológica lavável em água.
+8. POSEIDON — water washable. Sem álcool isopropílico.
+9. PYROBLAST — uso geral, alta precisão. NÃO é castable.
+10. VULCAN CAST — castable premium para joalheria. Queima limpa.
+11. SPIN — grande formato, alta precisão, leve flexibilidade. Shore D 73.
+12. SPARK — alta velocidade. Produção em lote.
+13. LOW SMELL — baixo odor. Sem ventilação adequada.
+14. VELVET SKIN — acabamento aveludado. Bustos e action figures premium.
 
-1. ALCHEMIST — Resina de uso geral com ótimo custo-benefício. Alta precisão e resolução de detalhes. Indicada para peças gerais, modelos, protótipos, miniaturas e action figures. Disponível em cores pigmentadas prontas para uso.
-
-2. IRON — Alta resistência mecânica e ao impacto. Indicada para peças funcionais, encaixes, ferramentas, peças que sofrem pressão ou impacto. Mais rígida que as demais resinas. Tende a aderir mais à plataforma — use FEP de boa qualidade e considere desmoldante. Disponível em Clear, Grey, Skin e Black.
-
-3. FLEXFORM — Resina flexível e elástica para engenharia e uso geral. Indicada para peças que precisam dobrar sem quebrar: juntas, vedações, peças de amortecimento. NÃO indicada para peças rígidas ou estruturais. Dureza Shore A. Disponível em Black e Clear.
-
-4. 70/30 — Resina híbrida que combina 70% de rigidez com 30% de flexibilidade. Equilíbrio entre resistência e absorção de impacto. Indicada para action figures, engenharia e peças que precisam de resistência sem ser totalmente rígidas. Disponível em Black, Grey, Skin e Clear.
-
-5. ATHOM DENTAL — Resina odontológica para modelos de estudo, modelos de trabalho e guias cirúrgicos. Alta precisão dimensional. Disponível em cores como White Cream, Ocre, Light Grey, Terracota, Dark Grey, Blue, Skin, White e Marfim.
-
-6. ATHOM ALINHADORES — Resina específica para confecção de placas termoformadas (alinhadores dentários transparentes). Alta transparência, resistência ao vacuoforming e thermoforming. Disponível em Terracota, Dark Grey, White, Ocre e Marfim.
-
-7. ATHOM WASHABLE — Resina odontológica lavável em água. Elimina necessidade de álcool isopropílico na lavagem. Indicada para modelos dentários e ortodônticos. Disponível em Light Grey, White Cream, Skin e Marfim.
-
-8. POSEIDON — Resina water washable (lavável em água). Indicada para quem quer evitar álcool isopropílico. Boa para miniaturas, modelos e action figures. Disponível em Clear, Light Grey e Skin.
-
-9. PYROBLAST — Resina de uso geral com alta precisão e dureza. Indicada para prototipagem, arte, decoração e action figures. Impressão rápida e fluida, minimiza imperfeições. Odor médio. NÃO é resina castable/fundível. Disponível em Grey e Skin.
-
-10. VULCAN CAST — Resina castable (fundível) premium para joalheria de alta precisão. Queima limpa sem resíduo de cinzas, compatível com fundição por cera perdida. Indicada para joalheria e peças de engenharia que precisam ser fundidas.
-
-11. SPIN — Resina para peças de grande formato com alto nível de detalhes e baixa deformação. Combina rigidez com leve flexibilidade, resistindo a tensões sem se deformar. Indicada para protótipos funcionais, action figures de grande porte e peças de uso final que exigem alta precisão. Também indicada para odontologia (modelos de estudo). Dureza Shore D 73. NÃO é resina para centrifugação. Disponível em Black, Light Grey, Skin, White, Blue e Dark Grey.
-
-12. SPARK — Resina de alta velocidade de impressão. Cura rápida, indicada para produção em lote e prototipagem rápida. Uso geral. Disponível em Clear.
-
-13. LOW SMELL — Resina de baixo odor para uso em ambientes sem ventilação adequada. Características gerais similares à Alchemist. Indicada para uso doméstico ou escritório. Disponível em Grey, Skin e Clear.
-
-14. VELVET SKIN — Resina com acabamento aveludado e toque macio. Indicada para bustos, action figures com efeito de pele realista e peças decorativas premium. Disponível em Velvet Skin.
-
-PROBLEMAS COMUNS E SOLUÇÕES:
-- Peça aderindo demais à plataforma: Reduza exposição base em 15-25%. Aumente Z-offset em 0,02 a 0,05mm. Verifique nivelamento. Reduza camadas base para 4-6.
-- Peça não adere / cai no fundo: Aumente exposição base. Verifique nivelamento. Aumente camadas base para 6-8. Limpe a plataforma com álcool.
-- Delaminação (camadas separando): Aumente exposição normal. Agite bem a resina antes de usar. Temperatura abaixo de 18°C prejudica a cura — aqueça o ambiente ou pré-aqueça a resina (máx 40°C).
-- Warping (empenamento): Reduza exposição base. Use mais suportes nas bordas. Evite peças planas grandes sem suportes.
-- Suporte difícil de remover: Reduza exposição normal em 0,2 a 0,5s. Use suporte leve (light/medium). Remova antes da cura UV final.
-- Peça porosa ou com buracos: Resina mal agitada ou vencida. Agite bem. Verifique temperatura e validade.
-- FEP manchado ou opaco: Troque o FEP — FEP danificado causa falhas graves.
-- Linhas visíveis entre camadas: Aumente exposição normal. Verifique limpeza da tela LCD.
-
-PARÂMETROS DE REFERÊNCIA (impressoras monocromáticas):
-- Altura de camada: 0,05mm (padrão) ou 0,03mm (alta resolução)
-- Exposição normal: 1,5s a 3,0s (varia por resina e impressora)
-- Exposição base: 25s a 45s
-- Camadas base: 4 a 8
-- Para parâmetros específicos por impressora, acesse quanton3d.com.br/parametrosdeimpressao
+PROBLEMAS COMUNS:
+- Peça adere demais: Reduza exposição base 15-25%. Aumente Z-offset 0,02-0,05mm.
+- Peça não adere: Aumente exposição base. Verifique nivelamento.
+- Delaminação: Aumente exposição normal. Agite a resina. Temperatura mínima 18°C.
+- Warping: Reduza exposição base. Mais suportes nas bordas.
+- Suporte difícil: Reduza exposição normal 0,2-0,5s. Use suporte leve.
+- FEP opaco: Troque o FEP imediatamente.
+- Peça porosa: Resina mal agitada ou vencida.
+- Resina vazando após dias: Furo de drenagem 2-3mm em peças ocas. Pós-cura insuficiente.
 
 REGRAS DE RESPOSTA:
-- Seja objetivo. Máximo 5 pontos práticos por resposta.
-- Use **negrito** para destacar termos técnicos importantes.
-- Dê sempre valores concretos quando sugerir ajuste de parâmetros.
-- Se o cliente mencionar impressora específica (Elegoo Mars, Anycubic Photon, Saturn etc.), adapte.
-- Para dúvidas de compra, pedido ou entrega: "Entre em contato pelo WhatsApp (31) 3271-6935 ou acesse quanton3d.com.br"
-- Para perguntas sem contexto de resina: dê solução geral e no final pergunte: "Qual resina e impressora você está usando? Assim consigo dar um ajuste mais preciso para o seu caso."
-- NUNCA sugira aquecer resina a 40C como solução padrão — isso é apenas para casos extremos de temperatura abaixo de 15C.
-- Para peças vazando resina após dias: a causa principal é SEMPRE geometria fechada sem furo de drenagem ou pós-cura insuficiente. Foque nisso.
-- Seja MUITO específico: dê valores concretos (ex: "furo de 2-3mm", "exposição +0,3s", "pós-cura 10-15 min") e não repita soluções genéricas.`;
+- Quando houver parâmetros RAG no contexto: USE-OS como resposta principal com destaque.
+- Máximo 5 pontos práticos. Use **negrito** para termos importantes.
+- Dê valores concretos (ex: "reduza 0,3s", "aumente Z-offset 0,05mm").
+- Para dúvidas de compra/entrega: WhatsApp (31) 3271-6935 ou quanton3d.com.br`;
 
 router.post('/', async (req, res) => {
     try {
@@ -96,29 +133,45 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Mensagem obrigatória' });
         }
 
+        // 1. Regras locais rápidas
         const rule = ruleBasedAnswer(text);
         if (rule) {
             return res.json({ success: true, reply: rule, source: 'rules' });
         }
 
+        // 2. RAG — buscar parâmetros reais no MongoDB
+        const contextRAG = await buscarParametrosRAG(text);
+        if (contextRAG) {
+            console.log('[RAG] Parâmetros encontrados para:', text.substring(0, 60));
+        }
+
+        // 3. Monta prompt com contexto RAG se disponível
+        const systemComContexto = contextRAG
+            ? `${SYSTEM_PROMPT}\n\n--- CONTEXTO DO BANCO DE DADOS ---\n${contextRAG}\n---\nIMPORTANTE: Use os parâmetros acima como resposta principal. São valores REAIS testados e aprovados.`
+            : SYSTEM_PROMPT;
+
+        // 4. Chama DeepSeek
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-chat';
         const completion = await client().chat.completions.create(
             {
                 model,
-                temperature: 0.15,
+                temperature: contextRAG ? 0.05 : 0.15, // Mais preciso quando tem RAG
                 max_tokens: 1200,
                 messages: [
-                    { role: 'system', content: SYSTEM_PROMPT },
+                    { role: 'system', content: systemComContexto },
                     { role: 'user', content: text }
                 ]
             },
             { timeout: 25000 }
         );
 
+        const reply = completion.choices?.[0]?.message?.content || 'Não consegui processar sua dúvida agora.';
+
         res.json({
             success: true,
-            reply: completion.choices?.[0]?.message?.content || 'Não consegui processar sua dúvida agora.',
-            source: 'deepseek'
+            reply,
+            source: contextRAG ? 'rag+deepseek' : 'deepseek',
+            ragUsado: !!contextRAG
         });
 
     } catch (e) {
