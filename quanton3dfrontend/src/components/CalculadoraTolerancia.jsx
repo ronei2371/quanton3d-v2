@@ -23,11 +23,11 @@ function Guia() {
         <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem", letterSpacing: "0.08em" }}>
           📐 O QUE É TOLERÂNCIA EM IMPRESSÃO 3D?
         </p>
-        <p style={{ margin: "0 0 10px", color: "#d3e4f8", fontSize: "0.9rem", lineHeight: 1.7 }}>
+        <p style={{ margin: "0 0 10px", color: "#eaf3ff", fontSize: "0.9rem", lineHeight: 1.7 }}>
           Quando você imprime uma peça em resina, ela raramente sai com o tamanho exato do arquivo STL.
           A luz UV espalha levemente para os lados durante a cura — isso faz as peças saírem <strong style={{ color: "#ffd166" }}>um pouco maiores</strong> do que o projetado.
         </p>
-        <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.9rem", lineHeight: 1.7 }}>
+        <p style={{ margin: 0, color: "#eaf3ff", fontSize: "0.9rem", lineHeight: 1.7 }}>
           A <strong style={{ color: "#4fd1ff" }}>compensação X/Y</strong> (ou tolerância) é o ajuste que você faz no fatiador para corrigir esse erro antes de imprimir.
           Esta calculadora descobre o valor exato que você precisa colocar.
         </p>
@@ -80,7 +80,7 @@ function Guia() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "8px" }}>
               <div style={{ background: "rgba(79,209,255,0.08)", borderRadius: "10px", padding: "12px", border: "1px solid rgba(79,209,255,0.2)" }}>
                 <p style={{ margin: "0 0 8px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.82rem" }}>EXTERNO (campo a)</p>
-                <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>
+                <p style={{ margin: 0, color: "#eaf3ff", fontSize: "0.82rem", lineHeight: 1.6 }}>
                   Usado para <strong>paredes externas</strong> da peça:<br />
                   • Cubos e blocos<br />
                   • Pinos macho<br />
@@ -93,7 +93,7 @@ function Guia() {
               </div>
               <div style={{ background: "rgba(184,156,255,0.08)", borderRadius: "10px", padding: "12px", border: "1px solid rgba(184,156,255,0.2)" }}>
                 <p style={{ margin: "0 0 8px", fontWeight: 800, color: "#b89cff", fontSize: "0.82rem" }}>INTERNO (campo b)</p>
-                <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>
+                <p style={{ margin: 0, color: "#eaf3ff", fontSize: "0.82rem", lineHeight: 1.6 }}>
                   Usado para <strong>dimensões internas</strong>:<br />
                   • Furos e buracos<br />
                   • Encaixes fêmea<br />
@@ -119,7 +119,7 @@ function Guia() {
             </div>
             <div style={{ background: "rgba(255,209,102,0.08)", borderRadius: "10px", padding: "12px 14px", marginTop: "10px" }}>
               <p style={{ margin: "0 0 6px", fontWeight: 800, color: "#ffd166", fontSize: "0.82rem" }}>📌 EXEMPLO PRÁTICO:</p>
-              <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.7 }}>
+              <p style={{ margin: 0, color: "#eaf3ff", fontSize: "0.82rem", lineHeight: 1.7 }}>
                 Arquivo: 20,000 mm → Peça impressa: 20,140 mm<br />
                 Erro = 20,140 − 20,000 = <strong>0,140 mm</strong> maior<br />
                 Compensação externa = −(0,140 ÷ 2) = <strong>−0,070 mm</strong><br />
@@ -134,7 +134,7 @@ function Guia() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "8px" }}>
               <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px" }}>
                 <p style={{ margin: "0 0 6px", fontWeight: 800, color: "#ff8fab", fontSize: "0.82rem" }}>CHITUBOX</p>
-                <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>
+                <p style={{ margin: 0, color: "#eaf3ff", fontSize: "0.82rem", lineHeight: 1.6 }}>
                   Configurações → Impressora →<br />
                   <strong>X/Y Compensation</strong><br />
                   Campo a = Externo<br />
@@ -143,7 +143,7 @@ function Guia() {
               </div>
               <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px" }}>
                 <p style={{ margin: "0 0 6px", fontWeight: 800, color: "#ff8fab", fontSize: "0.82rem" }}>LYCHEE SLICER</p>
-                <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>
+                <p style={{ margin: 0, color: "#eaf3ff", fontSize: "0.82rem", lineHeight: 1.6 }}>
                   Propriedades → Printer Settings →<br />
                   <strong>XY Tolerance</strong><br />
                   Inner / Outer<br />
@@ -178,8 +178,8 @@ const estiloCard = (cor) => ({
   padding: "16px",
 });
 const estiloTitulo = (cor) => ({ margin: "0 0 10px", fontWeight: 800, color: cor, fontSize: "0.85rem" });
-const estiloTexto = { margin: "0 0 8px", color: "#d3e4f8", fontSize: "0.88rem", lineHeight: 1.7 };
-const estiloLista = { margin: "0", paddingLeft: "18px", fontSize: "0.85rem", lineHeight: 1.9, color: "#d3e4f8" };
+const estiloTexto = { margin: "0 0 8px", color: "#eaf3ff", fontSize: "0.88rem", lineHeight: 1.7 };
+const estiloLista = { margin: "0", paddingLeft: "18px", fontSize: "0.85rem", lineHeight: 1.9, color: "#eaf3ff" };
 
 function ToleranceCard({ title, description, valores, tipo, onChange, onCalculate, buttonLabel }) {
   const baseId = `tolerancia-${tipo}`;
@@ -189,30 +189,30 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
 
   return (
     <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "18px" }}>
-      <p style={{ margin: "0 0 4px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.95rem" }}>{title}</p>
-      <p style={{ margin: "0 0 16px", color: "#9fb4c7", fontSize: "0.82rem", lineHeight: 1.5 }}>{description}</p>
+      <p style={{ margin: "0 0 4px", fontWeight: 800, color: "#ffffff", fontSize: "0.95rem" }}>{title}</p>
+      <p style={{ margin: "0 0 16px", color: "#b8cfe8", fontSize: "0.82rem", lineHeight: 1.5 }}>{description}</p>
 
       <label htmlFor={teoricaId} style={{ display: "block", marginBottom: "12px" }}>
-        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#a8bad2", display: "block", marginBottom: "5px" }}>
+        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#ccdaec", display: "block", marginBottom: "5px" }}>
           Medida no arquivo STL (teórica)
         </span>
         <input
           id={teoricaId} type="text" inputMode="decimal" autoComplete="off"
           value={valores.teorica} onChange={(e) => onChange(tipo, "teorica", e.target.value)}
           placeholder="Ex.: 20,000"
-          style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(4,12,24,0.55)", color: "#eaf3ff", fontSize: "14px", boxSizing: "border-box" }}
+          style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.35)", background: "rgba(4,12,24,0.7)", color: "#ffffff", fontSize: "14px", boxSizing: "border-box" }}
         />
       </label>
 
       <label htmlFor={realId} style={{ display: "block", marginBottom: "16px" }}>
-        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#a8bad2", display: "block", marginBottom: "5px" }}>
+        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#ccdaec", display: "block", marginBottom: "5px" }}>
           Medida no paquímetro (real impressa)
         </span>
         <input
           id={realId} type="text" inputMode="decimal" autoComplete="off"
           value={valores.real} onChange={(e) => onChange(tipo, "real", e.target.value)}
           placeholder="Ex.: 20,140"
-          style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(4,12,24,0.55)", color: "#eaf3ff", fontSize: "14px", boxSizing: "border-box" }}
+          style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.35)", background: "rgba(4,12,24,0.7)", color: "#ffffff", fontSize: "14px", boxSizing: "border-box" }}
         />
       </label>
 
@@ -228,7 +228,7 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
           marginTop: "12px", padding: "12px 14px", borderRadius: "10px", textAlign: "center",
           background: valores.erro ? "rgba(255,107,107,0.1)" : valores.resultado !== null ? "rgba(73,230,139,0.1)" : "rgba(255,255,255,0.04)",
           border: `1px solid ${valores.erro ? "rgba(255,107,107,0.35)" : valores.resultado !== null ? "rgba(73,230,139,0.35)" : "rgba(113,159,219,0.15)"}`,
-          color: valores.erro ? "#ff8fab" : valores.resultado !== null ? "#49e68b" : "#9fb4c7",
+          color: valores.erro ? "#ff8fab" : valores.resultado !== null ? "#49e68b" : "#b8cfe8",
           fontWeight: valores.resultado !== null ? 800 : "normal",
           fontSize: valores.resultado !== null ? "1.1rem" : "0.85rem",
         }}>
@@ -304,7 +304,7 @@ export default function CalculadoraTolerancia() {
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <button
           type="button" onClick={limpar}
-          style={{ padding: "10px 28px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(255,255,255,0.05)", color: "#9fb4c7", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem" }}>
+          style={{ padding: "10px 28px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(255,255,255,0.05)", color: "#eaf3ff", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem" }}>
           Limpar campos
         </button>
       </div>
