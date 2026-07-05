@@ -263,31 +263,30 @@ function App() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "10px" }}>
             {[
-              { nome: "POSEIDON", cor: "#4fd1ff", id: "16O4PvVPpW7XeDfLawq-IWcGPpcF_vY-k" },
-              { nome: "IRON 70/30", cor: "#b89cff", id: "1QqCd-dElM_FFqGUxwE76oqbRevEl3F_a" },
-              { nome: "IRON", cor: "#ff8fab", id: "1XsZlS26iluC-CPoq9Q74u6o026siRjDS" },
-              { nome: "SPIN", cor: "#49e68b", id: "1Z5sO3SUKqzn6ZF6QuoVq_JlAItxHl96H" },
-              { nome: "SPARK", cor: "#ffd166", id: "1imWi0ArGlEjwmHciQn_2Mbs0rmmZ5gt8" },
-              { nome: "PYROBLAST", cor: "#ff6b6b", id: "1n90Vsq3URNEjx3nnu-t6mozta-rXc76Y" },
-              { nome: "LOW SMELL", cor: "#8bd3ff", id: "1ni3z7HWBhfR-ELUrQ_6-jeErlRvpzdQB" },
+              { nome: "POSEIDON", cor: "#4fd1ff", arquivo: "POSEIDON.pdf" },
+              { nome: "IRON 70/30", cor: "#b89cff", arquivo: "IRON7030.pdf" },
+              { nome: "IRON", cor: "#ff8fab", arquivo: "IRON.pdf" },
+              { nome: "SPIN", cor: "#49e68b", arquivo: "SPIN.pdf" },
+              { nome: "SPARK", cor: "#ffd166", arquivo: "SPARK.pdf" },
+              { nome: "PYROBLAST", cor: "#ff6b6b", arquivo: "PYRO.pdf" },
+              { nome: "LOW SMELL", cor: "#8bd3ff", arquivo: "LOWSMELL.pdf" },
             ].map((item) => (
-              <a
+              <button
                 key={item.nome}
-                href={"https://drive.google.com/file/d/" + item.id + "/view"}
-                target="_blank"
-                rel="noreferrer"
+                type="button"
+                onClick={() => setActiveModal("fispq_" + item.arquivo)}
                 style={{
                   display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                   gap: "8px", padding: "16px 12px", borderRadius: "14px",
                   border: "1px solid " + item.cor + "44",
                   background: item.cor + "0d",
-                  textDecoration: "none", cursor: "pointer",
-                  transition: "all 0.2s ease", textAlign: "center",
+                  cursor: "pointer", transition: "all 0.2s ease", textAlign: "center",
+                  fontFamily: "inherit",
                 }}>
                 <span style={{ fontSize: "1.6rem" }}>📄</span>
                 <strong style={{ color: item.cor, fontSize: "0.82rem", fontWeight: 800 }}>{item.nome}</strong>
                 <span style={{ color: "#8ba3be", fontSize: "0.72rem" }}>FISPQ · PDF</span>
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -477,6 +476,7 @@ function GuideModal({ guide, onClose }) {
 }
 
 function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
+  const nomeFispq = type && type.startsWith("fispq_") ? "FISPQ — " + type.replace("fispq_","").replace(".pdf","") : null;
   const titles = {
     contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada",
     galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes",
@@ -487,9 +487,9 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
   };
   return (
     <div className="modal-backdrop">
-      <section className="site-modal" style={type === "calc_custos" ? { width: "min(1280px, calc(100vw - 32px))", maxHeight: "calc(100vh - 24px)", padding: "16px" } : {}}>
+      <section className="site-modal" style={(type === "calc_custos" || (type && type.startsWith("fispq_"))) ? { width: "min(1100px, calc(100vw - 32px))", maxHeight: "calc(100vh - 24px)", padding: "16px" } : {}}>
         <div className="guide-header">
-          <h2>{titles[type] || "Informações"}</h2>
+          <h2>{nomeFispq || titles[type] || "Informações"}</h2>
           <button type="button" onClick={onClose}>Fechar</button>
         </div>
         {type === "contato" && <ContatoContent cliente={cliente} />}
@@ -505,6 +505,15 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "calc_custos" && <CalculadoraCustos />}
         {type === "bot" && <BotContent cliente={cliente} />}
         {type === "chamado" && <ChamadoTecnicoContent cliente={cliente} />}
+        {type && type.startsWith("fispq_") && (
+          <div style={{ width: "100%", height: "75vh" }}>
+            <iframe
+              src={"/docs/" + type.replace("fispq_", "")}
+              title="FISPQ"
+              style={{ width: "100%", height: "100%", border: "none", borderRadius: "8px" }}
+            />
+          </div>
+        )}
       </section>
     </div>
   );
