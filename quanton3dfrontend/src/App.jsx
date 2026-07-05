@@ -18,6 +18,7 @@ const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
   { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
+  { label: "ABRIR CHAMADO TÉCNICO", kind: "modal", id: "chamado" },
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
@@ -336,23 +337,13 @@ function App() {
         )}
       </section>
 
-      <section id="contato" className="panel">
-        <div className="panel-header">
-          <div><span className="section-label">Contato</span><h2>Atendimento Quanton3D</h2></div>
-        </div>
-        <p style={{ color: "#9fb4c7", marginBottom: "20px" }}>
-          {cliente ? `Cliente ativo: ${cliente.nome}. O atendimento técnico usará seu cadastro para manter histórico.` : "Identifique-se para um atendimento mais personalizado."}
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.1)", color: "#eaf3ff", cursor: "pointer", fontFamily: "inherit" }} onClick={abrirCadastro}>{cliente ? "Atualizar meus dados" : "Identificar-me"}</button>
-          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.1)", color: "#eaf3ff", cursor: "pointer", fontFamily: "inherit" }} onClick={() => setMostrarContatoMensagem(true)}>Fale conosco</button>
-          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.1)", color: "#eaf3ff", cursor: "pointer", fontFamily: "inherit" }} onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
-          <button type="button" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", borderRadius: "12px", border: "1px solid rgba(37,211,102,0.4)", background: "rgba(37,211,102,0.12)", color: "#25d366", cursor: "pointer", fontFamily: "inherit" }} onClick={() => window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer")}>WhatsApp</button>
-        </div>
-      </section>
+
 
       <footer className="site-footer">
-        <span>Quanton3D © Suporte técnico e resinas UV de alta performance.</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <span style={{ fontWeight: 700, color: "#eaf7ff", fontSize: "0.85rem" }}>Quanton3D © Suporte técnico e resinas UV de alta performance.</span>
+          <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>Copyright Quanton 3D LTDA · CNPJ 11.165.962/0001-17 · 2026. Todos os direitos reservados.</span>
+        </div>
         <div className="footer-social-links">
           {SOCIAL_LINKS.map((link) => <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>)}
         </div>
