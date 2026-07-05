@@ -678,16 +678,22 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
           {erroItens && <div className="modal-error">{erroItens}</div>}
           {!carregandoItens && !erroItens && itens.length === 0 && <div className="gallery-empty">Ainda não há fotos aprovadas.</div>}
           {itens.map((item) => (
-            <article className="gallery-approved-card" key={item._id || item.imagem}>
-              {item.imagem && <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} />}
-              <div>
-                <h3>{item.resina || "Resina não informada"}</h3>
-                <p>{item.impressora || "Impressora não informada"}</p>
-                {item.observacao && <p className="gallery-note">{item.observacao}</p>}
-                <div className="gallery-param-list">
+            <article className="gallery-approved-card" key={item._id || item.imagem} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "16px", overflow: "hidden", background: "rgba(255,255,255,0.04)", marginBottom: "16px" }}>
+              {item.imagem && (
+                <img
+                  src={item.imagem}
+                  alt={`Peca impressa com ${item.resina || "resina"}`}
+                  style={{ width: "100%", maxHeight: "340px", objectFit: "contain", background: "rgba(0,0,0,0.3)", display: "block" }}
+                />
+              )}
+              <div style={{ padding: "14px" }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: "1rem", color: "#eaf3ff" }}>{item.resina || "Resina nao informada"}</h3>
+                <p style={{ margin: "0 0 8px", color: "#9fb4c7", fontSize: "0.85rem" }}>{item.impressora || "Impressora nao informada"}</p>
+                {item.observacao && <p className="gallery-note" style={{ color: "#d3e4f8", fontSize: "0.85rem", fontStyle: "italic", margin: "0 0 8px" }}>{item.observacao}</p>}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
                   {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
                     const valor = item.parametros?.[campo.name];
-                    return valor ? <span key={campo.name}><strong>{campo.label}:</strong> {valor}</span> : null;
+                    return valor ? <span key={campo.name} style={{ fontSize: "0.72rem", padding: "2px 7px", borderRadius: "6px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.2)", color: "#a8c4e8" }}><strong>{campo.label}:</strong> {valor}</span> : null;
                   })}
                 </div>
               </div>
@@ -824,7 +830,7 @@ function AdminContent() {
           {dados.galeria.map((item) => (
             <CARD key={item._id}>
               <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-                {item.imagem && <img src={item.imagem} alt="envio" style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "10px", flexShrink: 0, border: "1px solid rgba(113,159,219,0.2)" }} />}
+                {item.imagem && <img src={item.imagem} alt="envio" style={{ width: "160px", height: "160px", objectFit: "contain", borderRadius: "10px", flexShrink: 0, border: "1px solid rgba(113,159,219,0.2)", background: "rgba(0,0,0,0.3)", cursor: "pointer" }} onClick={() => window.open(item.imagem, "_blank")} />}
                 <div style={{ flex: 1, minWidth: "180px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
                     <strong>{item.nome || "Sem nome"}</strong>
