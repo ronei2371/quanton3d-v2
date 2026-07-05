@@ -34,7 +34,7 @@ const SERVICE_BUTTONS = [
   { label: "SUPORTES E POSICIONAMENTO", kind: "guide", id: "suportes", grupo: "guias" },
   { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao", grupo: "guias" },
   { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao", grupo: "guias" },
-  { label: "SAIBA MAIS SOBRE NÓS", kind: "modal", id: "sobre", grupo: "guias" },
+
 ];
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
@@ -238,15 +238,7 @@ function App() {
               ))}
             </div>
           </div>
-          {/* Grupo Guias */}
-          <div>
-            <p style={{ margin: "0 0 8px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#b89cff", textTransform: "uppercase" }}>📚 Guias Técnicos</p>
-            <div className="home-actions">
-              {SERVICE_BUTTONS.filter(b => b.grupo === "guias").map((item) => (
-                <button key={item.label} type="button" onClick={() => executarAcao(item)}>{item.label}</button>
-              ))}
-            </div>
-          </div>
+
         </div>
       </section>
 
@@ -270,9 +262,8 @@ function App() {
         </div>
         <div className="cards-grid">
           <InfoCard title="Alta Qualidade" text="Conheça linhas, aplicações e FISPQs." onClick={() => setActiveModal("qualidade")} />
-          <InfoCard title="Parâmetros detalhados" text="Abra o guia completo do Chitubox." onClick={() => abrirGuia("parametrosDetalhados")} />
+          <InfoCard title="Parâmetros detalhados" text="Guia completo de configuração Chitubox." onClick={() => abrirGuia("parametrosDetalhados")} />
           <InfoCard title="Parceiros e cursos" text="Veja parceiros e serviços recomendados." onClick={() => abrirGuia("parceiros")} />
-          <InfoCard title="Quero ser parceiro" text="Envie sua proposta de divulgação." onClick={abrirParceiroModal} />
         </div>
 
         {/* FISPQs — botão único abre modal com lista */}
@@ -304,6 +295,23 @@ function App() {
           <ServiceLine title="Posicionamento de suportes" onClick={() => abrirGuia("suportes")} />
           <ServiceLine title="Manutenção de máquina" onClick={() => abrirGuia("manutencao")} />
           <ServiceLine title="Otimização e pós-processamento" onClick={() => abrirGuia("otimizacao")} />
+        </div>
+        <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "1px solid rgba(79,209,255,0.12)" }}>
+          <p style={{ margin: "0 0 14px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#b89cff", textTransform: "uppercase" }}>🤝 Parceria e Comunidade</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+            <button type="button" onClick={abrirParceiroModal}
+              style={{ padding: "12px 20px", borderRadius: "12px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.88rem" }}>
+              🤝 Quero ser parceiro
+            </button>
+            <button type="button" onClick={() => abrirGuia("parceiros")}
+              style={{ padding: "12px 20px", borderRadius: "12px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.88rem" }}>
+              🏆 Ver parceiros e cursos
+            </button>
+            <button type="button" onClick={() => setActiveModal("sobre")}
+              style={{ padding: "12px 20px", borderRadius: "12px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.88rem" }}>
+              ℹ️ Saiba mais sobre nós
+            </button>
+          </div>
         </div>
       </section>
 
