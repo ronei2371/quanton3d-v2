@@ -254,6 +254,43 @@ function App() {
           <InfoCard title="Parceiros e cursos" text="Veja parceiros e serviços recomendados." onClick={() => abrirGuia("parceiros")} />
           <InfoCard title="Quero ser parceiro" text="Envie sua proposta de divulgação." onClick={abrirParceiroModal} />
         </div>
+
+        {/* FISPQs */}
+        <div style={{ marginTop: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+            <span className="section-label">Documentos técnicos</span>
+            <p style={{ margin: 0, color: "#8ba3be", fontSize: "0.85rem" }}>Fichas de Segurança (FISPQ) — clique para abrir o PDF</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "10px" }}>
+            {[
+              { nome: "POSEIDON", cor: "#4fd1ff", id: "16O4PvVPpW7XeDfLawq-IWcGPpcF_vY-k" },
+              { nome: "IRON 70/30", cor: "#b89cff", id: "1QqCd-dElM_FFqGUxwE76oqbRevEl3F_a" },
+              { nome: "IRON", cor: "#ff8fab", id: "1XsZlS26iluC-CPoq9Q74u6o026siRjDS" },
+              { nome: "SPIN", cor: "#49e68b", id: "1Z5sO3SUKqzn6ZF6QuoVq_JlAItxHl96H" },
+              { nome: "SPARK", cor: "#ffd166", id: "1imWi0ArGlEjwmHciQn_2Mbs0rmmZ5gt8" },
+              { nome: "PYROBLAST", cor: "#ff6b6b", id: "1n90Vsq3URNEjx3nnu-t6mozta-rXc76Y" },
+              { nome: "LOW SMELL", cor: "#8bd3ff", id: "1ni3z7HWBhfR-ELUrQ_6-jeErlRvpzdQB" },
+            ].map((item) => (
+              <a
+                key={item.nome}
+                href={"https://drive.google.com/file/d/" + item.id + "/view"}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                  gap: "8px", padding: "16px 12px", borderRadius: "14px",
+                  border: "1px solid " + item.cor + "44",
+                  background: item.cor + "0d",
+                  textDecoration: "none", cursor: "pointer",
+                  transition: "all 0.2s ease", textAlign: "center",
+                }}>
+                <span style={{ fontSize: "1.6rem" }}>📄</span>
+                <strong style={{ color: item.cor, fontSize: "0.82rem", fontWeight: 800 }}>{item.nome}</strong>
+                <span style={{ color: "#8ba3be", fontSize: "0.72rem" }}>FISPQ · PDF</span>
+              </a>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section id="servicos" className="panel">
