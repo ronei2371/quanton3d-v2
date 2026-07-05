@@ -17,6 +17,7 @@ const ORIGENS = ["Instagram","YouTube","Google / Pesquisa","Indicação de amigo
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
   { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
+  { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
@@ -213,7 +214,7 @@ function App() {
 
       <section className="hero-home">
         <div className="assistant-card">
-          <div className="bot-face">🤖</div>
+          <div className="bot-face">🦾</div>
           <button type="button" onClick={() => setActiveModal("bot")}>Clique para falar comigo! 🤖</button>
         </div>
         <div className="home-actions">
@@ -289,13 +290,7 @@ function App() {
         </div>
       </section>
 
-      <section id="formulacao" className="panel">
-        <div className="panel-header">
-          <div><span className="section-label">Formulação personalizada</span><h2>Precisa de uma resina com comportamento específico?</h2></div>
-        </div>
-        <p style={{ color: "#9fb4c7", marginBottom: "16px" }}>Desenvolvemos formulações sob medida para aplicações odontológicas, industriais, joalheria, ortopedia e muito mais.</p>
-        <button type="button" className="submit-registration" onClick={() => setActiveModal("formulacao")}>Solicitar formulação personalizada</button>
-      </section>
+
 
       <section id="parametros" className="panel">
         <div className="panel-header">
