@@ -74,6 +74,19 @@ a { color: inherit; text-decoration: none; }
 
 .brand { display: flex; align-items: center; gap: 14px; }
 
+.brand-logo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.1);
+}
+
+.brand-fallback {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .brand-mark {
   width: 46px;
   height: 46px;
