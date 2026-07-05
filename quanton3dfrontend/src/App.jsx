@@ -348,14 +348,14 @@ function App() {
         <div className="panel-header">
           <div><span className="section-label">Contato</span><h2>Atendimento Quanton3D</h2></div>
         </div>
-        <p style={{ color: "#9fb4c7", marginBottom: "16px" }}>
+        <p style={{ color: "#9fb4c7", marginBottom: "20px" }}>
           {cliente ? `Cliente ativo: ${cliente.nome}. O atendimento técnico usará seu cadastro para manter histórico.` : "Identifique-se para um atendimento mais personalizado."}
         </p>
-        <div className="experience-actions">
-          <button type="button" onClick={abrirCadastro}>{cliente ? "Atualizar meus dados" : "Identificar-me"}</button>
-          <button type="button" onClick={() => setMostrarContatoMensagem(true)}>Fale conosco</button>
-          <button type="button" onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
-          <button type="button" onClick={() => window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer")}>WhatsApp</button>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem" }} onClick={abrirCadastro}>{cliente ? "Atualizar meus dados" : "Identificar-me"}</button>
+          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem" }} onClick={() => setMostrarContatoMensagem(true)}>Fale conosco</button>
+          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem" }} onClick={() => setActiveModal("chamado")}>🔧 Abrir chamado técnico</button>
+          <button type="button" className="field clickable-card" style={{ padding: "14px 20px", fontWeight: 900, fontSize: "0.9rem", background: "rgba(37,211,102,0.12)", border: "1px solid rgba(37,211,102,0.35)", color: "#25d366" }} onClick={() => window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer")}>WhatsApp</button>
         </div>
       </section>
 
