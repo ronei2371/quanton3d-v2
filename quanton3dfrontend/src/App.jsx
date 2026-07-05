@@ -1060,50 +1060,85 @@ function AdminContent() {
           {!carregando && dados.galeria.length === 0 && <div className="gallery-empty">Nenhum envio para os filtros selecionados.</div>}
           {dados.galeria.map((item) => (
             <CARD key={item._id}>
-              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-                {item.imagem && <img src={item.imagem} alt="envio" style={{ width: "160px", height: "160px", objectFit: "contain", borderRadius: "10px", flexShrink: 0, border: "1px solid rgba(113,159,219,0.2)", background: "rgba(0,0,0,0.3)", cursor: "pointer" }} onClick={() => window.open(item.imagem, "_blank")} />}
-                <div style={{ flex: 1, minWidth: "180px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
-                    <strong>{item.nome || "Sem nome"}</strong>
-                    <div style={{ display: "flex", gap: "6px", alignItems: "center" }}><BADGE status={item.status} /><small style={{ color: "#9fb4c7", fontSize: "0.75rem" }}>{formatarDataHora(item.createdAt)}</small></div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7", marginBottom: "8px" }}>
-                    <span>Tel: {item.telefone || "-"}</span><span>Email: {item.email || "-"}</span>
-                    <span>Resina: {item.resina || "-"}</span><span>Impressora: {item.impressora || "-"}</span>
-                  </div>
-                  {item.observacao && <p style={{ color: "#d3e4f8", fontSize: "0.82rem", margin: "4px 0", fontStyle: "italic" }}>{item.observacao}</p>}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", margin: "6px 0" }}>
-                    {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
-                      const v = item.parametros?.[campo.name];
-                      return v ? <span key={campo.name} style={{ fontSize: "0.72rem", padding: "2px 7px", borderRadius: "6px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.2)", color: "#a8c4e8" }}>{campo.label}: {v}</span> : null;
-                    })}
-                  </div>
-                  <div style={{ marginTop: "8px", padding: "10px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.12)" }}>
-                    <p style={{ fontSize: "0.75rem", color: "#9fb4c7", margin: "0 0 5px" }}>Diagnostico tecnico (opcional):</p>
-                    <select value={diagnostico[item._id]?.tipo || ""} onChange={(e) => setDiagnostico((d) => ({ ...d, [item._id]: { ...d[item._id], tipo: e.target.value } }))}
-                      style={{ width: "100%", padding: "5px 8px", borderRadius: "7px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.78rem", marginBottom: "5px" }}>
-                      <option value="">Tipo de defeito (opcional)</option>
-                      <option value="descolamento da base">Descolamento da base</option>
-                      <option value="falha de suportes">Falha de suportes</option>
-                      <option value="rachadura ou quebra">Rachadura ou quebra</option>
-                      <option value="delaminacao">Delaminacao entre camadas</option>
-                      <option value="warping ou deformacao">Warping ou deformacao</option>
-                      <option value="problema de superficie">Problema de superficie</option>
-                      <option value="excesso ou falta de cura">Excesso ou falta de cura</option>
-                      <option value="problema de LCD">Problema de LCD</option>
-                      <option value="outro">Outro</option>
-                    </select>
-                    <textarea value={diagnostico[item._id]?.texto || ""} onChange={(e) => setDiagnostico((d) => ({ ...d, [item._id]: { ...d[item._id], texto: e.target.value } }))}
-                      placeholder="Diagnostico e solucao recomendada..." rows={2}
-                      style={{ width: "100%", padding: "5px 8px", borderRadius: "7px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.78rem", resize: "vertical" }} />
-                  </div>
-                  <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-                    <button type="button" onClick={() => atualizarGaleria(item._id, "aprovar", diagnostico[item._id] ? { diagnostico: diagnostico[item._id] } : null)} disabled={salvandoId === item._id || item.status === "aprovado"}
-                      style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#49e68b", cursor: "pointer", fontSize: "0.82rem", fontWeight: 800 }}>Aprovar</button>
-                    <button type="button" onClick={() => atualizarGaleria(item._id, "recusar")} disabled={salvandoId === item._id || item.status === "recusado"}
-                      style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff6b6b", cursor: "pointer", fontSize: "0.82rem", fontWeight: 800 }}>Recusar</button>
+              {/* Cabeçalho com nome, status e data */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+                <div>
+                  <strong style={{ fontSize: "1rem", color: "#eaf3ff" }}>{item.nome || "Sem nome"}</strong>
+                  <div style={{ fontSize: "0.78rem", color: "#9fb4c7", marginTop: "2px" }}>
+                    📱 {item.telefone || "-"} · ✉️ {item.email || "-"}
                   </div>
                 </div>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <BADGE status={item.status} />
+                  <small style={{ color: "#9fb4c7", fontSize: "0.72rem" }}>{formatarDataHora(item.createdAt)}</small>
+                </div>
+              </div>
+
+              {/* Foto + Configurações lado a lado */}
+              <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "14px", marginBottom: "12px" }}>
+                {/* Foto */}
+                <div style={{ background: "rgba(0,0,0,0.4)", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.2)", overflow: "hidden", minHeight: "180px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {item.imagem
+                    ? <img src={item.imagem} alt="Envio do cliente" onClick={() => window.open(item.imagem, "_blank")}
+                        style={{ width: "100%", maxHeight: "220px", objectFit: "contain", cursor: "pointer", display: "block" }}
+                        onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="flex"; }}
+                      />
+                    : null}
+                  <div style={{ display: item.imagem ? "none" : "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "#9pb4c7", fontSize: "0.82rem", padding: "20px" }}>
+                    <span style={{ fontSize: "2rem" }}>📷</span>
+                    <span style={{ color: "#9fb4c7" }}>Sem foto</span>
+                  </div>
+                </div>
+
+                {/* Configurações usadas pelo cliente */}
+                <div>
+                  <p style={{ margin: "0 0 8px", fontSize: "0.75rem", fontWeight: 900, color: "#4fd1ff", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    ⚙️ Configurações usadas pelo cliente
+                  </p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "8px" }}>
+                    <div style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "8px", padding: "8px 10px" }}>
+                      <span style={{ fontSize: "0.7rem", color: "#9fb4c7", display: "block" }}>Resina</span>
+                      <strong style={{ fontSize: "0.88rem", color: "#4fd1ff" }}>{item.resina || "Não informada"}</strong>
+                    </div>
+                    <div style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "8px", padding: "8px 10px" }}>
+                      <span style={{ fontSize: "0.7rem", color: "#9fb4c7", display: "block" }}>Impressora</span>
+                      <strong style={{ fontSize: "0.88rem", color: "#eaf3ff" }}>{item.impressora || "Não informada"}</strong>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                    {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
+                      const v = item.parametros?.[campo.name];
+                      return v ? (
+                        <span key={campo.name} style={{ fontSize: "0.72rem", padding: "3px 8px", borderRadius: "6px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.2)", color: "#a8c4e8" }}>
+                          <strong>{campo.label}:</strong> {v}
+                        </span>
+                      ) : null;
+                    })}
+                  </div>
+                  {item.observacao && (
+                    <p style={{ color: "#d3e4f8", fontSize: "0.82rem", margin: "8px 0 0", fontStyle: "italic", background: "rgba(255,255,255,0.03)", padding: "6px 8px", borderRadius: "6px" }}>
+                      💬 {item.observacao}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+
+
+              {/* Botões aprovar/recusar */}
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="button"
+                  onClick={() => atualizarGaleria(item._id, "aprovar", diagnostico[item._id] ? { diagnostico: diagnostico[item._id] } : null)}
+                  disabled={salvandoId === item._id || item.status === "aprovado"}
+                  style={{ flex: 1, padding: "9px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#49e68b", cursor: "pointer", fontSize: "0.88rem", fontWeight: 900 }}>
+                  ✅ Aprovar
+                </button>
+                <button type="button"
+                  onClick={() => atualizarGaleria(item._id, "recusar")}
+                  disabled={salvandoId === item._id || item.status === "recusado"}
+                  style={{ flex: 1, padding: "9px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff6b6b", cursor: "pointer", fontSize: "0.88rem", fontWeight: 900 }}>
+                  ❌ Recusar
+                </button>
               </div>
             </CARD>
           ))}
