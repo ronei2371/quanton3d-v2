@@ -147,20 +147,30 @@ router.post('/', async (req, res) => {
 
         // 3. Monta prompt com contexto RAG se disponível
         const systemComContexto = contextRAG
-            ? `${SYSTEM_PROMPT}\n\n--- CONTEXTO DO BANCO DE DADOS ---\n${contextRAG}\n---\nIMPORTANTE: Use os parâmetros acima como resposta principal. São valores REAIS testados e aprovados.`
+            ? `${SYSTEM_PROMPT}\n\n--- PARÂMETROS REAIS DO BANCO ---\n${contextRAG}\n---\nIMPORTANTE: Use ESSES parâmetros como resposta principal. São valores REAIS testados. Não liste todas as impressoras — responda sobre a que o cliente mencionou ou pergunte o modelo exato.`
             : SYSTEM_PROMPT;
 
-        // 4. Chama DeepSeek
+        // 4. Monta histórico de conversa (mantém contexto)
+        const { historico = [] } = req.body || {};
+        const mensagensHistorico = Array.isArray(historico)
+            ? historico.slice(-8).filter(m => m.role && m.content)
+            : [];
+
+        // Monta messages: system + histórico + mensagem atual
+        const messages = [
+            { role: 'system', content: systemComContexto },
+            ...mensagensHistorico.slice(0, -1), // histórico sem a última (que é a msg atual)
+            { role: 'user', content: text }
+        ];
+
+        // 5. Chama DeepSeek com histórico completo
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-chat';
         const completion = await client().chat.completions.create(
             {
                 model,
-                temperature: contextRAG ? 0.05 : 0.15, // Mais preciso quando tem RAG
+                temperature: contextRAG ? 0.05 : 0.15,
                 max_tokens: 1200,
-                messages: [
-                    { role: 'system', content: systemComContexto },
-                    { role: 'user', content: text }
-                ]
+                messages
             },
             { timeout: 25000 }
         );
