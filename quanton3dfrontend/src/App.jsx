@@ -238,11 +238,7 @@ function App() {
         </div>
       </section>
 
-      <section className="stats-grid">
-        <div className="stat-card"><span>Total de parâmetros</span><strong>{parametros.length}</strong></div>
-        <div className="stat-card"><span>Resinas cadastradas</span><strong>{resinas.length}</strong></div>
-        <div className="stat-card"><span>Impressoras/modelos</span><strong>{totalImpressoras}</strong></div>
-      </section>
+
 
       <section id="produtos" className="panel">
         <div className="panel-header">
