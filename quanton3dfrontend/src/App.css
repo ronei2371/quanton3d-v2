@@ -1412,3 +1412,97 @@ a {
     max-height: 62vh;
   }
 }
+
+/* ========================================================
+   CORREÇÃO GLOBAL DE CORES — botões legíveis em todo o site
+   ======================================================== */
+
+/* Botões do hero section — texto branco garantido */
+.home-actions button {
+  color: #ffffff !important;
+}
+
+/* Botões da experience-section (Compartilhar, Ver fotos, etc) */
+.experience-section button,
+.experience-actions button {
+  color: #ffffff !important;
+}
+
+/* Botão "Fechar" e "Atualizar" nos modais e guias */
+.guide-header button {
+  color: #02040b !important;
+  background: #00d9ff !important;
+}
+
+/* Botões de ação nos cards de galeria do ADM */
+.admin-gallery-actions button.approve {
+  color: #49e68b !important;
+  background: rgba(73,230,139,0.12) !important;
+  border: 1px solid rgba(73,230,139,0.4) !important;
+}
+.admin-gallery-actions button.reject {
+  color: #ff6b6b !important;
+  background: rgba(255,107,107,0.1) !important;
+  border: 1px solid rgba(255,107,107,0.4) !important;
+}
+
+/* Abas da galeria — texto visível */
+.gallery-tabs button {
+  color: #1e3a8a !important;
+}
+.gallery-tabs button.active {
+  color: #ffffff !important;
+}
+
+/* submit-registration — texto branco garantido */
+.submit-registration {
+  color: #ffffff !important;
+}
+
+/* Botões nas calculadoras com estilo inline — garantir visibilidade */
+.modal-rich-content button,
+.modal-rich-content input[type="button"] {
+  color: #ffffff !important;
+}
+
+/* Botões da seção contato */
+.field.clickable-card {
+  color: #eaf3ff !important;
+}
+
+/* Nav buttons */
+.main-nav button {
+  color: inherit !important;
+}
+
+/* Botões de ação dos modais */
+.modal-action-grid button,
+.modal-action-grid a {
+  color: #ffffff !important;
+}
+
+/* Botão cliente chip */
+.client-chip button {
+  color: #eaf3ff !important;
+}
+
+/* Botão "Limpar" e secundários */
+button.secondary,
+button.ghost {
+  color: #eaf3ff !important;
+}
+
+/* Botões inline com style — forçar herança correta */
+button[style*="cursor: pointer"] {
+  color: inherit;
+}
+
+/* Calculadora de Exposição — botão toggle */
+button[style*="color: #9fb4c7"] {
+  color: #9fb4c7 !important;
+}
+
+/* Garantir que NENHUM botão herde fundo que torne texto invisível */
+button:not([class]):not([style]) {
+  color: #eaf3ff;
+}
