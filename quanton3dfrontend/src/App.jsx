@@ -12,6 +12,10 @@ const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
   { label: "Instagram", url: "https://www.instagram.com/quanton3d" },
   { label: "YouTube", url: "https://www.youtube.com/@quanton3d" },
+  { label: "Facebook", url: "https://www.facebook.com/quanton3d" },
+  { label: "TikTok", url: "https://www.tiktok.com/@quanton3d" },
+  { label: "WhatsApp", url: "https://wa.me/553132716935" },
+  { label: "Site", url: "https://quanton3d.com.br" },
 ];
 const ORIGENS = ["Instagram","YouTube","Google / Pesquisa","Indicação de amigo","Mercado Livre / Shopee","Já sou cliente","Outros"];
 const SERVICE_BUTTONS = [
@@ -190,11 +194,8 @@ function App() {
       <header className="site-header">
         <div className="header-inner">
           <div className="brand">
-            <img src="/logo-quanton3d.png" alt="Quanton3D" className="brand-logo" onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="flex"; }} />
-            <div className="brand-fallback" style={{ display: "none" }}>
-              <div className="brand-mark">Q3D</div>
-              <div><h1 translate="no">Quanton3D</h1><p>Resinas UV SLA/DLP de Alta Performance</p></div>
-            </div>
+            <img src="/logo-quanton3d.png" alt="Quanton3D" className="brand-logo" />
+            <div><h1 translate="no" style={{ margin: 0, fontSize: "1.2rem", color: "#eaf7ff" }}>Quanton3D</h1><p style={{ margin: "3px 0 0", color: "#8ba3be", fontSize: "0.78rem" }}>Resinas UV SLA/DLP de Alta Performance</p></div>
           </div>
           <nav className="main-nav">
             <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
@@ -402,7 +403,14 @@ function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCl
         </div>
         <div className="social-box">
           <strong>Siga a Quanton3D nas redes</strong>
-          <div>{SOCIAL_LINKS.map((link) => <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>)}</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
+            {SOCIAL_LINKS.map((link) => (
+              <a key={link.label} href={link.url} target="_blank" rel="noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", padding: "5px 12px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.07)", color: "#4fd1ff", fontSize: "0.8rem", fontWeight: 700, textDecoration: "none" }}>
+                {link.label}
+              </a>
+            ))}
+          </div>
         </div>
         <button className="submit-registration" type="submit" disabled={salvandoCliente}>{salvandoCliente ? "Salvando..." : "Entrar no Suporte Técnico"}</button>
       </form>
