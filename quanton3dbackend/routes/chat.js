@@ -106,30 +106,22 @@ async function buscarParametrosRAG(textoAtual, historico = []) {
         if (nomeResina) query.resina = { $regex: `^${nomeResina}`, $options: 'i' };
         if (impressora) query.impressora = { $regex: impressora, $options: 'i' };
 
-        const parametros = await Parametro.find(query).limit(5).lean();
+        // SÓ retorna parâmetros se tiver RESINA + IMPRESSORA — senão pede a impressora
+        if (nomeResina && !impressora) {
+            return `INSTRUÇÃO: O cliente mencionou a resina ${nomeResina} mas NÃO disse qual impressora usa. PERGUNTE qual é o modelo exato da impressora antes de passar os parâmetros. NÃO liste parâmetros de nenhuma impressora agora.`;
+        }
+
+        const parametros = await Parametro.find(query).limit(3).lean();
 
         if (!parametros.length) {
-            // Se não achou com os dois filtros, tenta só pela resina
             if (nomeResina && impressora) {
-                const somenteResina = await Parametro.find({
-                    resina: { $regex: `^${nomeResina}`, $options: 'i' }
-                }).limit(3).lean();
-
-                if (somenteResina.length) {
-                    const linhas = somenteResina.map(p => formatarParametro(p));
-                    return `PARÂMETROS DA RESINA ${nomeResina} (impressora "${impressora}" não encontrada — dados de outras impressoras para referência):\n${linhas.join('\n')}`;
-                }
+                return `INSTRUÇÃO: Não encontrei parâmetros para ${nomeResina} + ${impressora} no banco. Informe que não temos esse cadastro ainda e sugira entrar em contato pelo WhatsApp (31) 3271-6935 para suporte personalizado.`;
             }
             return null;
         }
 
         const linhas = parametros.map(p => formatarParametro(p));
-        const label = nomeResina && impressora
-            ? `PARÂMETROS REAIS: ${nomeResina} + ${impressora.toUpperCase()}`
-            : nomeResina
-                ? `PARÂMETROS REAIS DA RESINA ${nomeResina}`
-                : `PARÂMETROS REAIS (impressora: ${impressora})`;
-
+        const label = `PARÂMETROS REAIS DO BANCO: ${nomeResina} + ${impressora.toUpperCase()}`;
         return `${label}:\n${linhas.join('\n')}`;
 
     } catch (err) {
