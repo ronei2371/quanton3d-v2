@@ -26,7 +26,7 @@ const SERVICE_BUTTONS = [
   { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao", grupo: "atendimento" },
   { label: "WHATSAPP", kind: "whatsapp", grupo: "atendimento" },
   // Guias técnicos
-  { label: "NIVELAMENTO", kind: "guide", id: "nivelamento", grupo: "guias" },
+  { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento", grupo: "guias" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores", grupo: "guias" },
   { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao", grupo: "guias" },
   { label: "GABARITO QUANTON3D", kind: "guide", id: "calibracaoQuanton3D", grupo: "guias" },
@@ -34,7 +34,8 @@ const SERVICE_BUTTONS = [
   { label: "SUPORTES E POSICIONAMENTO", kind: "guide", id: "suportes", grupo: "guias" },
   { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao", grupo: "guias" },
   { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao", grupo: "guias" },
-
+  { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp", grupo: "guias" },
+  { label: "CHAMADAS DE VÍDEO", kind: "whatsapp", grupo: "guias" },
 ];
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
@@ -231,6 +232,18 @@ function App() {
             <p style={{ margin: "0 0 8px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#4fd1ff", textTransform: "uppercase" }}>💬 Atendimento</p>
             <div className="home-actions" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
               {SERVICE_BUTTONS.filter(b => b.grupo === "atendimento").map((item) => (
+                <button key={item.label} type="button" onClick={() => executarAcao(item)}
+                  style={{ borderColor: item.kind === "whatsapp" ? "rgba(37,211,102,0.4)" : undefined, background: item.kind === "whatsapp" ? "rgba(37,211,102,0.08)" : undefined, color: item.kind === "whatsapp" ? "#25d366" : "#eaf7ff" }}>
+                  {item.kind === "whatsapp" ? "📱 " : ""}{item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Grupo Guias */}
+          <div>
+            <p style={{ margin: "0 0 8px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#b89cff", textTransform: "uppercase" }}>📚 Guias Técnicos</p>
+            <div className="home-actions">
+              {SERVICE_BUTTONS.filter(b => b.grupo === "guias").map((item) => (
                 <button key={item.label} type="button" onClick={() => executarAcao(item)}
                   style={{ borderColor: item.kind === "whatsapp" ? "rgba(37,211,102,0.4)" : undefined, background: item.kind === "whatsapp" ? "rgba(37,211,102,0.08)" : undefined, color: item.kind === "whatsapp" ? "#25d366" : "#eaf7ff" }}>
                   {item.kind === "whatsapp" ? "📱 " : ""}{item.label}
