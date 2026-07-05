@@ -195,7 +195,12 @@ function App() {
         <div className="header-inner">
           <div className="brand">
             <img src="/logo-quanton3d.png" alt="Quanton3D" className="brand-logo" />
-            <div><h1 translate="no" style={{ margin: 0, fontSize: "1.2rem", color: "#eaf7ff" }}>Quanton3D</h1><p style={{ margin: "3px 0 0", color: "#8ba3be", fontSize: "0.78rem" }}>Resinas UV SLA/DLP de Alta Performance</p></div>
+            <div>
+              <h1 translate="no" style={{ margin: 0, fontSize: "1.2rem", color: "#eaf7ff", display: "flex", alignItems: "baseline", gap: "3px" }}>
+                Quanton3D<sup style={{ fontSize: "0.55rem", color: "#4fd1ff", fontWeight: 700 }}>®</sup>
+              </h1>
+              <p style={{ margin: "3px 0 0", color: "#8ba3be", fontSize: "0.75rem" }}>Resinas UV SLA/DLP de Alta Performance</p>
+            </div>
           </div>
           <nav className="main-nav">
             <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
@@ -345,7 +350,12 @@ function App() {
           <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>Copyright Quanton 3D LTDA · CNPJ 11.165.962/0001-17 · 2026. Todos os direitos reservados.</span>
         </div>
         <div className="footer-social-links">
-          {SOCIAL_LINKS.map((link) => <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>)}
+          {SOCIAL_LINKS.map((link) => (
+            <a key={link.label} href={link.url} target="_blank" rel="noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", padding: "5px 12px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#4fd1ff", fontSize: "0.78rem", fontWeight: 700, textDecoration: "none" }}>
+              {link.label}
+            </a>
+          ))}
         </div>
       </footer>
     </main>
