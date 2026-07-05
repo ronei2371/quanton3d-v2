@@ -190,14 +190,13 @@ function App() {
       <header className="site-header">
         <div className="header-inner">
           <div className="brand">
-            <div className="brand-mark">Q3D</div>
-            <div><h1 translate="no">Quanton3D</h1><p>Resinas UV SLA/DLP de Alta Performance</p></div>
+            <img src="/logo-quanton3d.png" alt="Quanton3D" className="brand-logo" onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="flex"; }} />
+            <div className="brand-fallback" style={{ display: "none" }}>
+              <div className="brand-mark">Q3D</div>
+              <div><h1 translate="no">Quanton3D</h1><p>Resinas UV SLA/DLP de Alta Performance</p></div>
+            </div>
           </div>
           <nav className="main-nav">
-            <button type="button" onClick={() => scrollToSection("produtos")}>Produtos</button>
-            <button type="button" onClick={() => scrollToSection("servicos")}>Serviços</button>
-            <button type="button" onClick={() => scrollToSection("parametros")}>Inf. Técnicas</button>
-            <button type="button" onClick={() => scrollToSection("calculadoras")}>Calculadoras</button>
             <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
             <button type="button" onClick={abrirCadastro}>
               {cliente ? `👤 ${cliente.nome.split(" ")[0]}` : "Cliente"}
