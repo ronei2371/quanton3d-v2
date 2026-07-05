@@ -6,7 +6,7 @@
 :root {
   font-family: Inter, Arial, Helvetica, sans-serif;
   color: #eaf7ff;
-  background: #030810;
+  background: #060d1f;
   --glass-bg: rgba(8, 18, 38, 0.72);
   --glass-border: rgba(79, 209, 255, 0.18);
   --glass-shadow: 0 24px 64px rgba(0,0,0,0.45);
@@ -30,10 +30,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse at 15% 10%, rgba(79,209,255,0.12) 0%, transparent 40%),
-    radial-gradient(ellipse at 85% 5%, rgba(127,90,240,0.14) 0%, transparent 38%),
-    radial-gradient(ellipse at 50% 90%, rgba(34,197,94,0.06) 0%, transparent 40%),
-    linear-gradient(160deg, #030810 0%, #060f22 50%, #030810 100%);
+    radial-gradient(ellipse at 15% 10%, rgba(79,209,255,0.18) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 5%, rgba(127,90,240,0.18) 0%, transparent 42%),
+    radial-gradient(ellipse at 50% 90%, rgba(34,197,94,0.08) 0%, transparent 45%),
+    linear-gradient(160deg, #060d1f 0%, #0a1530 50%, #060d1f 100%);
   background-attachment: fixed;
 }
 
@@ -64,12 +64,12 @@ a { color: inherit; text-decoration: none; }
   padding: 12px 20px;
   border-radius: 999px;
   border: 1px solid rgba(79,209,255,0.22);
-  background: rgba(4, 10, 24, 0.82);
+  background: rgba(8, 16, 38, 0.88);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow:
-    0 0 0 1px rgba(79,209,255,0.08) inset,
-    0 20px 60px rgba(0,0,0,0.5);
+    0 0 0 1px rgba(79,209,255,0.15) inset,
+    0 20px 60px rgba(0,0,0,0.4);
 }
 
 .brand { display: flex; align-items: center; gap: 14px; }
@@ -239,7 +239,7 @@ a { color: inherit; text-decoration: none; }
   padding: 12px 14px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(79,209,255,0.28) !important;
-  background: rgba(8,18,38,0.65) !important;
+  background: rgba(14,28,60,0.8) !important;
   color: #eaf7ff !important;
   text-transform: uppercase;
   font-weight: 900;
@@ -359,8 +359,8 @@ a { color: inherit; text-decoration: none; }
 .panel {
   padding: 28px;
   border-radius: var(--radius-lg);
-  background: rgba(8,18,38,0.6);
-  border: 1px solid rgba(79,209,255,0.14);
+  background: rgba(12,24,52,0.75);
+  border: 1px solid rgba(79,209,255,0.2);
   box-shadow:
     0 0 0 1px rgba(79,209,255,0.04) inset,
     var(--glass-shadow);
@@ -417,8 +417,8 @@ a { color: inherit; text-decoration: none; }
 .info-card {
   padding: 22px;
   border-radius: var(--radius-md);
-  background: rgba(79,209,255,0.05);
-  border: 1px solid rgba(79,209,255,0.14);
+  background: rgba(79,209,255,0.08);
+  border: 1px solid rgba(79,209,255,0.22);
   transition: all 0.2s ease;
   cursor: pointer;
   position: relative;
@@ -656,9 +656,9 @@ textarea { min-height: 90px; resize: vertical; }
   flex-direction: column;
   padding: 28px;
   border-radius: var(--radius-lg);
-  background: rgba(6,14,30,0.92);
+  background: rgba(10,20,44,0.95);
   color: #eaf7ff;
-  border: 1px solid rgba(79,209,255,0.25);
+  border: 1px solid rgba(79,209,255,0.3);
   box-shadow:
     0 0 0 1px rgba(79,209,255,0.08) inset,
     0 32px 80px rgba(0,0,0,0.6),
