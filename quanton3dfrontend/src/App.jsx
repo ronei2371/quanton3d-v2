@@ -17,7 +17,6 @@ const ORIGENS = ["Instagram","YouTube","Google / Pesquisa","Indicação de amigo
 const SERVICE_BUTTONS = [
   { label: "FALE CONOSCO", kind: "modal", id: "contato" },
   { label: "SAIBA MAIS", kind: "modal", id: "sobre" },
-  { label: "FORMULAÇÃO PERSONALIZADA", kind: "modal", id: "formulacao" },
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores" },
   { label: "ATENDIMENTO PRIORITÁRIO", kind: "whatsapp" },
@@ -28,8 +27,6 @@ const SERVICE_BUTTONS = [
   { label: "MANUTENÇÃO DE MÁQUINA", kind: "guide", id: "manutencao" },
   { label: "OTIMIZAÇÃO DE PARÂMETROS", kind: "guide", id: "otimizacao" },
   { label: "CHAMADAS DE VÍDEO", kind: "whatsapp" },
-  { label: "CALCULADORA DE TOLERÂNCIA", kind: "modal", id: "calc_tolerancia" },
-  { label: "CALCULADORA DE CUSTOS", kind: "modal", id: "calc_custos" },
 ];
 const GUIDES = {
   nivelamento: { title: "Nivelamento de Plataforma", file: "/guias/guia-nivelamento.html" },
