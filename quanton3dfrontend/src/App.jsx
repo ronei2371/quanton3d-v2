@@ -780,6 +780,7 @@ function AdminContent() {
   }
 
   const ABAS_ADM = [
+    { id: "metricas", label: "📊 Metricas" },
     { id: "galeria", label: "Galeria (" + dados.galeria.length + ")" },
     { id: "clientes", label: "Clientes (" + dados.clientes.length + ")" },
     { id: "formulacoes", label: "Formulacoes (" + dados.formulacoes.length + ")" },
@@ -805,6 +806,110 @@ function AdminContent() {
       </div>
       {erro && <div className="modal-error">{erro}</div>}
       {carregando && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "20px" }}>Carregando...</div>}
+
+      {aba === "metricas" && (
+        <div>
+          {/* Cards de resumo */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+            {[
+              { label: "Clientes cadastrados", valor: dados.totais.clientes || 0, cor: "#4fd1ff" },
+              { label: "Formulacoes recebidas", valor: dados.totais.formulacoes || 0, cor: "#b89cff" },
+              { label: "Fotos na galeria", valor: dados.totais.gallery || 0, cor: "#49e68b" },
+              { label: "Parametros no banco", valor: dados.totais.parametros || 0, cor: "#ffd166" },
+              { label: "Chamados tecnicos", valor: dados.chamados.length || 0, cor: "#ff8fab" },
+              { label: "Mensagens de contato", valor: dados.mensagens.length || 0, cor: "#8bd3ff" },
+            ].map((item) => (
+              <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${item.cor}33`, borderRadius: "14px", padding: "16px", textAlign: "center" }}>
+                <p style={{ margin: "0 0 8px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>{item.label}</p>
+                <strong style={{ fontSize: "2rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
+              </div>
+            ))}
+          </div>
+
+          {/* Taxa de conversão */}
+          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+            <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>📈 TAXA DE CONVERSÃO</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>Clientes cadastrados</p>
+                <strong style={{ color: "#eaf3ff", fontSize: "1.4rem" }}>{dados.totais.clientes || 0}</strong>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>Formulações enviadas</p>
+                <strong style={{ color: "#eaf3ff", fontSize: "1.4rem" }}>{dados.totais.formulacoes || 0}</strong>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>Taxa formulação/cliente</p>
+                <strong style={{ color: "#49e68b", fontSize: "1.4rem" }}>
+                  {dados.totais.clientes > 0 ? ((dados.totais.formulacoes / dados.totais.clientes) * 100).toFixed(1) + "%" : "0%"}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          {/* Menções de resinas nos chamados */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧪 RESINAS MAIS MENCIONADAS NOS CHAMADOS</p>
+            {(() => {
+              const RESINAS_TRACK = ["IRON","FLEXFORM","ALCHEMIST","ATHOM","POSEIDON","PYROBLAST","VULCAN","SPARK","SPIN","LOW SMELL","70/30","VELVET"];
+              const texto = dados.chamados.map(c => `${c.resina || ""} ${c.descricao || ""} ${c.problema || ""}`).join(" ").toUpperCase();
+              const contagem = RESINAS_TRACK.map(r => ({ resina: r, count: (texto.match(new RegExp(r, "g")) || []).length })).filter(r => r.count > 0).sort((a,b) => b.count - a.count);
+              return contagem.length > 0 ? (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "8px" }}>
+                  {contagem.map(({ resina, count }) => (
+                    <div key={resina} style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "10px", padding: "10px", textAlign: "center" }}>
+                      <strong style={{ color: "#4fd1ff", display: "block", fontSize: "0.82rem" }}>{resina}</strong>
+                      <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}</span>
+                      <span style={{ color: "#9fb4c7", fontSize: "0.72rem", display: "block" }}>mencoes</span>
+                    </div>
+                  ))}
+                </div>
+              ) : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhuma mencao de resina nos chamados ainda.</p>;
+            })()}
+          </div>
+
+          {/* Problemas mais frequentes nos chamados */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🔧 PROBLEMAS MAIS FREQUENTES</p>
+            {(() => {
+              const freq = {};
+              dados.chamados.forEach(c => { if (c.problema) freq[c.problema] = (freq[c.problema] || 0) + 1; });
+              const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
+              return sorted.length > 0 ? (
+                <div style={{ display: "grid", gap: "8px" }}>
+                  {sorted.map(([problema, count]) => (
+                    <div key={problema} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,107,107,0.06)", border: "1px solid rgba(255,107,107,0.15)", borderRadius: "8px", padding: "8px 12px" }}>
+                      <span style={{ color: "#d3e4f8", fontSize: "0.85rem" }}>{problema}</span>
+                      <span style={{ background: "rgba(255,107,107,0.15)", color: "#ff8fab", borderRadius: "999px", padding: "2px 10px", fontSize: "0.78rem", fontWeight: 800 }}>{count}x</span>
+                    </div>
+                  ))}
+                </div>
+              ) : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum chamado registrado ainda.</p>;
+            })()}
+          </div>
+
+          {/* Origens dos clientes */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px" }}>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>📣 ORIGEM DOS CLIENTES</p>
+            {(() => {
+              const freq = {};
+              dados.clientes.forEach(c => { if (c.origem) freq[c.origem] = (freq[c.origem] || 0) + 1; });
+              const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
+              const cores = ["#4fd1ff","#b89cff","#49e68b","#ffd166","#ff8fab","#8bd3ff"];
+              return sorted.length > 0 ? (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "8px" }}>
+                  {sorted.map(([origem, count], i) => (
+                    <div key={origem} style={{ background: `${cores[i%cores.length]}11`, border: `1px solid ${cores[i%cores.length]}33`, borderRadius: "10px", padding: "10px", textAlign: "center" }}>
+                      <strong style={{ color: cores[i%cores.length], display: "block", fontSize: "0.82rem" }}>{origem}</strong>
+                      <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum cliente cadastrado ainda.</p>;
+            })()}
+          </div>
+        </div>
+      )}
 
       {aba === "galeria" && (
         <div>
