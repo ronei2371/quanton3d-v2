@@ -1506,3 +1506,39 @@ button[style*="color: #9fb4c7"] {
 button:not([class]):not([style]) {
   color: #eaf3ff;
 }
+
+/* CORREÇÃO NUCLEAR — textos das calculadoras sempre legíveis */
+.site-modal *,
+.guide-modal * {
+  color: inherit;
+}
+
+.site-modal p,
+.site-modal span,
+.site-modal label,
+.site-modal h1,
+.site-modal h2,
+.site-modal h3,
+.site-modal div:not([style*="color"]) {
+  color: #eaf3ff;
+}
+
+.site-modal input,
+.site-modal select,
+.site-modal textarea {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.site-modal input::placeholder,
+.site-modal textarea::placeholder {
+  color: rgba(255,255,255,0.45) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.45) !important;
+}
+
+/* Forçar cor nos elementos que usam style inline */
+.site-modal [style*="color: \"#9fb4c7\""],
+.site-modal [style*="color: \"#a8bad2\""],
+.site-modal [style*="color: \"#d3e4f8\""] {
+  color: #ccdaec !important;
+}
