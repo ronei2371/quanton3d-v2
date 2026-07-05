@@ -255,40 +255,19 @@ function App() {
           <InfoCard title="Quero ser parceiro" text="Envie sua proposta de divulgação." onClick={abrirParceiroModal} />
         </div>
 
-        {/* FISPQs */}
-        <div style={{ marginTop: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
-            <span className="section-label">Documentos técnicos</span>
-            <p style={{ margin: 0, color: "#8ba3be", fontSize: "0.85rem" }}>Fichas de Segurança (FISPQ) — clique para abrir o PDF</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "10px" }}>
-            {[
-              { nome: "POSEIDON", cor: "#4fd1ff", arquivo: "POSEIDON.pdf" },
-              { nome: "IRON 70/30", cor: "#b89cff", arquivo: "IRON7030.pdf" },
-              { nome: "IRON", cor: "#ff8fab", arquivo: "IRON.pdf" },
-              { nome: "SPIN", cor: "#49e68b", arquivo: "SPIN.pdf" },
-              { nome: "SPARK", cor: "#ffd166", arquivo: "SPARK.pdf" },
-              { nome: "PYROBLAST", cor: "#ff6b6b", arquivo: "PYRO.pdf" },
-              { nome: "LOW SMELL", cor: "#8bd3ff", arquivo: "LOWSMELL.pdf" },
-            ].map((item) => (
-              <button
-                key={item.nome}
-                type="button"
-                onClick={() => setActiveModal("fispq_" + item.arquivo)}
-                style={{
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                  gap: "8px", padding: "16px 12px", borderRadius: "14px",
-                  border: "1px solid " + item.cor + "44",
-                  background: item.cor + "0d",
-                  cursor: "pointer", transition: "all 0.2s ease", textAlign: "center",
-                  fontFamily: "inherit",
-                }}>
-                <span style={{ fontSize: "1.6rem" }}>📄</span>
-                <strong style={{ color: item.cor, fontSize: "0.82rem", fontWeight: 800 }}>{item.nome}</strong>
-                <span style={{ color: "#8ba3be", fontSize: "0.72rem" }}>FISPQ · PDF</span>
-              </button>
-            ))}
-          </div>
+        {/* FISPQs — botão único abre modal com lista */}
+        <div style={{ marginTop: "20px" }}>
+          <button
+            type="button"
+            onClick={() => setActiveModal("fispqs")}
+            style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", borderRadius: "14px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.07)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", width: "100%" }}>
+            <span style={{ fontSize: "1.4rem" }}>📄</span>
+            <div style={{ textAlign: "left" }}>
+              <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.92rem" }}>Fichas de Segurança — FISPQ</strong>
+              <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>7 documentos disponíveis · POSEIDON, IRON, SPIN, SPARK, PYROBLAST, LOW SMELL, IRON 70/30</span>
+            </div>
+            <span style={{ marginLeft: "auto", color: "#4fd1ff", fontSize: "0.82rem", fontWeight: 700 }}>Ver →</span>
+          </button>
         </div>
       </section>
 
@@ -440,7 +419,7 @@ function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCl
         <div className="form-grid">
           <label><span>Seu Nome</span><input value={formCliente.nome} onChange={(e) => alterarCliente("nome", e.target.value)} placeholder="Digite seu nome" /></label>
           <label><span>WhatsApp</span><input value={formCliente.telefone} onChange={(e) => alterarCliente("telefone", e.target.value)} placeholder="DDD + número" /></label>
-          <label><span>E-mail</span><input value={formCliente.email} onChange={(e) => alterarCliente("email", e.target.value)} placeholder="seu@email.com" /></label>
+          <label><span>E-mail</span><input value={formCliente.email} onChange={(e) => alterarCliente("email", e.target.value)} placeholder="seu@email.com" style={{ color: "#ffffff", background: "rgba(4,10,24,0.7)" }} /></label>
           <label><span>Como nos conheceu?</span>
             <select value={formCliente.origem} onChange={(e) => alterarCliente("origem", e.target.value)}>
               {ORIGENS.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -505,6 +484,29 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "calc_custos" && <CalculadoraCustos />}
         {type === "bot" && <BotContent cliente={cliente} />}
         {type === "chamado" && <ChamadoTecnicoContent cliente={cliente} />}
+        {type === "fispqs" && (
+          <div>
+            <p style={{ color: "#8ba3be", marginBottom: "16px", fontSize: "0.88rem" }}>Selecione a resina para abrir a Ficha de Informações de Segurança de Produto Químico (FISPQ).</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
+              {[
+                { nome: "POSEIDON", cor: "#4fd1ff", arquivo: "POSEIDON.pdf" },
+                { nome: "IRON 70/30", cor: "#b89cff", arquivo: "IRON7030.pdf" },
+                { nome: "IRON", cor: "#ff8fab", arquivo: "IRON.pdf" },
+                { nome: "SPIN", cor: "#49e68b", arquivo: "SPIN.pdf" },
+                { nome: "SPARK", cor: "#ffd166", arquivo: "SPARK.pdf" },
+                { nome: "PYROBLAST", cor: "#ff6b6b", arquivo: "PYRO.pdf" },
+                { nome: "LOW SMELL", cor: "#8bd3ff", arquivo: "LOWSMELL.pdf" },
+              ].map((item) => (
+                <button key={item.nome} type="button" onClick={() => setActiveModal("fispq_" + item.arquivo)}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", padding: "18px 12px", borderRadius: "14px", border: "1px solid " + item.cor + "44", background: item.cor + "0d", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease" }}>
+                  <span style={{ fontSize: "1.8rem" }}>📄</span>
+                  <strong style={{ color: item.cor, fontSize: "0.85rem", fontWeight: 800 }}>{item.nome}</strong>
+                  <span style={{ color: "#8ba3be", fontSize: "0.72rem" }}>FISPQ · PDF</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {type && type.startsWith("fispq_") && (
           <div style={{ width: "100%", height: "75vh" }}>
             <iframe
