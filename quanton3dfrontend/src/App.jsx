@@ -223,8 +223,16 @@ function App() {
 
       <section className="hero-home">
         <div className="assistant-card">
-          <div className="bot-face">🦾</div>
-          <button type="button" onClick={() => setActiveModal("bot")}>Clique para falar comigo! 🤖</button>
+          <div className="bot-face">
+            <div className="elio-container">
+              <img src="/elio-avatar.jpg" alt="ELIO - Assistente Quanton3D" className="elio-avatar" />
+              <div className="elio-glow-ring" />
+              <div className="elio-particles">
+                {[...Array(8)].map((_, i) => <span key={i} className={"elio-particle elio-particle-" + i} />)}
+              </div>
+            </div>
+          </div>
+          <button type="button" onClick={() => setActiveModal("bot")}>Falar com a ELIO 🤖</button>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
           {/* Grupo Atendimento */}
