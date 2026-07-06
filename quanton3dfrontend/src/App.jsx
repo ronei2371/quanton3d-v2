@@ -7,6 +7,7 @@ import CalculadoraExposicao from "./components/CalculadoraExposicao";
 import CalculadoraVolume from "./components/CalculadoraVolume";
 import CalculadoraTolerancia from "./components/CalculadoraTolerancia";
 import CalculadoraCustos from "./components/CalculadoraCustos";
+import CalculadoraTempo from "./components/CalculadoraTempo";
 
 const WHATSAPP_URL = "https://wa.me/553132716935";
 const SOCIAL_LINKS = [
@@ -361,6 +362,7 @@ function App() {
               { label: "📦 Volume", id: "calc_vol" },
               { label: "📏 Tolerância", id: "calc_tolerancia" },
               { label: "💰 Custos", id: "calc_custos" },
+              { label: "⏱️ Tempo de Impressão", id: "calc_tempo" },
             ].map(c => (
               <button key={c.id} type="button" onClick={() => setActiveModal(c.id)}
                 style={{ padding: "7px 13px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
@@ -542,12 +544,12 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
     galeria: "Galeria e Configurações", galeriaPublica: "Fotos e Configurações de Clientes",
     adm: "Painel Administrativo", qualidade: "Alta Qualidade",
     calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume",
-    calc_tolerancia: "Calculadora de Tolerância", calc_custos: "Calculadora de Custos e Orçamentos",
+    calc_tolerancia: "Calculadora de Tolerância", calc_custos: "Calculadora de Custos e Orçamentos", calc_tempo: "Calculadora de Tempo de Impressão",
     bot: "Bot Quanton3D", chamado: "Chamado Técnico",
   };
   return (
     <div className="modal-backdrop">
-      <section className="site-modal" style={(type === "calc_custos" || (type && type.startsWith("fispq_"))) ? { width: "min(1100px, calc(100vw - 32px))", maxHeight: "calc(100vh - 24px)", padding: "16px" } : {}}>
+      <section className="site-modal" style={(type === "calc_custos" || (type && type.startsWith("fispq_"))) ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" } : {}}>
         <div className="guide-header">
           <h2>{nomeFispq || titles[type] || "Informações"}</h2>
           <button type="button" onClick={onClose}>Fechar</button>
@@ -563,6 +565,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
         {type === "calc_vol" && <CalculadoraVolume />}
         {type === "calc_tolerancia" && <CalculadoraTolerancia />}
         {type === "calc_custos" && <CalculadoraCustos />}
+        {type === "calc_tempo" && <CalculadoraTempo />}
         {type === "bot" && <BotContent cliente={cliente} />}
         {type === "chamado" && <ChamadoTecnicoContent cliente={cliente} />}
         {type === "fispqs" && (
