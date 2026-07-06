@@ -243,7 +243,7 @@ function App() {
               </div>
             </div>
           </div>
-          <button type="button" onClick={() => setActiveModal("bot")}>Falar com a ELIO 🤖</button>
+          <button type="button" onClick={() => setActiveModal("bot")}>Assistente IA Quanton3D</button>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
           {/* Grupo Atendimento */}
