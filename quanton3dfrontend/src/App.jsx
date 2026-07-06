@@ -1446,13 +1446,17 @@ function AdminContent() {
                   <div>
                     <p style={{ margin: "0 0 6px", fontSize: "0.72rem", fontWeight: 800, color: "#9fb4c7", textTransform: "uppercase" }}>📷 Fotos do problema</p>
                     <div style={{ display: "grid", gridTemplateColumns: c.fotos.length > 1 ? "1fr 1fr" : "1fr", gap: "6px" }}>
-                      {c.fotos.map((foto, i) => (
-                        <img key={i} src={foto} alt={"Foto " + (i+1)}
-                          onClick={() => window.open(foto, "_blank")}
-                          style={{ width: "100%", maxHeight: "140px", objectFit: "cover", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.2)", cursor: "pointer", background: "rgba(0,0,0,0.3)" }}
-                          onError={(e) => { e.target.style.display = "none"; }}
-                        />
-                      ))}
+                      {c.fotos.map((foto, i) => {
+                        const src = typeof foto === "string" ? foto : foto?.url || "";
+                        if (!src) return null;
+                        return (
+                          <img key={i} src={src} alt={"Foto " + (i+1)}
+                            onClick={() => window.open(src, "_blank")}
+                            style={{ width: "100%", maxHeight: "140px", objectFit: "cover", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.2)", cursor: "pointer", background: "rgba(0,0,0,0.3)" }}
+                            onError={(e) => { e.target.style.display = "none"; }}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 )}
