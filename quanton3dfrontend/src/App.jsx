@@ -925,118 +925,144 @@ function AdminContent() {
 
       {aba === "metricas" && (
         <div>
-          {/* Cards resumo */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "18px" }}>
             {[
-              { label: "Clientes cadastrados", valor: dados.totais.clientes || 0, cor: "#4fd1ff" },
-              { label: "Formulacoes recebidas", valor: dados.totais.formulacoes || 0, cor: "#b89cff" },
-              { label: "Fotos na galeria", valor: dados.totais.gallery || 0, cor: "#49e68b" },
-              { label: "Parametros no banco", valor: dados.totais.parametros || 0, cor: "#ffd166" },
-              { label: "Chamados tecnicos", valor: dados.chamados.length || 0, cor: "#ff8fab" },
-              { label: "Mensagens de contato", valor: dados.mensagens.length || 0, cor: "#8bd3ff" },
+              { icon: "👥", label: "Clientes", valor: dados.totais.clientes || 0, cor: "#4fd1ff" },
+              { icon: "🧪", label: "Formulações", valor: dados.totais.formulacoes || 0, cor: "#b89cff" },
+              { icon: "📸", label: "Galeria", valor: dados.totais.gallery || 0, cor: "#49e68b" },
+              { icon: "📋", label: "Parâmetros", valor: dados.totais.parametros || 0, cor: "#ffd166" },
+              { icon: "🔧", label: "Chamados", valor: dados.chamados.length || 0, cor: "#ff8fab" },
+              { icon: "✉️", label: "Mensagens", valor: dados.mensagens.length || 0, cor: "#8bd3ff" },
+              { icon: "✅", label: "Aprovadas", valor: dados.galeria.filter(g => g.status === "aprovado").length, cor: "#49e68b" },
+              { icon: "⏳", label: "Pendentes", valor: dados.galeria.filter(g => g.status === "pendente").length, cor: "#ffd166" },
             ].map((item) => (
-              <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${item.cor}33`, borderRadius: "14px", padding: "16px", textAlign: "center" }}>
-                <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{item.label}</p>
-                <strong style={{ fontSize: "2rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
+              <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid " + item.cor + "33", borderRadius: "12px", padding: "12px", textAlign: "center" }}>
+                <div style={{ fontSize: "1.3rem", marginBottom: "4px" }}>{item.icon}</div>
+                <p style={{ margin: "0 0 4px", fontSize: "0.7rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>{item.label}</p>
+                <strong style={{ fontSize: "1.7rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
               </div>
             ))}
           </div>
 
-          {/* Taxa de conversão */}
-          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>📈 TAXA DE CONVERSÃO</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "12px" }}>
+          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "14px" }}>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>📈 INDICADORES DE CONVERSÃO</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "10px" }}>
               {[
-                { label: "Clientes cadastrados", valor: dados.totais.clientes || 0 },
-                { label: "Formulações enviadas", valor: dados.totais.formulacoes || 0 },
-                { label: "Taxa formulação/cliente", valor: dados.totais.clientes > 0 ? ((dados.totais.formulacoes / dados.totais.clientes) * 100).toFixed(1) + "%" : "0%", verde: true },
+                { label: "Formulação / Cliente", valor: dados.totais.clientes > 0 ? ((dados.totais.formulacoes / dados.totais.clientes) * 100).toFixed(1) + "%" : "0%", cor: "#49e68b", desc: "Clientes que pediram formulação" },
+                { label: "Chamado / Cliente", valor: dados.totais.clientes > 0 ? ((dados.chamados.length / dados.totais.clientes) * 100).toFixed(1) + "%" : "0%", cor: "#ff8fab", desc: "Clientes com chamado técnico" },
+                { label: "Aprovação galeria", valor: dados.galeria.length > 0 ? ((dados.galeria.filter(g => g.status === "aprovado").length / dados.galeria.length) * 100).toFixed(1) + "%" : "0%", cor: "#49e68b", desc: "Fotos aprovadas do total" },
+                { label: "Chamados abertos", valor: dados.chamados.filter(c => c.status !== "fechado" && c.status !== "resolvido").length, cor: "#ffd166", desc: "Aguardando resolução" },
               ].map(item => (
-                <div key={item.label} style={{ textAlign: "center" }}>
-                  <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.78rem" }}>{item.label}</p>
-                  <strong style={{ color: item.verde ? "#49e68b" : "#eaf3ff", fontSize: "1.4rem" }}>{item.valor}</strong>
+                <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px" }}>
+                  <p style={{ margin: "0 0 4px", color: "#9fb4c7", fontSize: "0.75rem" }}>{item.label}</p>
+                  <strong style={{ color: item.cor, fontSize: "1.4rem", display: "block" }}>{item.valor}</strong>
+                  <span style={{ color: "#8ba3be", fontSize: "0.7rem" }}>{item.desc}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Clientes cadastrados — dados completos */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>👥 CLIENTES CADASTRADOS — DADOS COMPLETOS</p>
-            {dados.clientes.length === 0
-              ? <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum cliente ainda.</p>
-              : <div style={{ display: "grid", gap: "8px", maxHeight: "300px", overflowY: "auto" }}>
-                  {dados.clientes.map((c, i) => (
-                    <div key={c._id || i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr auto", gap: "8px", alignItems: "center", background: "rgba(79,209,255,0.04)", border: "1px solid rgba(79,209,255,0.12)", borderRadius: "10px", padding: "10px 12px", fontSize: "0.82rem" }}>
-                      <span style={{ color: "#eaf3ff", fontWeight: 700 }}>{c.nome || "-"}</span>
-                      <span style={{ color: "#9fb4c7" }}>📱 {c.telefone || "-"}</span>
-                      <span style={{ color: "#9fb4c7" }}>✉️ {c.email || "-"}</span>
-                      <span style={{ color: "#9fb4c7" }}>🔗 {c.origem || "-"}</span>
-                      <span style={{ color: "#8ba3be", fontSize: "0.72rem", whiteSpace: "nowrap" }}>{formatarDataHora(c.createdAt)}</span>
-                    </div>
-                  ))}
-                </div>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "14px" }}>
+            <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>👥 CLIENTES ({dados.clientes.length})</p>
+            {dados.clientes.length === 0 ? <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum cliente ainda.</p> :
+              <div style={{ display: "grid", gap: "5px", maxHeight: "260px", overflowY: "auto" }}>
+                {dados.clientes.map((c, i) => (
+                  <div key={c._id || i} style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1.5fr 1fr auto", gap: "8px", alignItems: "center", background: "rgba(79,209,255,0.04)", border: "1px solid rgba(79,209,255,0.1)", borderRadius: "8px", padding: "7px 10px", fontSize: "0.78rem" }}>
+                    <span style={{ color: "#eaf3ff", fontWeight: 700 }}>{c.nome || "-"}</span>
+                    <span style={{ color: "#9fb4c7" }}>📱 {c.telefone || "-"}</span>
+                    <span style={{ color: "#9fb4c7", fontSize: "0.72rem" }}>{c.email || "-"}</span>
+                    <span style={{ padding: "2px 7px", borderRadius: "999px", background: "rgba(79,209,255,0.1)", color: "#4fd1ff", fontSize: "0.7rem", fontWeight: 700 }}>{c.origem || "-"}</span>
+                    <span style={{ color: "#8ba3be", fontSize: "0.68rem", whiteSpace: "nowrap" }}>{formatarDataHora(c.createdAt)}</span>
+                  </div>
+                ))}
+              </div>
             }
           </div>
 
-          {/* Resinas mais mencionadas */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧪 RESINAS MAIS USADAS NOS CHAMADOS</p>
-            {(() => {
-              const RESINAS_TRACK = ["IRON","FLEXFORM","ALCHEMIST","ATHOM","POSEIDON","PYROBLAST","VULCAN","SPARK","SPIN","LOW SMELL","70/30","VELVET"];
-              const texto = dados.chamados.map(c => `${c.resina || ""} ${c.descricao || ""}`).join(" ").toUpperCase();
-              const contagem = RESINAS_TRACK.map(r => ({ resina: r, count: (texto.match(new RegExp(r, "g")) || []).length })).filter(r => r.count > 0).sort((a,b) => b.count - a.count);
-              return contagem.length > 0
-                ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "8px" }}>
-                    {contagem.map(({ resina, count }) => (
-                      <div key={resina} style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "10px", padding: "10px", textAlign: "center" }}>
-                        <strong style={{ color: "#4fd1ff", display: "block", fontSize: "0.82rem" }}>{resina}</strong>
-                        <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}x</span>
-                      </div>
-                    ))}
-                  </div>
-                : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhuma menção ainda.</p>;
-            })()}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "14px" }}>
+              <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>📣 ORIGEM DOS CLIENTES</p>
+              {(() => {
+                const freq = {};
+                dados.clientes.forEach(c => { if (c.origem) freq[c.origem] = (freq[c.origem] || 0) + 1; });
+                const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
+                const total = dados.clientes.length || 1;
+                const cores = ["#4fd1ff","#b89cff","#49e68b","#ffd166","#ff8fab","#8bd3ff"];
+                return sorted.length > 0
+                  ? <div style={{ display: "grid", gap: "5px" }}>{sorted.map(([o, n], i) => (
+                      <div key={o} style={{ display: "grid", gridTemplateColumns: "1fr auto auto", gap: "8px", alignItems: "center" }}>
+                        <span style={{ color: "#d3e4f8", fontSize: "0.82rem" }}>{o}</span>
+                        <strong style={{ color: cores[i%6], fontSize: "0.88rem" }}>{n}</strong>
+                        <span style={{ color: "#9fb4c7", fontSize: "0.7rem" }}>{((n/total)*100).toFixed(0)}%</span>
+                      </div>))}</div>
+                  : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Sem dados.</p>;
+              })()}
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "14px" }}>
+              <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧪 RESINAS NOS CHAMADOS</p>
+              {(() => {
+                const RESINAS = ["IRON","FLEXFORM","ALCHEMIST","ATHOM","POSEIDON","PYROBLAST","VULCAN","SPARK","SPIN","LOW SMELL","70/30","VELVET"];
+                const texto = dados.chamados.map(c => (c.resina||"") + " " + (c.descricao||"")).join(" ").toUpperCase();
+                const contagem = RESINAS.map(r => ({ r, n: (texto.match(new RegExp(r,"g"))||[]).length })).filter(x => x.n > 0).sort((a,b) => b.n-a.n);
+                return contagem.length > 0
+                  ? <div style={{ display: "grid", gap: "5px" }}>{contagem.map(({ r, n }) => (
+                      <div key={r} style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "8px", alignItems: "center" }}>
+                        <span style={{ color: "#d3e4f8", fontSize: "0.82rem" }}>{r}</span>
+                        <span style={{ background: "rgba(79,209,255,0.15)", color: "#4fd1ff", borderRadius: "999px", padding: "2px 8px", fontSize: "0.72rem", fontWeight: 800 }}>{n}x</span>
+                      </div>))}</div>
+                  : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Sem dados.</p>;
+              })()}
+            </div>
           </div>
 
-          {/* Origem dos clientes */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>📣 ORIGEM DOS CLIENTES</p>
-            {(() => {
-              const freq = {};
-              dados.clientes.forEach(c => { if (c.origem) freq[c.origem] = (freq[c.origem] || 0) + 1; });
-              const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
-              const cores = ["#4fd1ff","#b89cff","#49e68b","#ffd166","#ff8fab","#8bd3ff"];
-              return sorted.length > 0
-                ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "8px" }}>
-                    {sorted.map(([origem, count], i) => (
-                      <div key={origem} style={{ background: cores[i%cores.length]+"11", border: `1px solid ${cores[i%cores.length]}33`, borderRadius: "10px", padding: "10px", textAlign: "center" }}>
-                        <strong style={{ color: cores[i%cores.length], display: "block", fontSize: "0.82rem" }}>{origem}</strong>
-                        <span style={{ color: "#eaf3ff", fontSize: "1.2rem", fontWeight: 800 }}>{count}</span>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "14px" }}>
+              <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🔧 CHAMADOS RECENTES ({dados.chamados.length})</p>
+              {dados.chamados.length === 0 ? <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Sem chamados.</p> :
+                <div style={{ display: "grid", gap: "5px", maxHeight: "200px", overflowY: "auto" }}>
+                  {dados.chamados.slice(0,8).map((c, i) => (
+                    <div key={c._id||i} style={{ background: "rgba(255,107,107,0.04)", border: "1px solid rgba(255,107,107,0.1)", borderRadius: "7px", padding: "7px 10px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <strong style={{ color: "#eaf3ff", fontSize: "0.78rem" }}>{c.nome || "-"}</strong>
+                        <span style={{ color: "#9fb4c7", fontSize: "0.68rem" }}>{formatarDataHora(c.createdAt)}</span>
                       </div>
-                    ))}
-                  </div>
-                : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhum cliente ainda.</p>;
-            })()}
+                      <p style={{ margin: "2px 0 0", color: "#ff8fab", fontSize: "0.72rem" }}>{c.problema || "-"} · {c.resina || "—"}</p>
+                    </div>
+                  ))}
+                </div>
+              }
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "14px" }}>
+              <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧬 FORMULAÇÕES POR APLICAÇÃO</p>
+              {(() => {
+                const freq = {};
+                dados.formulacoes.forEach(f => { const k = f.caracteristica || "Não informado"; freq[k] = (freq[k]||0)+1; });
+                const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]);
+                return sorted.length > 0
+                  ? <div style={{ display: "grid", gap: "5px" }}>{sorted.map(([app, n]) => (
+                      <div key={app} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(184,156,255,0.06)", borderRadius: "7px", padding: "6px 10px" }}>
+                        <span style={{ color: "#d3e4f8", fontSize: "0.82rem" }}>{app}</span>
+                        <span style={{ background: "rgba(184,156,255,0.15)", color: "#b89cff", borderRadius: "999px", padding: "2px 7px", fontSize: "0.72rem", fontWeight: 800 }}>{n}x</span>
+                      </div>))}</div>
+                  : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Sem formulações.</p>;
+              })()}
+            </div>
           </div>
 
-          {/* Formulações por aplicação */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "16px" }}>
-            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>🧬 FORMULAÇÕES POR APLICAÇÃO</p>
-            {(() => {
-              const freq = {};
-              dados.formulacoes.forEach(f => { const k = f.caracteristica || "Não informado"; freq[k] = (freq[k] || 0) + 1; });
-              const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
-              return sorted.length > 0
-                ? <div style={{ display: "grid", gap: "6px" }}>
-                    {sorted.map(([app, count]) => (
-                      <div key={app} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(184,156,255,0.06)", border: "1px solid rgba(184,156,255,0.15)", borderRadius: "8px", padding: "8px 12px" }}>
-                        <span style={{ color: "#d3e4f8", fontSize: "0.85rem" }}>{app}</span>
-                        <span style={{ background: "rgba(184,156,255,0.15)", color: "#b89cff", borderRadius: "999px", padding: "2px 10px", fontSize: "0.78rem", fontWeight: 800 }}>{count}x</span>
-                      </div>
-                    ))}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "14px", padding: "14px" }}>
+            <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#eaf3ff", fontSize: "0.85rem" }}>✉️ MENSAGENS RECENTES ({dados.mensagens.length})</p>
+            {dados.mensagens.length === 0 ? <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhuma mensagem ainda.</p> :
+              <div style={{ display: "grid", gap: "5px", maxHeight: "180px", overflowY: "auto" }}>
+                {dados.mensagens.slice(0,6).map((m, i) => (
+                  <div key={m._id||i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto auto", gap: "8px", alignItems: "center", background: "rgba(79,209,255,0.04)", border: "1px solid rgba(79,209,255,0.1)", borderRadius: "7px", padding: "7px 10px", fontSize: "0.78rem" }}>
+                    <strong style={{ color: "#eaf3ff" }}>{m.nome || m.clienteNome || "-"}</strong>
+                    <span style={{ color: "#9fb4c7" }}>{m.assunto || "Sem assunto"}</span>
+                    <BADGE status={m.resolvido ? "resolvido" : "pendente"} />
+                    <span style={{ color: "#8ba3be", fontSize: "0.68rem", whiteSpace: "nowrap" }}>{formatarDataHora(m.createdAt)}</span>
                   </div>
-                : <p style={{ color: "#9fb4c7", fontSize: "0.85rem", margin: 0 }}>Nenhuma formulação ainda.</p>;
-            })()}
+                ))}
+              </div>
+            }
           </div>
         </div>
       )}
