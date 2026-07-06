@@ -1014,7 +1014,15 @@ function AdminContent() {
       try { const r = await api.get("/bot-tickets", { headers }); chamados = Array.isArray(r.data?.botTickets) ? r.data.botTickets : []; } catch (_) {}
       let mensagens = [];
       try { const r = await api.get("/contact-messages", { headers }); mensagens = Array.isArray(r.data?.messages) ? r.data.messages : []; } catch (_) {}
-      setDados({ clientes: m.clientes || [], formulacoes: m.formulacoes || [], chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], totais: m.totals || {} });
+      // Formulações podem vir da métrica OU da rota direta
+      let formulacoes = m.formulacoes || [];
+      if (!formulacoes.length) {
+        try {
+          const fResp = await api.get("/formulacoes");
+          formulacoes = Array.isArray(fResp.data?.data) ? fResp.data.data : [];
+        } catch (_) {}
+      }
+      setDados({ clientes: m.clientes || [], formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
       setErro(err?.response?.data?.error || "Erro ao carregar dados.");
@@ -1452,14 +1460,96 @@ function AdminContent() {
 
       {aba === "formulacoes" && (
         <div>
-          {dados.formulacoes.length === 0 && !carregando && <div className="gallery-empty">Nenhuma formulacao solicitada.</div>}
+          {dados.formulacoes.length === 0 && !carregando && (
+            <div className="gallery-empty">Nenhuma formulação solicitada ainda.</div>
+          )}
           {dados.formulacoes.map((f) => (
             <CARD key={f._id}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", flexWrap: "wrap", gap: "6px" }}>
-                <strong>{f.caracteristica || "Sem aplicacao"}</strong><small style={{ color: "#9fb4c7" }}>{formatarDataHora(f.createdAt)}</small>
+              {/* Cabeçalho — nome + status + data */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+                <div>
+                  <strong style={{ fontSize: "0.95rem", color: "#eaf3ff" }}>{f.nome || "Sem nome"}</strong>
+                  <div style={{ fontSize: "0.78rem", color: "#9fb4c7", marginTop: "2px" }}>
+                    📱 {f.telefone || "-"} · ✉️ {f.email || "-"}
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{
+                    fontSize: "0.72rem", padding: "3px 10px", borderRadius: "999px", fontWeight: 800,
+                    background: f.status === "resolvido" ? "rgba(73,230,139,0.12)" : f.status === "em_contato" ? "rgba(79,209,255,0.12)" : f.status === "impossivel" ? "rgba(255,107,107,0.12)" : "rgba(255,209,102,0.12)",
+                    color: f.status === "resolvido" ? "#49e68b" : f.status === "em_contato" ? "#4fd1ff" : f.status === "impossivel" ? "#ff8fab" : "#ffd166",
+                    border: `1px solid ${f.status === "resolvido" ? "rgba(73,230,139,0.3)" : f.status === "em_contato" ? "rgba(79,209,255,0.3)" : f.status === "impossivel" ? "rgba(255,107,107,0.3)" : "rgba(255,209,102,0.3)"}`,
+                  }}>
+                    {f.status === "resolvido" ? "✅ Resolvido" : f.status === "em_contato" ? "📞 Em contato" : f.status === "impossivel" ? "❌ Não é possível" : "⏳ Pendente"}
+                  </span>
+                  <small style={{ color: "#8ba3be", fontSize: "0.72rem" }}>{formatarDataHora(f.createdAt)}</small>
+                </div>
               </div>
-              <p style={{ color: "#9fb4c7", fontSize: "0.82rem", margin: "4px 0" }}>Cor: {f.cor || "-"}</p>
-              {f.detalhes && <p style={{ color: "#d3e4f8", fontSize: "0.82rem", margin: "4px 0" }}>{f.detalhes}</p>}
+
+              {/* Dados da formulação */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "10px" }}>
+                <div style={{ background: "rgba(184,156,255,0.07)", border: "1px solid rgba(184,156,255,0.2)", borderRadius: "8px", padding: "8px 10px" }}>
+                  <span style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block" }}>Aplicação desejada</span>
+                  <strong style={{ fontSize: "0.85rem", color: "#b89cff" }}>{f.caracteristica || "Não informado"}</strong>
+                </div>
+                <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.15)", borderRadius: "8px", padding: "8px 10px" }}>
+                  <span style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block" }}>Cor desejada</span>
+                  <strong style={{ fontSize: "0.85rem", color: "#eaf3ff" }}>{f.cor || "Não informado"}</strong>
+                </div>
+              </div>
+
+              {f.detalhes && (
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.12)", borderRadius: "8px", padding: "10px 12px", marginBottom: "12px" }}>
+                  <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>💬 {f.detalhes}</p>
+                </div>
+              )}
+
+              {/* Botões de ação */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/formulacoes/" + f._id + "/status", { status: "em_contato" }, { headers: { Authorization: "Bearer " + token } });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  disabled={f.status === "em_contato"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.35)", background: "rgba(79,209,255,0.1)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: f.status === "em_contato" ? 0.4 : 1 }}>
+                  📞 Já entrei em contato
+                </button>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/formulacoes/" + f._id + "/status", { status: "resolvido" }, { headers: { Authorization: "Bearer " + token } });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  disabled={f.status === "resolvido"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.35)", background: "rgba(73,230,139,0.1)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: f.status === "resolvido" ? 0.4 : 1 }}>
+                  ✅ Resolvido
+                </button>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/formulacoes/" + f._id + "/status", { status: "impossivel" }, { headers: { Authorization: "Bearer " + token } });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  disabled={f.status === "impossivel"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.35)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: f.status === "impossivel" ? 0.4 : 1 }}>
+                  ❌ Não é possível
+                </button>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/formulacoes/" + f._id + "/status", { status: "pendente" }, { headers: { Authorization: "Bearer " + token } });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.25)", background: "rgba(255,209,102,0.06)", color: "#ffd166", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                  ↩️ Reabrir
+                </button>
+              </div>
             </CARD>
           ))}
         </div>
