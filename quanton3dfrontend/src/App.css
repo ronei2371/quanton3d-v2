@@ -1177,41 +1177,63 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   place-items: center;
 }
 
-/* Imagem principal com rotação Y — efeito de virar para frente */
+/* Imagem principal */
 .elio-avatar {
   width: 150px;
   height: 150px;
   object-fit: cover;
   object-position: center top;
   border-radius: 50%;
-  border: 2px solid rgba(79, 209, 255, 0.6);
-  animation:
-    elioFloat 4s ease-in-out infinite,
-    elioGlowPulse 3s ease-in-out infinite,
-    elioRotateY 8s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(79, 209, 255, 0.8));
+  border: 2px solid rgba(79, 209, 255, 0.5);
   position: relative;
   z-index: 2;
+  transform-style: preserve-3d;
+  animation: elioFullSequence 8s ease-in-out infinite;
 }
 
-/* Flutuação vertical */
-@keyframes elioFloat {
-  0%, 100% { transform: translateY(0px) rotateY(var(--ry, 0deg)); }
-  50%       { transform: translateY(-10px) rotateY(var(--ry, 0deg)); }
-}
-
-/* Rotação Y — vira de perfil para frente e volta */
-@keyframes elioRotateY {
-  0%   { --ry: -35deg; filter: drop-shadow(0 0 15px rgba(79,209,255,0.5)) brightness(0.85); }
-  40%  { --ry: 5deg;   filter: drop-shadow(0 0 35px rgba(79,209,255,1.0)) brightness(1.2); }
-  60%  { --ry: 5deg;   filter: drop-shadow(0 0 35px rgba(79,209,255,1.0)) brightness(1.2); }
-  100% { --ry: -35deg; filter: drop-shadow(0 0 15px rgba(79,209,255,0.5)) brightness(0.85); }
-}
-
-/* Pulso de brilho no contorno */
-@keyframes elioGlowPulse {
-  0%, 100% { border-color: rgba(79,209,255,0.5); box-shadow: 0 0 20px rgba(79,209,255,0.3); }
-  50%       { border-color: rgba(79,209,255,1.0); box-shadow: 0 0 45px rgba(79,209,255,0.8), 0 0 80px rgba(127,90,240,0.4); }
+/* Sequência completa: perfil → vira → acende → mantém → apaga → volta ao perfil */
+@keyframes elioFullSequence {
+  /* 0-15%: começa de perfil, escura */
+  0% {
+    transform: translateY(0px) rotateY(-40deg) scaleX(0.75);
+    filter: brightness(0.7) saturate(0.8) drop-shadow(0 0 8px rgba(79,209,255,0.3));
+    border-color: rgba(79,209,255,0.3);
+    box-shadow: none;
+  }
+  /* 15-40%: virando para frente */
+  15% {
+    transform: translateY(-5px) rotateY(-20deg) scaleX(0.88);
+    filter: brightness(0.85) saturate(1.0) drop-shadow(0 0 14px rgba(79,209,255,0.5));
+    border-color: rgba(79,209,255,0.5);
+  }
+  /* 40%: de frente — linhas ACENDEM TOTALMENTE */
+  40% {
+    transform: translateY(-10px) rotateY(0deg) scaleX(1.0);
+    filter: brightness(1.35) saturate(1.8) drop-shadow(0 0 40px rgba(79,209,255,1.0)) drop-shadow(0 0 80px rgba(127,90,240,0.6));
+    border-color: rgba(79,209,255,1.0);
+    box-shadow: 0 0 60px rgba(79,209,255,0.7), 0 0 120px rgba(127,90,240,0.4);
+  }
+  /* 40-60%: mantém acesa de frente */
+  60% {
+    transform: translateY(-10px) rotateY(0deg) scaleX(1.0);
+    filter: brightness(1.35) saturate(1.8) drop-shadow(0 0 40px rgba(79,209,255,1.0)) drop-shadow(0 0 80px rgba(127,90,240,0.6));
+    border-color: rgba(79,209,255,1.0);
+    box-shadow: 0 0 60px rgba(79,209,255,0.7), 0 0 120px rgba(127,90,240,0.4);
+  }
+  /* 75%: voltando ao perfil, apagando */
+  75% {
+    transform: translateY(-3px) rotateY(-20deg) scaleX(0.88);
+    filter: brightness(0.85) saturate(1.0) drop-shadow(0 0 14px rgba(79,209,255,0.5));
+    border-color: rgba(79,209,255,0.5);
+    box-shadow: none;
+  }
+  /* 100%: perfil escura de novo — loop */
+  100% {
+    transform: translateY(0px) rotateY(-40deg) scaleX(0.75);
+    filter: brightness(0.7) saturate(0.8) drop-shadow(0 0 8px rgba(79,209,255,0.3));
+    border-color: rgba(79,209,255,0.3);
+    box-shadow: none;
+  }
 }
 
 /* Anel de brilho girando ao redor */
