@@ -1160,3 +1160,113 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   font-size: 0.88rem;
   line-height: 1.6;
 }
+
+/* ── ELIO AVATAR ANIMATIONS ── */
+.bot-face {
+  height: 200px;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.elio-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: grid;
+  place-items: center;
+}
+
+/* Imagem principal com rotação Y — efeito de virar para frente */
+.elio-avatar {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%;
+  border: 2px solid rgba(79, 209, 255, 0.6);
+  animation:
+    elioFloat 4s ease-in-out infinite,
+    elioGlowPulse 3s ease-in-out infinite,
+    elioRotateY 8s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(79, 209, 255, 0.8));
+  position: relative;
+  z-index: 2;
+}
+
+/* Flutuação vertical */
+@keyframes elioFloat {
+  0%, 100% { transform: translateY(0px) rotateY(var(--ry, 0deg)); }
+  50%       { transform: translateY(-10px) rotateY(var(--ry, 0deg)); }
+}
+
+/* Rotação Y — vira de perfil para frente e volta */
+@keyframes elioRotateY {
+  0%   { --ry: -35deg; filter: drop-shadow(0 0 15px rgba(79,209,255,0.5)) brightness(0.85); }
+  40%  { --ry: 5deg;   filter: drop-shadow(0 0 35px rgba(79,209,255,1.0)) brightness(1.2); }
+  60%  { --ry: 5deg;   filter: drop-shadow(0 0 35px rgba(79,209,255,1.0)) brightness(1.2); }
+  100% { --ry: -35deg; filter: drop-shadow(0 0 15px rgba(79,209,255,0.5)) brightness(0.85); }
+}
+
+/* Pulso de brilho no contorno */
+@keyframes elioGlowPulse {
+  0%, 100% { border-color: rgba(79,209,255,0.5); box-shadow: 0 0 20px rgba(79,209,255,0.3); }
+  50%       { border-color: rgba(79,209,255,1.0); box-shadow: 0 0 45px rgba(79,209,255,0.8), 0 0 80px rgba(127,90,240,0.4); }
+}
+
+/* Anel de brilho girando ao redor */
+.elio-glow-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: rgba(79, 209, 255, 0.8);
+  border-right-color: rgba(127, 90, 240, 0.5);
+  animation: elioRingSpin 3s linear infinite;
+  z-index: 1;
+}
+
+.elio-glow-ring::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  border-bottom-color: rgba(79, 209, 255, 0.4);
+  animation: elioRingSpin 5s linear infinite reverse;
+}
+
+@keyframes elioRingSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Partículas orbitando */
+.elio-particles { position: absolute; inset: 0; z-index: 0; }
+
+.elio-particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(79, 209, 255, 0.9);
+  top: 50%;
+  left: 50%;
+}
+
+.elio-particle-0 { animation: elioOrbit0 4.0s linear infinite; }
+.elio-particle-1 { animation: elioOrbit1 4.5s linear infinite; }
+.elio-particle-2 { animation: elioOrbit2 5.0s linear infinite; }
+.elio-particle-3 { animation: elioOrbit3 3.5s linear infinite; background: rgba(127,90,240,0.9); }
+.elio-particle-4 { animation: elioOrbit4 6.0s linear infinite; width: 3px; height: 3px; }
+.elio-particle-5 { animation: elioOrbit5 4.2s linear infinite; background: rgba(127,90,240,0.7); }
+.elio-particle-6 { animation: elioOrbit6 5.5s linear infinite; width: 4px; height: 4px; }
+.elio-particle-7 { animation: elioOrbit7 3.8s linear infinite; }
+
+@keyframes elioOrbit0 { to { transform: rotate(360deg) translateX(85px) rotate(-360deg); } }
+@keyframes elioOrbit1 { 0% { transform: rotate(45deg) translateX(75px) rotate(-45deg); } to { transform: rotate(405deg) translateX(75px) rotate(-405deg); } }
+@keyframes elioOrbit2 { 0% { transform: rotate(90deg) translateX(90px) rotate(-90deg); } to { transform: rotate(450deg) translateX(90px) rotate(-450deg); } }
+@keyframes elioOrbit3 { 0% { transform: rotate(135deg) translateX(80px) rotate(-135deg); } to { transform: rotate(495deg) translateX(80px) rotate(-495deg); } }
+@keyframes elioOrbit4 { 0% { transform: rotate(180deg) translateX(95px) rotate(-180deg); } to { transform: rotate(540deg) translateX(95px) rotate(-540deg); } }
+@keyframes elioOrbit5 { 0% { transform: rotate(225deg) translateX(72px) rotate(-225deg); } to { transform: rotate(585deg) translateX(72px) rotate(-585deg); } }
+@keyframes elioOrbit6 { 0% { transform: rotate(270deg) translateX(88px) rotate(-270deg); } to { transform: rotate(630deg) translateX(88px) rotate(-630deg); } }
+@keyframes elioOrbit7 { 0% { transform: rotate(315deg) translateX(82px) rotate(-315deg); } to { transform: rotate(675deg) translateX(82px) rotate(-675deg); } }
