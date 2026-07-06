@@ -274,26 +274,30 @@ function App() {
         </div>
       </section>
 
-      <section className="experience-section">
-        <span className="section-label">Colaboração técnica</span>
-        <h2>Colabore com sua experiência de configuração</h2>
-        <p>Envie uma foto da peça e os tempos usados no Chitubox para ajudar a Quanton3D a melhorar a base técnica e orientar outros clientes.</p>
-        <div className="experience-actions">
-          <button type="button" onClick={() => setActiveModal("galeria")}>📷 Compartilhar minhas configurações</button>
-          <button type="button" onClick={() => setActiveModal("galeriaPublica")}>🖼️ Ver fotos de clientes</button>
+      <section style={{ padding: "12px 18px", borderRadius: "14px", background: "rgba(12,24,52,0.75)", border: "1px solid rgba(79,209,255,0.15)", marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px", flexWrap: "wrap" }}>
+        <div>
+          <span className="section-label">Colaboração Técnica</span>
+          <p style={{ margin: "3px 0 0", color: "#9fb4c7", fontSize: "0.8rem" }}>Envie sua foto e tempos do Chitubox para ajudar outros clientes.</p>
+        </div>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <button type="button" onClick={() => setActiveModal("galeria")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>📷 Compartilhar configurações</button>
+          <button type="button" onClick={() => setActiveModal("galeriaPublica")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>🖼️ Ver fotos de clientes</button>
         </div>
       </section>
 
 
 
-      <section id="produtos" className="panel">
-        <div className="panel-header">
-          <div><span className="section-label">Catálogo Elite</span><h2>Nossas Resinas</h2></div>
-        </div>
-        <div className="cards-grid">
-          <InfoCard title="Alta Qualidade" text="Conheça linhas, aplicações e FISPQs." onClick={() => setActiveModal("qualidade")} />
-          <InfoCard title="Parâmetros detalhados" text="Guia completo de configuração Chitubox." onClick={() => abrirGuia("parametrosDetalhados")} />
-          <InfoCard title="Parceiros e cursos" text="Veja parceiros e serviços recomendados." onClick={() => abrirGuia("parceiros")} />
+      <section id="produtos" className="panel" style={{ padding: "16px 20px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span className="section-label">Catálogo</span>
+            <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.95rem" }}>Nossas Resinas</span>
+          </div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <button type="button" onClick={() => setActiveModal("qualidade")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Alta Qualidade</button>
+            <button type="button" onClick={() => abrirGuia("parametrosDetalhados")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parâmetros Chitubox</button>
+            <button type="button" onClick={() => abrirGuia("parceiros")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parceiros e cursos</button>
+          </div>
         </div>
 
         {/* FISPQs — botão único abre modal com lista */}
@@ -345,9 +349,25 @@ function App() {
         </div>
       </section>
 
-      <section id="calculadoras" className="panel">
-        <div className="panel-header">
-          <div><span className="section-label">Ferramentas</span><h2>Calculadoras Técnicas</h2></div>
+      <section id="calculadoras" className="panel" style={{ padding: "14px 18px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span className="section-label">Ferramentas</span>
+            <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Calculadoras Técnicas</span>
+          </div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {[
+              { label: "📐 Exposição", id: "calc_exp" },
+              { label: "📦 Volume", id: "calc_vol" },
+              { label: "📏 Tolerância", id: "calc_tolerancia" },
+              { label: "💰 Custos", id: "calc_custos" },
+            ].map(c => (
+              <button key={c.id} type="button" onClick={() => setActiveModal(c.id)}
+                style={{ padding: "7px 13px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                {c.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="selector-grid">
           <div className="field clickable-card" onClick={() => setActiveModal("calc_exp")}>
@@ -371,12 +391,15 @@ function App() {
 
 
 
-      <section id="parametros" className="panel">
-        <div className="panel-header">
-          <div><span className="section-label">Consulta rápida</span><h2>Parâmetros de impressão</h2></div>
-          <div className="panel-actions">
+      <section id="parametros" className="panel" style={{ padding: "14px 18px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span className="section-label">Consulta rápida</span>
+            <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parâmetros de impressão</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {carregando && <span className="loading-pill">Carregando...</span>}
-            <button type="button" onClick={carregarParametros}>Atualizar</button>
+            <button type="button" onClick={carregarParametros} style={{ padding: "7px 13px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Atualizar</button>
           </div>
         </div>
         {erro && <div className="error-box">{erro}</div>}
