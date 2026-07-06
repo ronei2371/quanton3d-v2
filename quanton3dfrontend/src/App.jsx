@@ -1425,19 +1425,66 @@ function AdminContent() {
           {dados.chamados.length === 0 && !carregando && <div className="gallery-empty">Nenhum chamado tecnico registrado.</div>}
           {dados.chamados.map((c) => (
             <CARD key={c._id}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
-                <strong>{c.nome || "Sem nome"}</strong>
-                <div style={{ display: "flex", gap: "6px", alignItems: "center" }}><BADGE status={c.status || "novo"} /><small style={{ color: "#9fb4c7", fontSize: "0.75rem" }}>{formatarDataHora(c.createdAt)}</small></div>
+              {/* Cabeçalho */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
+                <div>
+                  <strong style={{ fontSize: "0.95rem", color: "#eaf3ff" }}>{c.nome || "Sem nome"}</strong>
+                  <div style={{ fontSize: "0.78rem", color: "#9fb4c7", marginTop: "2px" }}>
+                    📱 {c.telefone || "-"} · ✉️ {c.email || "-"}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                  <BADGE status={c.status || "novo"} />
+                  <small style={{ color: "#9fb4c7", fontSize: "0.72rem" }}>{formatarDataHora(c.createdAt)}</small>
+                </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7", marginBottom: "8px" }}>
-                <span>Tel: {c.telefone || "-"}</span><span>Email: {c.email || "-"}</span>
-                <span>Resina: {c.resina || "-"}</span><span>Impressora: {c.impressora || "-"}</span>
+
+              {/* Fotos + Dados lado a lado */}
+              <div style={{ display: "grid", gridTemplateColumns: c.fotos?.length > 0 ? "1fr 1.5fr" : "1fr", gap: "14px", marginBottom: "10px" }}>
+                {/* Fotos */}
+                {c.fotos?.length > 0 && (
+                  <div>
+                    <p style={{ margin: "0 0 6px", fontSize: "0.72rem", fontWeight: 800, color: "#9fb4c7", textTransform: "uppercase" }}>📷 Fotos do problema</p>
+                    <div style={{ display: "grid", gridTemplateColumns: c.fotos.length > 1 ? "1fr 1fr" : "1fr", gap: "6px" }}>
+                      {c.fotos.map((foto, i) => (
+                        <img key={i} src={foto} alt={"Foto " + (i+1)}
+                          onClick={() => window.open(foto, "_blank")}
+                          style={{ width: "100%", maxHeight: "140px", objectFit: "cover", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.2)", cursor: "pointer", background: "rgba(0,0,0,0.3)" }}
+                          onError={(e) => { e.target.style.display = "none"; }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Dados */}
+                <div>
+                  {/* Resina + Impressora */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "8px" }}>
+                    <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.15)", borderRadius: "8px", padding: "7px 10px" }}>
+                      <span style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block" }}>Resina</span>
+                      <strong style={{ fontSize: "0.82rem", color: "#4fd1ff" }}>{c.resina || "Não informada"}</strong>
+                    </div>
+                    <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.15)", borderRadius: "8px", padding: "7px 10px" }}>
+                      <span style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block" }}>Impressora</span>
+                      <strong style={{ fontSize: "0.82rem", color: "#eaf3ff" }}>{c.impressora || "Não informada"}</strong>
+                    </div>
+                  </div>
+
+                  {/* Problema */}
+                  <div style={{ background: "rgba(255,107,107,0.07)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "8px", padding: "8px 10px", marginBottom: "8px" }}>
+                    <strong style={{ fontSize: "0.78rem", color: "#ff6b6b" }}>⚠️ Problema: </strong>
+                    <span style={{ fontSize: "0.82rem", color: "#d3e4f8" }}>{c.problema || "-"}</span>
+                  </div>
+
+                  {/* Descrição / parâmetros */}
+                  {c.descricao && (
+                    <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.12)", borderRadius: "8px", padding: "8px 10px" }}>
+                      <p style={{ margin: 0, color: "#9fb4c7", fontSize: "0.78rem", lineHeight: 1.6 }}>{c.descricao}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div style={{ background: "rgba(255,107,107,0.07)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "8px", padding: "8px", marginBottom: "6px" }}>
-                <strong style={{ fontSize: "0.82rem", color: "#ff6b6b" }}>Problema: </strong>
-                <span style={{ fontSize: "0.82rem", color: "#d3e4f8" }}>{c.problema || "-"}</span>
-              </div>
-              {c.descricao && <p style={{ color: "#9fb4c7", fontSize: "0.82rem" }}>{c.descricao}</p>}
             </CARD>
           ))}
         </div>
