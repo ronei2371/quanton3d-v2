@@ -225,7 +225,18 @@ function App() {
         <div className="assistant-card">
           <div className="bot-face">
             <div className="elio-container">
-              <img src="/elio-avatar.jpg" alt="ELIO - Assistente Quanton3D" className="elio-avatar" />
+              <img
+                src="/elio-avatar.jpg"
+                alt="Assistente Quanton3D"
+                className="elio-avatar"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.nextSibling.style.display = "flex";
+                }}
+              />
+              <div className="elio-fallback" style={{ display: "none", width: "150px", height: "150px", borderRadius: "50%", background: "linear-gradient(135deg,#0a1530,#1a3060)", border: "2px solid rgba(79,209,255,0.6)", alignItems: "center", justifyContent: "center", fontSize: "4rem" }}>
+                🤖
+              </div>
               <div className="elio-glow-ring" />
               <div className="elio-particles">
                 {[...Array(8)].map((_, i) => <span key={i} className={"elio-particle elio-particle-" + i} />)}
