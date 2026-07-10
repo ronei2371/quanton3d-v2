@@ -290,6 +290,64 @@ Soluções:
 Disponíveis em quanton3d.com.br/docs:
 - POSEIDON.pdf, IRON.pdf, IRON7030.pdf, SPIN.pdf, SPARK.pdf, PYRO.pdf, LOWSMELL.pdf
 
+## SINÔNIMOS E TERMOS RELACIONADOS
+(Use para reconhecer a intenção do cliente mesmo com termos diferentes)
+
+Suporte difícil de remover: "suporte grudado", "suporte preso", "não consigo tirar o suporte", "suporte colado na peça"
+Peça aderindo demais: "peça grudou na plataforma", "não sai da mesa", "travou na build plate", "prendeu forte"
+Peça não adere: "caiu no tanque", "não colou", "peça soltou", "descolou da plataforma", "não fixou"
+Delaminação: "camadas separando", "descascando", "camadas se soltando", "rachou entre camadas"
+Warping: "empenou", "torceu", "entortou", "não ficou reto", "envergou"
+Peça porosa: "cheia de furinhos", "bolhas", "buracos pequenos", "não ficou lisa"
+Racha depois: "quebrou sozinha", "rachou depois de um tempo", "rachadura espontânea"
+FEP danificado: "filme da cuba", "membrana da cuba", "fundo da cuba riscado"
+Resina vazando: "vazando de dentro", "saindo líquido da peça", "pingando resina"
+Amarelada: "ficou amarela", "mudou de cor", "escureceu"
+
+Nomes alternativos de impressoras (reconhecer variações):
+Elegoo Mars = "Mars", "Elegoo", "Saturn" (linha Elegoo)
+Anycubic Photon = "Photon", "Anycubic", "Mono X", "Mono M"
+Phrozen Sonic = "Sonic", "Phrozen", "Mighty"
+Creality Halot = "Halot", "Creality"
+Voxelab = "Proxima", "Voxelab"
+
+## PERGUNTAS FREQUENTES (FAQ)
+
+P: Qual a diferença entre IRON e PYROBLAST?
+R: IRON é focada em resistência mecânica e impacto — ideal para peças funcionais que sofrem esforço. PYROBLAST é para prototipagem rápida com alta precisão de detalhes, mas não tem o mesmo reforço mecânico da IRON.
+
+P: Posso misturar duas resinas Quanton3D diferentes?
+R: Não recomendamos. Cada resina tem uma formulação otimizada para suas propriedades específicas — misturar pode gerar resultados imprevisíveis de cura, resistência e acabamento. Se precisar de uma característica intermediária, fale com a equipe pelo WhatsApp (31) 3271-6935 para avaliar uma formulação personalizada.
+
+P: Minha resina venceu, ainda posso usar?
+R: Resinas fotopolimerizáveis têm validade porque os fotoiniciadores perdem reatividade com o tempo. Resina vencida cura mal, fica pegajosa ou frágil mesmo com parâmetros corretos. Evite usar após a validade — o resultado não é confiável.
+
+P: Por que minha peça está pegajosa mesmo depois da pós-cura?
+R: Normalmente é lavagem insuficiente — resina líquida ainda presa na superfície ou em cavidades. Lave novamente em álcool isopropílico por 3-5 min, seque bem e faça pós-cura completa. Se persistir, pode ser pós-cura com potência UV insuficiente.
+
+P: Dá pra usar a mesma resina em diferentes impressoras?
+R: Sim, mas os parâmetros de exposição mudam conforme o comprimento de onda do LED/LCD e a potência da fonte de luz de cada impressora. Use a Consulta Rápida de Parâmetros no site para ver se já temos a combinação resina+impressora cadastrada.
+
+P: Qual resina recomendam para iniciantes?
+R: ALCHEMIST é a mais versátil e tolerante a pequenos erros de parâmetro — ótima para quem está começando. Depois que pegar prática, pode migrar para resinas mais específicas como IRON (resistência) ou VULCAN CAST (joalheria).
+
+P: A Quanton3D vende resina para dentistas?
+R: Sim — temos linha odontológica completa: ATHOM DENTAL (modelos e guias cirúrgicos), ATHOM ALINHADORES (placas termoformadas) e ATHOM WASHABLE (lavável em água, sem álcool).
+
+## EXEMPLOS DE USO POR APLICAÇÃO
+(Use para inspirar o cliente ou confirmar a resina certa para o projeto)
+
+Miniaturas e RPG: ALCHEMIST ou PYROBLAST — alta definição de detalhes finos
+Peças funcionais/engrenagens: IRON — resistência mecânica testada
+Vedações e peças flexíveis: FLEXFORM — dobra sem quebrar
+Action figures grandes: SPIN ou 70/30 — leve flexibilidade evita quebra no transporte
+Joalheria (fundição): VULCAN CAST — queima limpa, sem resíduo
+Modelos odontológicos: ATHOM DENTAL ou ATHOM WASHABLE
+Alinhadores transparentes: ATHOM ALINHADORES
+Produção em lote/velocidade: SPARK — cura rápida
+Ambiente sem ventilação: LOW SMELL ou POSEIDON (water washable)
+Bustos e peças com efeito de pele: VELVET SKIN
+
 ## CONTATO E SUPORTE
 - WhatsApp: (31) 3271-6935
 - Site: quanton3d.com.br
