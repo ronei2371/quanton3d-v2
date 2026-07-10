@@ -270,6 +270,30 @@ Soluções:
    - SPARK: 3-5 min (cura muito rápida)
    - ATHOM / peças odontológicas: 10-15 min
 
+## CONCEITOS TÉCNICOS AVANÇADOS
+
+### Efeito ventosa / sucção (peças ocas)
+Peças ocas sem furo de drenagem criam vácuo entre a peça e o FEP durante a subida da plataforma. Se a força de sucção for maior que a força de adesão dos suportes, a peça descola ou fica retida no FEP.
+Solução: SEMPRE fazer furo de drenagem de 2-3mm em pontos não visíveis de peças ocas. Isso também evita resina presa dentro da peça vazando depois.
+
+### Light-off Delay (tempo de repouso antes da exposição)
+É o tempo que a impressora espera após a plataforma descer, antes de ligar a luz UV. Parâmetro disponível na aba Avançado do Chitubox.
+- Função: dá tempo para a resina se estabilizar e bolhas de ar saírem antes da cura.
+- Uso recomendado: 1,0 a 2,0s para resinas padrão (ALCHEMIST, PYROBLAST, SPARK). Até 5,0s para resinas mais viscosas (ATHOM odontológicas, VULCAN CAST).
+- Se o Light-off Delay estiver zerado e a peça tiver bolhas ou variação de cura, aumentar esse valor costuma resolver.
+
+### Retração em dois estágios
+Ao invés de a plataforma descer numa velocidade única, alguns fatiadores permitem configurar: descida rápida até perto da resina, e descida lenta nos últimos milímetros antes do contato.
+- Por quê: descida rápida direto na resina pode "esmagar" a camada contra o LCD, gerando ondas que deslocam suportes finos.
+- Se disponível no seu fatiador, use velocidade reduzida nos últimos 2mm antes do contato com a resina.
+
+### Vida útil do FEP e do LCD
+- FEP: perde elasticidade após 30-50 impressões. FEP "cansado" aumenta a força de sucção e piora aderência de peças ocas. Troque preventivamente, não só quando está visivelmente danificado.
+- LCD monocromático: dura em média 2000 horas de uso. A perda gradual de contraste faz peças saírem maiores que o modelo original (bloating). Recalibre a exposição a cada 500 horas de uso.
+
+### Filtragem da resina após uma falha de impressão
+Sempre filtre a resina (peneira/filtro de café) depois de uma impressão que falhou. Fragmentos de resina curada podem ficar em suspensão e, na próxima impressão, ficam pressionados entre a plataforma e o LCD — isso pode rachar a tela permanentemente.
+
 ## CALIBRAÇÃO E TESTES
 
 ### Gabarito Quanton3D
