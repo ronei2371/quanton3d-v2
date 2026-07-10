@@ -100,7 +100,10 @@ function HMSInput({ label, value, onChange }) {
 export default function CalculadoraCompensacao() {
   const [tempoPrevisto, setTempoPrevisto] = useState(["", "", ""]);
   const [tempoReal, setTempoReal] = useState(["", "", ""]);
+  const [modoCamadas, setModoCamadas] = useState("numero"); // "numero" | "altura"
   const [camadas, setCamadas] = useState("");
+  const [alturaTotalMm, setAlturaTotalMm] = useState("");
+  const [alturaCamadaMm, setAlturaCamadaMm] = useState("0.05");
   const [resultado, setResultado] = useState(null);
   const [erro, setErro] = useState("");
 
@@ -109,11 +112,13 @@ export default function CalculadoraCompensacao() {
 
     const prevSeg = toSegundos(...tempoPrevisto);
     const realSeg = toSegundos(...tempoReal);
-    const cam = parseInt(camadas);
+    const cam = modoCamadas === "numero"
+      ? parseInt(camadas)
+      : Math.round(parseFloat(alturaTotalMm) / parseFloat(alturaCamadaMm));
 
     if (prevSeg <= 0) { setErro("Tempo de previsão do software deve ser maior que zero."); return; }
     if (realSeg <= 0) { setErro("Tempo real de impressão deve ser maior que zero."); return; }
-    if (!cam || cam < 1) { setErro("Contagem de camadas deve ser pelo menos 1."); return; }
+    if (!cam || cam < 1) { setErro(modoCamadas === "numero" ? "Contagem de camadas deve ser pelo menos 1." : "Informe altura total e altura de camada válidas."); return; }
 
     // Fórmula exata do Chitubox
     const compensacao = (realSeg - prevSeg) / cam;
@@ -127,6 +132,7 @@ export default function CalculadoraCompensacao() {
     setTempoPrevisto(["", "", ""]);
     setTempoReal(["", "", ""]);
     setCamadas("");
+    setAlturaTotalMm("");
     setResultado(null);
     setErro("");
   }
@@ -164,14 +170,63 @@ export default function CalculadoraCompensacao() {
       {/* Campo 3 — Contagem de camadas */}
       <div style={S.camadasField}>
         <label style={S.label}>3. Contagem de camadas</label>
-        <input
-          type="number" min="1" step="1"
-          value={camadas}
-          onChange={e => setCamadas(e.target.value)}
-          placeholder="Ex: 850"
-          style={S.camadasInput}
-        />
-        <span style={S.hint}>Total de camadas que a peça tinha (visible no Chitubox após fatiar)</span>
+
+        <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+          <button type="button" onClick={() => setModoCamadas("numero")}
+            style={{ flex: 1, padding: "8px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, border: "1px solid rgba(79,209,255,0.25)",
+              background: modoCamadas === "numero" ? "linear-gradient(135deg,#2563eb,#7c3aed)" : "rgba(79,209,255,0.05)",
+              color: modoCamadas === "numero" ? "#fff" : "#9fb4c7" }}>
+            📚 Número de camadas
+          </button>
+          <button type="button" onClick={() => setModoCamadas("altura")}
+            style={{ flex: 1, padding: "8px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, border: "1px solid rgba(79,209,255,0.25)",
+              background: modoCamadas === "altura" ? "linear-gradient(135deg,#2563eb,#7c3aed)" : "rgba(79,209,255,0.05)",
+              color: modoCamadas === "altura" ? "#fff" : "#9fb4c7" }}>
+            📐 Altura do modelo (mm)
+          </button>
+        </div>
+
+        {modoCamadas === "numero" ? (
+          <>
+            <input
+              type="number" min="1" step="1"
+              value={camadas}
+              onChange={e => setCamadas(e.target.value)}
+              placeholder="Ex: 850"
+              style={S.camadasInput}
+            />
+            <span style={S.hint}>Total de camadas que a peça tinha (visível no Chitubox após fatiar)</span>
+          </>
+        ) : (
+          <>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ flex: 1 }}>
+                <input
+                  type="number" min="0" step="0.01"
+                  value={alturaTotalMm}
+                  onChange={e => setAlturaTotalMm(e.target.value)}
+                  placeholder="Altura total (mm)"
+                  style={{ ...S.camadasInput, width: "100%" }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <input
+                  type="number" min="0" step="0.001"
+                  value={alturaCamadaMm}
+                  onChange={e => setAlturaCamadaMm(e.target.value)}
+                  placeholder="Altura de camada (mm)"
+                  style={{ ...S.camadasInput, width: "100%" }}
+                />
+              </div>
+            </div>
+            <span style={S.hint}>Use se seu fatiador (ex: Elegoo Saturn 4 Ultra) mostra a altura total do modelo em mm em vez do número de camadas.</span>
+            {alturaTotalMm && alturaCamadaMm && parseFloat(alturaCamadaMm) > 0 && (
+              <div style={{ marginTop: "6px", padding: "7px 10px", borderRadius: "8px", background: "rgba(79,209,255,0.08)", fontSize: "0.8rem", color: "#4fd1ff" }}>
+                📚 Camadas calculadas: <strong>{Math.round(parseFloat(alturaTotalMm) / parseFloat(alturaCamadaMm))}</strong>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {erro && <div style={S.errorBox}>⚠️ {erro}</div>}
