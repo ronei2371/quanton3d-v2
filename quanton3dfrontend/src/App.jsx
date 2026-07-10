@@ -1085,6 +1085,16 @@ function AdminContent() {
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
 
+  async function salvarMelhoriaConversa(id) {
+    try {
+      setSalvandoConversa(id);
+      const respostaMelhorada = edicaoConversa[id] || "";
+      await api.patch("/conversas/" + id + "/salvar-melhoria", { respostaMelhorada }, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { alert("Erro ao salvar melhoria."); }
+    finally { setSalvandoConversa(""); }
+  }
+
   async function aprovarConversa(id) {
     try {
       setSalvandoConversa(id);
@@ -1472,6 +1482,10 @@ function AdminContent() {
 
                 {/* Botões de ação */}
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button type="button" onClick={() => salvarMelhoriaConversa(c._id)} disabled={salvandoConversa === c._id || !foiEditado}
+                    style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.4)", background: "rgba(79,209,255,0.1)", color: "#4fd1ff", cursor: foiEditado ? "pointer" : "not-allowed", fontSize: "0.8rem", fontWeight: 800, opacity: foiEditado ? 1 : 0.4 }}>
+                    {salvandoConversa === c._id ? "Salvando..." : "💾 Salvar melhoria"}
+                  </button>
                   <button type="button" onClick={() => aprovarConversa(c._id)} disabled={salvandoConversa === c._id}
                     style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
                     {salvandoConversa === c._id ? "Salvando..." : c.aprovado ? "🔄 Atualizar aprovação" : "✅ Aprovar como conhecimento"}
@@ -1487,6 +1501,9 @@ function AdminContent() {
                     🗑️ Excluir
                   </button>
                 </div>
+                <p style={{ margin: "8px 0 0", fontSize: "0.7rem", color: "#8ba3be", lineHeight: 1.5 }}>
+                  💡 <strong>Salvar melhoria</strong> guarda seu texto editado como rascunho. <strong>Aprovar</strong> libera oficialmente para o ELIO usar em respostas futuras.
+                </p>
               </CARD>
             );
           })}
