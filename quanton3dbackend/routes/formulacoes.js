@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { criarFormulacao, listarFormulacoes } from '../controllers/formulacoesController.js'; 
+import { criarFormulacao, listarFormulacoes } from '../controllers/formulacoesController.js';
 import Formulacao from '../models/Formulacao.js';
 
 const router = express.Router();
