@@ -154,9 +154,37 @@ function App() {
   function aceitarPrivacidade() { localStorage.setItem("quanton3d_privacidade_aceita", "true"); setMostrarPrivacidade(false); setMostrarCadastro(!cliente); }
   function abrirCadastro() { setErroCadastro(""); if (!getPrivacidadeAceita()) { setMostrarPrivacidade(true); return; } setMostrarCadastro(true); }
   function alterarCliente(campo, valor) { setFormCliente((a) => ({ ...a, [campo]: valor })); }
+
+  function validarTelefone(tel) {
+    const digitos = String(tel || "").replace(/\D/g, "");
+    // Telefone BR: DDD (2 dígitos, 11-99) + número (8 ou 9 dígitos) = 10 ou 11 dígitos
+    if (digitos.length < 10 || digitos.length > 11) return false;
+    const ddd = parseInt(digitos.slice(0, 2), 10);
+    if (ddd < 11 || ddd > 99) return false;
+    // Rejeita sequências óbvias tipo 0000000000, 1111111111, 1234567890
+    if (/^(\d)\1+$/.test(digitos)) return false;
+    if (digitos === "12345678900" || digitos === "1234567890") return false;
+    return true;
+  }
+
+  function validarEmail(email) {
+    const e = String(email || "").trim();
+    // Regex de email padrão, exige domínio com ponto (ex: .com, .com.br)
+    const regex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+    if (!regex.test(e)) return false;
+    // Rejeita domínios de teste óbvios
+    const dominiosInvalidos = ["teste.com", "test.com", "email.com", "exemplo.com", "asdf.com", "xxx.com"];
+    const dominio = e.split("@")[1]?.toLowerCase();
+    if (dominiosInvalidos.includes(dominio)) return false;
+    return true;
+  }
+
   async function salvarCliente(e) {
     e.preventDefault(); setErroCadastro("");
     if (!formCliente.nome || !formCliente.telefone || !formCliente.email) { setErroCadastro("Preencha todos os campos obrigatórios."); return; }
+    if (formCliente.nome.trim().length < 2) { setErroCadastro("Digite um nome válido."); return; }
+    if (!validarTelefone(formCliente.telefone)) { setErroCadastro("Telefone inválido. Use o formato DDD + número (ex: 31987654321)."); return; }
+    if (!validarEmail(formCliente.email)) { setErroCadastro("E-mail inválido. Verifique se digitou corretamente."); return; }
     try {
       setSalvandoCliente(true);
       const res = await api.post("/clientes", formCliente);
@@ -1085,6 +1113,23 @@ function AdminContent() {
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
+  const [clientesSelecionados, setClientesSelecionados] = useState([]);
+  const [excluindoClientes, setExcluindoClientes] = useState(false);
+
+  async function excluirClientesSelecionados() {
+    if (!clientesSelecionados.length) return;
+    if (!window.confirm(`Excluir ${clientesSelecionados.length} cliente(s) selecionado(s)? Essa ação não pode ser desfeita.`)) return;
+    try {
+      setExcluindoClientes(true);
+      await api.delete("/clientes/lote", { headers: { Authorization: "Bearer " + token }, data: { ids: clientesSelecionados } });
+      setClientesSelecionados([]);
+      await carregarDados();
+    } catch (err) {
+      alert("Erro ao excluir clientes selecionados.");
+    } finally {
+      setExcluindoClientes(false);
+    }
+  }
 
   async function salvarMelhoriaConversa(id) {
     try {
@@ -1644,16 +1689,52 @@ function AdminContent() {
       {aba === "clientes" && (
         <div>
           {dados.clientes.length === 0 && !carregando && <div className="gallery-empty">Nenhum cliente cadastrado.</div>}
-          {dados.clientes.map((c) => (
-            <CARD key={c._id}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", flexWrap: "wrap", gap: "6px" }}>
-                <strong>{c.nome || "Sem nome"}</strong><small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
+
+          {dados.clientes.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", padding: "10px 14px", borderRadius: "10px", background: "rgba(255,107,107,0.05)", border: "1px solid rgba(255,107,107,0.15)", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "0.82rem", color: "#9fb4c7" }}>
+                  <input type="checkbox"
+                    checked={clientesSelecionados.length === dados.clientes.length && dados.clientes.length > 0}
+                    onChange={e => setClientesSelecionados(e.target.checked ? dados.clientes.map(c => c._id) : [])}
+                  />
+                  Selecionar todos
+                </label>
+                {clientesSelecionados.length > 0 && (
+                  <span style={{ fontSize: "0.78rem", color: "#ff8fab", fontWeight: 700 }}>{clientesSelecionados.length} selecionado(s)</span>
+                )}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7" }}>
-                <span>Tel: {c.telefone || "-"}</span><span>Email: {c.email || "-"}</span><span>Origem: {c.origem || "-"}</span>
+              {clientesSelecionados.length > 0 && (
+                <button type="button" onClick={excluirClientesSelecionados} disabled={excluindoClientes}
+                  style={{ padding: "7px 16px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.12)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                  {excluindoClientes ? "Excluindo..." : "🗑️ Excluir selecionados"}
+                </button>
+              )}
+            </div>
+          )}
+
+          {dados.clientes.map((c) => {
+            const suspeito = /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g, "") || "") || (c.nome || "").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome || "");
+            const selecionado = clientesSelecionados.includes(c._id);
+            return (
+              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom: "10px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
+                <input type="checkbox" checked={selecionado} style={{ marginTop: "3px", cursor: "pointer" }}
+                  onChange={e => setClientesSelecionados(prev => e.target.checked ? [...prev, c._id] : prev.filter(id => id !== c._id))} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", flexWrap: "wrap", gap: "6px" }}>
+                    <strong>
+                      {c.nome || "Sem nome"}
+                      {suspeito && <span style={{ marginLeft: "8px", fontSize: "0.68rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(255,209,102,0.15)", color: "#ffd166", fontWeight: 800 }}>⚠️ possível teste</span>}
+                    </strong>
+                    <small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7" }}>
+                    <span>Tel: {c.telefone || "-"}</span><span>Email: {c.email || "-"}</span><span>Origem: {c.origem || "-"}</span>
+                  </div>
+                </div>
               </div>
-            </CARD>
-          ))}
+            );
+          })}
         </div>
       )}
 
