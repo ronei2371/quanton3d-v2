@@ -37,7 +37,27 @@ router.get('/', authAdmin, async (req, res) => {
   }
 });
 
-// Salvar resposta melhorada e aprovar — vira conhecimento para o RAG
+// Salvar melhoria SEM aprovar — fica como rascunho, ainda não é usado pelo RAG
+router.patch('/:id/salvar-melhoria', authAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { respostaMelhorada = '' } = req.body || {};
+
+    const conversa = await Conversa.findByIdAndUpdate(
+      id,
+      { respostaMelhorada: respostaMelhorada.trim() },
+      { new: true }
+    );
+
+    if (!conversa) return res.status(404).json({ success: false, error: 'Conversa não encontrada' });
+    res.json({ success: true, data: conversa });
+  } catch (err) {
+    console.error('[SALVAR MELHORIA]', err);
+    res.status(500).json({ success: false, error: 'Erro ao salvar melhoria' });
+  }
+});
+
+// Aprovar — libera oficialmente para o RAG usar como conhecimento validado
 router.patch('/:id/aprovar', authAdmin, async (req, res) => {
   try {
     const { id } = req.params;
