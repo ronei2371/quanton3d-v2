@@ -16,6 +16,51 @@ function authAdmin(req, res, next) {
   }
 }
 
+// Feedback do CLIENTE (rota pública, sem autenticação) — usada quando a resposta do bot não ajudou
+router.patch('/:id/feedback', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { feedback = '', foto = '', configuracaoCliente = '' } = req.body || {};
+
+    if (!['satisfatoria', 'nao_satisfatoria'].includes(feedback)) {
+      return res.status(400).json({ success: false, error: 'Feedback inválido' });
+    }
+
+    // Limita tamanho da foto em Base64 (~5MB) por segurança
+    if (foto && foto.length > 7_000_000) {
+      return res.status(400).json({ success: false, error: 'Imagem muito grande' });
+    }
+
+    const update = { feedback };
+    if (feedback === 'nao_satisfatoria') {
+      if (foto) update.fotoProblema = foto;
+      if (configuracaoCliente) update.configuracaoCliente = configuracaoCliente;
+      update.revisadoFeedback = false;
+    }
+
+    const conversa = await Conversa.findByIdAndUpdate(id, update, { new: true });
+    if (!conversa) return res.status(404).json({ success: false, error: 'Conversa não encontrada' });
+
+    res.json({ success: true, message: 'Obrigado pelo retorno!' });
+  } catch (err) {
+    console.error('[FEEDBACK CONVERSA]', err);
+    res.status(500).json({ success: false, error: 'Erro ao registrar feedback' });
+  }
+});
+
+// Marcar feedback negativo como revisado pelo admin
+router.patch('/:id/revisar-feedback', authAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const conversa = await Conversa.findByIdAndUpdate(id, { revisadoFeedback: true }, { new: true });
+    if (!conversa) return res.status(404).json({ success: false, error: 'Conversa não encontrada' });
+    res.json({ success: true, data: conversa });
+  } catch (err) {
+    console.error('[REVISAR FEEDBACK]', err);
+    res.status(500).json({ success: false, error: 'Erro ao marcar como revisado' });
+  }
+});
+
 // Listar conversas — autenticado, mais recentes primeiro
 router.get('/', authAdmin, async (req, res) => {
   try {
@@ -24,6 +69,7 @@ router.get('/', authAdmin, async (req, res) => {
     if (req.query.aprovado === 'true') filtro.aprovado = true;
     if (req.query.aprovado === 'false') filtro.aprovado = false;
     if (req.query.resina) filtro.resinaDetectada = { $regex: req.query.resina, $options: 'i' };
+    if (req.query.feedback) filtro.feedback = req.query.feedback;
 
     const conversas = await Conversa.find(filtro)
       .sort({ createdAt: -1 })
