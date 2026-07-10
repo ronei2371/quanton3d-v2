@@ -270,6 +270,209 @@ Soluções:
    - SPARK: 3-5 min (cura muito rápida)
    - ATHOM / peças odontológicas: 10-15 min
 
+## BASE DE DIAGNÓSTICO TÉCNICO EXPANDIDA
+(25 problemas comuns de impressão em resina — sintomas, causas, diagnóstico e soluções)
+
+### Peça não adere à plataforma [adesao] — risco: baixo
+Sintomas: A impressão fica presa no filme FEP/PFA | A plataforma sobe sem a peça | Há apenas uma película curada no tanque
+Causas prováveis: Plataforma desnivelada | Tempo de exposição das camadas de base muito baixo | Poucas camadas de base | Plataforma contaminada ou lisa demais | Temperatura da resina muito baixa | Velocidade de elevação inicial excessiva
+Como diagnosticar: Verificar se existe resina curada no fundo do tanque | Refazer o nivelamento conforme o método da impressora | Confirmar temperatura ambiente e da resina | Executar um teste pequeno de adesão
+Soluções: Nivelar novamente a plataforma | Aumentar moderadamente a exposição das camadas de base | Aumentar o número de camadas de base | Limpar a plataforma com álcool isopropílico e secar | Aquecer a resina para a faixa recomendada pelo fabricante | Reduzir a velocidade de elevação nas primeiras camadas
+Prevenção: Misturar a resina antes do uso | Manter a plataforma limpa | Registrar perfis por resina e temperatura
+Termos relacionados: não gruda na mesa, peça presa no FEP, falha de primeira camada, base layer adhesion
+
+### Peça se solta durante a impressão [adesao] — risco: baixo
+Sintomas: Parte da peça permanece na plataforma e parte fica no tanque | Falha ocorre depois de várias camadas | Suportes quebrados ou arrancados
+Causas prováveis: Área de seção transversal muito grande | Força de descolamento elevada | Suportes insuficientes | Orientação inadequada | Exposição normal baixa | Filme do tanque danificado ou muito aderente
+Como diagnosticar: Identificar a camada aproximada da falha | Inspecionar suportes e ilhas no fatiador | Verificar o estado do filme | Comparar com uma impressão de calibração
+Soluções: Reorientar a peça para reduzir grandes áreas por camada | Adicionar suportes nas regiões de maior carga | Aumentar levemente a exposição normal | Reduzir velocidade de elevação | Aumentar distância de elevação quando necessário | Substituir o filme se estiver opaco, riscado ou deformado
+Prevenção: Revisar ilhas antes de imprimir | Evitar superfícies largas paralelas ao filme | Usar suportes mais fortes em pontos críticos
+Termos relacionados: peça cai no tanque, delaminação da plataforma, falha no meio da impressão
+
+### Suportes imprimem, mas o modelo não [suportes] — risco: baixo
+Sintomas: A floresta de suportes termina sem a peça | Pontas de suporte intactas ou deformadas | Modelo encontrado parcialmente curado no tanque
+Causas prováveis: Pontas de suporte pequenas demais | Baixa densidade de suportes | Exposição insuficiente | Orientação com alta força de sucção | Ilhas não suportadas
+Como diagnosticar: Verificar se as pontas romperam ou nunca tocaram o modelo | Executar detecção de ilhas | Comparar diâmetro e profundidade das pontas
+Soluções: Aumentar diâmetro ou profundidade da ponta | Adicionar suportes médios ou pesados nas primeiras regiões | Corrigir ilhas | Reorientar o modelo | Aumentar levemente a exposição normal
+Prevenção: Usar suportes reforçados na primeira área do modelo | Inspecionar todas as ilhas | Evitar depender apenas de suportes leves
+Termos relacionados: suporte sem peça, modelo não prende no suporte, support tips fail
+
+### Camadas separadas ou rachaduras horizontais [delaminacao] — risco: baixo
+Sintomas: Linhas horizontais visíveis | Peça abre entre camadas | Rachadura parcial em determinada altura
+Causas prováveis: Exposição insuficiente | Velocidade de elevação alta | Resina fria ou muito viscosa | Pausa ou vibração durante o trabalho | Contaminação da resina | Seção transversal grande
+Como diagnosticar: Observar se a falha ocorre sempre na mesma altura | Revisar o histórico de pausa ou falta de energia | Checar temperatura e viscosidade | Filtrar a resina para procurar fragmentos
+Soluções: Aumentar a exposição em pequenos incrementos | Reduzir a velocidade de elevação | Aumentar o tempo de repouso antes da exposição | Aquecer e homogeneizar a resina | Reorientar a peça
+Prevenção: Evitar vibrações | Manter temperatura estável | Não misturar resinas incompatíveis
+Termos relacionados: layer separation, rachadura entre camadas, delaminação SLA
+
+### Peça deformada ou empenada [geometria] — risco: baixo
+Sintomas: Base curva | Paredes inclinadas | Dimensões mudam após cura | Peça perde o formato ao remover suportes
+Causas prováveis: Orientação ruim | Suportes insuficientes | Tensões de cura | Pós-cura excessiva ou desigual | Peça oca sem drenagem adequada | Exposição alta
+Como diagnosticar: Comparar a geometria antes e depois da pós-cura | Avaliar concentração de suportes | Verificar se há cavidades fechadas
+Soluções: Reorientar para distribuir tensões | Adicionar suportes nas bordas | Fazer pós-cura uniforme e controlada | Criar furos de drenagem | Reduzir sobre-exposição quando confirmada | Deixar a peça secar completamente antes da cura
+Prevenção: Usar gabarito de cura para peças planas | Evitar paredes muito finas sem reforço | Curar todos os lados de modo uniforme
+Termos relacionados: warping resin print, peça torta, empenamento SLA
+
+### Perda de detalhes finos [qualidade] — risco: baixo
+Sintomas: Texturas ficam apagadas | Letras pequenas fecham | Cantos ficam arredondados | Furos saem menores
+Causas prováveis: Exposição excessiva | Compensação dimensional inadequada | Resina muito pigmentada ou opaca | Luz espalhada | Tela ou janela óptica suja
+Como diagnosticar: Imprimir teste de exposição | Medir furos e ressaltos | Inspecionar tela e filme | Comparar diferentes tempos de exposição
+Soluções: Reduzir gradualmente a exposição normal | Aplicar compensação XY quando disponível | Limpar superfícies ópticas | Usar perfil específico da resina | Aumentar espaçamento mínimo entre detalhes
+Prevenção: Calibrar cada lote de resina | Não reutilizar perfil de outra cor sem teste | Evitar pós-cura excessiva
+Termos relacionados: detalhe borrado, overexposure resin, furos fechados
+
+### Peça pegajosa após lavagem e cura [pos_processamento] — risco: medio
+Sintomas: Superfície permanece viscosa | Impressão deixa resíduos ao toque | Partes internas continuam moles
+Causas prováveis: Lavagem insuficiente | Solvente saturado | Pós-cura curta | Resina líquida presa em cavidades | Oxigênio inibindo a cura superficial | Peça não secou antes da pós-cura
+Como diagnosticar: Verificar limpeza do solvente | Inspecionar cavidades e furos | Testar uma segunda lavagem com solvente limpo
+Soluções: Fazer lavagem em duas etapas | Trocar ou filtrar o solvente | Secar completamente antes de curar | Aumentar a pós-cura dentro da recomendação do fabricante | Abrir e drenar cavidades | Usar cura submersa em água apenas quando compatível com a resina
+Prevenção: Separar banho sujo e banho limpo | Monitorar saturação do solvente | Projetar furos de drenagem
+Termos relacionados: resina pegajosa, sticky resin print, cura incompleta
+
+### Superfície esbranquiçada ou opaca [pos_processamento] — risco: baixo
+Sintomas: Manchas brancas depois da lavagem | Aspecto fosco irregular | Pó branco após a cura
+Causas prováveis: Resíduo de solvente evaporado | Cura com a peça ainda molhada | Água contaminada em resina lavável | Excesso de lavagem | Microfissuras superficiais
+Como diagnosticar: Observar se a mancha aparece antes ou depois da cura | Repetir lavagem com solvente limpo | Secar uma peça de teste por mais tempo
+Soluções: Enxaguar com solvente limpo | Secar totalmente antes da cura | Reduzir o tempo de lavagem | Trocar água ou álcool contaminado | Aplicar acabamento superficial compatível quando necessário
+Prevenção: Usar ar limpo para secagem | Não curar peças com líquido acumulado | Manter recipientes de lavagem fechados
+Termos relacionados: white residue resin, resina esbranquiçada, mancha após IPA
+
+### Bolhas ou pequenos vazios na peça [material] — risco: baixo
+Sintomas: Furos arredondados | Pontos ocos | Defeitos aleatórios sob a superfície
+Causas prováveis: Resina agitada vigorosamente | Bolhas presas após completar o tanque | Alta viscosidade | Tempo de repouso insuficiente | Geometria que aprisiona ar
+Como diagnosticar: Observar bolhas na cuba com luz ambiente segura | Verificar se o defeito aumenta com resina fria | Analisar orientação de cavidades
+Soluções: Misturar lentamente em vez de sacudir | Deixar a resina repousar | Aquecer dentro da faixa recomendada | Reorientar cavidades | Adicionar tempo de espera antes da exposição
+Prevenção: Despejar resina pela lateral da cuba | Evitar espuma | Manter temperatura consistente
+Termos relacionados: bolhas na resina, voids SLA, air bubbles resin printing
+
+### Linhas horizontais periódicas [mecanica] — risco: medio
+Sintomas: Bandas repetidas em intervalos regulares | Mudança de brilho por faixa | Textura ondulada no eixo Z
+Causas prováveis: Fuso Z sujo ou sem lubrificação | Folga no conjunto Z | Acoplamento desalinhado | Variação na espessura da camada | Vibração externa
+Como diagnosticar: Medir a periodicidade das linhas | Movimentar o eixo Z e verificar folgas | Inspecionar fuso e guias | Imprimir uma torre simples
+Soluções: Limpar e lubrificar o fuso conforme o manual | Apertar componentes do eixo Z | Corrigir alinhamento do acoplamento | Isolar a impressora de vibrações | Verificar se a plataforma está firmemente presa
+Prevenção: Manutenção periódica do eixo Z | Não mover a impressora durante o trabalho | Verificar parafusos e guias
+Termos relacionados: z banding resin, linhas horizontais SLA, wobble eixo Z
+
+### Camadas deslocadas lateralmente [mecanica] — risco: medio
+Sintomas: Degrau súbito na peça | Parte superior deslocada | Mudança abrupta de posição XY
+Causas prováveis: Plataforma mal apertada | Arquivo corrompido | Falha de tela ou projeção | Impacto ou vibração | Erro de firmware
+Como diagnosticar: Reimprimir o mesmo arquivo | Testar outro arquivo | Executar teste de exposição da tela | Verificar fixação da plataforma
+Soluções: Reapertar a plataforma | Refatiar e salvar em outra mídia | Atualizar firmware somente com versão compatível | Substituir mídia USB defeituosa | Inspecionar a tela se o deslocamento persistir
+Prevenção: Ejetar corretamente a mídia | Usar arquivos validados | Manter a impressora estável
+Termos relacionados: layer shift SLA, camada deslocada resina, degrau lateral
+
+### Furos e canais internos fechados [geometria] — risco: medio
+Sintomas: Canal não atravessa | Furo sai menor | Passagem interna contém resina curada
+Causas prováveis: Sobre-exposição | Diâmetro abaixo do limite do processo | Orientação desfavorável | Resina presa e curada durante pós-processamento
+Como diagnosticar: Comparar diâmetro nominal e medido | Testar cupom com vários diâmetros | Inspecionar orientação dos canais
+Soluções: Aumentar o diâmetro no modelo | Reduzir a exposição após calibração | Orientar canais para drenagem | Lavar internamente com seringa ou fluxo controlado antes da cura | Aplicar compensação dimensional
+Prevenção: Projetar canais acima do limite validado | Adicionar acessos de limpeza | Não pós-curar antes de drenar completamente
+Termos relacionados: furos fechados SLA, canal entupido resina, dimensional compensation
+
+### Efeito de sucção em peças ocas [orientacao] — risco: medio
+Sintomas: Ruído forte ao destacar cada camada | Suportes rompem | Paredes deformam | Falhas próximas a cavidades
+Causas prováveis: Cavidade fechada formando copo | Furos de drenagem pequenos ou mal posicionados | Grande área por camada | Elevação rápida
+Como diagnosticar: Analisar cortes no fatiador | Identificar volumes fechados | Observar aumento de força ao destacar
+Soluções: Adicionar ao menos dois furos: entrada de ar e drenagem | Posicionar furos no ponto mais baixo durante a impressão | Inclinar a peça | Reduzir velocidade de elevação | Evitar cavidades em formato de ventosa
+Prevenção: Executar análise de cavidades | Projetar drenagem antes de fatiar | Evitar peças ocas completamente seladas
+Termos relacionados: suction cup resin, efeito ventosa SLA, peça oca falhando
+
+### Resina curada solta no tanque [manutencao] — risco: medio
+Sintomas: Fragmentos duros no fundo | Marcas no filme | Falhas aleatórias nas próximas impressões
+Causas prováveis: Impressão anterior falhou | Suportes quebraram | Exposição acidental à luz | Resina contaminada
+Como diagnosticar: Inspecionar o tanque com espátula de silicone | Executar função de limpeza do tanque | Filtrar a resina
+Soluções: Remover a folha curada com cuidado | Filtrar toda a resina | Limpar o tanque sem ferramentas metálicas | Inspecionar o filme antes de reutilizar
+Prevenção: Nunca iniciar nova impressão sem verificar o tanque após falha | Manter tampa fechada | Filtrar resina após falhas relevantes
+Termos relacionados: pedaço curado no vat, debris resin tank, limpeza da cuba
+
+### Filme FEP/PFA furado ou vazando [manutencao] — risco: alto
+Sintomas: Resina sob o tanque | Vazamento sobre a tela | Perda de tensão do filme
+Causas prováveis: Fragmento curado pressionado pela plataforma | Uso de ferramenta pontiaguda | Desgaste | Montagem incorreta
+Como diagnosticar: Retirar o tanque e testar estanqueidade fora da impressora | Inspecionar riscos, furos e deformações
+Soluções: Interromper imediatamente o uso | Remover resina da tela seguindo o manual | Substituir o filme | Conferir tensão e montagem | Verificar se a tela foi danificada
+Prevenção: Filtrar a resina após falhas | Usar espátula de silicone | Não raspar o filme com metal
+Termos relacionados: FEP vazando, resina na tela LCD, filme furado
+
+### Tela LCD com áreas mortas [hardware] — risco: alto
+Sintomas: Faixas sem cura | Buracos repetidos em todas as peças | Padrão fixo de falha na mesma posição
+Causas prováveis: Pixels mortos | Cabo da tela solto | Tela degradada | Resina curada sobre a tela
+Como diagnosticar: Executar teste de exposição sem o tanque | Comparar o padrão luminoso com a falha | Inspecionar conexão somente com o equipamento desligado
+Soluções: Limpar cuidadosamente a superfície | Reconectar cabos conforme o manual | Substituir a tela quando houver pixels mortos permanentes | Evitar imprimir até resolver para não desperdiçar resina
+Prevenção: Proteger a tela contra vazamentos | Não pressionar a tela | Controlar horas de uso
+Termos relacionados: LCD dead pixels resin printer, faixa sem curar, tela MSLA falhando
+
+### Excesso de resina nas superfícies voltadas para baixo [qualidade] — risco: baixo
+Sintomas: Superfície inferior inchada | Detalhes inferiores borrados | Primeiras camadas com pé de elefante
+Causas prováveis: Exposição de base alta | Número excessivo de camadas de base | Compensação de base ausente | Peça diretamente na plataforma
+Como diagnosticar: Medir a expansão das primeiras camadas | Comparar impressão inclinada e direta | Revisar parâmetros de base
+Soluções: Reduzir exposição de base com cuidado | Reduzir camadas de transição quando apropriado | Aplicar compensação de pé de elefante | Elevar a peça em suportes quando a geometria permitir
+Prevenção: Calibrar base separadamente da exposição normal | Adicionar chanfro em peças funcionais impressas na plataforma
+Termos relacionados: elephant foot resin, pé de elefante SLA, base inchada
+
+### Peça frágil ou quebradiça [material] — risco: baixo
+Sintomas: Quebra ao remover suportes | Trincas após poucos dias | Pinos finos se partem facilmente
+Causas prováveis: Resina naturalmente rígida | Pós-cura excessiva | Geometria fina | Orientação desfavorável | Resina envelhecida ou mal armazenada
+Como diagnosticar: Comparar peça antes e depois da pós-cura | Verificar validade e armazenamento | Testar amostra com tempo de cura menor
+Soluções: Usar resina tough, ABS-like ou flexível conforme aplicação | Reduzir pós-cura dentro da faixa segura | Aumentar espessura ou adicionar raios | Orientar para melhorar resistência no eixo crítico
+Prevenção: Escolher resina pela função, não apenas pela aparência | Armazenar longe de calor e luz | Validar propriedades com corpos de prova
+Termos relacionados: resina quebradiça, brittle SLA print, peça quebra suporte
+
+### Resina separada, sedimentada ou com cor irregular [material] — risco: baixo
+Sintomas: Pigmento no fundo | Diferença de cor entre impressões | Propriedades variáveis ao longo da peça
+Causas prováveis: Longo tempo parada | Carga mineral ou pigmento sedimentável | Mistura insuficiente | Temperatura baixa
+Como diagnosticar: Observar o fundo do frasco e da cuba | Misturar e comparar viscosidade e cor | Verificar instruções do fabricante
+Soluções: Homogeneizar lentamente o frasco | Misturar a cuba com espátula de silicone | Aquecer dentro da faixa recomendada | Evitar incorporar bolhas
+Prevenção: Misturar antes de cada uso | Não deixar resina carregada parada por longos períodos | Registrar data de abertura
+Termos relacionados: resina sedimentada, pigment separation SLA, cor desigual
+
+### Odor intenso e irritação durante o uso [seguranca] — risco: alto
+Sintomas: Cheiro forte | Irritação nos olhos ou pele | Desconforto respiratório
+Causas prováveis: Ventilação insuficiente | Contato direto com resina | Recipientes abertos | Uso inadequado de solvente
+Como diagnosticar: Verificar ventilação local | Revisar ficha de dados de segurança da resina e do solvente | Identificar fontes abertas de vapor
+Soluções: Interromper a exposição e ventilar o local | Usar luvas de nitrila e proteção ocular | Manter recipientes fechados | Seguir a ficha de segurança e procurar orientação médica em caso de sintomas persistentes
+Prevenção: Operar em área ventilada ou com exaustão adequada | Não usar em ambientes de convivência sem controle de vapores | Treinar usuários em derramamentos e descarte
+Termos relacionados: segurança resina UV, resin fumes, dermatite resina 3D
+
+### Falha após trocar de marca ou cor de resina [parametros] — risco: baixo
+Sintomas: Perfil antigo deixa de funcionar | Peças subexpostas ou sobre-expostas | Aderência muda após troca de material
+Causas prováveis: Fotoiniciador e pigmentação diferentes | Viscosidade diferente | Perfil incompatível | Temperatura diferente
+Como diagnosticar: Comparar recomendações dos fabricantes | Executar matriz de exposição | Verificar comprimento de onda compatível
+Soluções: Criar perfil específico | Calibrar exposição normal e de base | Ajustar espera e elevação para viscosidade | Não misturar sobras sem validação
+Prevenção: Salvar perfis por resina, cor, camada e temperatura | Registrar lote e resultados
+Termos relacionados: troquei resina e falhou, resin exposure calibration, perfil por cor
+
+### Impressão muito lenta ou tempo estimado incorreto [desempenho] — risco: baixo
+Sintomas: Tempo real muito maior que o previsto | Longas pausas entre camadas | Movimentos Z lentos
+Causas prováveis: Distância de elevação excessiva | Velocidade baixa | Tempos de espera altos | Estimativa do fatiador não considera firmware | Muitas camadas finas
+Como diagnosticar: Somar tempo de exposição, espera e movimento por camada | Comparar configuração do fatiador com a impressora | Verificar se o modo de movimento está correto
+Soluções: Otimizar distância de elevação sem comprometer separação | Ajustar velocidades gradualmente | Reduzir tempos de espera após testes | Usar camada mais alta quando a qualidade permitir
+Prevenção: Validar perfis com peças de teste | Manter estimativas baseadas em impressões reais
+Termos relacionados: resin print too slow, tempo estimado errado SLA, lift distance
+
+### Ilhas não suportadas causam fragmentos ou falhas [fatiamento] — risco: baixo
+Sintomas: Pequenos pedaços curados no tanque | Detalhes ausentes | Defeito começa em regiões isoladas
+Causas prováveis: Pixels da camada iniciam sem conexão com a peça | Suportes automáticos não detectaram todas as ilhas | Orientação complexa
+Como diagnosticar: Percorrer as camadas no fatiador | Usar detector de ilhas | Inspecionar regiões que aparecem subitamente
+Soluções: Adicionar suportes manuais | Reorientar a peça | Dividir o modelo | Repetir a análise após alterações
+Prevenção: Nunca depender apenas do suporte automático | Revisar visualmente o início de cada detalhe
+Termos relacionados: islands resin slicer, ilhas no fatiador, fragmentos no tanque
+
+### Resina líquida presa dentro de peça oca [seguranca] — risco: alto
+Sintomas: Peça vaza dias depois | Rachaduras tardias | Cheiro forte vindo do interior | Pressão interna ou estalos
+Causas prováveis: Furos de drenagem insuficientes | Cavidade não lavada | Furo fechado por suporte ou orientação | Pós-cura externa sem cura interna
+Como diagnosticar: Inspecionar cavidades com luz | Agitar suavemente e ouvir líquido | Verificar continuidade dos furos
+Soluções: Não selar a peça | Abrir furos adequados usando proteção | Drenar e lavar internamente | Curar o interior quando possível | Descartar com segurança se não houver como remover a resina
+Prevenção: Adicionar no mínimo entrada e saída | Dimensionar furos para lavagem | Inspecionar antes da pós-cura
+Termos relacionados: resina presa peça oca, hollow resin print cracking, vazamento tardio
+
+### Arquivo não inicia ou impressão para no começo [arquivo] — risco: baixo
+Sintomas: Impressora não reconhece o arquivo | Erro ao carregar | Processo para nas primeiras camadas
+Causas prováveis: Formato incompatível | Arquivo corrompido | Nome de arquivo inválido | Mídia USB defeituosa | Versão de fatiador incompatível
+Como diagnosticar: Testar arquivo simples conhecido | Salvar em outra mídia | Refatiar com perfil correto | Verificar extensão suportada
+Soluções: Atualizar o fatiador compatível | Refatiar o modelo | Formatar ou substituir a mídia conforme manual | Usar nomes simples sem caracteres especiais
+Prevenção: Manter cópia dos arquivos | Validar com pré-visualização | Ejetar a mídia corretamente
+Termos relacionados: arquivo não reconhecido SLA, print file corrupted, USB resin printer
+
 ## CONCEITOS TÉCNICOS AVANÇADOS
 
 ### Efeito ventosa / sucção (peças ocas)
