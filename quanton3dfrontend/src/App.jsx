@@ -1084,7 +1084,8 @@ function AdminContent() {
   );
   const BADGE = ({ status }) => {
     const cor = ["aprovado","fechado","resolvido"].includes(status) ? "#49e68b" : status === "recusado" ? "#ff6b6b" : status === "respondido" ? "#4fd1ff" : "#ffd166";
-    return <span style={{ fontSize: "0.75rem", padding: "2px 10px", borderRadius: "999px", border: "1px solid " + cor + "44", background: cor + "18", color: cor, fontWeight: 800 }}>{status || "pendente"}</span>;
+    const LABELS = { novo: "🆕 Novo", em_analise: "🔍 Em análise", respondido: "📞 Respondido", fechado: "✅ Fechado", pendente: "⏳ Pendente", em_contato: "📞 Em contato", resolvido: "✅ Resolvido", impossivel: "❌ Não é possível", aprovado: "✅ Aprovado", recusado: "❌ Recusado" };
+    return <span style={{ fontSize: "0.75rem", padding: "2px 10px", borderRadius: "999px", border: "1px solid " + cor + "44", background: cor + "18", color: cor, fontWeight: 800 }}>{LABELS[status] || status || "⏳ Pendente"}</span>;
   };
 
   if (!token) {
@@ -1640,6 +1641,53 @@ function AdminContent() {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Botões de ação */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "6px" }}>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "em_analise" });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  disabled={c.status === "em_analise"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.35)", background: "rgba(255,209,102,0.1)", color: "#ffd166", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: c.status === "em_analise" ? 0.4 : 1 }}>
+                  🔍 Em análise
+                </button>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "respondido" });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  disabled={c.status === "respondido"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.35)", background: "rgba(79,209,255,0.1)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: c.status === "respondido" ? 0.4 : 1 }}>
+                  📞 Já entrei em contato
+                </button>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "fechado" });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  disabled={c.status === "fechado"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.35)", background: "rgba(73,230,139,0.1)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: c.status === "fechado" ? 0.4 : 1 }}>
+                  ✅ Resolvido
+                </button>
+                <button type="button"
+                  onClick={async () => {
+                    try {
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "novo" });
+                      await carregarDados();
+                    } catch(e) { alert("Erro ao atualizar"); }
+                  }}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(255,107,107,0.06)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                  ↩️ Reabrir
+                </button>
               </div>
             </CARD>
           ))}
