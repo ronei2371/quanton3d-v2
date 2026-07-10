@@ -198,12 +198,15 @@ Soluções:
 5. Filtre a resina com filtro de café para remover partículas
 
 ### Linhas visíveis entre camadas (layer lines)
-Causas: Exposição normal baixa, tela LCD suja, altura de camada grande
+Causas: Exposição normal baixa, velocidade de elevação/retração alta, tela LCD suja, resina mal agitada, altura de camada grande
 Soluções:
-1. Aumente exposição normal em 0,2-0,3s
-2. Limpe a tela LCD com pano de microfibra seco
-3. Reduza altura de camada de 0,05mm para 0,03mm
-4. Verifique se o FEP está limpo
+1. Aumente exposição normal em 0,2-0,5s
+2. Reduza a velocidade de elevação (lift speed) e retração (retract speed) em 20-30% — isso dá mais tempo para a resina se estabilizar antes da próxima camada, reduzindo turbulência e marcas visíveis
+3. Agite bem a resina por 2-3 min antes de usar — sedimentação de pigmento causa variação de cura entre camadas
+4. Limpe a tela LCD com pano de microfibra seco
+5. Verifique se o FEP está limpo e sem manchas
+6. Se persistir, reduza altura de camada de 0,05mm para 0,03mm
+Dica prática: comece ajustando exposição E velocidade de elevação juntos — a combinação dos dois resolve a maioria dos casos, mais eficaz que ajustar só um dos dois.
 
 ### Peça racha após alguns dias
 Causas: Pós-cura excessiva, peça oca sem furo de drenagem, exposição normal muito alta
