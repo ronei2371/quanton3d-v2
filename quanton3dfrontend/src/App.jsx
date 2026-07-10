@@ -991,7 +991,7 @@ function AdminContent() {
   const [aba, setAba] = useState("galeria");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
-  const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], totais: {} });
+  const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], conversas: [], totais: {} });
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
   const [diagnostico, setDiagnostico] = useState({});
@@ -1039,7 +1039,12 @@ function AdminContent() {
           formulacoes = Array.isArray(fResp.data?.data) ? fResp.data.data : [];
         } catch (_) {}
       }
-      setDados({ clientes: m.clientes || [], formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], totais: m.totals || {} });
+      let conversas = [];
+      try {
+        const cResp = await api.get("/conversas", { headers, params: { limit: 100 } });
+        conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
+      } catch (_) {}
+      setDados({ clientes: m.clientes || [], formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
       setErro(err?.response?.data?.error || "Erro ao carregar dados.");
@@ -1077,6 +1082,36 @@ function AdminContent() {
     } catch (err) { setMsgParam("❌ Erro ao excluir."); }
   }
 
+  const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
+  const [salvandoConversa, setSalvandoConversa] = useState("");
+
+  async function aprovarConversa(id) {
+    try {
+      setSalvandoConversa(id);
+      const respostaMelhorada = edicaoConversa[id] || "";
+      await api.patch("/conversas/" + id + "/aprovar", { respostaMelhorada, revisadoPor: "Admin" }, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { alert("Erro ao aprovar conversa."); }
+    finally { setSalvandoConversa(""); }
+  }
+
+  async function desaprovarConversa(id) {
+    try {
+      setSalvandoConversa(id);
+      await api.patch("/conversas/" + id + "/desaprovar", {}, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { alert("Erro ao desaprovar."); }
+    finally { setSalvandoConversa(""); }
+  }
+
+  async function excluirConversa(id) {
+    if (!window.confirm("Excluir esta conversa do histórico?")) return;
+    try {
+      await api.delete("/conversas/" + id, { headers: { Authorization: "Bearer " + token } });
+      setDados(d => ({ ...d, conversas: d.conversas.filter(c => c._id !== id) }));
+    } catch (err) { alert("Erro ao excluir."); }
+  }
+
   function sair() { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
 
   const CARD = ({ children }) => (
@@ -1102,6 +1137,7 @@ function AdminContent() {
 
   const ABAS_ADM = [
     { id: "metricas", label: "Metricas" },
+    { id: "conversas", label: "Conversas Bot (" + (dados.conversas?.length || 0) + ")" },
     { id: "parametros_adm", label: "Parametros" },
     { id: "galeria", label: "Galeria (" + dados.galeria.length + ")" },
     { id: "clientes", label: "Clientes (" + dados.clientes.length + ")" },
@@ -1374,6 +1410,86 @@ function AdminContent() {
               </div>
             </CARD>
           ))}
+        </div>
+      )}
+
+      {aba === "conversas" && (
+        <div>
+          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "14px 16px", marginBottom: "16px" }}>
+            <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.6 }}>
+              💡 Veja as perguntas dos clientes e as respostas do ELIO. Edite e clique em <strong style={{ color: "#4fd1ff" }}>Aprovar</strong> para transformar em conhecimento validado — o bot vai usar essas respostas aprovadas como referência em perguntas parecidas no futuro.
+            </p>
+          </div>
+
+          {(!dados.conversas || dados.conversas.length === 0) && !carregando && (
+            <div className="gallery-empty">Nenhuma conversa registrada ainda.</div>
+          )}
+
+          {(dados.conversas || []).map((c) => {
+            const textoEditado = edicaoConversa[c._id] !== undefined ? edicaoConversa[c._id] : (c.respostaMelhorada || c.resposta);
+            const foiEditado = textoEditado !== c.resposta;
+            return (
+              <CARD key={c._id}>
+                {/* Cabeçalho */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                    {c.aprovado && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(73,230,139,0.15)", border: "1px solid rgba(73,230,139,0.3)", color: "#49e68b", fontWeight: 800 }}>✅ Aprovado</span>}
+                    {c.ragUsado && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(184,156,255,0.12)", border: "1px solid rgba(184,156,255,0.25)", color: "#b89cff", fontWeight: 700 }}>📋 Usou RAG</span>}
+                    {c.resinaDetectada && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(79,209,255,0.1)", border: "1px solid rgba(79,209,255,0.2)", color: "#4fd1ff", fontWeight: 700 }}>🧪 {c.resinaDetectada}</span>}
+                    {c.impressoraDetectada && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(113,159,219,0.2)", color: "#9fb4c7", fontWeight: 700 }}>🖨️ {c.impressoraDetectada}</span>}
+                  </div>
+                  <small style={{ color: "#8ba3be", fontSize: "0.72rem" }}>{formatarDataHora(c.createdAt)}</small>
+                </div>
+
+                {/* Pergunta do cliente */}
+                <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.18)", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "0.7rem", fontWeight: 800, color: "#4fd1ff", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "4px" }}>
+                    👤 {c.clienteNome || "Cliente"} perguntou:
+                  </span>
+                  <p style={{ margin: 0, color: "#eaf3ff", fontSize: "0.88rem", lineHeight: 1.5 }}>{c.pergunta}</p>
+                </div>
+
+                {/* Resposta original do bot */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.12)", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "0.7rem", fontWeight: 800, color: "#9fb4c7", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "4px" }}>
+                    🤖 ELIO respondeu ({c.fonte || "deepseek"}):
+                  </span>
+                  <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.82rem", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.resposta}</p>
+                </div>
+
+                {/* Campo de edição / melhoria */}
+                <div style={{ marginBottom: "10px" }}>
+                  <span style={{ fontSize: "0.7rem", fontWeight: 800, color: foiEditado ? "#ffd166" : "#49e68b", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "4px" }}>
+                    {foiEditado ? "✏️ Resposta melhorada (editada)" : "✏️ Editar / refinar resposta (opcional)"}
+                  </span>
+                  <textarea
+                    value={textoEditado}
+                    onChange={e => setEdicaoConversa(prev => ({ ...prev, [c._id]: e.target.value }))}
+                    rows={3}
+                    style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid " + (foiEditado ? "rgba(255,209,102,0.35)" : "rgba(73,230,139,0.25)"), background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.82rem", lineHeight: 1.5, resize: "vertical", fontFamily: "inherit" }}
+                  />
+                </div>
+
+                {/* Botões de ação */}
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button type="button" onClick={() => aprovarConversa(c._id)} disabled={salvandoConversa === c._id}
+                    style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                    {salvandoConversa === c._id ? "Salvando..." : c.aprovado ? "🔄 Atualizar aprovação" : "✅ Aprovar como conhecimento"}
+                  </button>
+                  {c.aprovado && (
+                    <button type="button" onClick={() => desaprovarConversa(c._id)} disabled={salvandoConversa === c._id}
+                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.35)", background: "rgba(255,209,102,0.08)", color: "#ffd166", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                      ↩️ Remover aprovação
+                    </button>
+                  )}
+                  <button type="button" onClick={() => excluirConversa(c._id)}
+                    style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.06)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                    🗑️ Excluir
+                  </button>
+                </div>
+              </CARD>
+            );
+          })}
         </div>
       )}
 
