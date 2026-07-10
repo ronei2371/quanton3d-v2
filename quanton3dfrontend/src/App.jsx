@@ -1687,9 +1687,17 @@ function BotContent({ cliente }) {
   const [mensagens, setMensagens] = useState([]);
   const [input, setInput] = useState("");
   const [pensando, setPensando] = useState(false);
+  const [impressorasBot, setImpressorasBot] = useState([]);
   const scrollRef = useRef(null);
 
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [mensagens]);
+
+  useEffect(() => {
+    api.get("/parametros/impressoras").then(res => {
+      const lista = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      setImpressorasBot(lista.filter(Boolean).sort());
+    }).catch(() => {});
+  }, []);
 
   function iniciarChat() {
     const resina = ctx.resina || "não informada";
@@ -1758,14 +1766,22 @@ Como posso te ajudar hoje?`;
 
         <div>
           <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 800, color: "#b8cfe8", marginBottom: "6px" }}>
-            🖨️ Qual sua impressora? (marca e modelo)
+            🖨️ Qual sua impressora?
           </label>
-          <input
-            value={ctx.impressora}
-            onChange={e => setCtx(c => ({ ...c, impressora: e.target.value }))}
-            placeholder="Ex: Elegoo Mars 4 Ultra, Anycubic Photon M3..."
-            style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.9rem" }}
-          />
+          <select value={ctx.impressora} onChange={e => setCtx(c => ({ ...c, impressora: e.target.value }))}
+            style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: ctx.impressora ? "#ffffff" : "#8ba3be", fontSize: "0.9rem" }}>
+            <option value="">Selecione a impressora (opcional)</option>
+            {impressorasBot.map(i => <option key={i} value={i}>{i}</option>)}
+            <option value="Não sei / Outra">Não sei / Outra</option>
+          </select>
+          {impressorasBot.length === 0 && (
+            <input
+              value={ctx.impressora}
+              onChange={e => setCtx(c => ({ ...c, impressora: e.target.value }))}
+              placeholder="Ex: Elegoo Mars 4 Ultra, Anycubic Photon M3..."
+              style={{ width: "100%", marginTop: "8px", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.9rem" }}
+            />
+          )}
         </div>
 
         <div>
