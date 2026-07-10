@@ -256,8 +256,12 @@ router.post('/', async (req, res) => {
         // 1. Regras locais rápidas
         const rule = ruleBasedAnswer(text);
         if (rule) {
-            Conversa.create({ clienteId, clienteNome, pergunta: text, resposta: rule, fonte: 'rules' }).catch(() => {});
-            return res.json({ success: true, reply: rule, source: 'rules' });
+            let conversaId = null;
+            try {
+                const conv = await Conversa.create({ clienteId, clienteNome, pergunta: text, resposta: rule, fonte: 'rules' });
+                conversaId = conv._id;
+            } catch (_) {}
+            return res.json({ success: true, reply: rule, source: 'rules', conversaId });
         }
 
         // 2. RAG — busca no MongoDB usando mensagem atual + histórico
@@ -302,19 +306,25 @@ router.post('/', async (req, res) => {
 
         const reply = completion.choices?.[0]?.message?.content || 'Não consegui entender essa pergunta direito. Você pode reformular com mais detalhes, ou se preferir, me conta qual resina e impressora está usando que te ajudo melhor! Se quiser falar direto com a equipe, o WhatsApp é (31) 3271-6935.';
 
-        // 6. Salva a conversa para curadoria no painel ADM (não bloqueia a resposta)
-        Conversa.create({
-            clienteId,
-            clienteNome,
-            pergunta: text,
-            resposta: reply,
-            resinaDetectada: resinaAtual || '',
-            impressoraDetectada: impressoraAtual || '',
-            ragUsado: !!contextRAG,
-            fonte: contextRAG ? 'rag+deepseek' : 'deepseek',
-        }).catch(err => console.error('[SALVAR CONVERSA]', err.message));
+        // 6. Salva a conversa para curadoria no painel ADM
+        let conversaId = null;
+        try {
+            const conv = await Conversa.create({
+                clienteId,
+                clienteNome,
+                pergunta: text,
+                resposta: reply,
+                resinaDetectada: resinaAtual || '',
+                impressoraDetectada: impressoraAtual || '',
+                ragUsado: !!contextRAG,
+                fonte: contextRAG ? 'rag+deepseek' : 'deepseek',
+            });
+            conversaId = conv._id;
+        } catch (err) {
+            console.error('[SALVAR CONVERSA]', err.message);
+        }
 
-        res.json({ success: true, reply, source: contextRAG ? 'rag+deepseek' : 'deepseek', ragUsado: !!contextRAG });
+        res.json({ success: true, reply, source: contextRAG ? 'rag+deepseek' : 'deepseek', ragUsado: !!contextRAG, conversaId });
 
     } catch (e) {
         console.error('[CHAT ERROR]', e);
