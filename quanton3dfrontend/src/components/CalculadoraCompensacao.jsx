@@ -1,0 +1,236 @@
+import { useState } from "react";
+
+const S = {
+  wrap: { padding: "8px 4px" },
+  aviso: {
+    padding: "12px 14px", borderRadius: "10px", marginBottom: "18px",
+    background: "rgba(255,209,102,0.08)", border: "1px solid rgba(255,209,102,0.25)",
+    color: "#ffd166", fontSize: "0.82rem", lineHeight: 1.6,
+    display: "flex", gap: "10px", alignItems: "flex-start",
+  },
+  sectionTitle: {
+    display: "block", fontSize: "0.72rem", fontWeight: 900,
+    color: "#4fd1ff", textTransform: "uppercase", letterSpacing: "0.08em",
+    margin: "0 0 12px", padding: "6px 10px",
+    background: "rgba(79,209,255,0.08)", borderRadius: "8px",
+  },
+  label: { fontSize: "0.82rem", fontWeight: 700, color: "#b8cfe8", marginBottom: "8px", display: "block" },
+  hint: { fontSize: "0.72rem", color: "#8ba3be", marginTop: "4px" },
+  hmsRow: { display: "flex", gap: "8px", alignItems: "center" },
+  hmsGroup: { display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", flex: 1 },
+  hmsLabel: { fontSize: "0.7rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" },
+  hmsInput: {
+    width: "100%", padding: "10px 8px", borderRadius: "9px", textAlign: "center",
+    border: "1px solid rgba(79,209,255,0.22)", background: "rgba(4,10,24,0.7)",
+    color: "#ffffff", fontSize: "1rem", fontWeight: 700, fontFamily: "inherit", outline: "none",
+  },
+  separator: { color: "#4fd1ff", fontSize: "1.2rem", fontWeight: 900, paddingTop: "18px" },
+  camadasField: { display: "flex", flexDirection: "column", gap: "5px", marginTop: "16px" },
+  camadasInput: {
+    padding: "10px 14px", borderRadius: "9px",
+    border: "1px solid rgba(79,209,255,0.22)", background: "rgba(4,10,24,0.7)",
+    color: "#ffffff", fontSize: "0.95rem", fontFamily: "inherit", outline: "none",
+    width: "160px",
+  },
+  resultBox: {
+    marginTop: "20px", padding: "20px", borderRadius: "14px",
+    background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.25)",
+  },
+  resultLabel: { fontSize: "0.75rem", color: "#9fb4c7", display: "block", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.06em" },
+  resultValue: { fontSize: "2.2rem", fontWeight: 900, color: "#4fd1ff", display: "block", lineHeight: 1 },
+  resultUnit: { fontSize: "0.85rem", color: "#8ba3be", marginTop: "4px", display: "block" },
+  btns: { display: "flex", gap: "10px", marginTop: "20px" },
+  btnApply: {
+    flex: 1, padding: "13px", borderRadius: "10px", border: 0,
+    background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff",
+    fontWeight: 900, fontSize: "0.92rem", cursor: "pointer", fontFamily: "inherit",
+    boxShadow: "0 6px 20px rgba(37,99,235,0.3)",
+  },
+  btnCancel: {
+    padding: "13px 20px", borderRadius: "10px",
+    border: "1px solid rgba(113,159,219,0.25)", background: "transparent",
+    color: "#8ba3be", fontWeight: 700, fontSize: "0.88rem", cursor: "pointer", fontFamily: "inherit",
+  },
+  errorBox: {
+    padding: "10px 14px", borderRadius: "9px", marginTop: "12px",
+    background: "rgba(255,107,107,0.1)", border: "1px solid rgba(255,107,107,0.3)",
+    color: "#ff8fab", fontSize: "0.82rem",
+  },
+  contextBox: {
+    marginTop: "24px", padding: "14px 16px", borderRadius: "12px",
+    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.12)",
+  },
+  contextTitle: { fontSize: "0.72rem", fontWeight: 900, color: "#9fb4c7", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "10px", display: "block" },
+  contextGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" },
+  contextItem: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 10px", borderRadius: "7px", background: "rgba(79,209,255,0.04)", border: "1px solid rgba(79,209,255,0.08)", fontSize: "0.78rem" },
+};
+
+function toSegundos(h, m, s) {
+  return (parseInt(h) || 0) * 3600 + (parseInt(m) || 0) * 60 + (parseFloat(s) || 0);
+}
+
+function HMSInput({ label, value, onChange }) {
+  return (
+    <div style={{ marginBottom: "16px" }}>
+      <label style={S.label}>{label}</label>
+      <div style={S.hmsRow}>
+        {["h", "m", "s"].map((unit, i) => (
+          <div key={unit} style={S.hmsGroup}>
+            <input
+              type="number" min="0"
+              max={unit === "h" ? undefined : 59}
+              step={unit === "s" ? "0.1" : "1"}
+              value={value[i]}
+              onChange={e => {
+                const novo = [...value];
+                novo[i] = e.target.value;
+                onChange(novo);
+              }}
+              placeholder="0"
+              style={S.hmsInput}
+            />
+            <span style={S.hmsLabel}>{unit === "h" ? "horas" : unit === "m" ? "minutos" : "segundos"}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function CalculadoraCompensacao() {
+  const [tempoPrevisto, setTempoPrevisto] = useState(["", "", ""]);
+  const [tempoReal, setTempoReal] = useState(["", "", ""]);
+  const [camadas, setCamadas] = useState("");
+  const [resultado, setResultado] = useState(null);
+  const [erro, setErro] = useState("");
+
+  function calcular() {
+    setErro(""); setResultado(null);
+
+    const prevSeg = toSegundos(...tempoPrevisto);
+    const realSeg = toSegundos(...tempoReal);
+    const cam = parseInt(camadas);
+
+    if (prevSeg <= 0) { setErro("Tempo de previsão do software deve ser maior que zero."); return; }
+    if (realSeg <= 0) { setErro("Tempo real de impressão deve ser maior que zero."); return; }
+    if (!cam || cam < 1) { setErro("Contagem de camadas deve ser pelo menos 1."); return; }
+
+    // Fórmula exata do Chitubox
+    const compensacao = (realSeg - prevSeg) / cam;
+    const diferenca = realSeg - prevSeg;
+    const fator = realSeg / prevSeg;
+
+    setResultado({ compensacao, diferenca, fator, prevSeg, realSeg, cam });
+  }
+
+  function limpar() {
+    setTempoPrevisto(["", "", ""]);
+    setTempoReal(["", "", ""]);
+    setCamadas("");
+    setResultado(null);
+    setErro("");
+  }
+
+  function fmtHMS(seg) {
+    const s = Math.abs(seg);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sc = (s % 60).toFixed(1);
+    return `${h}h ${m}m ${sc}s`;
+  }
+
+  return (
+    <div style={S.wrap}>
+      {/* Aviso igual ao Chitubox */}
+      <div style={S.aviso}>
+        <span style={{ fontSize: "1.2rem", flexShrink: 0 }}>⚠️</span>
+        <span>O tempo de previsão do software e o tempo real de impressão precisam vir dos dados registrados na <strong>mesma impressão!</strong></span>
+      </div>
+
+      {/* Campo 1 — Tempo previsto */}
+      <HMSInput
+        label="1. Tempo de previsão do software"
+        value={tempoPrevisto}
+        onChange={setTempoPrevisto}
+      />
+
+      {/* Campo 2 — Tempo real */}
+      <HMSInput
+        label="2. Tempo real de impressão"
+        value={tempoReal}
+        onChange={setTempoReal}
+      />
+
+      {/* Campo 3 — Contagem de camadas */}
+      <div style={S.camadasField}>
+        <label style={S.label}>3. Contagem de camadas</label>
+        <input
+          type="number" min="1" step="1"
+          value={camadas}
+          onChange={e => setCamadas(e.target.value)}
+          placeholder="Ex: 850"
+          style={S.camadasInput}
+        />
+        <span style={S.hint}>Total de camadas que a peça tinha (visible no Chitubox após fatiar)</span>
+      </div>
+
+      {erro && <div style={S.errorBox}>⚠️ {erro}</div>}
+
+      {/* Botões — Aplicar / Cancelar (igual Chitubox) */}
+      <div style={S.btns}>
+        <button type="button" onClick={calcular} style={S.btnApply}>Aplicar</button>
+        <button type="button" onClick={limpar} style={S.btnCancel}>Cancelar</button>
+      </div>
+
+      {/* Campo 4 — Resultado: Compensação de tempo por camada */}
+      {resultado && (
+        <div style={S.resultBox}>
+          <span style={S.resultLabel}>4. Compensação de tempo de impressão da camada</span>
+          <span style={S.resultValue}>
+            {resultado.compensacao >= 0 ? "+" : ""}{resultado.compensacao.toFixed(2)}
+          </span>
+          <span style={S.resultUnit}>segundos por camada</span>
+
+          {/* Análise extra */}
+          <div style={{ marginTop: "16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
+            {[
+              { label: "Diferença total", valor: `${resultado.diferenca >= 0 ? "+" : ""}${fmtHMS(resultado.diferenca)}`, cor: resultado.diferenca > 0 ? "#ff8fab" : "#49e68b" },
+              { label: "Fator real/previsto", valor: `×${resultado.fator.toFixed(3)}`, cor: "#4fd1ff" },
+              { label: "Desvio %", valor: `${resultado.diferenca >= 0 ? "+" : ""}${((resultado.fator - 1) * 100).toFixed(1)}%`, cor: resultado.diferenca > 0 ? "#ffd166" : "#49e68b" },
+            ].map(item => (
+              <div key={item.label} style={{ textAlign: "center", background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px" }}>
+                <span style={{ fontSize: "0.7rem", color: "#9fb4c7", display: "block", marginBottom: "4px" }}>{item.label}</span>
+                <strong style={{ fontSize: "1.1rem", color: item.cor }}>{item.valor}</strong>
+              </div>
+            ))}
+          </div>
+
+          {/* Instrução do que fazer com o resultado */}
+          <div style={{ marginTop: "14px", padding: "12px 14px", borderRadius: "10px", background: "rgba(127,90,240,0.08)", border: "1px solid rgba(127,90,240,0.2)", color: "#b89cff", fontSize: "0.82rem", lineHeight: 1.6 }}>
+            <strong>Como aplicar no Chitubox:</strong> Vá em Configurações da Impressora → Configurações de Resina → aba <strong>Avançado</strong> → ative <strong>Compensação de tempo de impressão</strong> → insira <strong>{resultado.compensacao.toFixed(2)}s</strong> no campo "Compensação de tempo de impressão da camada".
+          </div>
+
+          {/* Contexto da aba Avançado */}
+          <div style={S.contextBox}>
+            <span style={S.contextTitle}>⚙️ Contexto — Aba Avançado do Chitubox (referência)</span>
+            <div style={S.contextGrid}>
+              {[
+                { campo: "Bottom Light PWM", valor: "255" },
+                { campo: "Light PWM", valor: "255" },
+                { campo: "Anti-aliasing", valor: "Desligado" },
+                { campo: "Compensação de encolhimento", valor: "Desligado" },
+                { campo: "Comp. de Tolerância (Beta)", valor: "Desligado" },
+                { campo: "Comp. de tempo de impressão", valor: "✅ Ligado" },
+              ].map(item => (
+                <div key={item.campo} style={S.contextItem}>
+                  <span style={{ color: "#9fb4c7" }}>{item.campo}</span>
+                  <span style={{ color: "#eaf3ff", fontWeight: 700 }}>{item.valor}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
