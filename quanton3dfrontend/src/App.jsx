@@ -1084,6 +1084,7 @@ function AdminContent() {
 
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
+  const [filtroConversas, setFiltroConversas] = useState("todas");
 
   async function salvarMelhoriaConversa(id) {
     try {
@@ -1120,6 +1121,13 @@ function AdminContent() {
       await api.delete("/conversas/" + id, { headers: { Authorization: "Bearer " + token } });
       setDados(d => ({ ...d, conversas: d.conversas.filter(c => c._id !== id) }));
     } catch (err) { alert("Erro ao excluir."); }
+  }
+
+  async function marcarFeedbackRevisado(id) {
+    try {
+      await api.patch("/conversas/" + id + "/revisar-feedback", {}, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { alert("Erro ao marcar como revisado."); }
   }
 
   function sair() { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
@@ -1425,24 +1433,44 @@ function AdminContent() {
 
       {aba === "conversas" && (
         <div>
-          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "14px 16px", marginBottom: "16px" }}>
+          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "14px 16px", marginBottom: "12px" }}>
             <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.6 }}>
-              💡 Veja as perguntas dos clientes e as respostas do ELIO. Edite e clique em <strong style={{ color: "#4fd1ff" }}>Aprovar</strong> para transformar em conhecimento validado — o bot vai usar essas respostas aprovadas como referência em perguntas parecidas no futuro.
+              💡 Veja as perguntas dos clientes e as respostas do ELIO. Edite e clique em <strong style={{ color: "#4fd1ff" }}>Aprovar</strong> para transformar em conhecimento validado. Casos marcados <strong style={{ color: "#ff8fab" }}>👎 Não ajudou</strong> pelo cliente aparecem destacados abaixo.
             </p>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+            {[
+              { id: "todas", label: "Todas" },
+              { id: "nao_satisfatoria", label: "👎 Não ajudou" },
+              { id: "aprovadas", label: "✅ Aprovadas" },
+            ].map(f => (
+              <button key={f.id} type="button" onClick={() => setFiltroConversas(f.id)}
+                style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700, fontFamily: "inherit",
+                  background: filtroConversas === f.id ? "linear-gradient(135deg,#2563eb,#7c3aed)" : "rgba(79,209,255,0.06)",
+                  color: filtroConversas === f.id ? "#fff" : "#9fb4c7" }}>
+                {f.label}
+              </button>
+            ))}
           </div>
 
           {(!dados.conversas || dados.conversas.length === 0) && !carregando && (
             <div className="gallery-empty">Nenhuma conversa registrada ainda.</div>
           )}
 
-          {(dados.conversas || []).map((c) => {
+          {(dados.conversas || [])
+            .filter(c => filtroConversas === "todas" ? true : filtroConversas === "nao_satisfatoria" ? c.feedback === "nao_satisfatoria" : filtroConversas === "aprovadas" ? c.aprovado : true)
+            .map((c) => {
             const textoEditado = edicaoConversa[c._id] !== undefined ? edicaoConversa[c._id] : (c.respostaMelhorada || c.resposta);
             const foiEditado = textoEditado !== c.resposta;
+            const naoAjudou = c.feedback === "nao_satisfatoria";
             return (
-              <CARD key={c._id}>
+              <div key={c._id} style={{ border: naoAjudou && !c.revisadoFeedback ? "1px solid rgba(255,107,107,0.5)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: naoAjudou && !c.revisadoFeedback ? "rgba(255,107,107,0.05)" : "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
                 {/* Cabeçalho */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
                   <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                    {naoAjudou && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(255,107,107,0.15)", border: "1px solid rgba(255,107,107,0.35)", color: "#ff8fab", fontWeight: 800 }}>👎 Não ajudou {c.revisadoFeedback ? "(revisado)" : ""}</span>}
+                    {c.feedback === "satisfatoria" && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(73,230,139,0.1)", border: "1px solid rgba(73,230,139,0.25)", color: "#49e68b", fontWeight: 700 }}>👍 Ajudou</span>}
                     {c.aprovado && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(73,230,139,0.15)", border: "1px solid rgba(73,230,139,0.3)", color: "#49e68b", fontWeight: 800 }}>✅ Aprovado</span>}
                     {c.ragUsado && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(184,156,255,0.12)", border: "1px solid rgba(184,156,255,0.25)", color: "#b89cff", fontWeight: 700 }}>📋 Usou RAG</span>}
                     {c.resinaDetectada && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(79,209,255,0.1)", border: "1px solid rgba(79,209,255,0.2)", color: "#4fd1ff", fontWeight: 700 }}>🧪 {c.resinaDetectada}</span>}
@@ -1450,6 +1478,20 @@ function AdminContent() {
                   </div>
                   <small style={{ color: "#8ba3be", fontSize: "0.72rem" }}>{formatarDataHora(c.createdAt)}</small>
                 </div>
+
+                {/* Configuração e foto do problema — só quando feedback negativo */}
+                {naoAjudou && (c.fotoProblema || c.configuracaoCliente) && (
+                  <div style={{ display: "grid", gridTemplateColumns: c.fotoProblema ? "140px 1fr" : "1fr", gap: "10px", marginBottom: "10px", background: "rgba(255,107,107,0.04)", border: "1px solid rgba(255,107,107,0.15)", borderRadius: "10px", padding: "10px" }}>
+                    {c.fotoProblema && (
+                      <img src={c.fotoProblema} alt="Foto do problema" onClick={() => window.open(c.fotoProblema, "_blank")}
+                        style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "8px", cursor: "pointer", border: "1px solid rgba(255,107,107,0.25)" }} />
+                    )}
+                    <div>
+                      <span style={{ fontSize: "0.7rem", fontWeight: 800, color: "#ff8fab", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>📷 Enviado pelo cliente após feedback negativo</span>
+                      {c.configuracaoCliente && <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.8rem" }}>{c.configuracaoCliente}</p>}
+                    </div>
+                  </div>
+                )}
 
                 {/* Pergunta do cliente */}
                 <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.18)", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px" }}>
@@ -1496,6 +1538,12 @@ function AdminContent() {
                       ↩️ Remover aprovação
                     </button>
                   )}
+                  {naoAjudou && !c.revisadoFeedback && (
+                    <button type="button" onClick={() => marcarFeedbackRevisado(c._id)}
+                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.35)", background: "rgba(184,156,255,0.08)", color: "#b89cff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                      👁️ Marcar como revisado
+                    </button>
+                  )}
                   <button type="button" onClick={() => excluirConversa(c._id)}
                     style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.06)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
                     🗑️ Excluir
@@ -1504,7 +1552,7 @@ function AdminContent() {
                 <p style={{ margin: "8px 0 0", fontSize: "0.7rem", color: "#8ba3be", lineHeight: 1.5 }}>
                   💡 <strong>Salvar melhoria</strong> guarda seu texto editado como rascunho. <strong>Aprovar</strong> libera oficialmente para o ELIO usar em respostas futuras.
                 </p>
-              </CARD>
+              </div>
             );
           })}
         </div>
@@ -1875,6 +1923,9 @@ function BotContent({ cliente }) {
   const [input, setInput] = useState("");
   const [pensando, setPensando] = useState(false);
   const [impressorasBot, setImpressorasBot] = useState([]);
+  const [feedbackAberto, setFeedbackAberto] = useState(null); // índice da mensagem com form de feedback aberto
+  const [fotoFeedback, setFotoFeedback] = useState(null);
+  const [enviandoFeedback, setEnviandoFeedback] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [mensagens]);
@@ -1921,13 +1972,53 @@ Como posso te ajudar hoje?`;
         ...novasMensagens.slice(-8).filter(m => m.text).map(m => ({ role: m.isBot ? "assistant" : "user", content: m.text }))
       ];
 
-      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id });
+      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "" });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
-      setMensagens((prev) => [...prev, { text: reply, isBot: true }]);
+      const conversaId = res.data.data?.conversaId || res.data.conversaId || null;
+      setMensagens((prev) => [...prev, { text: reply, isBot: true, conversaId }]);
     } catch (err) {
       console.error("Erro ao conversar com bot:", err);
       setMensagens((prev) => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
     } finally { setPensando(false); }
+  }
+
+  function fotoParaBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function enviarFeedback(conversaId, indice, satisfatoria) {
+    if (!conversaId) return;
+    if (satisfatoria) {
+      try {
+        await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "satisfatoria" });
+        setMensagens(prev => prev.map((m, i) => i === indice ? { ...m, feedbackEnviado: "satisfatoria" } : m));
+      } catch (_) {}
+      return;
+    }
+    // Não satisfatória — abre form para foto
+    setFeedbackAberto(indice);
+  }
+
+  async function confirmarFeedbackNegativo(conversaId, indice) {
+    setEnviandoFeedback(true);
+    try {
+      let foto = "";
+      if (fotoFeedback) foto = await fotoParaBase64(fotoFeedback);
+      const configuracaoCliente = `Resina: ${ctx.resina || "não informada"} | Impressora: ${ctx.impressora || "não informada"} | Altura de camada: ${ctx.altura || "0.05"}mm`;
+      await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "nao_satisfatoria", foto, configuracaoCliente });
+      setMensagens(prev => prev.map((m, i) => i === indice ? { ...m, feedbackEnviado: "nao_satisfatoria" } : m));
+      setFeedbackAberto(null);
+      setFotoFeedback(null);
+    } catch (err) {
+      alert("Não consegui enviar seu feedback agora. Tente novamente.");
+    } finally {
+      setEnviandoFeedback(false);
+    }
   }
 
   if (etapa === "contexto") return (
@@ -2013,10 +2104,59 @@ Como posso te ajudar hoje?`;
       )}
       <div className="chat-messages" ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
         {mensagens.map((m, i) => (
-          <div key={i}
-            style={{ alignSelf: m.isBot ? "flex-start" : "flex-end", maxWidth: "85%", padding: "10px 14px", borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px", background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)", border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)", color: "#eaf3ff", fontSize: "0.92rem", lineHeight: 1.55 }}
-            dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
-          />
+          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", maxWidth: "85%", alignSelf: m.isBot ? "flex-start" : "flex-end" }}>
+            <div
+              style={{ padding: "10px 14px", borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px", background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)", border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)", color: "#eaf3ff", fontSize: "0.92rem", lineHeight: 1.55 }}
+              dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
+            />
+
+            {/* Feedback — só em respostas do bot que vieram do /chat (têm conversaId) */}
+            {m.isBot && m.conversaId && !m.feedbackEnviado && feedbackAberto !== i && (
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px", padding: "0 4px" }}>
+                <span style={{ fontSize: "0.72rem", color: "#8ba3be" }}>Essa resposta ajudou?</span>
+                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, true)}
+                  style={{ padding: "3px 10px", borderRadius: "999px", border: "1px solid rgba(73,230,139,0.3)", background: "rgba(73,230,139,0.08)", color: "#49e68b", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700 }}>
+                  👍 Sim
+                </button>
+                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, false)}
+                  style={{ padding: "3px 10px", borderRadius: "999px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.06)", color: "#ff8fab", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700 }}>
+                  👎 Não
+                </button>
+              </div>
+            )}
+
+            {/* Form de feedback negativo — foto + envio */}
+            {m.isBot && feedbackAberto === i && (
+              <div style={{ marginTop: "8px", padding: "12px", borderRadius: "10px", background: "rgba(255,107,107,0.06)", border: "1px solid rgba(255,107,107,0.2)", width: "100%", maxWidth: "320px" }}>
+                <p style={{ margin: "0 0 8px", fontSize: "0.78rem", color: "#ff8fab", fontWeight: 700 }}>
+                  Poxa, desculpa! Manda uma foto do problema (opcional) que a equipe vai analisar:
+                </p>
+                <label style={{ display: "block", padding: "10px", borderRadius: "8px", border: "1px dashed rgba(255,107,107,0.3)", background: "rgba(0,0,0,0.2)", cursor: "pointer", textAlign: "center", marginBottom: "8px" }}>
+                  <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => setFotoFeedback(e.target.files?.[0] || null)} />
+                  <span style={{ fontSize: "0.75rem", color: fotoFeedback ? "#49e68b" : "#9fb4c7" }}>
+                    {fotoFeedback ? "✅ " + fotoFeedback.name : "📷 Anexar foto (opcional)"}
+                  </span>
+                </label>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button type="button" onClick={() => confirmarFeedbackNegativo(m.conversaId, i)} disabled={enviandoFeedback}
+                    style={{ flex: 1, padding: "8px", borderRadius: "8px", border: 0, background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" }}>
+                    {enviandoFeedback ? "Enviando..." : "Enviar para análise"}
+                  </button>
+                  <button type="button" onClick={() => { setFeedbackAberto(null); setFotoFeedback(null); }}
+                    style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: "#8ba3be", fontSize: "0.78rem", cursor: "pointer" }}>
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Confirmação de feedback enviado */}
+            {m.isBot && m.feedbackEnviado && (
+              <span style={{ marginTop: "6px", fontSize: "0.72rem", color: m.feedbackEnviado === "satisfatoria" ? "#49e68b" : "#ffd166" }}>
+                {m.feedbackEnviado === "satisfatoria" ? "✅ Obrigado pelo retorno!" : "📨 Enviado para a equipe analisar. Obrigado!"}
+              </span>
+            )}
+          </div>
         ))}
         {pensando && <div style={{ alignSelf: "flex-start", padding: "10px 16px", borderRadius: "4px 18px 18px 18px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.25)", color: "#9fb4c7", fontSize: "0.88rem" }}>⏳ Analisando base técnica...</div>}
       </div>
