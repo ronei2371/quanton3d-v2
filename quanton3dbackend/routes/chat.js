@@ -2,6 +2,7 @@ import express from 'express';
 import OpenAI from 'openai';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Parametro from '../models/Parametro.js';
+import Conversa from '../models/Conversa.js';
 import KNOWLEDGE_BASE from '../services/knowledge.js';
 
 const router = express.Router();
@@ -82,6 +83,32 @@ function extrairContextoHistorico(historico = []) {
     const resina = detectarResina(textoCompleto);
     const impressora = detectarImpressora(textoCompleto);
     return { resina, impressora };
+}
+
+// Busca conversas aprovadas pelo admin como conhecimento extra (RAG de aprendizado)
+async function buscarConhecimentoAprovado(textoAtual, resinaDetectada) {
+    try {
+        const query = { aprovado: true };
+        if (resinaDetectada) {
+            query.resinaDetectada = { $regex: resinaDetectada, $options: 'i' };
+        }
+        const aprovadas = await Conversa.find(query)
+            .sort({ updatedAt: -1 })
+            .limit(3)
+            .lean();
+
+        if (!aprovadas.length) return null;
+
+        const linhas = aprovadas.map(c => {
+            const resp = c.respostaMelhorada || c.resposta;
+            return `P: ${c.pergunta}\nR (validada pela equipe Quanton3D): ${resp}`;
+        });
+
+        return `CASOS JÁ VALIDADOS PELA EQUIPE (use como referência de qualidade e precisão):\n${linhas.join('\n\n')}`;
+    } catch (err) {
+        console.error('[CONHECIMENTO APROVADO ERROR]', err.message);
+        return null;
+    }
 }
 
 async function buscarParametrosRAG(textoAtual, historico = []) {
@@ -219,7 +246,7 @@ PROBLEMAS E SOLUÇÕES:
 
 router.post('/', async (req, res) => {
     try {
-        const { message = '', historico = [] } = req.body || {};
+        const { message = '', historico = [], clienteId = '', clienteNome = '' } = req.body || {};
         const text = String(message || '').trim();
 
         if (!text) {
@@ -229,6 +256,7 @@ router.post('/', async (req, res) => {
         // 1. Regras locais rápidas
         const rule = ruleBasedAnswer(text);
         if (rule) {
+            Conversa.create({ clienteId, clienteNome, pergunta: text, resposta: rule, fonte: 'rules' }).catch(() => {});
             return res.json({ success: true, reply: rule, source: 'rules' });
         }
 
@@ -238,10 +266,21 @@ router.post('/', async (req, res) => {
             console.log('[RAG] Encontrado:', contextRAG.substring(0, 80));
         }
 
-        // 3. Monta system prompt com RAG
-        const systemFinal = contextRAG
-            ? `${SYSTEM_PROMPT}\n\n--- DADOS DO BANCO ---\n${contextRAG}\n---\nUse ESSES parâmetros na resposta. Não mencione outras resinas além da que está nos dados.`
-            : SYSTEM_PROMPT;
+        // 2b. Detecta resina para buscar conhecimento aprovado + tracking
+        const ctxHistorico = extrairContextoHistorico(historico);
+        const resinaAtual = detectarResina(text) || ctxHistorico.resina;
+        const impressoraAtual = detectarImpressora(text) || ctxHistorico.impressora;
+
+        const conhecimentoAprovado = await buscarConhecimentoAprovado(text, resinaAtual);
+
+        // 3. Monta system prompt com RAG + conhecimento aprovado
+        let systemFinal = SYSTEM_PROMPT;
+        if (contextRAG) {
+            systemFinal += `\n\n--- DADOS DO BANCO ---\n${contextRAG}\n---\nUse ESSES parâmetros na resposta. Não mencione outras resinas além da que está nos dados.`;
+        }
+        if (conhecimentoAprovado) {
+            systemFinal += `\n\n--- ${conhecimentoAprovado} ---\nUse esses casos validados como referência de tom e precisão, mas não copie literalmente se a pergunta atual for diferente.`;
+        }
 
         // 4. Monta histórico de conversa
         const mensagensHistorico = Array.isArray(historico)
@@ -262,6 +301,18 @@ router.post('/', async (req, res) => {
         );
 
         const reply = completion.choices?.[0]?.message?.content || 'Não consegui entender essa pergunta direito. Você pode reformular com mais detalhes, ou se preferir, me conta qual resina e impressora está usando que te ajudo melhor! Se quiser falar direto com a equipe, o WhatsApp é (31) 3271-6935.';
+
+        // 6. Salva a conversa para curadoria no painel ADM (não bloqueia a resposta)
+        Conversa.create({
+            clienteId,
+            clienteNome,
+            pergunta: text,
+            resposta: reply,
+            resinaDetectada: resinaAtual || '',
+            impressoraDetectada: impressoraAtual || '',
+            ragUsado: !!contextRAG,
+            fonte: contextRAG ? 'rag+deepseek' : 'deepseek',
+        }).catch(err => console.error('[SALVAR CONVERSA]', err.message));
 
         res.json({ success: true, reply, source: contextRAG ? 'rag+deepseek' : 'deepseek', ragUsado: !!contextRAG });
 
