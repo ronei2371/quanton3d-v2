@@ -202,6 +202,7 @@ PROBLEMAS E SOLUÇÕES:
 - Delaminação: Aumente exposição normal. Agite bem. Mínimo 18°C.
 - Warping: Reduza exposição base. Mais suportes nas bordas.
 - Suporte difícil: Reduza exposição normal 0,2-0,5s. Use suporte leve.
+- Linhas entre camadas: Aumente exposição normal 0,2-0,5s E reduza velocidade de elevação/retração em 20-30%. Agite bem a resina.
 - FEP opaco: Troque imediatamente.
 - Peça porosa: Resina mal agitada ou vencida.
 - Racha após dias: Furo de drenagem 2-3mm em peças ocas. Pós-cura máx 5 min por lado.`;
