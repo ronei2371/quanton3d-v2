@@ -559,7 +559,13 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
   };
   return (
     <div className="modal-backdrop">
-      <section className="site-modal" style={(type === "calc_custos" || (type && type.startsWith("fispq_"))) ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" } : {}}>
+      <section className="site-modal" style={
+          (type === "calc_custos" || (type && type.startsWith("fispq_")))
+            ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" }
+            : type === "bot"
+            ? { width: "min(760px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "14px" }
+            : {}
+        }>
         <div className="guide-header">
           <h2>{nomeFispq || titles[type] || "Informações"}</h2>
           <button type="button" onClick={onClose}>Fechar</button>
@@ -1815,7 +1821,7 @@ Como posso te ajudar hoje?`;
   );
 
   return (
-    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "60vh" }}>
+    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "78vh", maxHeight: "780px" }}>
       {(ctx.resina || ctx.impressora) && (
         <div style={{ padding: "8px 14px", background: "rgba(79,209,255,0.06)", borderBottom: "1px solid rgba(79,209,255,0.15)", fontSize: "0.78rem", color: "#8ba3be", display: "flex", gap: "12px", flexWrap: "wrap" }}>
           {ctx.resina && <span>🧪 {ctx.resina}</span>}
