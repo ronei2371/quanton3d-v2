@@ -1926,6 +1926,7 @@ function BotContent({ cliente }) {
   const [feedbackAberto, setFeedbackAberto] = useState(null); // índice da mensagem com form de feedback aberto
   const [fotoFeedback, setFotoFeedback] = useState(null);
   const [enviandoFeedback, setEnviandoFeedback] = useState(false);
+  const [paramsFeedback, setParamsFeedback] = useState({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" });
   const scrollRef = useRef(null);
 
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [mensagens]);
@@ -2009,11 +2010,20 @@ Como posso te ajudar hoje?`;
     try {
       let foto = "";
       if (fotoFeedback) foto = await fotoParaBase64(fotoFeedback);
-      const configuracaoCliente = `Resina: ${ctx.resina || "não informada"} | Impressora: ${ctx.impressora || "não informada"} | Altura de camada: ${ctx.altura || "0.05"}mm`;
+      const partesConfig = [
+        `Resina: ${ctx.resina || "não informada"}`,
+        `Impressora: ${ctx.impressora || "não informada"}`,
+        `Altura de camada: ${paramsFeedback.alturaCamada || ctx.altura || "0.05"}mm`,
+        paramsFeedback.exposicaoNormal && `Exposição normal: ${paramsFeedback.exposicaoNormal}s`,
+        paramsFeedback.exposicaoBase && `Exposição base: ${paramsFeedback.exposicaoBase}s`,
+        paramsFeedback.camadasBase && `Camadas base: ${paramsFeedback.camadasBase}`,
+      ].filter(Boolean);
+      const configuracaoCliente = partesConfig.join(" | ");
       await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "nao_satisfatoria", foto, configuracaoCliente });
       setMensagens(prev => prev.map((m, i) => i === indice ? { ...m, feedbackEnviado: "nao_satisfatoria" } : m));
       setFeedbackAberto(null);
       setFotoFeedback(null);
+      setParamsFeedback({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" });
     } catch (err) {
       alert("Não consegui enviar seu feedback agora. Tente novamente.");
     } finally {
@@ -2125,12 +2135,40 @@ Como posso te ajudar hoje?`;
               </div>
             )}
 
-            {/* Form de feedback negativo — foto + envio */}
+            {/* Form de feedback negativo — configurações estilo Chitubox + foto + envio */}
             {m.isBot && feedbackAberto === i && (
-              <div style={{ marginTop: "8px", padding: "12px", borderRadius: "10px", background: "rgba(255,107,107,0.06)", border: "1px solid rgba(255,107,107,0.2)", width: "100%", maxWidth: "320px" }}>
-                <p style={{ margin: "0 0 8px", fontSize: "0.78rem", color: "#ff8fab", fontWeight: 700 }}>
-                  Poxa, desculpa! Manda uma foto do problema (opcional) que a equipe vai analisar:
+              <div style={{ marginTop: "8px", padding: "12px", borderRadius: "10px", background: "rgba(255,107,107,0.06)", border: "1px solid rgba(255,107,107,0.2)", width: "100%", maxWidth: "360px" }}>
+                <p style={{ margin: "0 0 10px", fontSize: "0.78rem", color: "#ff8fab", fontWeight: 700 }}>
+                  Poxa, desculpa! Confirma as configurações que está usando (o que souber) e manda uma foto do problema:
                 </p>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "8px" }}>
+                  <div>
+                    <label style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block", marginBottom: "3px" }}>Altura de camada</label>
+                    <input value={paramsFeedback.alturaCamada} onChange={e => setParamsFeedback(p => ({ ...p, alturaCamada: e.target.value }))}
+                      placeholder={ctx.altura ? ctx.altura + "mm" : "Ex: 0.05mm"}
+                      style={{ width: "100%", padding: "6px 8px", borderRadius: "7px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.78rem" }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block", marginBottom: "3px" }}>Camadas base</label>
+                    <input value={paramsFeedback.camadasBase} onChange={e => setParamsFeedback(p => ({ ...p, camadasBase: e.target.value }))}
+                      placeholder="Ex: 6"
+                      style={{ width: "100%", padding: "6px 8px", borderRadius: "7px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.78rem" }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block", marginBottom: "3px" }}>Exposição normal (s)</label>
+                    <input value={paramsFeedback.exposicaoNormal} onChange={e => setParamsFeedback(p => ({ ...p, exposicaoNormal: e.target.value }))}
+                      placeholder="Ex: 2.1"
+                      style={{ width: "100%", padding: "6px 8px", borderRadius: "7px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.78rem" }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block", marginBottom: "3px" }}>Exposição base (s)</label>
+                    <input value={paramsFeedback.exposicaoBase} onChange={e => setParamsFeedback(p => ({ ...p, exposicaoBase: e.target.value }))}
+                      placeholder="Ex: 35"
+                      style={{ width: "100%", padding: "6px 8px", borderRadius: "7px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.78rem" }} />
+                  </div>
+                </div>
+
                 <label style={{ display: "block", padding: "10px", borderRadius: "8px", border: "1px dashed rgba(255,107,107,0.3)", background: "rgba(0,0,0,0.2)", cursor: "pointer", textAlign: "center", marginBottom: "8px" }}>
                   <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => setFotoFeedback(e.target.files?.[0] || null)} />
                   <span style={{ fontSize: "0.75rem", color: fotoFeedback ? "#49e68b" : "#9fb4c7" }}>
@@ -2142,7 +2180,7 @@ Como posso te ajudar hoje?`;
                     style={{ flex: 1, padding: "8px", borderRadius: "8px", border: 0, background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" }}>
                     {enviandoFeedback ? "Enviando..." : "Enviar para análise"}
                   </button>
-                  <button type="button" onClick={() => { setFeedbackAberto(null); setFotoFeedback(null); }}
+                  <button type="button" onClick={() => { setFeedbackAberto(null); setFotoFeedback(null); setParamsFeedback({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" }); }}
                     style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: "#8ba3be", fontSize: "0.78rem", cursor: "pointer" }}>
                     Cancelar
                   </button>
