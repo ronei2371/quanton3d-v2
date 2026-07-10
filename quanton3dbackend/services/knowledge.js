@@ -31,7 +31,7 @@ export const KNOWLEDGE_BASE = `
 - Cores: Clear, Grey, Skin, Black
 - Lavagem: Álcool isopropílico 95%+
 - Pós-cura: 5-10 min câmara UV 405nm
-- Atenção: Tende a aderir mais à plataforma — use FEP de qualidade e considere desmoldante (spray de silicone) na plataforma
+- Atenção: Tende a aderir mais à plataforma — use FEP de qualidade e ajuste a exposição base
 - Exposição base: Reduzir 10-15% em relação ao padrão para evitar superaderência
 - Temperatura ideal: 22-28°C
 
@@ -147,9 +147,9 @@ Soluções:
 1. Reduza exposição base em 15-25% (ex: 40s → 30s)
 2. Aumente Z-offset em 0,02 a 0,05mm
 3. Reduza camadas base de 8 para 4-6
-4. Lixe levemente a plataforma com lixa 400
-5. Para IRON: aplique spray desmoldante de silicone na plataforma
-6. Aqueça o secador de cabelo na plataforma por 30s antes de remover
+4. Lixe levemente a plataforma com lixa 400 para criar textura de ancoragem controlada
+5. Use uma espátula fina e flexível, incline com movimento de alavanca em vez de puxar direto
+6. Aqueça levemente a plataforma (secador de cabelo, 30s a distância segura) para a resina contrair e soltar mais fácil
 
 ### Peça não adere à plataforma / cai no fundo
 Causas: Exposição base baixa, nivelamento incorreto, plataforma suja, temperatura baixa
