@@ -17,6 +17,7 @@ import chatRoutes from "./routes/chat.js";
 import adminRoutes from "./routes/admin.js";
 import botTicketsRoutes from "./routes/botTickets.js";
 import conversasRoutes from "./routes/conversas.js";
+import visitasRoutes from "./routes/visitas.js";
 
 dotenv.config();
 
@@ -77,6 +78,7 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/conversas", conversasRoutes);
+app.use("/api/visitas", visitasRoutes);
 app.use("/api/contact-messages", contactMessagesRoutes);
 
 // Rota coringa para o Frontend (Single Page Application)
