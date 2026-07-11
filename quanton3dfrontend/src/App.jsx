@@ -139,6 +139,18 @@ function App() {
 
   useEffect(() => { const t = setTimeout(carregarParametros, 0); return () => clearTimeout(t); }, []);
 
+  // Registra visita ao site — uma vez por sessão de navegador
+  useEffect(() => {
+    try {
+      let sessionId = sessionStorage.getItem("quanton3d_session_id");
+      if (!sessionId) {
+        sessionId = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+        sessionStorage.setItem("quanton3d_session_id", sessionId);
+      }
+      api.post("/visitas", { sessionId, pagina: window.location.pathname, origem: document.referrer || "" }).catch(() => {});
+    } catch (_) {}
+  }, []);
+
   const resinas = Array.from(new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))).sort((a, b) => a.localeCompare(b));
   const impressoras = Array.from(new Set(parametros.filter((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora).map((item) => item.marca ? `${item.marca} - ${item.impressora}` : item.impressora))).sort((a, b) => a.localeCompare(b));
   const totalImpressoras = new Set(parametros.filter((item) => item.impressora).map((item) => `${item.marca || ""}-${item.impressora}`)).size;
@@ -1129,6 +1141,25 @@ function AdminContent() {
   const [filtroConversas, setFiltroConversas] = useState("todas");
   const [clientesSelecionados, setClientesSelecionados] = useState([]);
   const [excluindoClientes, setExcluindoClientes] = useState(false);
+  const [filtroVisitasInicio, setFiltroVisitasInicio] = useState("");
+  const [filtroVisitasFim, setFiltroVisitasFim] = useState("");
+  const [relatorioVisitas, setRelatorioVisitas] = useState(null);
+  const [carregandoVisitas, setCarregandoVisitas] = useState(false);
+
+  async function buscarRelatorioVisitas() {
+    try {
+      setCarregandoVisitas(true);
+      const params = {};
+      if (filtroVisitasInicio) params.startDate = filtroVisitasInicio;
+      if (filtroVisitasFim) params.endDate = filtroVisitasFim;
+      const res = await api.get("/visitas/relatorio", { headers: { Authorization: "Bearer " + token }, params });
+      setRelatorioVisitas(res.data);
+    } catch (err) {
+      alert("Erro ao gerar relatório de visitas.");
+    } finally {
+      setCarregandoVisitas(false);
+    }
+  }
 
   async function excluirClientesSelecionados() {
     if (!clientesSelecionados.length) return;
@@ -1244,6 +1275,64 @@ function AdminContent() {
 
       {aba === "metricas" && (
         <div>
+          {/* Relatório de visitantes por período */}
+          <div style={{ background: "rgba(184,156,255,0.06)", border: "1px solid rgba(184,156,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+            <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#b89cff", fontSize: "0.85rem" }}>📅 VISITANTES DO SITE POR PERÍODO</p>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "flex-end", marginBottom: "14px" }}>
+              <div>
+                <label style={{ fontSize: "0.72rem", color: "#9fb4c7", display: "block", marginBottom: "4px" }}>Data inicial</label>
+                <input type="date" value={filtroVisitasInicio} onChange={e => setFiltroVisitasInicio(e.target.value)}
+                  style={{ padding: "7px 10px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+              </div>
+              <div>
+                <label style={{ fontSize: "0.72rem", color: "#9fb4c7", display: "block", marginBottom: "4px" }}>Data final</label>
+                <input type="date" value={filtroVisitasFim} onChange={e => setFiltroVisitasFim(e.target.value)}
+                  style={{ padding: "7px 10px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+              </div>
+              <button type="button" onClick={buscarRelatorioVisitas} disabled={carregandoVisitas}
+                style={{ padding: "8px 16px", borderRadius: "8px", border: 0, background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 800, cursor: "pointer", fontSize: "0.8rem" }}>
+                {carregandoVisitas ? "Carregando..." : "🔍 Gerar relatório"}
+              </button>
+            </div>
+
+            {relatorioVisitas && (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px,1fr))", gap: "10px", marginBottom: "12px" }}>
+                  <div style={{ background: "rgba(184,156,255,0.1)", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                    <span style={{ fontSize: "0.7rem", color: "#9fb4c7", display: "block" }}>Total de visitas</span>
+                    <strong style={{ fontSize: "1.6rem", color: "#b89cff" }}>{relatorioVisitas.totalVisitas}</strong>
+                  </div>
+                  <div style={{ background: "rgba(79,209,255,0.1)", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                    <span style={{ fontSize: "0.7rem", color: "#9fb4c7", display: "block" }}>Visitantes únicos</span>
+                    <strong style={{ fontSize: "1.6rem", color: "#4fd1ff" }}>{relatorioVisitas.visitantesUnicos}</strong>
+                  </div>
+                  <div style={{ background: "rgba(73,230,139,0.1)", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                    <span style={{ fontSize: "0.7rem", color: "#9fb4c7", display: "block" }}>Média por dia</span>
+                    <strong style={{ fontSize: "1.6rem", color: "#49e68b" }}>
+                      {relatorioVisitas.porDia.length > 0 ? (relatorioVisitas.visitantesUnicos / relatorioVisitas.porDia.length).toFixed(1) : "0"}
+                    </strong>
+                  </div>
+                </div>
+
+                {relatorioVisitas.porDia.length > 0 ? (
+                  <div style={{ maxHeight: "220px", overflowY: "auto", display: "grid", gap: "5px" }}>
+                    {relatorioVisitas.porDia.slice().reverse().map(d => (
+                      <div key={d.dia} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", borderRadius: "8px", padding: "7px 12px" }}>
+                        <span style={{ color: "#d3e4f8", fontSize: "0.82rem" }}>{new Date(d.dia + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", weekday: "short" })}</span>
+                        <span style={{ background: "rgba(184,156,255,0.15)", color: "#b89cff", borderRadius: "999px", padding: "2px 10px", fontSize: "0.78rem", fontWeight: 800 }}>{d.visitantes} visitante{d.visitantes !== 1 ? "s" : ""}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ color: "#9fb4c7", fontSize: "0.82rem", margin: 0 }}>Nenhuma visita registrada nesse período.</p>
+                )}
+              </>
+            )}
+            {!relatorioVisitas && (
+              <p style={{ color: "#8ba3be", fontSize: "0.78rem", margin: 0 }}>Selecione um período e clique em "Gerar relatório" para ver quantas pessoas visitaram o site por dia.</p>
+            )}
+          </div>
+
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "18px" }}>
             {[
               { icon: "👥", label: "Clientes", valor: dados.totais.clientes || 0, cor: "#4fd1ff" },
@@ -1767,8 +1856,8 @@ function AdminContent() {
                     </strong>
                     <small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7" }}>
-                    <span>Tel: {c.telefone || "-"}</span><span>Email: {c.email || "-"}</span><span>Origem: {c.origem || "-"}</span>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", fontSize: "0.82rem", color: "#9fb4c7" }}>
+                    <span>📱 {c.telefone || "-"}</span><span>✉️ {c.email || "-"}</span><span>🔗 {c.origem || "-"}</span>
                   </div>
                 </div>
               </div>
