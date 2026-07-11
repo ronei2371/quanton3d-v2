@@ -54,16 +54,18 @@ export const KNOWLEDGE_BASE = `
 - Temperatura ideal: 20-28°C
 
 ### ATHOM DENTAL
-- Aplicação: Modelos de estudo, modelos de trabalho, guias cirúrgicos, próteses provisórias
-- Características: Alta precisão dimensional, biocompatível para uso intraoral de curta duração
+⚠️ AVISO DE SEGURANÇA: Esta resina é indicada para modelos de estudo, modelos de trabalho, guias cirúrgicos e próteses provisórias — todos de uso EXTRAORAL ou de contato clínico limitado e supervisionado. Qualquer aplicação de contato direto e prolongado com a mucosa oral do paciente exige avaliação de um profissional dentista habilitado e verificação da documentação de biocompatibilidade específica para essa finalidade. O ELIO NUNCA deve indicar esta resina como aprovada para uso intraoral definitivo — apenas o profissional pode fazer essa avaliação caso a caso.
+- Aplicação: Modelos de estudo, modelos de trabalho, guias cirúrgicos, próteses provisórias (sob supervisão profissional)
+- Características: Alta precisão dimensional
 - Cores: White Cream, Ocre, Light Grey, Terracota, Dark Grey, Blue, Skin, White, Marfim
 - Lavagem: Álcool isopropílico 95%+ ou isopropanol grau odontológico
 - Pós-cura: 10-15 min câmara UV 405nm
 - Temperatura ideal: 22-26°C
-- Atenção: Seguir protocolos de biossegurança para uso clínico
+- Atenção: Uso profissional. Seguir protocolos de biossegurança e a bula/documentação técnica oficial do produto.
 
 ### ATHOM ALINHADORES
-- Aplicação: Placas termoformadas para alinhadores dentários transparentes
+⚠️ AVISO DE SEGURANÇA: Uso profissional em consultório/laboratório odontológico, sob prescrição e acompanhamento de dentista ou ortodontista. Não é indicado para uso doméstico ou automedicação ortodôntica.
+- Aplicação: Placas termoformadas para alinhadores dentários transparentes, uso profissional
 - Características: Alta transparência, resistência ao vacuoforming e thermoforming
 - Cores: Terracota, Dark Grey, White, Ocre, Marfim
 - Lavagem: Álcool isopropílico 95%+
@@ -72,6 +74,7 @@ export const KNOWLEDGE_BASE = `
 - Espessura recomendada: 0,5-1,0mm para modelos de alinhadores
 
 ### ATHOM WASHABLE
+⚠️ AVISO DE SEGURANÇA: Mesmo uso profissional das demais ATHOM — modelos de estudo e ortodônticos. Não é para uso intraoral direto sem avaliação profissional.
 - Aplicação: Modelos dentários e ortodônticos, laboratórios sem boa ventilação
 - Características: Lavável em água, elimina necessidade de álcool isopropílico
 - Cores: Light Grey, White Cream, Skin, Marfim
