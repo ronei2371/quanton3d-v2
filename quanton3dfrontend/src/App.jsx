@@ -459,13 +459,23 @@ function App() {
             </select>
           </label>
         </div>
-        {!resultado && <div className="empty-state"><h3>Selecione resina e impressora</h3><p>Os parâmetros técnicos aparecerão aqui automaticamente.</p></div>}
+        {!resultado && <div className="empty-state"><h3>Selecione resina e impressora</h3><p>A configuração inicial recomendada aparecerá aqui automaticamente.</p></div>}
         {resultado && (
           <div className="result-card">
             <div className="result-header">
               <h3>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
               <button type="button" onClick={copiarParametros}>Copiar parâmetros</button>
             </div>
+
+            {/* Selo de confiança do parâmetro */}
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "999px", marginBottom: "12px",
+              background: resultado.confianca === "estimado" ? "rgba(255,209,102,0.12)" : "rgba(73,230,139,0.12)",
+              border: "1px solid " + (resultado.confianca === "estimado" ? "rgba(255,209,102,0.3)" : "rgba(73,230,139,0.3)") }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: resultado.confianca === "estimado" ? "#ffd166" : "#49e68b" }}>
+                {resultado.confianca === "estimado" ? "⚠️ Estimativa inicial" : "✅ Testado pela Quanton3D"}
+              </span>
+            </div>
+
             <div className="params-grid">
               <ParamItem label="Altura de Camada" value={resultado.alturaCamada} />
               <ParamItem label="Tempo de Exposição" value={resultado.exposicaoNormal} />
@@ -474,6 +484,10 @@ function App() {
               <ParamItem label="Retardo UV" value={resultado.retardoUV} />
               <ParamItem label="Potência UV" value={resultado.potenciaUV} />
             </div>
+
+            <p style={{ margin: "12px 0 0", fontSize: "0.75rem", color: "#8ba3be", lineHeight: 1.5 }}>
+              💡 Essa é uma configuração inicial recomendada. Pequenos ajustes podem ser necessários conforme temperatura ambiente, manutenção da impressora e estado do FEP.
+            </p>
           </div>
         )}
       </section>
@@ -1023,7 +1037,7 @@ function AdminContent() {
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
   const [diagnostico, setDiagnostico] = useState({});
-  const [novoParam, setNovoParam] = useState({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", liftSpeed:"", retractSpeed:"" });
+  const [novoParam, setNovoParam] = useState({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", liftSpeed:"", retractSpeed:"", confianca:"oficial" });
   const [salvandoParam, setSalvandoParam] = useState(false);
   const [msgParam, setMsgParam] = useState("");
   const [parametrosAdm, setParametrosAdm] = useState([]);
@@ -1631,6 +1645,25 @@ function AdminContent() {
                 </label>
               ))}
             </div>
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "6px" }}>Confiança do parâmetro</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button type="button" onClick={() => setNovoParam(p => ({ ...p, confianca: "oficial" }))}
+                  style={{ flex: 1, padding: "9px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem", fontWeight: 800, border: "1px solid rgba(73,230,139,0.3)",
+                    background: novoParam.confianca === "oficial" ? "rgba(73,230,139,0.18)" : "rgba(73,230,139,0.05)", color: "#49e68b" }}>
+                  ✅ Testado pela Quanton3D
+                </button>
+                <button type="button" onClick={() => setNovoParam(p => ({ ...p, confianca: "estimado" }))}
+                  style={{ flex: 1, padding: "9px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem", fontWeight: 800, border: "1px solid rgba(255,209,102,0.3)",
+                    background: novoParam.confianca === "estimado" ? "rgba(255,209,102,0.18)" : "rgba(255,209,102,0.05)", color: "#ffd166" }}>
+                  ⚠️ Estimativa inicial
+                </button>
+              </div>
+              <span style={{ fontSize: "0.72rem", color: "#8ba3be", marginTop: "4px", display: "block" }}>
+                "Testado" = validado em impressão real pela equipe. "Estimativa" = baseado em resina/impressora parecida, ainda não confirmado.
+              </span>
+            </div>
+
             <button type="button" onClick={salvarParametro} disabled={salvandoParam}
               style={{ width: "100%", padding: "11px", borderRadius: "10px", border: 0, background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", fontSize: "0.9rem" }}>
               {salvandoParam ? "Salvando..." : "Salvar parâmetro"}
@@ -1657,10 +1690,16 @@ function AdminContent() {
               .map((p) => (
                 <div key={p._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "10px", padding: "10px 12px" }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px" }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px", flexWrap: "wrap" }}>
                       <strong style={{ color: "#4fd1ff", fontSize: "0.88rem" }}>{p.resina}</strong>
                       <span style={{ color: "#9fb4c7", fontSize: "0.82rem" }}>+</span>
                       <span style={{ color: "#eaf3ff", fontSize: "0.85rem" }}>{p.impressora}</span>
+                      <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800,
+                        background: p.confianca === "estimado" ? "rgba(255,209,102,0.12)" : "rgba(73,230,139,0.12)",
+                        color: p.confianca === "estimado" ? "#ffd166" : "#49e68b",
+                        border: "1px solid " + (p.confianca === "estimado" ? "rgba(255,209,102,0.3)" : "rgba(73,230,139,0.3)") }}>
+                        {p.confianca === "estimado" ? "⚠️ Estimativa" : "✅ Testado"}
+                      </span>
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
                       {[
