@@ -16,80 +16,80 @@ export const KNOWLEDGE_BASE = `
 
 ## RESINAS — GUIA COMPLETO DE USO
 
-### ALCHEMIST
-- Aplicação: Uso geral, protótipos, miniaturas, action figures, modelos
-- Características: Alta resolução de detalhes, ótimo custo-benefício
-- Cores: Várias cores pigmentadas prontas para uso
-- Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405nm
-- Temperatura ideal: 20-28°C
-- Problema comum: Nenhum específico — é a resina mais versátil da linha
+### ALCHEMIST (fonte: site oficial quanton3d.com.br)
+- Aplicação oficial: Reprodução de efeitos especiais em colecionáveis e itens de decoração
+- Características: Cores translúcidas e vibrantes, efeito fosco após limpeza com álcool (pode ser aprimorado com lixamento ou verniz)
+- Cores: Green, Aqua, Sunset, Pink, Red, Violet, Scarlet
+- Lavagem: Álcool isopropílico, 2-4 minutos em movimento
+- Pós-cura: Câmara UV — tempo varia conforme potência
+- Temperatura de trabalho: 18-35°C (pode pré-aquecer até no máximo 40°C)
+- Armazenamento: 18-35°C, ambiente ventilado, longe de luz solar
+- Validade: 12 meses da fabricação
+- Atenção: Resinas pigmentadas já vêm com carga de pigmento pronta — NÃO adicionar pigmento extra (risco de falha de impressão e perda de garantia)
 
-### IRON
-- Aplicação: Peças funcionais, encaixes, ferramentas, peças sob pressão/impacto
-- Características: Alta resistência mecânica e ao impacto, mais rígida que as demais
-- Cores: Clear, Grey, Skin, Black
-- Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405nm
-- Atenção: Tende a aderir mais à plataforma — use FEP de qualidade e ajuste a exposição base
-- Exposição base: Reduzir 10-15% em relação ao padrão para evitar superaderência
-- Temperatura ideal: 22-28°C
+### IRON (fonte: site oficial)
+- Aplicação oficial: Projetos que exigem flexibilidade e resistência a impactos — industrial, prototipagem funcional, peças finais, ferramentas
+- Características: Alta resistência ao impacto, dureza intermediária, flexibilidade
+- Atenção técnica: Adequada para peças acima de 2mm de espessura — abaixo disso fica mais flexível. NÃO recomendada para peças muito inclinadas. Baixa resistência à água.
+- Propriedades físicas medidas em laboratório: Módulo de Elasticidade 635 MPa | Tensão de Ruptura 11,5 MPa | Alongamento 50% | Dureza Shore D ~55
+- Características físicas: Odor baixo, viscosidade baixa, pH 6,1, densidade 1,09 g/cm³
+- Cores: Grey, Skin, Black, Clear
+- Lavagem: Álcool isopropílico, 2-4 minutos em movimento
+- Temperatura de trabalho: 18-35°C
+- Nota: propriedades podem variar com geometria, temperatura e parâmetros de impressão da peça
 
-### FLEXFORM
-- Aplicação: Peças flexíveis — juntas, vedações, amortecedores, pneus, solas
-- Características: Elástica, dobra sem quebrar, dureza Shore A
+### FLEXFORM (fonte: site oficial)
+- Aplicação oficial: Protótipos e peças industriais que exigem alta flexibilidade e resistência, sem comprometer estrutura
+- Características: Alta flexibilidade, durabilidade robusta contra desgaste/impacto, boa precisão dimensional
 - Cores: Black, Clear
-- Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 3-5 min (excesso torna rígida)
-- Atenção: NÃO usar para peças rígidas ou estruturais
-- Temperatura ideal: 24-28°C (resina mais sensível ao frio)
-- Dica: Imprimir em temperatura ambiente mais alta melhora a elasticidade
+- Lavagem: Álcool isopropílico, ~1 minuto em movimento (mais curto que as outras resinas)
+- Temperatura de trabalho: 18-35°C
+- Atenção: Resinas pigmentadas já vêm com carga de pigmento pronta — não adicionar pigmento extra
 
-### 70/30
-- Aplicação: Action figures, peças de engenharia, encaixes com absorção de impacto
-- Características: Híbrida — 70% rígida + 30% flexível, resiste impacto sem quebrar
+### 70/30 (fonte: site oficial)
+- Aplicação oficial: Protótipos e peças que exigem resistência mecânica com leve flexibilidade
+- Características: Equilíbrio entre flexibilidade e resistência, alto detalhamento
+- Atenção técnica: NÃO recomendada para peças com geometrias finas e suspensas (estruturas delicadas)
+- Propriedades físicas medidas em laboratório: Módulo de Elasticidade 620 MPa | Tensão de Ruptura 15,7 MPa | Alongamento 11% | Dureza Shore D ~67
+- Características físicas: Odor médio, viscosidade média, pH 6,0, densidade 1,017 g/cm³
 - Cores: Black, Grey, Skin, Clear
-- Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405nm
-- Temperatura ideal: 20-28°C
+- Lavagem: Álcool isopropílico, 2-4 minutos em movimento
 
-### ATHOM DENTAL
-⚠️ AVISO DE SEGURANÇA: Esta resina é indicada para modelos de estudo, modelos de trabalho, guias cirúrgicos e próteses provisórias — todos de uso EXTRAORAL ou de contato clínico limitado e supervisionado. Qualquer aplicação de contato direto e prolongado com a mucosa oral do paciente exige avaliação de um profissional dentista habilitado e verificação da documentação de biocompatibilidade específica para essa finalidade. O ELIO NUNCA deve indicar esta resina como aprovada para uso intraoral definitivo — apenas o profissional pode fazer essa avaliação caso a caso.
-- Aplicação: Modelos de estudo, modelos de trabalho, guias cirúrgicos, próteses provisórias (sob supervisão profissional)
-- Características: Alta precisão dimensional
+### ATHOM DENTAL (fonte: site oficial)
+⚠️ AVISO DE SEGURANÇA OFICIAL DO FABRICANTE: "Esta resina é destinada apenas para uso EXTERNO, NÃO sendo biocompatível." Uso confirmado apenas para modelos de estudo, troquéis e protótipos de peças dentárias — NUNCA para contato direto/prolongado com a mucosa oral do paciente. O ELIO NUNCA deve sugerir uso intraoral desta resina.
+- Aplicação oficial: Modelos de estudo, troquéis e protótipos de peças dentárias (uso de laboratório/bancada)
+- Dica oficial: para modelos com encaixe, evitar resinas totalmente rígidas — a SPIN tem leve flexibilidade que ajuda em encaixes que precisam de mais firmeza
 - Cores: White Cream, Ocre, Light Grey, Terracota, Dark Grey, Blue, Skin, White, Marfim
-- Lavagem: Álcool isopropílico 95%+ ou isopropanol grau odontológico
-- Pós-cura: 10-15 min câmara UV 405nm
-- Temperatura ideal: 22-26°C
-- Atenção: Uso profissional. Seguir protocolos de biossegurança e a bula/documentação técnica oficial do produto.
+- Lavagem: Álcool isopropílico, 2-4 minutos em movimento
+- Temperatura de trabalho: 18-35°C
 
-### ATHOM ALINHADORES
-⚠️ AVISO DE SEGURANÇA: Uso profissional em consultório/laboratório odontológico, sob prescrição e acompanhamento de dentista ou ortodontista. Não é indicado para uso doméstico ou automedicação ortodôntica.
-- Aplicação: Placas termoformadas para alinhadores dentários transparentes, uso profissional
-- Características: Alta transparência, resistência ao vacuoforming e thermoforming
+### ATHOM ALINHADORES (fonte: site oficial)
+⚠️ AVISO: Descrição oficial confirma "Produto de uso externo e não intraoral." Uso profissional em laboratório odontológico.
+- Aplicação oficial: Modelos para termoformagem de alinhadores ortodônticos, contenções, placas de clareamento, placas de bruxismo, placas miorrelaxantes, protetores bucais, guias e matrizes termoformadas
+- Características: Alta resolução/precisão, baixíssima contração dimensional, BOA RESISTÊNCIA TÉRMICA (suporta calor de plastificadoras a vácuo/termoformadoras sem deformar, trincar ou derreter)
+- Importante: NÃO usar desmoldante (vaselina ou similares) no processo de termoformagem — compromete aderência e acabamento da placa
 - Cores: Terracota, Dark Grey, White, Ocre, Marfim
-- Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 10-15 min câmara UV 405nm
-- Temperatura termoformagem: 80-120°C dependendo do material da placa
-- Espessura recomendada: 0,5-1,0mm para modelos de alinhadores
+- Lavagem: Álcool isopropílico, 2-4 minutos em movimento
+- Odor: Baixo/médio, viscosidade baixa
 
-### ATHOM WASHABLE
-⚠️ AVISO DE SEGURANÇA: Mesmo uso profissional das demais ATHOM — modelos de estudo e ortodônticos. Não é para uso intraoral direto sem avaliação profissional.
-- Aplicação: Modelos dentários e ortodônticos, laboratórios sem boa ventilação
-- Características: Lavável em água, elimina necessidade de álcool isopropílico
+### ATHOM WASHABLE (fonte: site oficial)
+⚠️ AVISO DE SEGURANÇA OFICIAL: "Embora lavável em água, a resina NÃO é biocompatível e apresenta toxicidade." Mesma restrição das demais ATHOM — uso de laboratório/bancada, não para contato intraoral direto.
+- Aplicação oficial: Modelos odontológicos de alta precisão, elimina necessidade de álcool para limpeza
+- Características: Alta rigidez com leve flexibilidade, detalhamento superficial excepcional
+- Dica oficial: para modelos com encaixe, considerar a SPIN (leve flexibilidade ideal para encaixes)
 - Cores: Light Grey, White Cream, Skin, Marfim
-- Lavagem: Água corrente com sabão neutro, 2-3 minutos
-- Pós-cura: 10-15 min câmara UV 405nm
-- Temperatura ideal: 22-26°C
+- Lavagem: Água corrente, ~2 minutos em movimento
+- Vantagem: reduz custo operacional por não precisar de álcool isopropílico
 
-### POSEIDON
-- Aplicação: Miniaturas, modelos, action figures — para quem quer evitar álcool
-- Características: Water washable, lavável em água corrente
+### POSEIDON (fonte: site oficial)
+⚠️ AVISO: "Não é biocompatível" — embora lavável em água, ainda apresenta toxicidade e exige EPIs.
+- Aplicação oficial: Protótipos, miniaturas, peças funcionais, itens de decoração — dispensa álcool para limpeza
+- Características: Rígida com leve flexibilidade, detalhamento preciso, baixo odor, ampla compatibilidade com impressoras
+- Propriedades físicas medidas em laboratório: Módulo de Elasticidade 492 MPa | Tensão de Ruptura 11,7 MPa | Alongamento 4% | Dureza Shore D ~64
+- Características físicas: pH 5,5, densidade 1,10 g/cm³
 - Cores: Clear, Light Grey, Skin
-- Lavagem: Água corrente com sabão neutro, 2-3 minutos
-- Pós-cura: 5-10 min câmara UV 405nm
-- Temperatura ideal: 22-28°C
-- Dica: Lavar imediatamente após impressão — resina lavável endurece mais rápido sem lavagem
+- Lavagem: Água corrente, ~2 minutos em movimento
+- Temperatura de trabalho: 18-35°C
 
 ### PYROBLAST
 - Aplicação: Prototipagem rápida, arte, decoração, action figures com detalhes finos
