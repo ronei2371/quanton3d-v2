@@ -18,7 +18,7 @@ function authAdmin(req, res, next) {
 }
 
 router.get('/', listarParametros);
-router.post('/', criarParametro);
+router.post('/', authAdmin, criarParametro); // protegido — só admin pode cadastrar parâmetro
 router.get('/resinas', listarResinas);
 router.get('/impressoras', listarImpressoras);
 router.get('/perfil', buscarPerfil);
