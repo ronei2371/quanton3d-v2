@@ -33,15 +33,29 @@ function normalizarPayload(req, _res, next) {
   if (!req.body) req.body = {};
 
   const parametros = {};
+  const redesSociais = {};
   Object.entries(req.body).forEach(([chave, valor]) => {
-    if (!chave.startsWith('parametros.')) return;
-    const nomeCampo = chave.replace('parametros.', '');
-    parametros[nomeCampo] = valor;
-    delete req.body[chave];
+    if (chave.startsWith('parametros.')) {
+      const nomeCampo = chave.replace('parametros.', '');
+      parametros[nomeCampo] = valor;
+      delete req.body[chave];
+    } else if (chave.startsWith('redesSociais.')) {
+      const nomeCampo = chave.replace('redesSociais.', '');
+      redesSociais[nomeCampo] = valor;
+      delete req.body[chave];
+    }
   });
 
   if (Object.keys(parametros).length > 0) {
     req.body.parametros = parametros;
+  }
+  if (Object.keys(redesSociais).length > 0) {
+    req.body.redesSociais = redesSociais;
+  }
+
+  // "true"/"false" (string) -> boolean real
+  if (typeof req.body.autorizaDivulgacao === 'string') {
+    req.body.autorizaDivulgacao = req.body.autorizaDivulgacao === 'true';
   }
 
   // Converte imagem para Base64 e salva direto no banco
