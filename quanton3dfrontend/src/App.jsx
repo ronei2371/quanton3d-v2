@@ -101,6 +101,10 @@ function formatarMarkdown(texto) {
 }
 
 function App() {
+  // Controle de seções em acordeão (clica no título pra abrir/fechar os itens)
+  const [secoesAbertas, setSecoesAbertas] = useState({});
+  function alternarSecao(nome) { setSecoesAbertas(s => ({ ...s, [nome]: !s[nome] })); }
+
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
   const [privacidadeAceitaInicial] = useState(() => getPrivacidadeAceita());
   const [parametros, setParametros] = useState([]);
@@ -287,172 +291,180 @@ function App() {
           </div>
           <button type="button" onClick={() => setActiveModal("bot")}>Assistente IA Quanton3D</button>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
-          {/* Grupo Atendimento */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
+          {/* Grupo Atendimento — acordeão */}
           <div>
-            <p style={{ margin: "0 0 8px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#4fd1ff", textTransform: "uppercase" }}>💬 Atendimento</p>
-            <div className="home-actions" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
-              {SERVICE_BUTTONS.filter(b => b.grupo === "atendimento").map((item) => (
-                <button key={item.label} type="button" onClick={() => executarAcao(item)}
-                  style={{ borderColor: item.kind === "whatsapp" ? "rgba(37,211,102,0.4)" : undefined, background: item.kind === "whatsapp" ? "rgba(37,211,102,0.08)" : undefined, color: item.kind === "whatsapp" ? "#25d366" : "#eaf7ff" }}>
-                  {item.kind === "whatsapp" ? "📱 " : ""}{item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          {/* Grupo Guias */}
-          <div>
-            <p style={{ margin: "0 0 8px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#b89cff", textTransform: "uppercase" }}>📚 Guias Técnicos</p>
-            <div className="home-actions">
-              {SERVICE_BUTTONS.filter(b => b.grupo === "guias").map((item) => (
-                <button key={item.label} type="button" onClick={() => executarAcao(item)}
-                  style={{ borderColor: item.kind === "whatsapp" ? "rgba(37,211,102,0.4)" : undefined, background: item.kind === "whatsapp" ? "rgba(37,211,102,0.08)" : undefined, color: item.kind === "whatsapp" ? "#25d366" : "#eaf7ff" }}>
-                  {item.kind === "whatsapp" ? "📱 " : ""}{item.label}
-                </button>
-              ))}
-            </div>
+            <button type="button" onClick={() => alternarSecao("atendimento")}
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+              <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>💬 Atendimento</span>
+              <span style={{ color: "#4fd1ff", fontSize: "0.9rem", transform: secoesAbertas.atendimento ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+            </button>
+            {secoesAbertas.atendimento && (
+              <div className="home-actions" style={{ gridTemplateColumns: "repeat(2, 1fr)", marginTop: "8px" }}>
+                {SERVICE_BUTTONS.filter(b => b.grupo === "atendimento").map((item) => (
+                  <button key={item.label} type="button" onClick={() => executarAcao(item)}
+                    style={{ borderColor: item.kind === "whatsapp" ? "rgba(37,211,102,0.4)" : undefined, background: item.kind === "whatsapp" ? "rgba(37,211,102,0.08)" : undefined, color: item.kind === "whatsapp" ? "#25d366" : "#eaf7ff" }}>
+                    {item.kind === "whatsapp" ? "📱 " : ""}{item.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Grupo Guias — acordeão */}
+          <div>
+            <button type="button" onClick={() => alternarSecao("guias")}
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+              <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#b89cff", textTransform: "uppercase" }}>📚 Guias Técnicos</span>
+              <span style={{ color: "#b89cff", fontSize: "0.9rem", transform: secoesAbertas.guias ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+            </button>
+            {secoesAbertas.guias && (
+              <div className="home-actions" style={{ marginTop: "8px" }}>
+                {SERVICE_BUTTONS.filter(b => b.grupo === "guias").map((item) => (
+                  <button key={item.label} type="button" onClick={() => executarAcao(item)}
+                    style={{ borderColor: item.kind === "whatsapp" ? "rgba(37,211,102,0.4)" : undefined, background: item.kind === "whatsapp" ? "rgba(37,211,102,0.08)" : undefined, color: item.kind === "whatsapp" ? "#25d366" : "#eaf7ff" }}>
+                    {item.kind === "whatsapp" ? "📱 " : ""}{item.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      <section style={{ padding: "12px 18px", borderRadius: "14px", background: "rgba(12,24,52,0.75)", border: "1px solid rgba(79,209,255,0.15)", marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px", flexWrap: "wrap" }}>
-        <div>
-          <span className="section-label">Colaboração Técnica</span>
-          <p style={{ margin: "3px 0 0", color: "#9fb4c7", fontSize: "0.8rem" }}>Envie sua foto e tempos do Chitubox para ajudar outros clientes.</p>
-        </div>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          <button type="button" onClick={() => setActiveModal("galeria")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>📷 Compartilhar configurações</button>
-          <button type="button" onClick={() => setActiveModal("galeriaPublica")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>🖼️ Ver fotos de clientes</button>
-        </div>
+      <section style={{ padding: "12px 18px", borderRadius: "14px", background: "rgba(12,24,52,0.75)", border: "1px solid rgba(79,209,255,0.15)", marginBottom: "16px" }}>
+        <button type="button" onClick={() => alternarSecao("colaboracao")}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
+          <div style={{ textAlign: "left" }}>
+            <span className="section-label">Colaboração Técnica</span>
+            <p style={{ margin: "3px 0 0", color: "#9fb4c7", fontSize: "0.8rem" }}>Envie sua foto e tempos do Chitubox para ajudar outros clientes.</p>
+          </div>
+          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.colaboracao ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▾</span>
+        </button>
+        {secoesAbertas.colaboracao && (
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
+            <button type="button" onClick={() => setActiveModal("galeria")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>📷 Compartilhar configurações</button>
+            <button type="button" onClick={() => setActiveModal("galeriaPublica")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>🖼️ Ver fotos de clientes</button>
+          </div>
+        )}
       </section>
 
 
 
       <section id="produtos" className="panel" style={{ padding: "16px 20px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+        <button type="button" onClick={() => alternarSecao("catalogo")}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span className="section-label">Catálogo</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.95rem" }}>Nossas Resinas</span>
           </div>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <button type="button" onClick={() => setActiveModal("qualidade")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Alta Qualidade</button>
-            <button type="button" onClick={() => abrirGuia("parametrosDetalhados")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parâmetros Chitubox</button>
-            <button type="button" onClick={() => abrirGuia("parceiros")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parceiros e cursos</button>
-          </div>
-        </div>
+          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.catalogo ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+        </button>
 
-        {/* FISPQs — botão único abre modal com lista */}
-        <div style={{ marginTop: "20px" }}>
-          <button
-            type="button"
-            onClick={() => setActiveModal("fispqs")}
-            style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", borderRadius: "14px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.07)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", width: "100%" }}>
-            <span style={{ fontSize: "1.4rem" }}>📄</span>
-            <div style={{ textAlign: "left" }}>
-              <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.92rem" }}>Fichas de Segurança — FISPQ</strong>
-              <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>7 documentos disponíveis · POSEIDON, IRON, SPIN, SPARK, PYROBLAST, LOW SMELL, IRON 70/30</span>
+        {secoesAbertas.catalogo && (
+          <>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
+              <button type="button" onClick={() => setActiveModal("qualidade")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Alta Qualidade</button>
+              <button type="button" onClick={() => abrirGuia("parametrosDetalhados")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parâmetros Chitubox</button>
+              <button type="button" onClick={() => abrirGuia("parceiros")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parceiros e cursos</button>
             </div>
-            <span style={{ marginLeft: "auto", color: "#4fd1ff", fontSize: "0.82rem", fontWeight: 700 }}>Ver →</span>
+
+            {/* FISPQs — botão único abre modal com lista */}
+            <div style={{ marginTop: "16px" }}>
+              <button
+                type="button"
+                onClick={() => setActiveModal("fispqs")}
+                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", borderRadius: "14px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.07)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", width: "100%" }}>
+                <span style={{ fontSize: "1.4rem" }}>📄</span>
+                <div style={{ textAlign: "left" }}>
+                  <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.92rem" }}>Fichas de Segurança — FISPQ</strong>
+                  <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>7 documentos disponíveis · POSEIDON, IRON, SPIN, SPARK, PYROBLAST, LOW SMELL, IRON 70/30</span>
+                </div>
+                <span style={{ marginLeft: "auto", color: "#4fd1ff", fontSize: "0.82rem", fontWeight: 700 }}>Ver →</span>
+              </button>
+            </div>
+          </>
+        )}
+      </section>
+
+      <section id="servicos" className="panel" style={{ padding: "14px 18px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+          <span className="section-label">Comunidade</span>
+          <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parceria e Comunidade</span>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          <button type="button" onClick={abrirParceiroModal}
+            style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
+            🤝 Quero ser parceiro
+          </button>
+          <button type="button" onClick={() => abrirGuia("parceiros")}
+            style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
+            🏆 Ver parceiros e cursos
+          </button>
+          <button type="button" onClick={() => setActiveModal("sobre")}
+            style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
+            ℹ️ Saiba mais sobre nós
           </button>
         </div>
       </section>
 
-      <section id="servicos" className="panel">
-        <div className="panel-header">
-          <div><span className="section-label">Guias técnicos</span><h2>Serviços e Suporte</h2></div>
-        </div>
-        <div className="service-list">
-          <ServiceLine title="Nivelamento de plataforma" onClick={() => abrirGuia("nivelamento")} />
-          <ServiceLine title="Configuração de fatiador" onClick={() => abrirGuia("fatiadores")} />
-          <ServiceLine title="Calibração de resina" onClick={() => abrirGuia("calibracao")} />
-          <ServiceLine title="Gabarito Quanton3D" onClick={() => abrirGuia("calibracaoQuanton3D")} />
-          <ServiceLine title="Diagnóstico de problemas" onClick={() => abrirGuia("diagnostico")} />
-          <ServiceLine title="Posicionamento de suportes" onClick={() => abrirGuia("suportes")} />
-          <ServiceLine title="Manutenção de máquina" onClick={() => abrirGuia("manutencao")} />
-          <ServiceLine title="Otimização e pós-processamento" onClick={() => abrirGuia("otimizacao")} />
-        </div>
-        <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "1px solid rgba(79,209,255,0.12)" }}>
-          <p style={{ margin: "0 0 14px", fontSize: "0.7rem", fontWeight: 900, letterSpacing: "0.12em", color: "#b89cff", textTransform: "uppercase" }}>🤝 Parceria e Comunidade</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-            <button type="button" onClick={abrirParceiroModal}
-              style={{ padding: "12px 20px", borderRadius: "12px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.88rem" }}>
-              🤝 Quero ser parceiro
-            </button>
-            <button type="button" onClick={() => abrirGuia("parceiros")}
-              style={{ padding: "12px 20px", borderRadius: "12px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.88rem" }}>
-              🏆 Ver parceiros e cursos
-            </button>
-            <button type="button" onClick={() => setActiveModal("sobre")}
-              style={{ padding: "12px 20px", borderRadius: "12px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.88rem" }}>
-              ℹ️ Saiba mais sobre nós
-            </button>
-          </div>
-        </div>
-      </section>
-
       <section id="calculadoras" className="panel" style={{ padding: "14px 18px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+        <button type="button" onClick={() => alternarSecao("ferramentas")}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span className="section-label">Ferramentas</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Calculadoras Técnicas</span>
           </div>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            {[
-              { label: "📐 Exposição", id: "calc_exp" },
-              { label: "📦 Volume", id: "calc_vol" },
-              { label: "📏 Tolerância", id: "calc_tolerancia" },
-              { label: "💰 Custos", id: "calc_custos" },
-              { label: "⏱️ Tempo de Impressão", id: "calc_tempo" },
-              { label: "🔧 Compensação Chitubox", id: "calc_compensacao" },
-            ].map(c => (
-              <button key={c.id} type="button" onClick={() => setActiveModal(c.id)}
-                style={{ padding: "7px 13px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                {c.label}
-              </button>
-            ))}
+          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.ferramentas ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+        </button>
+
+        {secoesAbertas.ferramentas && (
+          <div className="selector-grid" style={{ marginTop: "12px" }}>
+            <div className="field clickable-card" onClick={() => setActiveModal("calc_exp")}>
+              <span>📐 Calculadora de Exposição</span>
+              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Ajuste fino baseado na temperatura.</p>
+            </div>
+            <div className="field clickable-card" onClick={() => setActiveModal("calc_vol")}>
+              <span>📦 Calculadora de Volume</span>
+              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Estime o custo real da sua peça.</p>
+            </div>
+            <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
+              <span>📏 Calculadora de Tolerância</span>
+              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Compensação X/Y para encaixes perfeitos.</p>
+            </div>
+            <div className="field clickable-card" onClick={() => setActiveModal("calc_custos")}>
+              <span>💰 Calculadora de Custos</span>
+              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Precifique seu job com margem real.</p>
+            </div>
+            <div className="field clickable-card" onClick={() => setActiveModal("calc_tempo")}>
+              <span>⏱️ Tempo de Impressão</span>
+              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Calcule e compare tempos por camadas e delays.</p>
+            </div>
+            <div className="field clickable-card" onClick={() => setActiveModal("calc_compensacao")}>
+              <span>🔧 Compensação Chitubox</span>
+              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Calibre a estimativa do fatiador com o tempo real.</p>
+            </div>
           </div>
-        </div>
-        <div className="selector-grid">
-          <div className="field clickable-card" onClick={() => setActiveModal("calc_exp")}>
-            <span>📐 Calculadora de Exposição</span>
-            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Ajuste fino baseado na temperatura.</p>
-          </div>
-          <div className="field clickable-card" onClick={() => setActiveModal("calc_vol")}>
-            <span>📦 Calculadora de Volume</span>
-            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Estime o custo real da sua peça.</p>
-          </div>
-          <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
-            <span>📏 Calculadora de Tolerância</span>
-            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Compensação X/Y para encaixes perfeitos.</p>
-          </div>
-          <div className="field clickable-card" onClick={() => setActiveModal("calc_custos")}>
-            <span>💰 Calculadora de Custos</span>
-            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Precifique seu job com margem real.</p>
-          </div>
-          <div className="field clickable-card" onClick={() => setActiveModal("calc_tempo")}>
-            <span>⏱️ Tempo de Impressão</span>
-            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Calcule e compare tempos por camadas e delays.</p>
-          </div>
-          <div className="field clickable-card" onClick={() => setActiveModal("calc_compensacao")}>
-            <span>🔧 Compensação Chitubox</span>
-            <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Calibre a estimativa do fatiador com o tempo real.</p>
-          </div>
-        </div>
+        )}
       </section>
 
 
 
       <section id="parametros" className="panel" style={{ padding: "14px 18px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+        <button type="button" onClick={() => alternarSecao("consulta")}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span className="section-label">Consulta rápida</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parâmetros de impressão</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            {carregando && <span className="loading-pill">Carregando...</span>}
-            <button type="button" onClick={carregarParametros} style={{ padding: "7px 13px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Atualizar</button>
-          </div>
+          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.consulta ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+        </button>
+
+        {secoesAbertas.consulta && (
+        <>
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "8px", marginTop: "12px", marginBottom: "8px" }}>
+          {carregando && <span className="loading-pill">Carregando...</span>}
+          <button type="button" onClick={carregarParametros} style={{ padding: "7px 13px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Atualizar</button>
         </div>
         {erro && <div className="error-box">{erro}</div>}
         <div className="selector-grid">
@@ -501,6 +513,8 @@ function App() {
               💡 Essa é uma configuração inicial recomendada. Pequenos ajustes podem ser necessários conforme temperatura ambiente, manutenção da impressora e estado do FEP.
             </p>
           </div>
+        )}
+        </>
         )}
       </section>
 
