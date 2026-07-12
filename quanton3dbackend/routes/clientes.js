@@ -16,8 +16,8 @@ function authAdmin(req, res, next) {
   }
 }
 
-router.post('/', criarCliente);
-router.get('/', listarClientes);
+router.post('/', criarCliente); // cadastro do cliente continua público
+router.get('/', authAdmin, listarClientes); // protegido — evita vazar nome/telefone/email de todos os clientes
 router.delete('/lote', authAdmin, excluirClientesEmLote); // precisa vir antes de /:id
 router.delete('/:id', authAdmin, excluirCliente);
 
