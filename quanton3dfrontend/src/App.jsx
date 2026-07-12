@@ -375,7 +375,7 @@ function App() {
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
               <button type="button" onClick={() => setActiveModal("qualidade")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Alta Qualidade</button>
               <button type="button" onClick={() => abrirGuia("parametrosDetalhados")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parâmetros Chitubox</button>
-              <button type="button" onClick={() => abrirGuia("parceiros")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parceiros e cursos</button>
+              <button type="button" onClick={() => setActiveModal("parceirosPublico")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parceiros e cursos</button>
             </div>
 
             {/* FISPQs — botão único abre modal com lista */}
@@ -406,7 +406,7 @@ function App() {
             style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
             🤝 Quero ser parceiro
           </button>
-          <button type="button" onClick={() => abrirGuia("parceiros")}
+          <button type="button" onClick={() => setActiveModal("parceirosPublico")}
             style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
             🏆 Ver parceiros e cursos
           </button>
@@ -632,12 +632,12 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
     adm: "Painel Administrativo", qualidade: "Alta Qualidade",
     calc_exp: "Calculadora de Exposição", calc_vol: "Calculadora de Volume",
     calc_tolerancia: "Calculadora de Tolerância", calc_custos: "Calculadora de Custos e Orçamentos", calc_tempo: "Calculadora de Tempo de Impressão", calc_compensacao: "Compensação de Tempo — Chitubox",
-    bot: "Bot Quanton3D", chamado: "Chamado Técnico",
+    bot: "Bot Quanton3D", chamado: "Chamado Técnico", parceirosPublico: "Parceiros e Cursos Quanton3D",
   };
   return (
     <div className="modal-backdrop">
       <section className="site-modal" style={
-          (type === "calc_custos" || (type && type.startsWith("fispq_")))
+          (type === "calc_custos" || type === "parceirosPublico" || (type && type.startsWith("fispq_")))
             ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
             ? { width: "min(760px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "14px" }
@@ -662,6 +662,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "calc_compensacao" && <CalculadoraCompensacao />}
         {type === "bot" && <BotContent cliente={cliente} />}
         {type === "chamado" && <ChamadoTecnicoContent cliente={cliente} />}
+        {type === "parceirosPublico" && <ParceirosPublicoContent abrirParceiroModal={abrirParceiroModal} />}
         {type === "fispqs" && (
           <div>
             <p style={{ color: "#8ba3be", marginBottom: "16px", fontSize: "0.88rem" }}>Selecione a resina para abrir a Ficha de Informações de Segurança de Produto Químico (FISPQ).</p>
@@ -699,6 +700,71 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
   );
 }
 
+function ParceirosPublicoContent({ abrirParceiroModal }) {
+  const [parceiros, setParceiros] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    api.get("/partner-requests/public/aprovados")
+      .then(res => {
+        const lista = Array.isArray(res.data?.partners) ? res.data.partners : [];
+        setParceiros(lista);
+      })
+      .catch(() => setErro("Não foi possível carregar os parceiros agora. Tente novamente em instantes."))
+      .finally(() => setCarregando(false));
+  }, []);
+
+  return (
+    <div style={{ padding: "8px 4px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px", flexWrap: "wrap", gap: "10px" }}>
+        <p style={{ margin: 0, color: "#9fb4c7", fontSize: "0.85rem" }}>
+          Conheça parceiros, cursos e serviços recomendados pela comunidade Quanton3D.
+        </p>
+        <button type="button" onClick={abrirParceiroModal}
+          style={{ padding: "9px 18px", borderRadius: "10px", border: 0, background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.85rem", whiteSpace: "nowrap" }}>
+          🤝 Quero ser parceiro
+        </button>
+      </div>
+
+      {carregando && <p style={{ color: "#9fb4c7", fontSize: "0.85rem" }}>Carregando parceiros...</p>}
+      {erro && <div className="error-box">{erro}</div>}
+
+      {!carregando && !erro && parceiros.length === 0 && (
+        <div className="empty-state">
+          <h3>Ainda não temos parceiros publicados</h3>
+          <p>Seja o primeiro! Clique em "Quero ser parceiro" para enviar sua solicitação.</p>
+        </div>
+      )}
+
+      {!carregando && parceiros.length > 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
+          {parceiros.map((p) => (
+            <div key={p._id} style={{ background: "rgba(79,209,255,0.05)", border: "1px solid rgba(79,209,255,0.18)", borderRadius: "14px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              {p.fotos?.[0]?.url && (
+                <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "10px" }} />
+              )}
+              <div>
+                <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#4fd1ff", textTransform: "uppercase", letterSpacing: "0.05em" }}>{p.categoria || "Parceiro"}</span>
+                <h3 style={{ margin: "4px 0 6px", fontSize: "1rem", color: "#eaf7ff" }}>{p.titulo}</h3>
+                <p style={{ margin: 0, color: "#9fb4c7", fontSize: "0.82rem", lineHeight: 1.6 }}>{p.descricao}</p>
+              </div>
+              {(p.cidade || p.estado) && (
+                <span style={{ fontSize: "0.78rem", color: "#8ba3be" }}>📍 {p.cidade}{p.cidade && p.estado ? " - " : ""}{p.estado}</span>
+              )}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "auto", paddingTop: "8px", borderTop: "1px solid rgba(79,209,255,0.1)" }}>
+                {p.instagram && <a href={p.instagram.startsWith("http") ? p.instagram : `https://instagram.com/${p.instagram.replace("@","")}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>📸 Instagram</a>}
+                {p.site && <a href={p.site.startsWith("http") ? p.site : `https://${p.site}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>🌐 Site</a>}
+                {p.portfolio && <a href={p.portfolio.startsWith("http") ? p.portfolio : `https://${p.portfolio}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>💼 Portfólio</a>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ContatoContent() {
   return (
     <div className="modal-rich-content">
@@ -716,7 +782,7 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
     <div className="modal-rich-content">
       <p>A Quanton3D é especialista em resinas UV de alta performance com mais de 20 anos de experiência em fabricação.</p>
       <div className="modal-action-grid">
-        <button type="button" onClick={() => abrirGuia("parceiros")}>Ver parceiros</button>
+        <button type="button" onClick={() => setActiveModal("parceirosPublico")}>Ver parceiros</button>
         <button type="button" onClick={() => abrirGuia("diagnostico")}>Guia de diagnóstico</button>
         <button type="button" onClick={abrirParceiroModal}>Quero ser parceiro</button>
       </div>
