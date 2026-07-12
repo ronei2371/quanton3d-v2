@@ -51,7 +51,7 @@ body {
 }
 
 button, select, input { font: inherit; }
-button { cursor: pointer; }
+button { cursor: pointer; color: #eaf7ff; }
 a { color: inherit; text-decoration: none; }
 
 /* ── APP SHELL ── */
