@@ -17,8 +17,8 @@ function authAdmin(req, res, next) {
   }
 }
 
-router.post('/', criarFormulacao);
-router.get('/', listarFormulacoes);
+router.post('/', criarFormulacao); // envio do cliente continua público
+router.get('/', authAdmin, listarFormulacoes); // protegido — evita vazar nome/telefone/email de clientes
 
 // Atualizar status — autenticado
 router.patch('/:id/status', authAdmin, async (req, res) => {
