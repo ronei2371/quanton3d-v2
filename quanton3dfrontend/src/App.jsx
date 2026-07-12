@@ -1245,6 +1245,43 @@ function AdminContent() {
     } catch (err) { alert("Erro ao marcar como revisado."); }
   }
 
+  const [legendaCopiadaId, setLegendaCopiadaId] = useState("");
+
+  function montarLegenda(item) {
+    const redes = item.redesSociais || {};
+    const marcacoes = [redes.instagram, redes.tiktok, redes.facebook, redes.youtube].filter(Boolean).join(" ");
+    const nomeOuMarcacao = marcacoes || item.nome || "nosso cliente";
+    const resina = item.resina || "resina Quanton3D";
+    const impressora = item.impressora ? ` na ${item.impressora}` : "";
+
+    const hashtagResina = "#" + String(resina).replace(/[^a-zA-Z0-9À-ÿ]/g, "");
+
+    return [
+      `Peça feita por ${nomeOuMarcacao} usando ${resina}${impressora}! 🔥`,
+      ``,
+      `Configuração completa e mais dicas no nosso site: quanton3d.com.br`,
+      ``,
+      `#Quanton3D #Resina3D #Impressao3D ${hashtagResina} #Maker3D`,
+    ].join("\n");
+  }
+
+  async function copiarLegenda(item) {
+    const texto = montarLegenda(item);
+    try {
+      await navigator.clipboard.writeText(texto);
+    } catch (_) {
+      // Fallback pra navegadores sem permissão de clipboard
+      const area = document.createElement("textarea");
+      area.value = texto;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      document.body.removeChild(area);
+    }
+    setLegendaCopiadaId(item._id);
+    setTimeout(() => setLegendaCopiadaId(""), 2500);
+  }
+
   function sair() { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
 
   const CARD = ({ children }) => (
@@ -1595,6 +1632,10 @@ function AdminContent() {
                           <span style={{ fontSize: "0.75rem", color: "#8ba3be" }}>Cliente autorizou mas não deixou @ — usar nome mesmo.</span>
                         )}
                       </div>
+                      <button type="button" onClick={() => copiarLegenda(item)}
+                        style={{ marginTop: "10px", width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.35)", background: legendaCopiadaId === item._id ? "rgba(73,230,139,0.15)" : "rgba(184,156,255,0.1)", color: legendaCopiadaId === item._id ? "#49e68b" : "#b89cff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                        {legendaCopiadaId === item._id ? "✅ Legenda copiada!" : "📋 Copiar legenda pronta"}
+                      </button>
                     </div>
                   )}
                 </div>
