@@ -150,6 +150,29 @@ export default function CalculadoraCompensacao() {
 
   return (
     <div style={S.wrap}>
+      {/* Seletor de fatiador — bem no topo, visível antes de preencher qualquer campo */}
+      <div style={{ marginBottom: "16px" }}>
+        <p style={{ margin: "0 0 8px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>Qual fatiador você usa?</p>
+        <div style={{ display: "flex", gap: "8px" }}>
+          {[
+            { id: "chitubox", label: "🟦 Chitubox" },
+            { id: "lychee", label: "🟩 Lychee" },
+          ].map(f => (
+            <button key={f.id} type="button" onClick={() => setFatiadorGuia(f.id)}
+              style={{ flex: 1, padding: "10px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem", fontWeight: 800, border: "1px solid rgba(79,209,255,0.25)",
+                background: fatiadorGuia === f.id ? "linear-gradient(135deg,#2563eb,#7c3aed)" : "rgba(79,209,255,0.05)",
+                color: fatiadorGuia === f.id ? "#fff" : "#9fb4c7" }}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <p style={{ margin: "8px 0 0", fontSize: "0.72rem", color: "#8ba3be" }}>
+          {fatiadorGuia === "chitubox"
+            ? "Os campos abaixo seguem exatamente o modal \"Configuração de compensação\" do Chitubox."
+            : "Preencha os mesmos dados abaixo — no final, você verá o valor certo para colar no Lychee (Print Time Override)."}
+        </p>
+      </div>
+
       {/* Aviso igual ao Chitubox */}
       <div style={S.aviso}>
         <span style={{ fontSize: "1.2rem", flexShrink: 0 }}>⚠️</span>
@@ -260,21 +283,6 @@ export default function CalculadoraCompensacao() {
                 <span style={{ fontSize: "0.7rem", color: "#9fb4c7", display: "block", marginBottom: "4px" }}>{item.label}</span>
                 <strong style={{ fontSize: "1.1rem", color: item.cor }}>{item.valor}</strong>
               </div>
-            ))}
-          </div>
-
-          {/* Seletor de fatiador */}
-          <div style={{ display: "flex", gap: "8px", marginTop: "18px", marginBottom: "12px" }}>
-            {[
-              { id: "chitubox", label: "🟦 Sou usuário do Chitubox" },
-              { id: "lychee", label: "🟩 Sou usuário do Lychee" },
-            ].map(f => (
-              <button key={f.id} type="button" onClick={() => setFatiadorGuia(f.id)}
-                style={{ flex: 1, padding: "10px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem", fontWeight: 800, border: "1px solid rgba(79,209,255,0.25)",
-                  background: fatiadorGuia === f.id ? "linear-gradient(135deg,#2563eb,#7c3aed)" : "rgba(79,209,255,0.05)",
-                  color: fatiadorGuia === f.id ? "#fff" : "#9fb4c7" }}>
-                {f.label}
-              </button>
             ))}
           </div>
 
