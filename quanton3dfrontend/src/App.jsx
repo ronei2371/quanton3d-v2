@@ -91,8 +91,17 @@ function formatarDataHora(data) {
   if (!data) return "-";
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data));
 }
+function escaparHtml(texto) {
+  const mapa = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+  return texto.replace(/[&<>"']/g, (c) => mapa[c]);
+}
+
+// Sanitiza o texto ANTES de aplicar as tags de formatação —
+// evita que HTML/script vindo do bot (IA) ou de qualquer fonte externa
+// seja renderizado como código real (proteção contra XSS).
 function formatarMarkdown(texto) {
-  return texto
+  const seguro = escaparHtml(texto);
+  return seguro
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/`(.+?)`/g, "<code style=\"background:rgba(255,255,255,0.12);padding:2px 6px;border-radius:4px;font-size:0.88em\">$1</code>")
@@ -236,7 +245,7 @@ function App() {
       {activeGuide && <GuideModal guide={activeGuide} onClose={() => setActiveGuide(null)} />}
       <ContactMessageModal aberto={mostrarContatoMensagem} aoFechar={() => setMostrarContatoMensagem(false)} cliente={cliente} />
       {activeModal && (
-        <SiteModal type={activeModal} cliente={cliente} onClose={() => setActiveModal(null)} abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />
+        <SiteModal type={activeModal} cliente={cliente} onClose={() => setActiveModal(null)} abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} setActiveModal={setActiveModal} />
       )}
       <PartnerRequestModal aberto={mostrarParceiroModal} aoFechar={() => setMostrarParceiroModal(false)} cliente={cliente} />
 
@@ -615,7 +624,7 @@ function GuideModal({ guide, onClose }) {
   );
 }
 
-function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal }) {
+function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setActiveModal }) {
   const nomeFispq = type && type.startsWith("fispq_") ? "FISPQ — " + type.replace("fispq_","").replace(".pdf","") : null;
   const titles = {
     contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada",
@@ -1128,7 +1137,7 @@ function AdminContent() {
       let formulacoes = m.formulacoes || [];
       if (!formulacoes.length) {
         try {
-          const fResp = await api.get("/formulacoes");
+          const fResp = await api.get("/formulacoes", { headers: { Authorization: "Bearer " + token } });
           formulacoes = Array.isArray(fResp.data?.data) ? fResp.data.data : [];
         } catch (_) {}
       }
@@ -1159,7 +1168,7 @@ function AdminContent() {
     if (!novoParam.resina.trim() || !novoParam.impressora.trim()) { setMsgParam("Resina e impressora são obrigatórias."); return; }
     try {
       setSalvandoParam(true); setMsgParam("");
-      await api.post("/parametros", novoParam);
+      await api.post("/parametros", novoParam, { headers: { Authorization: "Bearer " + token } });
       setMsgParam("✅ Parâmetro salvo com sucesso!");
       setNovoParam({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", liftSpeed:"", retractSpeed:"" });
       await carregarDados();
