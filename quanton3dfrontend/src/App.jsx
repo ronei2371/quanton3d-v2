@@ -927,7 +927,7 @@ function ChamadoTecnicoContent({ cliente }) {
 
 function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false }) {
   const [aba, setAba] = useState(initialAba);
-  const [form, setForm] = useState({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia() });
+  const [form, setForm] = useState({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia(), redes: { instagram: "", tiktok: "", facebook: "", youtube: "" }, autorizaDivulgacao: false });
   const [foto, setFoto] = useState(null);
   const [itens, setItens] = useState([]);
   const [carregandoItens, setCarregandoItens] = useState(false);
@@ -953,6 +953,7 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
 
   function alterar(campo, valor) { setForm((a) => ({ ...a, [campo]: valor })); }
   function alterarParametro(campo, valor) { setForm((a) => ({ ...a, parametros: { ...a.parametros, [campo]: valor } })); }
+  function alterarRede(campo, valor) { setForm((a) => ({ ...a, redes: { ...a.redes, [campo]: valor } })); }
 
   async function enviar(event) {
     event.preventDefault();
@@ -968,10 +969,12 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
       formData.append("observacao", form.observacao);
       formData.append("clienteId", cliente?._id || "");
       formData.append("fotos", foto);
+      formData.append("autorizaDivulgacao", form.autorizaDivulgacao ? "true" : "false");
       Object.entries(form.parametros).forEach(([campo, valor]) => formData.append(`parametros.${campo}`, valor));
+      Object.entries(form.redes).forEach(([campo, valor]) => formData.append(`redesSociais.${campo}`, valor));
       await api.post("/gallery", formData);
       setSucesso(true);
-      setForm({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia() });
+      setForm({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia(), redes: { instagram: "", tiktok: "", facebook: "", youtube: "" }, autorizaDivulgacao: false });
       setFoto(null);
     } catch (err) { console.error("Erro ao enviar para galeria:", err); alert("Erro ao enviar para galeria."); }
     finally { setEnviando(false); }
@@ -1004,7 +1007,29 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
             </div>
           </div>
           <label className="gallery-observation"><span>Observações para o próximo cliente</span><textarea rows="4" value={form.observacao} onChange={(e) => alterar("observacao", e.target.value)} placeholder="Ex.: temperatura ambiente, suporte usado, ajustes que fez..." /></label>
-          <button type="submit" className="submit-registration" disabled={enviando}>{enviando ? "Enviando..." : "Enviar para aprovação"}</button>
+
+          <div style={{ marginTop: "16px", padding: "14px", borderRadius: "12px", background: "rgba(184,156,255,0.06)", border: "1px solid rgba(184,156,255,0.2)" }}>
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer", marginBottom: form.autorizaDivulgacao ? "14px" : 0 }}>
+              <input type="checkbox" checked={form.autorizaDivulgacao} onChange={e => alterar("autorizaDivulgacao", e.target.checked)} style={{ marginTop: "3px" }} />
+              <span style={{ fontSize: "0.85rem", color: "#d3e4f8", lineHeight: 1.5 }}>
+                📸 Autorizo a Quanton3D a divulgar essa peça nas redes sociais oficiais, dando os créditos a mim.
+              </span>
+            </label>
+
+            {form.autorizaDivulgacao && (
+              <div>
+                <p style={{ margin: "0 0 10px", fontSize: "0.78rem", color: "#9fb4c7" }}>Ótimo! Deixa seu @ pra gente te marcar (opcional, preencha o que tiver):</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                  <input value={form.redes.instagram} onChange={e => alterarRede("instagram", e.target.value)} placeholder="📸 @ do Instagram" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                  <input value={form.redes.tiktok} onChange={e => alterarRede("tiktok", e.target.value)} placeholder="🎵 @ do TikTok" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                  <input value={form.redes.facebook} onChange={e => alterarRede("facebook", e.target.value)} placeholder="📘 Facebook" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                  <input value={form.redes.youtube} onChange={e => alterarRede("youtube", e.target.value)} placeholder="▶️ Canal do YouTube" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button type="submit" className="submit-registration" style={{ marginTop: "16px" }} disabled={enviando}>{enviando ? "Enviando..." : "Enviar para aprovação"}</button>
         </form>
       ) : (
         <div className="gallery-approved-list">
@@ -1554,6 +1579,24 @@ function AdminContent() {
                       💬 {item.observacao}
                     </p>
                   )}
+
+                  {/* Redes sociais — pra marcar o cliente ao divulgar a peça */}
+                  {item.autorizaDivulgacao && (
+                    <div style={{ marginTop: "8px", padding: "8px 10px", borderRadius: "8px", background: "rgba(184,156,255,0.06)", border: "1px solid rgba(184,156,255,0.2)" }}>
+                      <span style={{ fontSize: "0.7rem", fontWeight: 800, color: "#b89cff", textTransform: "uppercase", display: "block", marginBottom: "5px" }}>
+                        📣 Autorizado pra divulgar
+                      </span>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                        {item.redesSociais?.instagram && <span style={{ fontSize: "0.75rem", padding: "3px 9px", borderRadius: "999px", background: "rgba(184,156,255,0.12)", color: "#b89cff" }}>📸 {item.redesSociais.instagram}</span>}
+                        {item.redesSociais?.tiktok && <span style={{ fontSize: "0.75rem", padding: "3px 9px", borderRadius: "999px", background: "rgba(184,156,255,0.12)", color: "#b89cff" }}>🎵 {item.redesSociais.tiktok}</span>}
+                        {item.redesSociais?.facebook && <span style={{ fontSize: "0.75rem", padding: "3px 9px", borderRadius: "999px", background: "rgba(184,156,255,0.12)", color: "#b89cff" }}>📘 {item.redesSociais.facebook}</span>}
+                        {item.redesSociais?.youtube && <span style={{ fontSize: "0.75rem", padding: "3px 9px", borderRadius: "999px", background: "rgba(184,156,255,0.12)", color: "#b89cff" }}>▶️ {item.redesSociais.youtube}</span>}
+                        {!item.redesSociais?.instagram && !item.redesSociais?.tiktok && !item.redesSociais?.facebook && !item.redesSociais?.youtube && (
+                          <span style={{ fontSize: "0.75rem", color: "#8ba3be" }}>Cliente autorizou mas não deixou @ — usar nome mesmo.</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1845,19 +1888,21 @@ function AdminContent() {
             const suspeito = /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g, "") || "") || (c.nome || "").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome || "");
             const selecionado = clientesSelecionados.includes(c._id);
             return (
-              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom: "10px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
-                <input type="checkbox" checked={selecionado} style={{ marginTop: "3px", cursor: "pointer" }}
+              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom: "12px", display: "flex", gap: "12px", alignItems: "flex-start", overflow: "hidden" }}>
+                <input type="checkbox" checked={selecionado} style={{ marginTop: "3px", cursor: "pointer", flexShrink: 0 }}
                   onChange={e => setClientesSelecionados(prev => e.target.checked ? [...prev, c._id] : prev.filter(id => id !== c._id))} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", flexWrap: "wrap", gap: "6px" }}>
-                    <strong>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
+                    <strong style={{ wordBreak: "break-word" }}>
                       {c.nome || "Sem nome"}
-                      {suspeito && <span style={{ marginLeft: "8px", fontSize: "0.68rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(255,209,102,0.15)", color: "#ffd166", fontWeight: 800 }}>⚠️ possível teste</span>}
+                      {suspeito && <span style={{ marginLeft: "8px", fontSize: "0.68rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(255,209,102,0.15)", color: "#ffd166", fontWeight: 800, whiteSpace: "nowrap" }}>⚠️ possível teste</span>}
                     </strong>
-                    <small style={{ color: "#9fb4c7" }}>{formatarDataHora(c.createdAt)}</small>
+                    <small style={{ color: "#9fb4c7", whiteSpace: "nowrap" }}>{formatarDataHora(c.createdAt)}</small>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", fontSize: "0.82rem", color: "#9fb4c7" }}>
-                    <span>📱 {c.telefone || "-"}</span><span>✉️ {c.email || "-"}</span><span>🔗 {c.origem || "-"}</span>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", fontSize: "0.8rem", color: "#9fb4c7" }}>
+                    <span style={{ whiteSpace: "nowrap" }}>📱 {c.telefone || "-"}</span>
+                    <span style={{ wordBreak: "break-word" }}>✉️ {c.email || "-"}</span>
+                    <span style={{ wordBreak: "break-word" }}>🔗 {c.origem || "-"}</span>
                   </div>
                 </div>
               </div>
