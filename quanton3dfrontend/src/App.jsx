@@ -700,6 +700,20 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
   );
 }
 
+// Só monta o link se o texto realmente parecer um endereço de site (evita erro tipo "pintor" virar https://pintor)
+function pareceLink(texto) {
+  if (!texto) return false;
+  const t = texto.trim();
+  if (t.startsWith("http://") || t.startsWith("https://")) return true;
+  // Precisa ter um ponto seguido de pelo menos 2 letras (ex: .com, .com.br) pra parecer domínio real
+  return /\.[a-zA-Z]{2,}/.test(t) && !t.includes(" ");
+}
+
+function montarLink(texto) {
+  const t = texto.trim();
+  return t.startsWith("http") ? t : `https://${t}`;
+}
+
 function ParceirosPublicoContent({ abrirParceiroModal }) {
   const [parceiros, setParceiros] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -738,11 +752,13 @@ function ParceirosPublicoContent({ abrirParceiroModal }) {
       )}
 
       {!carregando && parceiros.length > 0 && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
           {parceiros.map((p) => (
             <div key={p._id} style={{ background: "rgba(79,209,255,0.05)", border: "1px solid rgba(79,209,255,0.18)", borderRadius: "14px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
               {p.fotos?.[0]?.url && (
-                <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "10px" }} />
+                <div style={{ width: "100%", minHeight: "220px", maxHeight: "340px", borderRadius: "10px", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                  <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", height: "100%", maxHeight: "340px", objectFit: "contain" }} />
+                </div>
               )}
               <div>
                 <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#4fd1ff", textTransform: "uppercase", letterSpacing: "0.05em" }}>{p.categoria || "Parceiro"}</span>
@@ -753,9 +769,21 @@ function ParceirosPublicoContent({ abrirParceiroModal }) {
                 <span style={{ fontSize: "0.78rem", color: "#8ba3be" }}>📍 {p.cidade}{p.cidade && p.estado ? " - " : ""}{p.estado}</span>
               )}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "auto", paddingTop: "8px", borderTop: "1px solid rgba(79,209,255,0.1)" }}>
-                {p.instagram && <a href={p.instagram.startsWith("http") ? p.instagram : `https://instagram.com/${p.instagram.replace("@","")}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>📸 Instagram</a>}
-                {p.site && <a href={p.site.startsWith("http") ? p.site : `https://${p.site}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>🌐 Site</a>}
-                {p.portfolio && <a href={p.portfolio.startsWith("http") ? p.portfolio : `https://${p.portfolio}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>💼 Portfólio</a>}
+                {p.instagram && (
+                  pareceLink(p.instagram)
+                    ? <a href={p.instagram.startsWith("http") ? p.instagram : `https://instagram.com/${p.instagram.replace("@","")}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>📸 Instagram</a>
+                    : <span style={{ fontSize: "0.78rem", color: "#9fb4c7" }}>📸 {p.instagram}</span>
+                )}
+                {p.site && (
+                  pareceLink(p.site)
+                    ? <a href={montarLink(p.site)} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>🌐 Site</a>
+                    : <span style={{ fontSize: "0.78rem", color: "#9fb4c7" }}>🌐 {p.site}</span>
+                )}
+                {p.portfolio && (
+                  pareceLink(p.portfolio)
+                    ? <a href={montarLink(p.portfolio)} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#4fd1ff", fontWeight: 700 }}>💼 Portfólio</a>
+                    : <span style={{ fontSize: "0.78rem", color: "#9fb4c7" }}>💼 {p.portfolio}</span>
+                )}
               </div>
             </div>
           ))}
