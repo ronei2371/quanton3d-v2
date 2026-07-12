@@ -20,6 +20,17 @@ const ParametrosSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// Redes sociais do cliente — usado para marcar/creditar ao divulgar a peça aprovada
+const RedesSociaisSchema = new mongoose.Schema(
+  {
+    instagram: { type: String, default: '' },
+    tiktok: { type: String, default: '' },
+    facebook: { type: String, default: '' },
+    youtube: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
 const Schema = new mongoose.Schema(
   {
     nome: String,
@@ -31,6 +42,8 @@ const Schema = new mongoose.Schema(
     imagem: String,
     observacao: String,
     parametros: ParametrosSchema,
+    redesSociais: RedesSociaisSchema,
+    autorizaDivulgacao: { type: Boolean, default: false },
     status: { type: String, default: 'pendente' },
   },
   { timestamps: true }
