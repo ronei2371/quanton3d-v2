@@ -4,8 +4,8 @@ const S = {
   wrap: { padding: "8px 4px" },
   aviso: {
     padding: "12px 14px", borderRadius: "10px", marginBottom: "18px",
-    background: "rgba(255,209,102,0.08)", border: "1px solid rgba(255,209,102,0.25)",
-    color: "#ffd166", fontSize: "0.82rem", lineHeight: 1.6,
+    background: "rgba(255,209,102,0.1)", borderLeft: "3px solid #ffd166", border: "1px solid rgba(255,209,102,0.2)",
+    color: "#eaf7ff", fontSize: "0.82rem", lineHeight: 1.6,
     display: "flex", gap: "10px", alignItems: "flex-start",
   },
   sectionTitle: {
@@ -106,6 +106,7 @@ export default function CalculadoraCompensacao() {
   const [alturaCamadaMm, setAlturaCamadaMm] = useState("0.05");
   const [resultado, setResultado] = useState(null);
   const [erro, setErro] = useState("");
+  const [fatiadorGuia, setFatiadorGuia] = useState("chitubox");
 
   function calcular() {
     setErro(""); setResultado(null);
@@ -124,8 +125,10 @@ export default function CalculadoraCompensacao() {
     const compensacao = (realSeg - prevSeg) / cam;
     const diferenca = realSeg - prevSeg;
     const fator = realSeg / prevSeg;
+    // Tempo médio real por camada — é o valor que o Lychee pede em "Print Time Override"
+    const tempoMedioPorCamada = realSeg / cam;
 
-    setResultado({ compensacao, diferenca, fator, prevSeg, realSeg, cam });
+    setResultado({ compensacao, diferenca, fator, prevSeg, realSeg, cam, tempoMedioPorCamada });
   }
 
   function limpar() {
@@ -260,30 +263,78 @@ export default function CalculadoraCompensacao() {
             ))}
           </div>
 
-          {/* Instrução do que fazer com o resultado */}
-          <div style={{ marginTop: "14px", padding: "12px 14px", borderRadius: "10px", background: "rgba(127,90,240,0.08)", border: "1px solid rgba(127,90,240,0.2)", color: "#b89cff", fontSize: "0.82rem", lineHeight: 1.6 }}>
-            <strong>Como aplicar no Chitubox:</strong> Vá em Configurações da Impressora → Configurações de Resina → aba <strong>Avançado</strong> → ative <strong>Compensação de tempo de impressão</strong> → insira <strong>{resultado.compensacao.toFixed(2)}s</strong> no campo "Compensação de tempo de impressão da camada".
+          {/* Seletor de fatiador */}
+          <div style={{ display: "flex", gap: "8px", marginTop: "18px", marginBottom: "12px" }}>
+            {[
+              { id: "chitubox", label: "🟦 Sou usuário do Chitubox" },
+              { id: "lychee", label: "🟩 Sou usuário do Lychee" },
+            ].map(f => (
+              <button key={f.id} type="button" onClick={() => setFatiadorGuia(f.id)}
+                style={{ flex: 1, padding: "10px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem", fontWeight: 800, border: "1px solid rgba(79,209,255,0.25)",
+                  background: fatiadorGuia === f.id ? "linear-gradient(135deg,#2563eb,#7c3aed)" : "rgba(79,209,255,0.05)",
+                  color: fatiadorGuia === f.id ? "#fff" : "#9fb4c7" }}>
+                {f.label}
+              </button>
+            ))}
           </div>
 
-          {/* Contexto da aba Avançado */}
-          <div style={S.contextBox}>
-            <span style={S.contextTitle}>⚙️ Contexto — Aba Avançado do Chitubox (referência)</span>
-            <div style={S.contextGrid}>
+          {/* GUIA CHITUBOX — passo a passo visual */}
+          {fatiadorGuia === "chitubox" && (
+            <div style={{ background: "rgba(127,90,240,0.06)", border: "1px solid rgba(127,90,240,0.2)", borderRadius: "12px", padding: "16px" }}>
+              <p style={{ margin: "0 0 14px", fontSize: "0.85rem", fontWeight: 800, color: "#b89cff" }}>
+                📍 Onde colocar o valor <strong style={{ color: "#4fd1ff" }}>{resultado.compensacao >= 0 ? "+" : ""}{resultado.compensacao.toFixed(2)}s</strong> no Chitubox:
+              </p>
               {[
-                { campo: "Bottom Light PWM", valor: "255" },
-                { campo: "Light PWM", valor: "255" },
-                { campo: "Anti-aliasing", valor: "Desligado" },
-                { campo: "Compensação de encolhimento", valor: "Desligado" },
-                { campo: "Comp. de Tolerância (Beta)", valor: "Desligado" },
-                { campo: "Comp. de tempo de impressão", valor: "✅ Ligado" },
-              ].map(item => (
-                <div key={item.campo} style={S.contextItem}>
-                  <span style={{ color: "#9fb4c7" }}>{item.campo}</span>
-                  <span style={{ color: "#eaf3ff", fontWeight: 700 }}>{item.valor}</span>
+                { n: 1, texto: <>Abra o Chitubox e clique em <strong>Configurações</strong> (ícone de engrenagem) da sua impressora</> },
+                { n: 2, texto: <>Clique na aba <strong>Configurações de Resina</strong> (o perfil da resina que você usa)</> },
+                { n: 3, texto: <>Procure a aba <strong>Avançado</strong> no topo da janela</> },
+                { n: 4, texto: <>Ative o interruptor <strong>"Compensação de tempo de impressão"</strong></> },
+                { n: 5, texto: <>Vai aparecer um campo chamado <strong>"Compensação de tempo de impressão da camada"</strong> — cole exatamente <strong style={{ color: "#4fd1ff" }}>{resultado.compensacao.toFixed(2)}</strong> ali (em segundos)</> },
+                { n: 6, texto: <>Clique em <strong>Salvar</strong>. Pronto — a partir da próxima impressão, o tempo estimado vai bater bem mais perto do real</> },
+              ].map(passo => (
+                <div key={passo.n} style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "12px" }}>
+                  <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "rgba(79,209,255,0.15)", border: "1px solid rgba(79,209,255,0.4)", color: "#4fd1ff", fontWeight: 900, fontSize: "0.78rem", display: "flex", alignItems: "center", justifyContent: "center" }}>{passo.n}</span>
+                  <p style={{ margin: "3px 0 0", color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>{passo.texto}</p>
                 </div>
               ))}
+              <div style={{ marginTop: "8px", padding: "10px 12px", borderRadius: "8px", background: "rgba(255,209,102,0.08)", border: "1px solid rgba(255,209,102,0.2)", color: "#ffd166", fontSize: "0.78rem" }}>
+                💡 Se o número for negativo (ex: -1.50), o Chitubox aceita normalmente — significa que a impressora está mais rápida do que o previsto.
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* GUIA LYCHEE — processo diferente, tempo por camada direto */}
+          {fatiadorGuia === "lychee" && (
+            <div style={{ background: "rgba(73,230,139,0.06)", border: "1px solid rgba(73,230,139,0.2)", borderRadius: "12px", padding: "16px" }}>
+              <p style={{ margin: "0 0 6px", fontSize: "0.85rem", fontWeight: 800, color: "#49e68b" }}>
+                📍 No Lychee o processo é diferente — chama-se "Print Time Override"
+              </p>
+              <p style={{ margin: "0 0 14px", fontSize: "0.78rem", color: "#9fb4c7", lineHeight: 1.6 }}>
+                Em vez de comparar tempo estimado × real como no Chitubox, o Lychee pede o <strong>tempo médio de UMA camada completa</strong> (subida + cura + descida). Com os dados que você já colocou aqui, esse valor é:
+              </p>
+
+              <div style={{ background: "rgba(73,230,139,0.1)", borderRadius: "10px", padding: "14px", textAlign: "center", marginBottom: "14px" }}>
+                <span style={{ fontSize: "0.72rem", color: "#9fb4c7", display: "block", marginBottom: "4px" }}>Tempo médio por camada (use esse valor)</span>
+                <strong style={{ fontSize: "1.6rem", color: "#49e68b" }}>{resultado.tempoMedioPorCamada.toFixed(2)}s</strong>
+              </div>
+
+              {[
+                { n: 1, texto: <>No Lychee, abra o perfil da sua resina em <strong>Configurações de Resina</strong></> },
+                { n: 2, texto: <>Procure a opção <strong>"Print Time Override"</strong> (Substituir tempo de impressão)</> },
+                { n: 3, texto: <>Ative essa opção e no campo <strong>"Time per layer"</strong> (tempo por camada) insira <strong style={{ color: "#49e68b" }}>{resultado.tempoMedioPorCamada.toFixed(2)}</strong> segundos</> },
+                { n: 4, texto: <>Salve o perfil. O Lychee vai passar a mostrar o tempo total baseado nesse valor real por camada</> },
+              ].map(passo => (
+                <div key={passo.n} style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "12px" }}>
+                  <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "rgba(73,230,139,0.15)", border: "1px solid rgba(73,230,139,0.4)", color: "#49e68b", fontWeight: 900, fontSize: "0.78rem", display: "flex", alignItems: "center", justifyContent: "center" }}>{passo.n}</span>
+                  <p style={{ margin: "3px 0 0", color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>{passo.texto}</p>
+                </div>
+              ))}
+
+              <div style={{ marginTop: "8px", padding: "10px 12px", borderRadius: "8px", background: "rgba(255,209,102,0.08)", border: "1px solid rgba(255,209,102,0.2)", color: "#ffd166", fontSize: "0.78rem", lineHeight: 1.6 }}>
+                💡 <strong>Dica do próprio Lychee:</strong> pra um valor ainda mais preciso, cronometre com um relógio o tempo de UMA camada normal (do início da descida até o início da próxima) e ajuste esse número se notar diferença nas próximas impressões.
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
