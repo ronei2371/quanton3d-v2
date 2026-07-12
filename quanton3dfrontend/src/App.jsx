@@ -1093,7 +1093,7 @@ function AdminContent() {
   const [aba, setAba] = useState("galeria");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
-  const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], conversas: [], totais: {} });
+  const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], conversas: [], parceiros: [], totais: {} });
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
   const [diagnostico, setDiagnostico] = useState({});
@@ -1133,6 +1133,8 @@ function AdminContent() {
       try { const r = await api.get("/bot-tickets", { headers }); chamados = Array.isArray(r.data?.botTickets) ? r.data.botTickets : []; } catch (_) {}
       let mensagens = [];
       try { const r = await api.get("/contact-messages", { headers }); mensagens = Array.isArray(r.data?.messages) ? r.data.messages : []; } catch (_) {}
+      let parceiros = [];
+      try { const r = await api.get("/partner-requests", { headers }); parceiros = Array.isArray(r.data?.partnerRequests) ? r.data.partnerRequests : []; } catch (_) {}
       // Formulações podem vir da métrica OU da rota direta
       let formulacoes = m.formulacoes || [];
       if (!formulacoes.length) {
@@ -1146,7 +1148,7 @@ function AdminContent() {
         const cResp = await api.get("/conversas", { headers, params: { limit: 100 } });
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
       } catch (_) {}
-      setDados({ clientes: m.clientes || [], formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, totais: m.totals || {} });
+      setDados({ clientes: m.clientes || [], formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
       setErro(err?.response?.data?.error || "Erro ao carregar dados.");
@@ -1268,6 +1270,13 @@ function AdminContent() {
     } catch (err) { alert("Erro ao marcar como revisado."); }
   }
 
+  async function atualizarStatusParceiro(id, status) {
+    try {
+      await api.patch("/partner-requests/" + id + "/status", { status }, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { alert("Erro ao atualizar status do parceiro."); }
+  }
+
   const [legendaCopiadaId, setLegendaCopiadaId] = useState("");
 
   function montarLegenda(item) {
@@ -1311,8 +1320,8 @@ function AdminContent() {
     <div style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>{children}</div>
   );
   const BADGE = ({ status }) => {
-    const cor = ["aprovado","fechado","resolvido"].includes(status) ? "#49e68b" : status === "recusado" ? "#ff6b6b" : status === "respondido" ? "#4fd1ff" : "#ffd166";
-    const LABELS = { novo: "🆕 Novo", em_analise: "🔍 Em análise", respondido: "📞 Respondido", fechado: "✅ Fechado", pendente: "⏳ Pendente", em_contato: "📞 Em contato", resolvido: "✅ Resolvido", impossivel: "❌ Não é possível", aprovado: "✅ Aprovado", recusado: "❌ Recusado" };
+    const cor = ["aprovado","fechado","resolvido"].includes(status) ? "#49e68b" : ["recusado","rejeitado"].includes(status) ? "#ff6b6b" : status === "respondido" ? "#4fd1ff" : "#ffd166";
+    const LABELS = { novo: "🆕 Novo", em_analise: "🔍 Em análise", respondido: "📞 Respondido", fechado: "✅ Fechado", pendente: "⏳ Pendente", em_contato: "📞 Em contato", resolvido: "✅ Resolvido", impossivel: "❌ Não é possível", aprovado: "✅ Aprovado", recusado: "❌ Recusado", rejeitado: "❌ Rejeitado" };
     return <span style={{ fontSize: "0.75rem", padding: "2px 10px", borderRadius: "999px", border: "1px solid " + cor + "44", background: cor + "18", color: cor, fontWeight: 800 }}>{LABELS[status] || status || "⏳ Pendente"}</span>;
   };
 
@@ -1336,6 +1345,7 @@ function AdminContent() {
     { id: "clientes", label: "Clientes (" + dados.clientes.length + ")" },
     { id: "formulacoes", label: "Formulacoes (" + dados.formulacoes.length + ")" },
     { id: "chamados", label: "Chamados (" + dados.chamados.length + ")" },
+    { id: "parceiros", label: "Parceiros (" + (dados.parceiros?.length || 0) + ")" },
     { id: "mensagens", label: "Mensagens (" + dados.mensagens.length + ")" },
   ];
 
@@ -2186,6 +2196,78 @@ function AdminContent() {
                   }}
                   style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(255,107,107,0.06)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
                   ↩️ Reabrir
+                </button>
+              </div>
+            </CARD>
+          ))}
+        </div>
+      )}
+
+      {aba === "parceiros" && (
+        <div>
+          {(!dados.parceiros || dados.parceiros.length === 0) && !carregando && (
+            <div className="gallery-empty">Nenhuma solicitação de parceria ainda.</div>
+          )}
+          {(dados.parceiros || []).map((p) => (
+            <CARD key={p._id}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
+                <div>
+                  <strong style={{ fontSize: "0.95rem", color: "#eaf3ff" }}>{p.nome || "Sem nome"}</strong>
+                  <div style={{ fontSize: "0.78rem", color: "#9fb4c7", marginTop: "2px" }}>
+                    📱 {p.telefone || "-"} · ✉️ {p.email || "-"}
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <BADGE status={p.status} />
+                  <small style={{ color: "#8ba3be", fontSize: "0.72rem" }}>{formatarDataHora(p.createdAt)}</small>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "10px" }}>
+                <div style={{ background: "rgba(184,156,255,0.07)", border: "1px solid rgba(184,156,255,0.2)", borderRadius: "8px", padding: "8px 10px" }}>
+                  <span style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block" }}>Tipo de solicitação</span>
+                  <strong style={{ fontSize: "0.85rem", color: "#b89cff" }}>{p.tipo || "-"}</strong>
+                </div>
+                <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.15)", borderRadius: "8px", padding: "8px 10px" }}>
+                  <span style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block" }}>Categoria</span>
+                  <strong style={{ fontSize: "0.85rem", color: "#eaf3ff" }}>{p.categoria || "-"}</strong>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "10px" }}>
+                <strong style={{ color: "#eaf3ff", fontSize: "0.88rem", display: "block", marginBottom: "4px" }}>{p.titulo}</strong>
+                <p style={{ margin: 0, color: "#d3e4f8", fontSize: "0.82rem", lineHeight: 1.6 }}>{p.descricao}</p>
+              </div>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px", fontSize: "0.78rem", color: "#9fb4c7" }}>
+                {p.instagram && <span>📸 {p.instagram}</span>}
+                {p.site && <span>🌐 {p.site}</span>}
+                {p.portfolio && <span>💼 {p.portfolio}</span>}
+                {(p.cidade || p.estado) && <span>📍 {p.cidade}{p.cidade && p.estado ? " - " : ""}{p.estado}</span>}
+              </div>
+
+              {p.fotos?.length > 0 && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: "6px", marginBottom: "10px" }}>
+                  {p.fotos.map((foto, i) => (
+                    <img key={i} src={foto.url} alt={"Foto " + (i + 1)} onClick={() => window.open(foto.url, "_blank")}
+                      style={{ width: "100%", height: "80px", objectFit: "cover", borderRadius: "8px", cursor: "pointer", border: "1px solid rgba(113,159,219,0.2)" }}
+                      onError={(e) => { e.target.style.display = "none"; }} />
+                  ))}
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <button type="button" onClick={() => atualizarStatusParceiro(p._id, "aprovado")} disabled={p.status === "aprovado"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: p.status === "aprovado" ? 0.4 : 1 }}>
+                  ✅ Aprovar
+                </button>
+                <button type="button" onClick={() => atualizarStatusParceiro(p._id, "rejeitado")} disabled={p.status === "rejeitado"}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.35)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: p.status === "rejeitado" ? 0.4 : 1 }}>
+                  ❌ Rejeitar
+                </button>
+                <button type="button" onClick={() => atualizarStatusParceiro(p._id, "pendente")}
+                  style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.25)", background: "rgba(255,209,102,0.06)", color: "#ffd166", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                  ↩️ Voltar pra pendente
                 </button>
               </div>
             </CARD>
