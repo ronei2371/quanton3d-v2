@@ -1226,7 +1226,7 @@ function AdminContent() {
       let chamados = [];
       try { const r = await api.get("/bot-tickets", { headers }); chamados = Array.isArray(r.data?.botTickets) ? r.data.botTickets : []; } catch (_) {}
       let mensagens = [];
-      try { const r = await api.get("/contact-messages", { headers }); mensagens = Array.isArray(r.data?.messages) ? r.data.messages : []; } catch (_) {}
+      try { const r = await api.get("/contact-messages", { headers }); mensagens = Array.isArray(r.data?.contactMessages) ? r.data.contactMessages : []; } catch (_) {}
       let parceiros = [];
       try { const r = await api.get("/partner-requests", { headers }); parceiros = Array.isArray(r.data?.partnerRequests) ? r.data.partnerRequests : []; } catch (_) {}
       // Formulações podem vir da métrica OU da rota direta
@@ -2251,7 +2251,7 @@ function AdminContent() {
                 <button type="button"
                   onClick={async () => {
                     try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "em_analise" });
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "em_analise" }, { headers: { Authorization: "Bearer " + token } });
                       await carregarDados();
                     } catch(e) { alert("Erro ao atualizar"); }
                   }}
@@ -2262,7 +2262,7 @@ function AdminContent() {
                 <button type="button"
                   onClick={async () => {
                     try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "respondido" });
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "respondido" }, { headers: { Authorization: "Bearer " + token } });
                       await carregarDados();
                     } catch(e) { alert("Erro ao atualizar"); }
                   }}
@@ -2273,7 +2273,7 @@ function AdminContent() {
                 <button type="button"
                   onClick={async () => {
                     try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "fechado" });
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "fechado" }, { headers: { Authorization: "Bearer " + token } });
                       await carregarDados();
                     } catch(e) { alert("Erro ao atualizar"); }
                   }}
@@ -2284,7 +2284,7 @@ function AdminContent() {
                 <button type="button"
                   onClick={async () => {
                     try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "novo" });
+                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "novo" }, { headers: { Authorization: "Bearer " + token } });
                       await carregarDados();
                     } catch(e) { alert("Erro ao atualizar"); }
                   }}
