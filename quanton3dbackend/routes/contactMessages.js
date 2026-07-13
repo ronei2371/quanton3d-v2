@@ -3,6 +3,20 @@ import ContactMessage from "../models/ContactMessage.js";
 
 const router = express.Router();
 
+import jwt from "jsonwebtoken";
+
+function authAdmin(req, res, next) {
+  const header = req.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ success: false, error: "Token ausente" });
+  try {
+    jwt.verify(token, process.env.ADMIN_JWT_SECRET);
+    return next();
+  } catch {
+    return res.status(401).json({ success: false, error: "Token inválido" });
+  }
+}
+
 function limparTexto(valor) {
   return String(valor || "").trim();
 }
@@ -44,7 +58,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authAdmin, async (req, res) => {
   try {
     const status = limparTexto(req.query.status);
     const limite = Math.min(
@@ -77,7 +91,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.patch("/:id/status", async (req, res) => {
+router.patch("/:id/status", authAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
