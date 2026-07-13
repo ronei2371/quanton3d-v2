@@ -99,7 +99,7 @@ router.get("/", authAdmin, async (req, res) => { // protegido — evita vazar da
   }
 });
 
-router.patch("/:id/status", async (req, res) => {
+router.patch("/:id/status", authAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const status = limparTexto(req.body.status);
