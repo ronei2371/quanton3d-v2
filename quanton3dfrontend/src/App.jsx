@@ -640,7 +640,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
           (type === "calc_custos" || type === "parceirosPublico" || (type && type.startsWith("fispq_")))
             ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
-            ? { width: "min(1200px, calc(100vw - 16px))", height: "calc(100vh - 30px)", maxHeight: "calc(100vh - 30px)", padding: "16px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }
+            ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "18px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)" }
             : {}
         }>
         <div className="guide-header">
