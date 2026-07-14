@@ -61,15 +61,11 @@ export async function aprovarGalleryItem(req, res) {
 }
 
 export async function recusarGalleryItem(req, res) {
-  const item = await GalleryItem.findByIdAndUpdate(
-    req.params.id,
-    { status: 'recusado' },
-    { new: true }
-  );
+  const item = await GalleryItem.findByIdAndDelete(req.params.id);
 
   if (!item) {
     return res.status(404).json({ success: false, error: 'Item não encontrado' });
   }
 
-  return res.json({ success: true, data: item });
+  return res.json({ success: true, message: 'Item recusado e excluído.' });
 }
