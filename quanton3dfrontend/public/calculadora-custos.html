@@ -783,7 +783,19 @@
     function parseBR(value) {
       if (value === null || value === undefined) return 0;
       if (typeof value === "number") return isFinite(value) ? value : 0;
-      const cleaned = String(value).trim().replace(/R\$/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
+      const raw = String(value).trim().replace(/R\$/g, "").replace(/\s/g, "");
+      const comma = raw.lastIndexOf(",");
+      const dot = raw.lastIndexOf(".");
+      let cleaned = raw;
+      if (comma >= 0 && dot >= 0) {
+        cleaned = comma > dot ? raw.replace(/\./g, "").replace(",", ".") : raw.replace(/,/g, "");
+      } else if (comma >= 0) {
+        cleaned = raw.replace(/\./g, "").replace(",", ".");
+      } else if ((raw.match(/\./g) || []).length > 1) {
+        cleaned = raw.replace(/\./g, "");
+      } else if (dot >= 0 && raw.slice(dot + 1).length === 3) {
+        cleaned = raw.replace(/\./g, "");
+      }
       const n = Number(cleaned);
       return isFinite(n) ? n : 0;
     }
@@ -859,12 +871,24 @@
           ok = false;
         }
       });
+      const taxPct = parseBR($("taxPct").value);
+      const commissionPct = parseBR($("commissionPct").value);
+      const marginPct = parseBR($("marginPct").value);
+      const markInvalid = (id) => $(id)?.closest(".field")?.classList.add("invalid");
+      if (taxPct + commissionPct >= 100) {
+        ["taxPct", "commissionPct"].forEach(markInvalid);
+        ok = false;
+      }
+      if ($("marginMode").value === "netMargin" && taxPct + commissionPct + marginPct >= 100) {
+        ["taxPct", "commissionPct", "marginPct"].forEach(markInvalid);
+        ok = false;
+      }
       return ok;
     }
 
     function calculate(showErrors = true) {
       if (showErrors && !validate()) {
-        setStatus("Alguns campos obrigatórios estão vazios ou zerados. Corrigi eles em vermelho para não calcular no escuro.", "bad");
+        setStatus("Revise os campos em vermelho: há campos obrigatórios vazios/zerados ou percentuais que chegam a 100% da venda.", "bad");
         return null;
       }
       const d = collect();
@@ -911,10 +935,16 @@
       const taxPct = parseBR(d.taxPct) / 100;
       const commissionPct = parseBR(d.commissionPct) / 100;
       const marginPct = parseBR(d.marginPct) / 100;
-      const sellCostPct = clamp(taxPct + commissionPct, 0, 0.95);
+      const sellCostPct = taxPct + commissionPct;
+      const sellCostFactor = 1 - sellCostPct;
+      const netMarginFactor = sellCostFactor - marginPct;
+      if (sellCostFactor <= 0 || (d.marginMode === "netMargin" && netMarginFactor <= 0)) {
+        setStatus("Percentuais de imposto, comissão e margem passam de 100% da venda. Ajuste antes de calcular.", "bad");
+        return null;
+      }
       let rawSuggested = 0;
-      if (d.marginMode === "markup") rawSuggested = totalCost * (1 + marginPct) / Math.max(0.01, 1 - sellCostPct);
-      else rawSuggested = totalCost / Math.max(0.01, 1 - sellCostPct - marginPct);
+      if (d.marginMode === "markup") rawSuggested = totalCost * (1 + marginPct) / sellCostFactor;
+      else rawSuggested = totalCost / netMarginFactor;
       const suggestedPrice = roundCommercial(rawSuggested, d.roundMode);
       const agreedPrice = parseBR(d.agreedPrice);
       const effectivePrice = agreedPrice > 0 ? agreedPrice : suggestedPrice;
@@ -922,7 +952,7 @@
       const commissionValue = effectivePrice * commissionPct;
       const netProfit = effectivePrice - totalCost - taxValue - commissionValue;
       const netMargin = safeDiv(netProfit, effectivePrice) * 100;
-      const breakEvenPrice = totalCost / Math.max(0.01, 1 - sellCostPct);
+      const breakEvenPrice = totalCost / sellCostFactor;
 
       const groups = [
         { key: "resina", label: "Resina + perda técnica", value: resinCost, hint: `${num(resinKgEffective, 3)} kg efetivos, incluindo ${pct(wastePct)} de perda` },
