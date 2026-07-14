@@ -2306,6 +2306,20 @@ function AdminContent() {
                 </div>
               </div>
 
+              {/* Botões de contato rápido */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
+                <a href={"https://wa.me/5531983340053?text=" + encodeURIComponent("Olá " + (f.nome || "") + ", recebi seu pedido de formulação personalizada para " + (f.caracteristica || "sua aplicação") + ". Vou te ajudar!")}
+                  target="_blank" rel="noreferrer"
+                  style={{ display:"flex", alignItems:"center", gap:"6px", padding:"7px 14px", borderRadius:"8px", border:"1px solid rgba(37,211,102,0.4)", background:"rgba(37,211,102,0.1)", color:"#25d366", fontSize:"0.8rem", fontWeight:800, textDecoration:"none" }}>
+                  💬 WhatsApp Business
+                </a>
+                {f.email && <a href={"mailto:" + f.email}
+                  target="_blank" rel="noreferrer"
+                  style={{ display:"flex", alignItems:"center", gap:"6px", padding:"7px 14px", borderRadius:"8px", border:"1px solid rgba(113,159,219,0.25)", background:"rgba(255,255,255,0.04)", color:"#9fb4c7", fontSize:"0.8rem", fontWeight:800, textDecoration:"none" }}>
+                  ✉️ Email
+                </a>}
+              </div>
+
               {/* Dados da formulação */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "10px" }}>
                 <div style={{ background: "rgba(184,156,255,0.07)", border: "1px solid rgba(184,156,255,0.2)", borderRadius: "8px", padding: "8px 10px" }}>
