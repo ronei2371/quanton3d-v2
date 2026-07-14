@@ -823,9 +823,18 @@ function FormulacaoContent({ cliente }) {
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
   async function enviar() {
+    if (!form.caracteristica.trim()) { alert("Informe a aplicação desejada."); return; }
     try {
       setEnviando(true);
-      await api.post("/formulacoes", { ...form, clienteId: cliente?._id });
+      await api.post("/formulacoes", {
+        nome: cliente?.nome || "Não informado",
+        telefone: cliente?.telefone || "Não informado",
+        email: cliente?.email || "",
+        caracteristica: form.caracteristica,
+        cor: form.cor,
+        detalhes: form.detalhes,
+        clienteId: cliente?._id,
+      });
       setSucesso(true);
     } catch (err) { console.error("Erro ao enviar formulação:", err); alert("Erro ao enviar pedido."); }
     finally { setEnviando(false); }
