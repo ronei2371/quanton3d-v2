@@ -641,6 +641,8 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
             ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
             ? { width: "min(760px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "14px" }
+            : type === "adm"
+            ? { width: "min(860px, calc(100vw - 16px))", height: "calc(100vh - 40px)", maxHeight: "calc(100vh - 40px)", display: "flex", flexDirection: "column", overflow: "hidden", padding: "20px" }
             : {}
         }>
         <div className="guide-header">
@@ -1366,6 +1368,13 @@ function AdminContent() {
     } catch (err) { alert("Erro ao marcar como revisado."); }
   }
 
+  async function atualizarStatusMensagem(id, status) {
+    try {
+      await api.patch("/contact-messages/" + id + "/status", { status }, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { setErro(err?.response?.data?.error || "Erro ao atualizar mensagem."); }
+  }
+
   async function atualizarStatusParceiro(id, status) {
     try {
       await api.patch("/partner-requests/" + id + "/status", { status }, { headers: { Authorization: "Bearer " + token } });
@@ -1446,7 +1455,7 @@ function AdminContent() {
   ];
 
   return (
-    <div className="admin-gallery-panel" style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+    <div className="admin-gallery-panel" style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, overflow: "hidden" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           {ABAS_ADM.map((a) => (
@@ -1525,6 +1534,37 @@ function AdminContent() {
               <p style={{ color: "#8ba3be", fontSize: "0.78rem", margin: 0 }}>Selecione um período e clique em "Gerar relatório" para ver quantas pessoas visitaram o site por dia.</p>
             )}
           </div>
+
+          {/* Clientes cadastrados no período filtrado */}
+          {filtroVisitasInicio && relatorioVisitas && (() => {
+            const inicio = new Date(filtroVisitasInicio + "T00:00:00");
+            const fim = filtroVisitasFim ? new Date(filtroVisitasFim + "T23:59:59") : new Date();
+            const clientesPeriodo = dados.clientes.filter(c => {
+              const d = new Date(c.createdAt);
+              return d >= inicio && d <= fim;
+            });
+            if (clientesPeriodo.length === 0) return null;
+            return (
+              <div style={{ background: "rgba(73,230,139,0.05)", border: "1px solid rgba(73,230,139,0.2)", borderRadius: "14px", padding: "14px 16px", marginBottom: "14px" }}>
+                <p style={{ margin: "0 0 10px", fontWeight: 800, color: "#49e68b", fontSize: "0.82rem" }}>
+                  👥 CLIENTES CADASTRADOS NO PERÍODO ({clientesPeriodo.length})
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  {clientesPeriodo.map(c => (
+                    <div key={c._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 10px", borderRadius: "8px", background: "rgba(255,255,255,0.03)", flexWrap: "wrap", gap: "6px" }}>
+                      <span style={{ fontWeight: 700, color: "#eaf3ff", fontSize: "0.85rem" }}>{c.nome || "Sem nome"}</span>
+                      <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "#9fb4c7" }}>
+                        <span>📱 {c.telefone || "-"}</span>
+                        <span>✉️ {c.email || "-"}</span>
+                        <span style={{ color: "#6b8aad" }}>{new Date(c.createdAt).toLocaleDateString("pt-BR")}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "18px" }}>
             {[
@@ -2408,14 +2448,28 @@ function AdminContent() {
             <CARD key={m._id}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
                 <strong>{m.nome || m.clienteNome || "Sem nome"}</strong>
-                <div style={{ display: "flex", gap: "6px", alignItems: "center" }}><BADGE status={m.resolvido ? "resolvido" : "pendente"} /><small style={{ color: "#9fb4c7", fontSize: "0.75rem" }}>{formatarDataHora(m.createdAt)}</small></div>
+                <div style={{ display: "flex", gap: "6px", alignItems: "center" }}><BADGE status={m.status || (m.resolvido ? "resolvido" : "pendente")} /><small style={{ color: "#9fb4c7", fontSize: "0.75rem" }}>{formatarDataHora(m.createdAt)}</small></div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", fontSize: "0.82rem", color: "#9fb4c7", marginBottom: "8px" }}>
                 <span>Tel: {m.telefone || "-"}</span><span>Email: {m.email || "-"}</span><span>Assunto: {m.assunto || "-"}</span>
               </div>
-              {m.mensagem && <div style={{ background: "rgba(26,115,232,0.08)", border: "1px solid rgba(26,115,232,0.2)", borderRadius: "8px", padding: "8px" }}>
+              {m.mensagem && <div style={{ background: "rgba(26,115,232,0.08)", border: "1px solid rgba(26,115,232,0.2)", borderRadius: "8px", padding: "8px", marginBottom: "10px" }}>
                 <p style={{ color: "#d3e4f8", fontSize: "0.82rem", margin: 0 }}>{m.mensagem}</p>
               </div>}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <button type="button" onClick={() => atualizarStatusMensagem(m._id, "em_contato")} disabled={m.status === "em_contato"}
+                  style={{ padding: "6px 12px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.35)", background: "rgba(79,209,255,0.08)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, opacity: m.status === "em_contato" ? 0.4 : 1 }}>
+                  📞 Em contato
+                </button>
+                <button type="button" onClick={() => atualizarStatusMensagem(m._id, "resolvido")} disabled={m.status === "resolvido"}
+                  style={{ padding: "6px 12px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.08)", color: "#49e68b", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, opacity: m.status === "resolvido" ? 0.4 : 1 }}>
+                  ✅ Resolvido
+                </button>
+                <button type="button" onClick={() => atualizarStatusMensagem(m._id, "pendente")}
+                  style={{ padding: "6px 12px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.3)", background: "rgba(255,209,102,0.06)", color: "#ffd166", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800 }}>
+                  ↩️ Pendente
+                </button>
+              </div>
             </CARD>
           ))}
         </div>
