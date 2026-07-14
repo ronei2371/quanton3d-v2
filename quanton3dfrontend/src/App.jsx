@@ -641,8 +641,6 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
             ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
             ? { width: "min(760px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "14px" }
-            : type === "adm"
-            ? { width: "min(860px, calc(100vw - 16px))", height: "calc(100vh - 40px)", maxHeight: "calc(100vh - 40px)", display: "flex", flexDirection: "column", overflow: "hidden", padding: "20px" }
             : {}
         }>
         <div className="guide-header">
@@ -1245,6 +1243,7 @@ function AdminContent() {
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
       } catch (_) {}
       const clientesCarregados = Array.isArray(m.clientes) ? m.clientes : [];
+      console.log("[ADM] clientes carregados:", clientesCarregados.length, clientesCarregados[0]);
       setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
@@ -1455,7 +1454,7 @@ function AdminContent() {
   ];
 
   return (
-    <div className="admin-gallery-panel" style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, overflow: "hidden" }}>
+    <div className="admin-gallery-panel">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           {ABAS_ADM.map((a) => (
@@ -1472,8 +1471,6 @@ function AdminContent() {
       </div>
       {erro && <div className="modal-error">{erro}</div>}
       {carregando && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "20px" }}>Carregando...</div>}
-
-      <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden", paddingRight: "4px" }}>
 
       {aba === "metricas" && (
         <div>
@@ -2124,7 +2121,7 @@ function AdminContent() {
             </div>
           )}
 
-          {dados.clientes.map((c) => {
+          {dados.clientes.filter(c => c && c._id).map((c) => {
             const suspeito = /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g, "") || "") || (c.nome || "").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome || "");
             const selecionado = clientesSelecionados.includes(c._id);
             return (
@@ -2474,7 +2471,6 @@ function AdminContent() {
           ))}
         </div>
       )}
-      </div>{/* fim scroll-content */}
     </div>
   );
 }
