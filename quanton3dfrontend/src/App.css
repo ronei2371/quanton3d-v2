@@ -1319,3 +1319,12 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 @keyframes elioOrbit5 { 0% { transform: rotate(225deg) translateX(72px) rotate(-225deg); } to { transform: rotate(585deg) translateX(72px) rotate(-585deg); } }
 @keyframes elioOrbit6 { 0% { transform: rotate(270deg) translateX(88px) rotate(-270deg); } to { transform: rotate(630deg) translateX(88px) rotate(-630deg); } }
 @keyframes elioOrbit7 { 0% { transform: rotate(315deg) translateX(82px) rotate(-315deg); } to { transform: rotate(675deg) translateX(82px) rotate(-675deg); } }
+
+/* ═══ BOT em tela cheia ═══ */
+.site-modal[style*="98vw"] {
+  width: 98vw !important;
+  max-width: 98vw !important;
+  height: 98vh !important;
+  max-height: 98vh !important;
+  padding: 18px !important;
+}
