@@ -600,7 +600,7 @@
               <div class="field required" data-required="true"><label for="priceKg">Preço por quilo (R$/kg)</label><input id="priceKg" type="text" inputmode="decimal" value="175,00" placeholder="Ex: 175,00" /></div>
               <div class="field required" data-required="true"><label for="resinGrams">Quantidade de resina usada no job (g)</label><input id="resinGrams" type="text" inputmode="decimal" value="1580" placeholder="Ex: 1580" /><small>Use o consumo total do lote, já considerando suportes e base.</small></div>
               <div class="field required" data-required="true"><label for="piecesQty">Quantidade de peças no lote</label><input id="piecesQty" type="number" min="1" step="1" value="1" /><small>Divide custo fixo e total para chegar no custo unitário real.</small></div>
-              <div class="field"><label for="wastePct">Perda técnica de resina (%)</label><input id="wastePct" type="text" inputmode="decimal" value="8" /><small>Resina presa em cuba, suporte, funil, respingo e resíduo.</small></div>
+              <div class="field"><label for="wastePct">Perda técnica de resina (%)</label><input id="wastePct" type="text" inputmode="decimal" value="8" /><small>Perda adicional não indicada pelo fatiador: resina retida na cuba, funil, ferramentas, respingos e resíduos de lavagem.</small></div>
               <div class="field"><label for="failurePct">Risco de falha / refação (%)</label><input id="failurePct" type="text" inputmode="decimal" value="5" /><small>Reserva técnica para falhas, FEP ruim, suporte subdimensionado etc.</small></div>
             </div>
           </div>
@@ -660,12 +660,12 @@
 
           <div class="card">
             <h2>7. Impostos, comissão e margem desejada</h2>
-            <p class="section-note">Use margem real sobre venda quando quiser saber o lucro líquido de verdade. Markup simples é mais rápido, mas pode enganar se imposto e comissão forem altos.</p>
+            <p class="section-note">Use margem real sobre venda quando quiser saber o lucro líquido de verdade. Lucro sobre custo é mais rápido, mas pode enganar se imposto e comissão forem altos.</p>
             <div class="grid">
               <div class="field"><label for="taxPct">Impostos / taxa de venda (%)</label><input id="taxPct" type="text" inputmode="decimal" value="6" /></div>
               <div class="field"><label for="commissionPct">Comissão / marketplace (%)</label><input id="commissionPct" type="text" inputmode="decimal" value="0" /></div>
               <div class="field required" data-required="true"><label for="marginPct">Margem desejada (%)</label><input id="marginPct" type="text" inputmode="decimal" value="20" /></div>
-              <div class="field"><label for="marginMode">Modo de cálculo</label><select id="marginMode"><option value="netMargin">Margem líquida sobre venda</option><option value="markup">Markup sobre custo</option></select></div>
+              <div class="field"><label for="marginMode">Modo de cálculo</label><select id="marginMode"><option value="netMargin">Margem líquida sobre venda</option><option value="markup">Lucro desejado sobre o custo, após taxas</option></select></div>
               <div class="field"><label for="agreedPrice">Preço combinado / simulação (R$)</label><input id="agreedPrice" type="text" inputmode="decimal" value="0,00" /><small>Opcional. Compare o preço sugerido com um preço negociado.</small></div>
               <div class="field"><label for="roundMode">Arredondamento comercial</label><select id="roundMode"><option value="none">Sem arredondar</option><option value="up1">Arredondar para cima em R$ 1</option><option value="up5">Arredondar para cima em R$ 5</option><option value="up10">Arredondar para cima em R$ 10</option><option value="psych">Preço psicológico (,90)</option></select></div>
             </div>
@@ -678,7 +678,7 @@
           <h2>Resultado</h2>
           <p class="section-note">Preço recomendado, custo real e margem líquida.</p>
           <div class="price-box">
-            <span>Preço sugerido do job</span>
+            <span>Preço do job</span>
             <strong id="suggestedPrice">R$ 0,00</strong>
             <div class="unit-price">
               <div><span>Preço por peça</span><strong id="unitSuggestedPrice">R$ 0,00</strong></div>
@@ -751,7 +751,7 @@
 
   <script>
     const RESINS = [
-      { name: "— Selecione ou preencha manualmente —", price: 0 },
+      { name: "— Selecione a resina —", price: 0 },
       { name: "Quanton3D Alchemist", price: 175 },
       { name: "Quanton3D Athom Dental", price: 179 },
       { name: "Quanton3D Athom Alinhadores", price: 249 },
@@ -780,11 +780,31 @@
     let lastResult = null;
     let scenarios = loadJSON(SCENARIO_KEY, { A: null, B: null });
 
+    function normalizeBRNumber(value) {
+      const raw = String(value ?? "").trim().replace(/R\$/g, "").replace(/\s/g, "");
+      const comma = raw.lastIndexOf(",");
+      const dot = raw.lastIndexOf(".");
+      let cleaned = raw;
+      if (comma >= 0 && dot >= 0) {
+        cleaned = comma > dot ? raw.replace(/\./g, "").replace(",", ".") : raw.replace(/,/g, "");
+      } else if (comma >= 0) {
+        cleaned = raw.replace(/\./g, "").replace(",", ".");
+      } else if ((raw.match(/\./g) || []).length > 1) {
+        cleaned = raw.replace(/\./g, "");
+      } else if (dot >= 0 && raw.slice(dot + 1).length === 3) {
+        cleaned = raw.replace(/\./g, "");
+      }
+      return cleaned;
+    }
+    function isValidBRNumber(value) {
+      if (typeof value === "number") return isFinite(value);
+      const cleaned = normalizeBRNumber(value);
+      return cleaned !== "" && /^[-+]?\d+(\.\d+)?$/.test(cleaned) && isFinite(Number(cleaned));
+    }
     function parseBR(value) {
       if (value === null || value === undefined) return 0;
       if (typeof value === "number") return isFinite(value) ? value : 0;
-      const cleaned = String(value).trim().replace(/R\$/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
-      const n = Number(cleaned);
+      const n = Number(normalizeBRNumber(value));
       return isFinite(n) ? n : 0;
     }
     function money(n) {
@@ -816,8 +836,9 @@
       if (mode === "up10") return Math.ceil(value / 10) * 10;
       if (mode === "psych") {
         if (value <= 0) return 0;
-        const base = Math.ceil(value);
-        return Math.max(0, base - 0.10);
+        let candidate = Math.ceil(value) - 0.10;
+        if (candidate + 1e-9 < value) candidate += 1;
+        return Math.max(0, candidate);
       }
       return value;
     }
@@ -846,25 +867,73 @@
 
     function validate() {
       let ok = true;
+      const numericIds = [
+        "quoteValidity", "priceKg", "resinGrams", "piecesQty", "wastePct", "failurePct", "alcoholMl", "alcoholLiterPrice", "disposables", "finishSupplies", "packagingCost", "adminCost",
+        "printerWatts", "printMinutes", "washCureWatts", "washCureMinutes", "kwhPrice", "extraEnergyCost", "prepMinutes", "finishMinutes", "laborHour", "printerValue", "printerLifeHours", "fepCost", "fepLifeJobs", "lcdCost", "lcdLifeHours",
+        "inboundFreightKg", "outboundFreight", "stockLossPct", "stockLossFixed", "taxPct", "commissionPct", "marginPct", "agreedPrice"
+      ];
       document.querySelectorAll(".field.invalid").forEach(el => el.classList.remove("invalid"));
+      const markInvalid = (id) => $(id)?.closest(".field")?.classList.add("invalid");
       document.querySelectorAll(".field[data-required='true']").forEach(field => {
         const input = field.querySelector("input, select, textarea");
         if (!input) return;
         const id = input.id;
         const value = input.value;
         let valid = String(value).trim() !== "";
+        if (id === "resinSelect") valid = Number(value) > 0;
         if (["priceKg", "resinGrams", "piecesQty", "marginPct"].includes(id)) valid = parseBR(value) > 0;
         if (!valid) {
           field.classList.add("invalid");
           ok = false;
         }
       });
+      numericIds.forEach(id => {
+        const el = $(id);
+        if (!el) return;
+        const raw = String(el.value ?? "").trim();
+        if (raw !== "" && !isValidBRNumber(raw)) {
+          markInvalid(id);
+          ok = false;
+          return;
+        }
+        const value = parseBR(raw);
+        if (raw !== "" && value < 0) {
+          markInvalid(id);
+          ok = false;
+        }
+      });
+      const pieces = parseBR($("piecesQty").value);
+      if (!Number.isInteger(pieces) || pieces < 1) {
+        markInvalid("piecesQty");
+        ok = false;
+      }
+      [
+        ["printerValue", "printerLifeHours"],
+        ["fepCost", "fepLifeJobs"],
+        ["lcdCost", "lcdLifeHours"]
+      ].forEach(([costId, lifeId]) => {
+        if (parseBR($(costId).value) > 0 && parseBR($(lifeId).value) <= 0) {
+          markInvalid(lifeId);
+          ok = false;
+        }
+      });
+      const taxPct = parseBR($("taxPct").value);
+      const commissionPct = parseBR($("commissionPct").value);
+      const marginPct = parseBR($("marginPct").value);
+      if (taxPct >= 100 || commissionPct >= 100 || taxPct + commissionPct >= 100) {
+        ["taxPct", "commissionPct"].forEach(markInvalid);
+        ok = false;
+      }
+      if ($("marginMode").value === "netMargin" && taxPct + commissionPct + marginPct >= 100) {
+        ["taxPct", "commissionPct", "marginPct"].forEach(markInvalid);
+        ok = false;
+      }
       return ok;
     }
 
     function calculate(showErrors = true) {
       if (showErrors && !validate()) {
-        setStatus("Alguns campos obrigatórios estão vazios ou zerados. Corrigi eles em vermelho para não calcular no escuro.", "bad");
+        setStatus("Revise os campos em vermelho: há campos obrigatórios vazios/zerados ou percentuais que chegam a 100% da venda.", "bad");
         return null;
       }
       const d = collect();
@@ -911,10 +980,16 @@
       const taxPct = parseBR(d.taxPct) / 100;
       const commissionPct = parseBR(d.commissionPct) / 100;
       const marginPct = parseBR(d.marginPct) / 100;
-      const sellCostPct = clamp(taxPct + commissionPct, 0, 0.95);
+      const sellCostPct = taxPct + commissionPct;
+      const sellCostFactor = 1 - sellCostPct;
+      const netMarginFactor = sellCostFactor - marginPct;
+      if (sellCostFactor <= 0 || (d.marginMode === "netMargin" && netMarginFactor <= 0)) {
+        setStatus("Percentuais de imposto, comissão e margem passam de 100% da venda. Ajuste antes de calcular.", "bad");
+        return null;
+      }
       let rawSuggested = 0;
-      if (d.marginMode === "markup") rawSuggested = totalCost * (1 + marginPct) / Math.max(0.01, 1 - sellCostPct);
-      else rawSuggested = totalCost / Math.max(0.01, 1 - sellCostPct - marginPct);
+      if (d.marginMode === "markup") rawSuggested = totalCost * (1 + marginPct) / sellCostFactor;
+      else rawSuggested = totalCost / netMarginFactor;
       const suggestedPrice = roundCommercial(rawSuggested, d.roundMode);
       const agreedPrice = parseBR(d.agreedPrice);
       const effectivePrice = agreedPrice > 0 ? agreedPrice : suggestedPrice;
@@ -922,7 +997,7 @@
       const commissionValue = effectivePrice * commissionPct;
       const netProfit = effectivePrice - totalCost - taxValue - commissionValue;
       const netMargin = safeDiv(netProfit, effectivePrice) * 100;
-      const breakEvenPrice = totalCost / Math.max(0.01, 1 - sellCostPct);
+      const breakEvenPrice = totalCost / sellCostFactor;
 
       const groups = [
         { key: "resina", label: "Resina + perda técnica", value: resinCost, hint: `${num(resinKgEffective, 3)} kg efetivos, incluindo ${pct(wastePct)} de perda` },
@@ -992,20 +1067,21 @@
     }
 
     function updateUI(r) {
-      $("suggestedPrice").textContent = money(r.suggestedPrice);
-      $("unitSuggestedPrice").textContent = money(r.unitSuggestedPrice);
+      $("suggestedPrice").textContent = money(r.effectivePrice);
+      $("unitSuggestedPrice").textContent = money(r.unitEffectivePrice);
       $("unitRealCost").textContent = money(r.unitRealCost);
       $("totalCost").textContent = money(r.totalCost);
       $("netProfit").textContent = money(r.netProfit);
       $("energyCostView").textContent = money(r.parts.energyCost);
       $("kwhView").textContent = `${num(r.totalKwh, 3)} kWh`;
-      $("kpiPrice").textContent = money(r.suggestedPrice);
+      $("kpiPrice").textContent = money(r.effectivePrice);
       $("kpiUnitCost").textContent = money(r.unitRealCost);
       $("kpiMargin").textContent = pct(r.netMargin);
 
-      if (r.netMargin < 5) setStatus(`Atenção: margem líquida estimada de ${pct(r.netMargin)}. Esse preço está apertado demais, uai.`, "bad");
-      else if (r.netMargin < 15) setStatus(`Margem líquida estimada de ${pct(r.netMargin)}. Funciona, mas tem pouca gordura para falha, desconto ou retrabalho.`, "warn");
-      else setStatus(`Preço saudável: margem líquida estimada de ${pct(r.netMargin)} e lucro de ${money(r.netProfit)} no job.`, "good");
+      const priceNote = r.agreedPrice > 0 ? ` Preço recomendado: ${money(r.suggestedPrice)}; preço combinado: ${money(r.effectivePrice)}.` : "";
+      if (r.netMargin < 5) setStatus(`Atenção: margem líquida estimada de ${pct(r.netMargin)}. Esse preço está apertado demais, uai.${priceNote}`, "bad");
+      else if (r.netMargin < 15) setStatus(`Margem líquida estimada de ${pct(r.netMargin)}. Funciona, mas tem pouca gordura para falha, desconto ou retrabalho.${priceNote}`, "warn");
+      else setStatus(`Preço saudável: margem líquida estimada de ${pct(r.netMargin)} e lucro de ${money(r.netProfit)} no job.${priceNote}`, "good");
 
       renderBreakdown(r);
       renderDonut(r.groups, r.totalCost);
@@ -1044,7 +1120,7 @@
 
     function renderSummaries(r) {
       const d = r.input;
-      const clientSummary = `ORÇAMENTO QUANTON3D\n\nCódigo: ${d.quoteCode}\nCliente: ${d.clientName}\nPedido/Projeto: ${d.projectName}\nResina/Material: ${r.resinName}\nQuantidade no lote: ${r.pieces} peça(s)\nDescrição: ${d.pieceDescription || "Não informado"}\n\nValor total sugerido: ${money(r.suggestedPrice)}\nValor por peça: ${money(r.unitSuggestedPrice)}\nPrazo estimado: ${d.deadline || "A combinar"}\nValidade: ${d.quoteValidity || 7} dia(s)\n\nObservações: ${d.notes || "Sem observações adicionais."}`;
+      const clientSummary = `ORÇAMENTO QUANTON3D\n\nCódigo: ${d.quoteCode}\nCliente: ${d.clientName}\nPedido/Projeto: ${d.projectName}\nResina/Material: ${r.resinName}\nQuantidade no lote: ${r.pieces} peça(s)\nDescrição: ${d.pieceDescription || "Não informado"}\n\nValor total do orçamento: ${money(r.effectivePrice)}\nValor por peça: ${money(r.unitEffectivePrice)}\nPrazo estimado: ${d.deadline || "A combinar"}\nValidade: ${d.quoteValidity || 7} dia(s)\n\nObservações: ${d.notes || "Sem observações adicionais."}`;
 
       const internalSummary = `RELATÓRIO INTERNO QUANTON3D\n\nCódigo: ${d.quoteCode}\nData: ${r.savedAt}\nStatus: ${d.quoteStatus}\nCliente: ${d.clientName}\nTelefone: ${d.clientPhone || "-"}\nE-mail: ${d.clientEmail || "-"}\nPedido/Projeto: ${d.projectName}\nResina: ${r.resinName}\nPreço da resina: ${d.priceKg}/kg\nConsumo base: ${num(r.resinKgBase, 3)} kg\nConsumo com perda: ${num(r.resinKgEffective, 3)} kg\nQuantidade de peças: ${r.pieces}\n\nCusto total: ${money(r.totalCost)}\nCusto unitário: ${money(r.unitRealCost)}\nPreço mínimo sem lucro: ${money(r.breakEvenPrice)}\nPreço sugerido total: ${money(r.suggestedPrice)}\nPreço sugerido unitário: ${money(r.unitSuggestedPrice)}\nPreço combinado/simulado: ${r.agreedPrice > 0 ? money(r.agreedPrice) : "Não informado"}\nImpostos/taxas: ${money(r.taxValue)}\nComissão/marketplace: ${money(r.commissionValue)}\nLucro líquido estimado: ${money(r.netProfit)}\nLucro unitário: ${money(r.unitNetProfit)}\nMargem líquida estimada: ${pct(r.netMargin)}\nEnergia: ${money(r.parts.energyCost)} (${num(r.totalKwh, 3)} kWh)\n\nDETALHAMENTO\n${r.groups.map(g => `- ${g.label}: ${money(g.value)} (${pct(safeDiv(g.value, r.totalCost) * 100)})`).join("\n")}\n\nObservações internas/cliente:\n${d.notes || "-"}`;
 
@@ -1065,14 +1141,14 @@
           <div class="print-box"><h3>Pedido</h3><p><b>Projeto:</b> ${escapeHtml(d.projectName)}</p><p><b>Status:</b> ${escapeHtml(d.quoteStatus)}</p><p><b>Prazo:</b> ${escapeHtml(d.deadline || "A combinar")}</p><p><b>Validade:</b> ${escapeHtml(d.quoteValidity || "7")} dia(s)</p></div>
         </div>
         <div class="print-box"><h3>Descrição</h3><p>${escapeHtml(d.pieceDescription || "Não informado")}</p></div>
-        <div class="print-price"><span>Valor total sugerido</span><strong>${money(r.suggestedPrice)}</strong><span>Valor por peça: ${money(r.unitSuggestedPrice)} · Quantidade: ${r.pieces} peça(s)</span></div>
+        <div class="print-price"><span>Valor total do orçamento</span><strong>${money(r.effectivePrice)}</strong><span>Valor por peça: ${money(r.unitEffectivePrice)} · Quantidade: ${r.pieces} peça(s)</span></div>
         <div class="print-grid">
           <div class="print-box"><h3>Material</h3><p><b>Resina:</b> ${escapeHtml(r.resinName)}</p><p><b>Consumo estimado:</b> ${num(r.resinKgBase, 3)} kg</p></div>
           <div class="print-box"><h3>Observações</h3><p>${escapeHtml(d.notes || "Sem observações adicionais.")}</p></div>
         </div>
         <table class="print-table">
-          <thead><tr><th>Resumo interno</th><th>Valor</th></tr></thead>
-          <tbody><tr><td>Custo técnico total</td><td>${money(r.totalCost)}</td></tr><tr><td>Custo unitário</td><td>${money(r.unitRealCost)}</td></tr><tr><td>Lucro líquido estimado</td><td>${money(r.netProfit)}</td></tr><tr><td>Margem líquida estimada</td><td>${pct(r.netMargin)}</td></tr></tbody>
+          <thead><tr><th>Resumo do orçamento</th><th>Informação</th></tr></thead>
+          <tbody><tr><td>Quantidade</td><td>${r.pieces} peça(s)</td></tr><tr><td>Valor total</td><td>${money(r.effectivePrice)}</td></tr><tr><td>Valor por peça</td><td>${money(r.unitEffectivePrice)}</td></tr><tr><td>Validade</td><td>${escapeHtml(d.quoteValidity || "7")} dia(s)</td></tr></tbody>
         </table>
       `;
     }
