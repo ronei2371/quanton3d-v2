@@ -1405,3 +1405,86 @@ section.hero-home button:hover {
   border-radius: 14px !important;
   backdrop-filter: blur(12px) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v7 — título brilhante + ícones maiores + cores
+   ═══════════════════════════════════════════════════════════ */
+
+/* Título "Quanton3D" brilhante com gradiente */
+.brand h1 {
+  background: linear-gradient(135deg, #4fd1ff 0%, #b89cff 60%, #ff6ec7 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-weight: 900 !important;
+  font-size: 1.4rem !important;
+  letter-spacing: -0.01em !important;
+  filter: drop-shadow(0 0 12px rgba(79,209,255,0.4)) !important;
+}
+.brand p {
+  color: #b8cfe8 !important;
+  font-weight: 500 !important;
+}
+
+/* Botões do header (ADM e Cliente) mais brilhantes */
+.main-nav button {
+  padding: 9px 18px !important;
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  transition: all 0.2s ease !important;
+  border: 1px solid rgba(79,209,255,0.4) !important;
+  background: rgba(79,209,255,0.12) !important;
+}
+.main-nav button:hover {
+  background: rgba(184,156,255,0.2) !important;
+  border-color: rgba(184,156,255,0.6) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(124,58,237,0.3) !important;
+}
+
+/* Section-labels (💬 ATENDIMENTO, 📸 FOTOS, etc) MAIORES */
+.section-label {
+  font-size: 0.9rem !important;
+  padding: 8px 16px !important;
+  letter-spacing: 0.08em !important;
+  font-weight: 900 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+}
+
+/* Cores personalizadas para as seções (por parágrafo pai) */
+/* ATENDIMENTO azul-ciano (padrão) */
+
+/* FOTOS E PEÇAS DE CLIENTES rosa */
+.hero-home > div:last-child > div:nth-of-type(3) .section-label {
+  color: #ff8fab !important;
+  background: rgba(255,143,171,0.1) !important;
+  border-color: rgba(255,143,171,0.35) !important;
+}
+
+/* CATÁLOGO verde */
+.hero-home > div:last-child > div:nth-of-type(4) .section-label {
+  color: #49e68b !important;
+  background: rgba(73,230,139,0.1) !important;
+  border-color: rgba(73,230,139,0.35) !important;
+}
+
+/* COMUNIDADE amarelo */
+.hero-home > div:last-child > div:nth-of-type(5) .section-label {
+  color: #ffd166 !important;
+  background: rgba(255,209,102,0.1) !important;
+  border-color: rgba(255,209,102,0.35) !important;
+}
+
+/* FERRAMENTAS laranja */
+.hero-home > div:last-child > div:nth-of-type(6) .section-label {
+  color: #ffa07a !important;
+  background: rgba(255,160,122,0.1) !important;
+  border-color: rgba(255,160,122,0.35) !important;
+}
+
+/* CONSULTA RÁPIDA ciano brilhante (mantém padrão) */
+
+/* Ícones dos section-labels maiores dentro do texto */
+.section-label {
+  gap: 4px;
+}
