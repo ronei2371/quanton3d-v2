@@ -345,14 +345,14 @@ function App() {
         <button type="button" onClick={() => alternarSecao("colaboracao")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ textAlign: "left" }}>
-            <span className="section-label">Colaboração Técnica</span>
-            <p style={{ margin: "3px 0 0", color: "#9fb4c7", fontSize: "0.8rem" }}>Envie sua foto e tempos do Chitubox para ajudar outros clientes.</p>
+            <span className="section-label">📸 Fotos e Peças de Clientes</span>
+            <p style={{ margin: "3px 0 0", color: "#9fb4c7", fontSize: "0.8rem" }}>Compartilhe sua peça impressa com resina Quanton3D e inspire outros makers!</p>
           </div>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.colaboracao ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▾</span>
         </button>
         {secoesAbertas.colaboracao && (
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
-            <button type="button" onClick={() => setActiveModal("galeria")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>📷 Compartilhar configurações</button>
+            <button type="button" onClick={() => setActiveModal("galeria")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>📷 Compartilhar minha peça</button>
             <button type="button" onClick={() => setActiveModal("galeriaPublica")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>🖼️ Ver fotos de clientes</button>
           </div>
         )}
@@ -922,8 +922,8 @@ function ChamadoTecnicoContent({ cliente }) {
       formData.append("telefone", cliente?.telefone || "");
       formData.append("email", cliente?.email || "");
       formData.append("problema", form.problema);
-      formData.append("resina", form.resina);
-      formData.append("impressora", form.impressora);
+      formData.append("resina", form.resina === "outra" ? (form.resinaCustom || "Outra") : form.resina);
+      formData.append("impressora", form.impressora === "outra" ? (form.impressoraCustom || "Outra") : form.impressora);
       formData.append("descricao", descricao);
       fotos.forEach(foto => formData.append("fotos", foto));
       await api.post("/bot-tickets", formData);
@@ -1051,6 +1051,24 @@ function ChamadoTecnicoContent({ cliente }) {
   );
 }
 
+const RESINAS_QUANTON = [
+  "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "POSEIDON",
+  "PYROBLAST", "VULCAN CAST", "SPIN", "SPARK", "LOW SMELL", "VELVET SKIN",
+  "ATHOM DENTAL", "ATHOM ALINHADORES", "ATHOM WASHABLE",
+];
+
+const IMPRESSORAS_COMUNS = [
+  "Anycubic Photon Mono", "Anycubic Photon Mono X", "Anycubic Photon Mono X 6K",
+  "Anycubic Photon M3", "Anycubic Photon M3 Max", "Anycubic Photon M3 Plus",
+  "Anycubic Photon M5", "Anycubic Photon M5s", "Anycubic Photon M7",
+  "Elegoo Mars 2", "Elegoo Mars 3", "Elegoo Mars 4", "Elegoo Mars 4 Ultra",
+  "Elegoo Saturn", "Elegoo Saturn 2", "Elegoo Saturn 3 Ultra", "Elegoo Saturn 4 Ultra",
+  "Elegoo Jupiter", "Elegoo Jupiter SE",
+  "Creality Halot One", "Creality Halot Mage", "Creality Halot Mage Pro",
+  "Phrozen Sonic Mini 8K", "Phrozen Sonic Mighty 8K",
+  "Bambu Lab",
+];
+
 function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false }) {
   const [aba, setAba] = useState(initialAba);
   const [form, setForm] = useState({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia(), redes: { instagram: "", tiktok: "", facebook: "", youtube: "" }, autorizaDivulgacao: false });
@@ -1083,15 +1101,17 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
 
   async function enviar(event) {
     event.preventDefault();
-    if (!form.resina.trim() || !form.impressora.trim() || !foto) { alert("Preencha a resina, a impressora e envie uma foto."); return; }
+    const resinaFinal = form.resina === "outra" ? form.resinaCustom : form.resina;
+    const impressoraFinal = form.impressora === "outra" ? form.impressoraCustom : form.impressora;
+    if (!resinaFinal?.trim() || !impressoraFinal?.trim() || !foto) { alert("Preencha a resina, a impressora e envie uma foto."); return; }
     try {
       setEnviando(true);
       const formData = new FormData();
       formData.append("nome", cliente?.nome || "");
       formData.append("telefone", cliente?.telefone || "");
       formData.append("email", cliente?.email || "");
-      formData.append("resina", form.resina);
-      formData.append("impressora", form.impressora);
+      formData.append("resina", form.resina === "outra" ? (form.resinaCustom || "Outra") : form.resina);
+      formData.append("impressora", form.impressora === "outra" ? (form.impressoraCustom || "Outra") : form.impressora);
       formData.append("observacao", form.observacao);
       formData.append("clienteId", cliente?._id || "");
       formData.append("fotos", foto);
@@ -1119,8 +1139,24 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
         <form className="modal-form-layout" style={{ marginTop: "20px" }} onSubmit={enviar}>
           {sucesso && <div className="modal-success">Enviado! Aguarda aprovação para aparecer para outros clientes.</div>}
           <div className="form-grid gallery-form-grid">
-            <label><span>Resina usada *</span><input value={form.resina} onChange={(e) => alterar("resina", e.target.value)} placeholder="Ex.: IRON Cinza" /></label>
-            <label><span>Impressora *</span><input value={form.impressora} onChange={(e) => alterar("impressora", e.target.value)} placeholder="Ex.: Anycubic Photon M3 Max" /></label>
+            <label><span>Resina usada *</span>
+              <select value={form.resina} onChange={e => alterar("resina", e.target.value)}
+                style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.85)", color: form.resina ? "#eaf3ff" : "#6b8aad", fontSize: "0.88rem", fontFamily: "inherit", width: "100%" }}>
+                <option value="">Selecione a resina...</option>
+                {RESINAS_QUANTON.map(r => <option key={r} value={r}>{r}</option>)}
+                <option value="outra">Outra (não listada)</option>
+              </select>
+              {form.resina === "outra" && <input value={form.resinaCustom || ""} onChange={e => alterar("resinaCustom", e.target.value)} placeholder="Digite o nome da resina" style={{ marginTop: "6px", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.85)", color: "#eaf3ff", fontSize: "0.88rem", width: "100%", boxSizing: "border-box" }} />}
+            </label>
+            <label><span>Impressora *</span>
+              <select value={form.impressora} onChange={e => alterar("impressora", e.target.value)}
+                style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.85)", color: form.impressora ? "#eaf3ff" : "#6b8aad", fontSize: "0.88rem", fontFamily: "inherit", width: "100%" }}>
+                <option value="">Selecione a impressora...</option>
+                {IMPRESSORAS_COMUNS.map(i => <option key={i} value={i}>{i}</option>)}
+                <option value="outra">Outra (não listada)</option>
+              </select>
+              {form.impressora === "outra" && <input value={form.impressoraCustom || ""} onChange={e => alterar("impressoraCustom", e.target.value)} placeholder="Digite o modelo da impressora" style={{ marginTop: "6px", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.85)", color: "#eaf3ff", fontSize: "0.88rem", width: "100%", boxSizing: "border-box" }} />}
+            </label>
             <label className="partner-grid-full"><span>Foto do trabalho *</span><input type="file" accept="image/*" onChange={(e) => setFoto(e.target.files?.[0] || null)} /></label>
           </div>
           <div className="gallery-config-box">
