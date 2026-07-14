@@ -2124,17 +2124,17 @@ function AdminContent() {
             const suspeito = /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g, "") || "") || (c.nome || "").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome || "");
             const selecionado = clientesSelecionados.includes(c._id);
             return (
-              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "12px 14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom: "10px", color: "#eaf3ff" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                  <input type="checkbox" checked={selecionado} style={{ cursor: "pointer", flexShrink: 0 }}
+              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "10px 14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom: "8px", color: "#eaf3ff", boxSizing: "border-box" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "20px 1fr auto", gap: "8px", alignItems: "center", marginBottom: "5px" }}>
+                  <input type="checkbox" checked={selecionado} style={{ cursor: "pointer" }}
                     onChange={e => setClientesSelecionados(prev => e.target.checked ? [...prev, c._id] : prev.filter(id => id !== c._id))} />
-                  <strong style={{ fontSize: "0.9rem", color: "#eaf3ff", flex: 1 }}>
+                  <strong style={{ color: "#eaf3ff", fontSize: "0.88rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {c.nome || "Sem nome"}
-                    {suspeito && <span style={{ marginLeft: "8px", fontSize: "0.68rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(255,209,102,0.15)", color: "#ffd166", fontWeight: 800 }}>⚠️ teste</span>}
+                    {suspeito && <span style={{ marginLeft: "6px", fontSize: "0.65rem", padding: "1px 6px", borderRadius: "999px", background: "rgba(255,209,102,0.15)", color: "#ffd166", fontWeight: 800 }}>⚠️ teste</span>}
                   </strong>
-                  <small style={{ color: "#6b8aad", fontSize: "0.72rem", flexShrink: 0 }}>{formatarDataHora(c.createdAt)}</small>
+                  <small style={{ color: "#6b8aad", fontSize: "0.7rem", whiteSpace: "nowrap" }}>{formatarDataHora(c.createdAt)}</small>
                 </div>
-                <div style={{ paddingLeft: "24px", fontSize: "0.8rem", color: "#9fb4c7", display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+                <div style={{ paddingLeft: "28px", fontSize: "0.78rem", color: "#9fb4c7", display: "flex", flexWrap: "wrap", gap: "3px 14px" }}>
                   <span>📱 {c.telefone || "-"}</span>
                   <span>✉️ {c.email || "-"}</span>
                   <span>🔗 {c.origem || "-"}</span>
