@@ -1285,6 +1285,10 @@ function AdminContent() {
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
   const [filtroClienteConv, setFiltroClienteConv] = useState("");
+  const [buscaCliente, setBuscaCliente] = useState("");
+  const [filtroOrigem, setFiltroOrigem] = useState("");
+  const [clienteExpandido, setClienteExpandido] = useState("");
+  const [contatoCopiado, setContatoCopiado] = useState("");
   const [clientesSelecionados, setClientesSelecionados] = useState([]);
   const [excluindoClientes, setExcluindoClientes] = useState(false);
   const [filtroVisitasInicio, setFiltroVisitasInicio] = useState("");
@@ -1364,6 +1368,14 @@ function AdminContent() {
       await api.patch("/conversas/" + id + "/revisar-feedback", {}, { headers: { Authorization: "Bearer " + token } });
       await carregarDados();
     } catch (err) { alert("Erro ao marcar como revisado."); }
+  }
+
+  async function copiarContato(c) {
+    const texto = `${c.nome || "Sem nome"}\n📱 ${c.telefone || "-"}\n✉️ ${c.email || "-"}\n🔗 ${c.origem || "-"}`;
+    try { await navigator.clipboard.writeText(texto); }
+    catch (_) { const a = document.createElement("textarea"); a.value = texto; document.body.appendChild(a); a.select(); document.execCommand("copy"); document.body.removeChild(a); }
+    setContatoCopiado(c._id);
+    setTimeout(() => setContatoCopiado(""), 2000);
   }
 
   async function atualizarStatusMensagem(id, status) {
@@ -2089,59 +2101,171 @@ function AdminContent() {
 
       {aba === "clientes" && (
         <div>
-          {dados.clientes.length === 0 && !carregando && <div className="gallery-empty">Nenhum cliente cadastrado.</div>}
 
-          {dados.clientes.length > 0 && dados.totais?.clientes > dados.clientes.length && (
-            <div style={{ marginBottom: "12px", padding: "8px 14px", borderRadius: "8px", background: "rgba(255,209,102,0.07)", border: "1px solid rgba(255,209,102,0.25)", fontSize: "0.78rem", color: "#ffd166" }}>
-              ⚠️ Exibindo os <strong>{dados.clientes.length}</strong> clientes mais recentes. Total no banco: <strong>{dados.totais.clientes}</strong>. Os demais podem ser gerenciados direto no MongoDB.
-            </div>
-          )}
-
-          {dados.clientes.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", padding: "10px 14px", borderRadius: "10px", background: "rgba(255,107,107,0.05)", border: "1px solid rgba(255,107,107,0.15)", flexWrap: "wrap", gap: "10px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "0.82rem", color: "#9fb4c7" }}>
-                  <input type="checkbox"
-                    checked={clientesSelecionados.length === dados.clientes.length && dados.clientes.length > 0}
-                    onChange={e => setClientesSelecionados(e.target.checked ? dados.clientes.map(c => c._id) : [])}
-                  />
-                  Selecionar todos
-                </label>
-                {clientesSelecionados.length > 0 && (
-                  <span style={{ fontSize: "0.78rem", color: "#ff8fab", fontWeight: 700 }}>{clientesSelecionados.length} selecionado(s)</span>
-                )}
-              </div>
-              {clientesSelecionados.length > 0 && (
-                <button type="button" onClick={excluirClientesSelecionados} disabled={excluindoClientes}
-                  style={{ padding: "7px 16px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.12)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
-                  {excluindoClientes ? "Excluindo..." : "🗑️ Excluir selecionados"}
-                </button>
-              )}
-            </div>
-          )}
-
-          {dados.clientes.filter(c => c && c._id).map((c) => {
-            const suspeito = /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g, "") || "") || (c.nome || "").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome || "");
-            const selecionado = clientesSelecionados.includes(c._id);
+          {/* ── STATS POR ORIGEM ── */}
+          {dados.clientes.length > 0 && (() => {
+            const freq = {};
+            dados.clientes.forEach(c => { const o = c.origem || "outros"; freq[o] = (freq[o] || 0) + 1; });
+            const tops = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,6);
+            const cores = { instagram:"#e1306c", site:"#4fd1ff", whatsapp:"#25d366", outros:"#9fb4c7", facebook:"#1877f2", youtube:"#ff0000" };
             return (
-              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "10px 14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom: "8px", color: "#eaf3ff", boxSizing: "border-box" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "20px 1fr auto", gap: "8px", alignItems: "center", marginBottom: "5px" }}>
-                  <input type="checkbox" checked={selecionado} style={{ cursor: "pointer" }}
-                    onChange={e => setClientesSelecionados(prev => e.target.checked ? [...prev, c._id] : prev.filter(id => id !== c._id))} />
-                  <strong style={{ color: "#eaf3ff", fontSize: "0.88rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {c.nome || "Sem nome"}
-                    {suspeito && <span style={{ marginLeft: "6px", fontSize: "0.65rem", padding: "1px 6px", borderRadius: "999px", background: "rgba(255,209,102,0.15)", color: "#ffd166", fontWeight: 800 }}>⚠️ teste</span>}
-                  </strong>
-                  <small style={{ color: "#6b8aad", fontSize: "0.7rem", whiteSpace: "nowrap" }}>{formatarDataHora(c.createdAt)}</small>
-                </div>
-                <div style={{ paddingLeft: "28px", fontSize: "0.78rem", color: "#9fb4c7", display: "flex", flexWrap: "wrap", gap: "3px 14px" }}>
-                  <span>📱 {c.telefone || "-"}</span>
-                  <span>✉️ {c.email || "-"}</span>
-                  <span>🔗 {c.origem || "-"}</span>
-                </div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:"8px", marginBottom:"14px" }}>
+                {tops.map(([orig, qtd]) => (
+                  <div key={orig} onClick={() => setFiltroOrigem(filtroOrigem === orig ? "" : orig)}
+                    style={{ padding:"6px 12px", borderRadius:"999px", cursor:"pointer", fontSize:"0.75rem", fontWeight:800,
+                      background: filtroOrigem === orig ? (cores[orig.toLowerCase()] || "#b89cff") + "33" : "rgba(255,255,255,0.05)",
+                      border: `1px solid ${filtroOrigem === orig ? (cores[orig.toLowerCase()] || "#b89cff") : "rgba(113,159,219,0.2)"}`,
+                      color: filtroOrigem === orig ? (cores[orig.toLowerCase()] || "#b89cff") : "#9fb4c7" }}>
+                    {orig} <span style={{ opacity:0.7 }}>({qtd})</span>
+                  </div>
+                ))}
+                {filtroOrigem && <button type="button" onClick={() => setFiltroOrigem("")}
+                  style={{ padding:"6px 10px", borderRadius:"999px", border:"1px solid rgba(255,107,107,0.3)", background:"rgba(255,107,107,0.08)", color:"#ff8fab", cursor:"pointer", fontSize:"0.73rem", fontWeight:800 }}>✕ limpar</button>}
               </div>
             );
-          })}
+          })()}
+
+          {/* ── AVISO LIMITE ── */}
+          {dados.clientes.length > 0 && dados.totais?.clientes > dados.clientes.length && (
+            <div style={{ marginBottom:"12px", padding:"8px 14px", borderRadius:"8px", background:"rgba(255,209,102,0.07)", border:"1px solid rgba(255,209,102,0.25)", fontSize:"0.78rem", color:"#ffd166" }}>
+              ⚠️ Exibindo os <strong>{dados.clientes.length}</strong> mais recentes. Total no banco: <strong>{dados.totais.clientes}</strong>.
+            </div>
+          )}
+
+          {/* ── TOOLBAR: busca + selecionar + excluir ── */}
+          <div style={{ display:"flex", gap:"8px", marginBottom:"12px", flexWrap:"wrap", alignItems:"center" }}>
+            <input value={buscaCliente} onChange={e => setBuscaCliente(e.target.value)}
+              placeholder="🔍 Buscar por nome, telefone ou email..."
+              style={{ flex:1, minWidth:"200px", padding:"8px 12px", borderRadius:"8px", border:"1px solid rgba(113,159,219,0.3)", background:"rgba(255,255,255,0.05)", color:"#eaf3ff", fontSize:"0.82rem", fontFamily:"inherit" }} />
+            {buscaCliente && <button type="button" onClick={() => setBuscaCliente("")}
+              style={{ padding:"7px 10px", borderRadius:"8px", border:"1px solid rgba(255,107,107,0.3)", background:"rgba(255,107,107,0.08)", color:"#ff8fab", cursor:"pointer", fontSize:"0.78rem" }}>✕</button>}
+          </div>
+
+          {/* ── BARRA SELECIONAR/EXCLUIR ── */}
+          {(() => {
+            const filtrados = dados.clientes.filter(c => c && c._id)
+              .filter(c => !filtroOrigem || (c.origem || "outros") === filtroOrigem)
+              .filter(c => {
+                if (!buscaCliente) return true;
+                const q = buscaCliente.toLowerCase();
+                return (c.nome||"").toLowerCase().includes(q) || (c.telefone||"").includes(q) || (c.email||"").toLowerCase().includes(q);
+              });
+            const suspeitos = filtrados.filter(c => /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g,"")||"") || (c.nome||"").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome||"")).length;
+            return (
+              <>
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"10px", padding:"8px 12px", borderRadius:"10px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(113,159,219,0.12)", flexWrap:"wrap", gap:"8px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:"10px", flexWrap:"wrap" }}>
+                    <label style={{ display:"flex", alignItems:"center", gap:"6px", cursor:"pointer", fontSize:"0.8rem", color:"#9fb4c7" }}>
+                      <input type="checkbox"
+                        checked={clientesSelecionados.length === filtrados.length && filtrados.length > 0}
+                        onChange={e => setClientesSelecionados(e.target.checked ? filtrados.map(c => c._id) : [])}
+                      /> Selecionar todos ({filtrados.length})
+                    </label>
+                    {clientesSelecionados.length > 0 && <span style={{ fontSize:"0.78rem", color:"#ff8fab", fontWeight:700 }}>{clientesSelecionados.length} selecionado(s)</span>}
+                    {suspeitos > 0 && <span style={{ fontSize:"0.72rem", color:"#ffd166" }}>⚠️ {suspeitos} possível(is) teste</span>}
+                  </div>
+                  <div style={{ display:"flex", gap:"8px", flexWrap:"wrap" }}>
+                    {suspeitos > 0 && clientesSelecionados.length === 0 && (
+                      <button type="button"
+                        onClick={() => setClientesSelecionados(filtrados.filter(c => /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g,"")||"") || (c.nome||"").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome||"")).map(c => c._id))}
+                        style={{ padding:"6px 12px", borderRadius:"8px", border:"1px solid rgba(255,209,102,0.35)", background:"rgba(255,209,102,0.08)", color:"#ffd166", cursor:"pointer", fontSize:"0.75rem", fontWeight:800 }}>
+                        ⚠️ Selecionar suspeitos
+                      </button>
+                    )}
+                    {clientesSelecionados.length > 0 && (
+                      <button type="button" onClick={excluirClientesSelecionados} disabled={excluindoClientes}
+                        style={{ padding:"6px 14px", borderRadius:"8px", border:"1px solid rgba(255,107,107,0.4)", background:"rgba(255,107,107,0.12)", color:"#ff8fab", cursor:"pointer", fontSize:"0.78rem", fontWeight:800 }}>
+                        {excluindoClientes ? "Excluindo..." : "🗑️ Excluir selecionados"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {filtrados.length === 0 && (
+                  <div className="gallery-empty">Nenhum cliente encontrado para esse filtro.</div>
+                )}
+
+                {filtrados.map((c) => {
+                  const suspeito = /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g,"")||"") || (c.nome||"").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome||"");
+                  const selecionado = clientesSelecionados.includes(c._id);
+                  const expandido = clienteExpandido === c._id;
+                  const corOrigem = { instagram:"#e1306c", site:"#4fd1ff", whatsapp:"#25d366", facebook:"#1877f2", youtube:"#ff0000" };
+                  const origCor = corOrigem[(c.origem||"").toLowerCase()] || "#9fb4c7";
+                  return (
+                    <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.35)" : "1px solid rgba(113,159,219,0.18)", borderRadius:"12px", padding:"10px 14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom:"8px", color:"#eaf3ff", boxSizing:"border-box" }}>
+
+                      {/* linha principal */}
+                      <div style={{ display:"grid", gridTemplateColumns:"20px 1fr auto", gap:"8px", alignItems:"center" }}>
+                        <input type="checkbox" checked={selecionado} style={{ cursor:"pointer" }}
+                          onChange={e => setClientesSelecionados(prev => e.target.checked ? [...prev, c._id] : prev.filter(id => id !== c._id))} />
+                        <div style={{ overflow:"hidden" }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:"6px", overflow:"hidden" }}>
+                            <strong style={{ color:"#eaf3ff", fontSize:"0.88rem", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{c.nome || "Sem nome"}</strong>
+                            {suspeito && <span style={{ fontSize:"0.62rem", padding:"1px 5px", borderRadius:"999px", background:"rgba(255,209,102,0.15)", color:"#ffd166", fontWeight:800, flexShrink:0 }}>⚠️ teste</span>}
+                            {c.origem && <span style={{ fontSize:"0.62rem", padding:"1px 6px", borderRadius:"999px", background: origCor+"22", color: origCor, fontWeight:700, flexShrink:0, border:`1px solid ${origCor}44` }}>{c.origem}</span>}
+                          </div>
+                          <div style={{ fontSize:"0.75rem", color:"#7a9bb5", marginTop:"2px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                            {c.telefone || "-"} · {c.email || "-"}
+                          </div>
+                        </div>
+                        <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:"4px" }}>
+                          <small style={{ color:"#6b8aad", fontSize:"0.68rem", whiteSpace:"nowrap" }}>{formatarDataHora(c.createdAt)}</small>
+                          <button type="button" onClick={() => setClienteExpandido(expandido ? "" : c._id)}
+                            style={{ padding:"2px 8px", borderRadius:"6px", border:"1px solid rgba(113,159,219,0.25)", background:"rgba(255,255,255,0.04)", color:"#9fb4c7", cursor:"pointer", fontSize:"0.68rem" }}>
+                            {expandido ? "▲ menos" : "▼ mais"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* painel expandido */}
+                      {expandido && (
+                        <div style={{ marginTop:"10px", paddingTop:"10px", borderTop:"1px solid rgba(113,159,219,0.12)" }}>
+                          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6px", marginBottom:"8px" }}>
+                            <div style={{ background:"rgba(79,209,255,0.06)", borderRadius:"8px", padding:"7px 10px" }}>
+                              <div style={{ fontSize:"0.65rem", color:"#6b8aad", marginBottom:"2px" }}>TELEFONE</div>
+                              <div style={{ fontSize:"0.82rem", color:"#eaf3ff", fontWeight:700 }}>{c.telefone || "-"}</div>
+                            </div>
+                            <div style={{ background:"rgba(79,209,255,0.06)", borderRadius:"8px", padding:"7px 10px" }}>
+                              <div style={{ fontSize:"0.65rem", color:"#6b8aad", marginBottom:"2px" }}>EMAIL</div>
+                              <div style={{ fontSize:"0.82rem", color:"#eaf3ff", wordBreak:"break-all" }}>{c.email || "-"}</div>
+                            </div>
+                            <div style={{ background:"rgba(79,209,255,0.06)", borderRadius:"8px", padding:"7px 10px" }}>
+                              <div style={{ fontSize:"0.65rem", color:"#6b8aad", marginBottom:"2px" }}>ORIGEM</div>
+                              <div style={{ fontSize:"0.82rem", color: origCor, fontWeight:700 }}>{c.origem || "-"}</div>
+                            </div>
+                            <div style={{ background:"rgba(79,209,255,0.06)", borderRadius:"8px", padding:"7px 10px" }}>
+                              <div style={{ fontSize:"0.65rem", color:"#6b8aad", marginBottom:"2px" }}>CADASTRO</div>
+                              <div style={{ fontSize:"0.82rem", color:"#eaf3ff" }}>{new Date(c.createdAt).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" })}</div>
+                            </div>
+                          </div>
+                          {c.observacao && (
+                            <div style={{ background:"rgba(184,156,255,0.07)", borderRadius:"8px", padding:"8px 10px", marginBottom:"8px", border:"1px solid rgba(184,156,255,0.15)" }}>
+                              <div style={{ fontSize:"0.65rem", color:"#b89cff", marginBottom:"3px", fontWeight:800 }}>💬 OBSERVAÇÃO</div>
+                              <div style={{ fontSize:"0.82rem", color:"#d3e4f8", lineHeight:1.5 }}>{c.observacao}</div>
+                            </div>
+                          )}
+                          <div style={{ display:"flex", gap:"8px", flexWrap:"wrap" }}>
+                            <button type="button" onClick={() => copiarContato(c)}
+                              style={{ padding:"6px 14px", borderRadius:"8px", border:"1px solid rgba(79,209,255,0.3)", background: contatoCopiado===c._id ? "rgba(73,230,139,0.12)" : "rgba(79,209,255,0.08)", color: contatoCopiado===c._id ? "#49e68b" : "#4fd1ff", cursor:"pointer", fontSize:"0.78rem", fontWeight:800 }}>
+                              {contatoCopiado===c._id ? "✅ Copiado!" : "📋 Copiar contato"}
+                            </button>
+                            <a href={`https://wa.me/55${(c.telefone||"").replace(/\D/g,"")}`} target="_blank" rel="noreferrer"
+                              style={{ padding:"6px 14px", borderRadius:"8px", border:"1px solid rgba(37,211,102,0.35)", background:"rgba(37,211,102,0.08)", color:"#25d366", fontSize:"0.78rem", fontWeight:800, textDecoration:"none" }}>
+                              💬 WhatsApp
+                            </a>
+                            <a href={`mailto:${c.email}`} target="_blank" rel="noreferrer"
+                              style={{ padding:"6px 14px", borderRadius:"8px", border:"1px solid rgba(113,159,219,0.25)", background:"rgba(255,255,255,0.04)", color:"#9fb4c7", fontSize:"0.78rem", fontWeight:800, textDecoration:"none" }}>
+                              ✉️ Email
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </>
+            );
+          })()}
         </div>
       )}
 
