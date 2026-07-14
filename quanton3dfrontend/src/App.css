@@ -1330,41 +1330,50 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ATUALIZAÇÕES VISUAIS — Redesign v5
+   ATUALIZAÇÕES VISUAIS — Redesign v6 (regras mais fortes)
    ═══════════════════════════════════════════════════════════ */
 
-/* Botões das seções accordion — mais arredondados e brilhantes */
-.home-actions button {
+/* Botões dos accordions — TOTALMENTE arredondados como pill */
+.hero-home .home-actions button,
+.hero-home button.grid-cols-2,
+section.hero-home button {
   border-radius: 999px !important;
-  padding: 10px 18px !important;
-  font-weight: 700 !important;
+  min-height: auto !important;
+  padding: 12px 20px !important;
+  text-transform: none !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0 !important;
+  background: rgba(10,20,45,0.7) !important;
+  border: 1px solid rgba(79,209,255,0.35) !important;
+  backdrop-filter: blur(14px) !important;
   transition: all 0.25s ease !important;
-  border: 1px solid rgba(79,209,255,0.3) !important;
-  background: rgba(10,20,45,0.55) !important;
-  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
 }
-.home-actions button:hover {
-  transform: translateY(-2px) !important;
-  border-color: rgba(184,156,255,0.5) !important;
-  box-shadow: 0 8px 20px rgba(124,58,237,0.25) !important;
-  background: rgba(10,20,45,0.75) !important;
+.hero-home .home-actions button:hover,
+section.hero-home button:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(184,156,255,0.6) !important;
+  background: rgba(20,30,60,0.9) !important;
+  box-shadow: 0 10px 24px rgba(124,58,237,0.35), 0 0 20px rgba(184,156,255,0.2) !important;
 }
 
-/* Botão do bot mais destacado */
+/* Botão do bot com brilho maior */
 .assistant-card button {
-  padding: 14px 28px !important;
+  padding: 15px 32px !important;
   border-radius: 999px !important;
   font-weight: 900 !important;
-  font-size: 0.95rem !important;
-  box-shadow: 0 6px 24px rgba(124,58,237,0.5) !important;
+  font-size: 1rem !important;
+  box-shadow: 0 8px 28px rgba(124,58,237,0.55) !important;
   transition: all 0.25s ease !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
 }
 .assistant-card button:hover {
   transform: translateY(-3px) !important;
-  box-shadow: 0 8px 30px rgba(184,156,255,0.6) !important;
+  box-shadow: 0 12px 36px rgba(184,156,255,0.65) !important;
 }
 
-/* ELIO maior e mais destacada */
+/* ELIO maior */
 .elio-container {
   width: 240px !important;
   height: 240px !important;
@@ -1372,26 +1381,26 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .elio-avatar {
   width: 210px !important;
   height: 210px !important;
-  border: 3px solid rgba(79,209,255,0.6) !important;
-  box-shadow: 0 0 50px rgba(79,209,255,0.3) !important;
+  border: 3px solid rgba(79,209,255,0.65) !important;
+  box-shadow: 0 0 60px rgba(79,209,255,0.35) !important;
 }
 .bot-face {
   height: 280px !important;
 }
 
-/* Cabeçalhos accordion — pill maior mais bonito */
-.hero-home > div:last-child > div > button[type="button"]:first-child {
-  border-radius: 14px !important;
+/* Cabeçalhos das seções accordion arredondados */
+.hero-home > div:last-child > div > button:first-child {
+  border-radius: 16px !important;
   padding: 12px 18px !important;
   transition: all 0.2s ease !important;
 }
-
-/* Header do site com bordas mais arredondadas */
-.top-header {
-  border-radius: 20px !important;
+.hero-home > div:last-child > div > button:first-child:hover {
+  background: rgba(79,209,255,0.12) !important;
+  transform: translateX(3px) !important;
 }
 
-/* Chip do cliente ativo mais bonito */
+/* Header e chip mais arredondados */
+.top-header { border-radius: 20px !important; }
 .client-chip {
   border-radius: 14px !important;
   backdrop-filter: blur(12px) !important;
