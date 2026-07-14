@@ -1446,7 +1446,7 @@ function AdminContent() {
   ];
 
   return (
-    <div className="admin-gallery-panel">
+    <div className="admin-gallery-panel" style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           {ABAS_ADM.map((a) => (
@@ -1463,6 +1463,8 @@ function AdminContent() {
       </div>
       {erro && <div className="modal-error">{erro}</div>}
       {carregando && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "20px" }}>Carregando...</div>}
+
+      <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden", paddingRight: "4px" }}>
 
       {aba === "metricas" && (
         <div>
@@ -2418,6 +2420,7 @@ function AdminContent() {
           ))}
         </div>
       )}
+      </div>{/* fim scroll-content */}
     </div>
   );
 }
