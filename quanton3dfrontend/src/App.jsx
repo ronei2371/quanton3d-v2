@@ -2385,6 +2385,20 @@ function AdminContent() {
                 </div>
               </div>
 
+              {/* Ações rápidas de contato */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
+                <a href={"https://wa.me/5531983340053?text=" + encodeURIComponent("Olá " + (c.nome || "") + ", vi seu chamado técnico sobre " + (c.problema || c.resina || "sua impressora") + ". Posso te ajudar!")}
+                  target="_blank" rel="noreferrer"
+                  style={{ display:"flex", alignItems:"center", gap:"6px", padding:"7px 14px", borderRadius:"8px", border:"1px solid rgba(37,211,102,0.4)", background:"rgba(37,211,102,0.1)", color:"#25d366", fontSize:"0.8rem", fontWeight:800, textDecoration:"none" }}>
+                  💬 WhatsApp Business
+                </a>
+                <a href={"mailto:" + (c.email || "")}
+                  target="_blank" rel="noreferrer"
+                  style={{ display:"flex", alignItems:"center", gap:"6px", padding:"7px 14px", borderRadius:"8px", border:"1px solid rgba(113,159,219,0.25)", background:"rgba(255,255,255,0.04)", color:"#9fb4c7", fontSize:"0.8rem", fontWeight:800, textDecoration:"none" }}>
+                  ✉️ Email
+                </a>
+              </div>
+
               {/* Fotos + Dados lado a lado */}
               <div style={{ display: "grid", gridTemplateColumns: c.fotos?.length > 0 ? "1fr 1.5fr" : "1fr", gap: "14px", marginBottom: "10px" }}>
                 {/* Fotos */}
