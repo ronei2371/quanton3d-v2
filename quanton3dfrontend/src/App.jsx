@@ -2124,7 +2124,7 @@ function AdminContent() {
             const suspeito = /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g, "") || "") || (c.nome || "").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome || "");
             const selecionado = clientesSelecionados.includes(c._id);
             return (
-              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.04)", marginBottom: "12px", display: "flex", gap: "12px", alignItems: "flex-start", overflow: "hidden", color: "#eaf3ff" }}>
+              <div key={c._id} style={{ border: selecionado ? "1px solid rgba(255,107,107,0.5)" : suspeito ? "1px solid rgba(255,209,102,0.4)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", minHeight: "60px", background: selecionado ? "rgba(255,107,107,0.06)" : "rgba(30,40,60,0.8)", marginBottom: "12px", display: "flex", gap: "12px", alignItems: "flex-start", color: "#eaf3ff" }}>
                 <input type="checkbox" checked={selecionado} style={{ marginTop: "3px", cursor: "pointer", flexShrink: 0 }}
                   onChange={e => setClientesSelecionados(prev => e.target.checked ? [...prev, c._id] : prev.filter(id => id !== c._id))} />
                 <div style={{ flex: 1, minWidth: 0 }}>
