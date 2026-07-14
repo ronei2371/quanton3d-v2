@@ -1242,7 +1242,8 @@ function AdminContent() {
         const cResp = await api.get("/conversas", { headers, params: { limit: 100 } });
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
       } catch (_) {}
-      setDados({ clientes: m.clientes || [], formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
+      const clientesCarregados = Array.isArray(m.clientes) ? m.clientes : [];
+      setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
       setErro(err?.response?.data?.error || "Erro ao carregar dados.");
@@ -1283,6 +1284,7 @@ function AdminContent() {
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
+  const [filtroClienteConv, setFiltroClienteConv] = useState("");
   const [clientesSelecionados, setClientesSelecionados] = useState([]);
   const [excluindoClientes, setExcluindoClientes] = useState(false);
   const [filtroVisitasInicio, setFiltroVisitasInicio] = useState("");
@@ -1813,12 +1815,34 @@ function AdminContent() {
             ))}
           </div>
 
+          {/* Filtro por cliente */}
+          {(() => {
+            const clientesUnicos = [...new Map((dados.conversas || []).filter(c => c.clienteId && c.clienteNome).map(c => [c.clienteId, c.clienteNome])).entries()].sort((a,b) => a[1].localeCompare(b[1]));
+            if (clientesUnicos.length === 0) return null;
+            return (
+              <div style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                <span style={{ fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>👤 Filtrar por cliente:</span>
+                <select value={filtroClienteConv} onChange={e => setFiltroClienteConv(e.target.value)}
+                  style={{ padding: "6px 12px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(15,23,42,0.8)", color: "#eaf3ff", fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit" }}>
+                  <option value="">Todos os clientes</option>
+                  {clientesUnicos.map(([id, nome]) => <option key={id} value={id}>{nome}</option>)}
+                </select>
+                {filtroClienteConv && (
+                  <button type="button" onClick={() => setFiltroClienteConv("")}
+                    style={{ padding: "4px 10px", borderRadius: "6px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700 }}>
+                    ✕ Limpar
+                  </button>
+                )}
+              </div>
+            );
+          })()}
+
           {(!dados.conversas || dados.conversas.length === 0) && !carregando && (
             <div className="gallery-empty">Nenhuma conversa registrada ainda.</div>
           )}
 
           {(dados.conversas || [])
-            .filter(c => filtroConversas === "todas" ? true : filtroConversas === "nao_satisfatoria" ? c.feedback === "nao_satisfatoria" : filtroConversas === "aprovadas" ? c.aprovado : true)
+            .filter(c => (filtroConversas === "todas" ? true : filtroConversas === "nao_satisfatoria" ? c.feedback === "nao_satisfatoria" : filtroConversas === "aprovadas" ? c.aprovado : true) && (filtroClienteConv ? c.clienteId === filtroClienteConv : true))
             .map((c) => {
             const textoEditado = edicaoConversa[c._id] !== undefined ? edicaoConversa[c._id] : (c.respostaMelhorada || c.resposta);
             const foiEditado = textoEditado !== c.resposta;
@@ -2028,6 +2052,12 @@ function AdminContent() {
       {aba === "clientes" && (
         <div>
           {dados.clientes.length === 0 && !carregando && <div className="gallery-empty">Nenhum cliente cadastrado.</div>}
+
+          {dados.clientes.length > 0 && dados.totais?.clientes > dados.clientes.length && (
+            <div style={{ marginBottom: "12px", padding: "8px 14px", borderRadius: "8px", background: "rgba(255,209,102,0.07)", border: "1px solid rgba(255,209,102,0.25)", fontSize: "0.78rem", color: "#ffd166" }}>
+              ⚠️ Exibindo os <strong>{dados.clientes.length}</strong> clientes mais recentes. Total no banco: <strong>{dados.totais.clientes}</strong>. Os demais podem ser gerenciados direto no MongoDB.
+            </div>
+          )}
 
           {dados.clientes.length > 0 && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", padding: "10px 14px", borderRadius: "10px", background: "rgba(255,107,107,0.05)", border: "1px solid rgba(255,107,107,0.15)", flexWrap: "wrap", gap: "10px" }}>
