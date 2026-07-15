@@ -637,7 +637,7 @@
               <div class="field"><label for="clientPhone">Telefone / WhatsApp</label><input autocomplete="off" id="clientPhone" type="text" placeholder="Ex: (31) 99999-9999" /></div>
               <div class="field"><label for="clientEmail">E-mail</label><input autocomplete="off" id="clientEmail" type="email" placeholder="Ex: cliente@email.com" /></div>
               <div class="field required" data-required="true"><label for="projectName">Nome do pedido / projeto</label><input autocomplete="off" id="projectName" type="text" placeholder="Ex: Modelos alinhadores lote 01" /></div>
-              <div class="field"><label for="quoteStatus">Status</label><select id="quoteStatus"><option>Rascunho</option><option>Enviado</option><option>Aprovado</option><option>Perdido</option><option>Revisar</option></select></div>
+              <div class="field"><label for="quoteStatus">Status</label><select id="quoteStatus"><option>Rascunho</option><option>Enviado</option><option>Em desenvolvimento</option><option>Aprovado</option><option>Perdido</option><option>Revisar</option></select></div>
               <div class="field"><label for="quoteValidity">Validade do orçamento (dias)</label><input autocomplete="off" id="quoteValidity" type="number" inputmode="decimal" min="0" /></div>
               <div class="field"><label for="deadline">Prazo estimado</label><input autocomplete="off" id="deadline" type="text" placeholder="Ex: 3 a 5 dias úteis" /></div>
               <div class="field"><label for="quoteCode">Código do orçamento</label><input autocomplete="off" id="quoteCode" type="text" readonly /></div>
@@ -654,7 +654,17 @@
               <div class="field required" data-required="true"><label for="priceKg">Preço por quilo (R$/kg)</label><input autocomplete="off" id="priceKg" type="text" inputmode="decimal" placeholder="Ex: 175,00" /></div>
               <div class="field required" data-required="true"><label for="resinGrams">Quantidade de resina usada no job (g)</label><input autocomplete="off" id="resinGrams" type="text" inputmode="decimal" placeholder="Ex: 1580" /><small>Use o consumo total do lote, já considerando suportes e base.</small></div>
               <div class="field required" data-required="true"><label for="piecesQty">Quantidade de peças no lote</label><input autocomplete="off" id="piecesQty" type="number" min="1" step="1" /><small>Divide custo fixo e total para chegar no custo unitário real.</small></div>
-              <div class="field"><label for="wastePct">Perda técnica de resina (%)</label><input autocomplete="off" id="wastePct" type="text" inputmode="decimal" /><small>Resina presa em cuba, suporte, funil, respingo e resíduo.</small></div>
+              <div class="field">
+                <label for="wastePct">Perda técnica de resina (%) <span style="font-size:11px;color:var(--muted);font-weight:400">(dica)</span></label>
+                <input autocomplete="off" id="wastePct" type="text" inputmode="decimal" placeholder="Ex: 8" />
+                <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+                  <button type="button" class="waste-preset" data-value="5" style="padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:11px;cursor:pointer;font-family:inherit">✅ Peças simples (5%)</button>
+                  <button type="button" class="waste-preset" data-value="10" style="padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:11px;cursor:pointer;font-family:inherit">⚙️ Peças médias (10%)</button>
+                  <button type="button" class="waste-preset" data-value="15" style="padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:11px;cursor:pointer;font-family:inherit">🔧 Peças complexas (15%)</button>
+                  <button type="button" class="waste-preset" data-value="20" style="padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:11px;cursor:pointer;font-family:inherit">🎨 Miniaturas detalhadas (20%)</button>
+                </div>
+                <small>Resina presa em cuba, suporte, funil, respingo e resíduo. <strong>Média do mercado: 5-15%</strong>. Peças com muitos suportes/detalhes perdem mais.</small>
+              </div>
               <div class="field"><label for="failurePct">Risco de falha / refação (%)</label><input autocomplete="off" id="failurePct" type="text" inputmode="decimal" /><small>Reserva técnica para falhas, FEP ruim, suporte subdimensionado etc.</small></div>
             </div>
           </div>
@@ -1143,9 +1153,11 @@
       $("kpiUnitCost").textContent = money(r.unitRealCost);
       $("kpiMargin").textContent = pct(r.netMargin);
 
-      if (r.netMargin < 5) setStatus(`Atenção: margem líquida estimada de ${pct(r.netMargin)}. Esse preço está apertado demais, uai.`, "bad");
-      else if (r.netMargin < 15) setStatus(`Margem líquida estimada de ${pct(r.netMargin)}. Funciona, mas tem pouca gordura para falha, desconto ou retrabalho.`, "warn");
-      else setStatus(`Preço saudável: margem líquida estimada de ${pct(r.netMargin)} e lucro de ${money(r.netProfit)} no job.`, "good");
+      if (r.netMargin < 0) setStatus(`🚨 PREJUÍZO: margem líquida negativa de ${pct(r.netMargin)}! Você está perdendo ${money(-r.netProfit)} neste job. Sugestões: 1) aumente a margem de lucro; 2) reduza custos (embalagem, comissão, mão de obra); 3) recuse o pedido se não puder ajustar; 4) renegocie o preço com o cliente.`, "bad");
+      else if (r.netMargin < 5) setStatus(`⚠️ ATENÇÃO: margem líquida de apenas ${pct(r.netMargin)}. Está apertado demais! Sugestões: 1) suba a margem para pelo menos 15-20%; 2) verifique se a perda técnica está realista; 3) qualquer imprevisto (falha, retrabalho) vira prejuízo.`, "bad");
+      else if (r.netMargin < 15) setStatus(`⚡ Margem de ${pct(r.netMargin)} — funciona, mas sem folga. Uma falha de impressão ou desconto pode acabar com o lucro. Ideal ficar acima de 15%.`, "warn");
+      else if (r.netMargin < 30) setStatus(`✅ Preço saudável: margem líquida de ${pct(r.netMargin)} e lucro de ${money(r.netProfit)} neste job. Boa gordura para eventuais falhas.`, "good");
+      else setStatus(`🏆 Excelente margem de ${pct(r.netMargin)}! Lucro de ${money(r.netProfit)} no job. Considere ajustar se o mercado local for competitivo.`, "good");
 
       renderBreakdown(r);
       renderDonut(r.groups, r.totalCost);
@@ -1403,6 +1415,36 @@
     $("btnImportJSON").addEventListener("click", () => {
       $("importFileInput").click();
     });
+
+    // ── Botões de perda técnica (presets) ──
+    document.querySelectorAll(".waste-preset").forEach(btn => {
+      btn.addEventListener("click", () => {
+        $("wastePct").value = btn.dataset.value;
+        $("wastePct").dispatchEvent(new Event("input", { bubbles: true }));
+        // destaque visual
+        document.querySelectorAll(".waste-preset").forEach(b => b.style.background = "var(--card-2)");
+        btn.style.background = "rgba(79,209,255,0.15)";
+      });
+    });
+
+    // ── Preencher dados do cliente pela URL (integração com site React) ──
+    // O site React abre a calculadora com: /calculadora-custos.html?nome=X&telefone=Y&email=Z
+    (function autoFillClienteFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const nome = params.get("nome");
+      const telefone = params.get("telefone");
+      const email = params.get("email");
+      if (nome && $("clientName")) $("clientName").value = nome;
+      if (telefone && $("clientPhone")) $("clientPhone").value = telefone;
+      if (email && $("clientEmail")) $("clientEmail").value = email;
+      // dispara evento pra salvar no cache
+      if (nome || telefone || email) {
+        ["clientName","clientPhone","clientEmail"].forEach(id => {
+          const el = $(id);
+          if (el && el.value) el.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+      }
+    })();
     $("importFileInput").addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
