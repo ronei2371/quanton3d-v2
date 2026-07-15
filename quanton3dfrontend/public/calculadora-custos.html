@@ -728,7 +728,21 @@
                 </select>
               </div>
               <div class="field"><label for="printerWatts">Consumo da impressora (W)</label><input autocomplete="off" id="printerWatts" type="text" inputmode="decimal" placeholder="Ex: 45" /></div>
-              <div class="field"><label for="printMinutes">Tempo de impressão (min)</label><input autocomplete="off" id="printMinutes" type="text" inputmode="decimal" /></div>
+              <div class="field">
+                <label>Tempo de impressão <span style="font-size:11px;color:var(--muted);font-weight:400">(horas e minutos)</span></label>
+                <div style="display:flex;gap:8px">
+                  <div style="flex:1">
+                    <input autocomplete="off" id="printHoursInput" type="text" inputmode="decimal" placeholder="Horas" style="width:100%" />
+                    <small style="color:var(--muted);font-size:10px">Horas</small>
+                  </div>
+                  <div style="flex:1">
+                    <input autocomplete="off" id="printMinutesOnly" type="text" inputmode="decimal" placeholder="Minutos" style="width:100%" />
+                    <small style="color:var(--muted);font-size:10px">Minutos</small>
+                  </div>
+                </div>
+                <input type="hidden" id="printMinutes" value="0" />
+                <small style="margin-top:4px;display:block">Ex: 12 horas e 30 minutos = 750 minutos totais</small>
+              </div>
               <div class="field">
                 <label for="washCureModel">Modelo lavadora/câmara UV <span style="font-size:11px;color:var(--muted);font-weight:400">(médias oficiais)</span></label>
                 <select id="washCureModel" style="width:100%;padding:.5rem .75rem;border-radius:8px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-family:inherit;font-size:.875rem">
@@ -1387,6 +1401,21 @@
       $("btnPDF").addEventListener("click", () => { if (!lastResult) calculate(true); if (lastResult) window.print(); });
       $("btnScenarioA").addEventListener("click", () => saveScenario("A"));
       $("btnScenarioB").addEventListener("click", () => saveScenario("B"));
+
+      // ── Sincronizar horas + minutos com o campo hidden printMinutes ──
+      function syncPrintTime() {
+        const h = parseBR($("printHoursInput").value) || 0;
+        const m = parseBR($("printMinutesOnly").value) || 0;
+        const total = (h * 60) + m;
+        $("printMinutes").value = total;
+      }
+      ["printHoursInput","printMinutesOnly"].forEach(id => {
+        const el = $(id);
+        if (el) {
+          el.addEventListener("input", syncPrintTime);
+          el.addEventListener("change", syncPrintTime);
+        }
+      });
       $("btnExportJSON").addEventListener("click", exportJSON);
 
     // ── Selects de impressora e lavadora preenchem o W automaticamente ──
