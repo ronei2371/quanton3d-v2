@@ -657,7 +657,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
         {type === "calc_tolerancia" && <CalculadoraTolerancia />}
-        {type === "calc_custos" && <CalculadoraCustos />}
+        {type === "calc_custos" && <CalculadoraCustos cliente={cliente} />}
         {type === "calc_tempo" && <CalculadoraTempo />}
         {type === "calc_compensacao" && <CalculadoraCompensacao />}
         {type === "bot" && <BotContent cliente={cliente} />}
