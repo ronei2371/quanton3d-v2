@@ -676,9 +676,76 @@
             <h2>4. Energia elétrica e tempo</h2>
             <p class="section-note">Agora o gasto de luz fica separado: impressora, cura/lavadora e custo extra de ambiente.</p>
             <div class="grid">
-              <div class="field"><label for="printerWatts">Consumo da impressora (W)</label><input autocomplete="off" id="printerWatts" type="text" inputmode="decimal" /></div>
+              <div class="field">
+                <label for="printerModel">Modelo da impressora <span style="font-size:11px;color:var(--muted);font-weight:400">(médias oficiais)</span></label>
+                <select id="printerModel" style="width:100%;padding:.5rem .75rem;border-radius:8px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-family:inherit;font-size:.875rem">
+                  <option value="">-- Preencha o consumo manualmente --</option>
+                  <optgroup label="Anycubic">
+                    <option value="45">Anycubic Photon Mono</option>
+                    <option value="50">Anycubic Photon Mono X</option>
+                    <option value="55">Anycubic Photon Mono X 6K</option>
+                    <option value="45">Anycubic Photon M3</option>
+                    <option value="65">Anycubic Photon M3 Max</option>
+                    <option value="55">Anycubic Photon M3 Plus</option>
+                    <option value="60">Anycubic Photon M5</option>
+                    <option value="65">Anycubic Photon M5s</option>
+                    <option value="75">Anycubic Photon M7</option>
+                  </optgroup>
+                  <optgroup label="Elegoo">
+                    <option value="40">Elegoo Mars 2</option>
+                    <option value="45">Elegoo Mars 3</option>
+                    <option value="50">Elegoo Mars 4</option>
+                    <option value="55">Elegoo Mars 4 Ultra</option>
+                    <option value="60">Elegoo Saturn</option>
+                    <option value="65">Elegoo Saturn 2</option>
+                    <option value="70">Elegoo Saturn 3 Ultra</option>
+                    <option value="75">Elegoo Saturn 4 Ultra</option>
+                    <option value="90">Elegoo Jupiter</option>
+                    <option value="95">Elegoo Jupiter SE</option>
+                  </optgroup>
+                  <optgroup label="Creality">
+                    <option value="45">Creality Halot One</option>
+                    <option value="70">Creality Halot Mage</option>
+                    <option value="75">Creality Halot Mage Pro</option>
+                  </optgroup>
+                  <optgroup label="Phrozen">
+                    <option value="60">Phrozen Sonic Mini 8K</option>
+                    <option value="75">Phrozen Sonic Mighty 8K</option>
+                  </optgroup>
+                  <optgroup label="Bambu Lab">
+                    <option value="50">Bambu Lab</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="field"><label for="printerWatts">Consumo da impressora (W)</label><input autocomplete="off" id="printerWatts" type="text" inputmode="decimal" placeholder="Ex: 45" /></div>
               <div class="field"><label for="printMinutes">Tempo de impressão (min)</label><input autocomplete="off" id="printMinutes" type="text" inputmode="decimal" /></div>
-              <div class="field"><label for="washCureWatts">Consumo lavadora/câmara UV (W)</label><input autocomplete="off" id="washCureWatts" type="text" inputmode="decimal" /></div>
+              <div class="field">
+                <label for="washCureModel">Modelo lavadora/câmara UV <span style="font-size:11px;color:var(--muted);font-weight:400">(médias oficiais)</span></label>
+                <select id="washCureModel" style="width:100%;padding:.5rem .75rem;border-radius:8px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-family:inherit;font-size:.875rem">
+                  <option value="">-- Preencha o consumo manualmente --</option>
+                  <optgroup label="Anycubic Wash & Cure">
+                    <option value="35">Anycubic Wash & Cure 1</option>
+                    <option value="45">Anycubic Wash & Cure 2</option>
+                    <option value="60">Anycubic Wash & Cure 3</option>
+                    <option value="60">Anycubic Wash & Cure Plus</option>
+                    <option value="90">Anycubic Wash & Cure Max</option>
+                  </optgroup>
+                  <optgroup label="Elegoo Mercury">
+                    <option value="40">Elegoo Mercury X</option>
+                    <option value="45">Elegoo Mercury Plus 2.0</option>
+                    <option value="55">Elegoo Mercury XS Bundle</option>
+                  </optgroup>
+                  <optgroup label="Creality">
+                    <option value="45">Creality UW-01</option>
+                    <option value="50">Creality UW-02</option>
+                  </optgroup>
+                  <optgroup label="Phrozen">
+                    <option value="55">Phrozen Cure Beam</option>
+                    <option value="50">Phrozen Cure Luna</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="field"><label for="washCureWatts">Consumo lavadora/câmara UV (W)</label><input autocomplete="off" id="washCureWatts" type="text" inputmode="decimal" placeholder="Ex: 40" /></div>
               <div class="field"><label for="washCureMinutes">Tempo lavadora/cura (min)</label><input autocomplete="off" id="washCureMinutes" type="text" inputmode="decimal" /></div>
               <div class="field"><label for="kwhPrice">Valor do kWh (R$)</label><input autocomplete="off" id="kwhPrice" type="text" inputmode="decimal" /></div>
               <div class="field"><label for="extraEnergyCost">Gasto extra de luz/ambiente (R$)</label><input autocomplete="off" id="extraEnergyCost" type="text" inputmode="decimal" /><small>Exaustor, ar-condicionado, iluminação, nobreak ou rateio manual.</small></div>
@@ -787,10 +854,12 @@
             <button type="button" class="secondary" id="btnExportCSV">CSV</button>
           </div>
           <div class="toolbar">
-            <button type="button" class="secondary" id="btnExportJSON">Exportar JSON</button>
-            <button type="button" class="danger" id="btnClearHistory">Limpar histórico</button>
+            <button type="button" class="secondary" id="btnExportJSON">💾 Baixar histórico (JSON)</button>
+            <button type="button" class="secondary" id="btnImportJSON">📂 Carregar histórico (JSON)</button>
+            <button type="button" class="danger" id="btnClearHistory">🗑️ Limpar histórico</button>
           </div>
-          <div class="tip">O histórico local é ótimo para conferência rápida. Para vários atendentes usando o mesmo banco, o próximo passo é backend + login + banco de dados.</div>
+          <input type="file" id="importFileInput" accept=".json,application/json" style="display:none" />
+          <div class="tip">💡 <strong>Backup dos seus orçamentos:</strong> baixe o arquivo JSON para não perder nada se limpar o navegador ou trocar de aparelho. Depois é só carregar de volta pelo botão "Carregar histórico".</div>
           <div class="divider"></div>
           <div id="historyList" class="history-list"></div>
         </section>
@@ -1307,6 +1376,72 @@
       $("btnScenarioA").addEventListener("click", () => saveScenario("A"));
       $("btnScenarioB").addEventListener("click", () => saveScenario("B"));
       $("btnExportJSON").addEventListener("click", exportJSON);
+
+    // ── Selects de impressora e lavadora preenchem o W automaticamente ──
+    const printerModelSelect = $("printerModel");
+    if (printerModelSelect) {
+      printerModelSelect.addEventListener("change", (e) => {
+        const w = e.target.value;
+        if (w) {
+          $("printerWatts").value = w;
+          $("printerWatts").dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      });
+    }
+    const washCureModelSelect = $("washCureModel");
+    if (washCureModelSelect) {
+      washCureModelSelect.addEventListener("change", (e) => {
+        const w = e.target.value;
+        if (w) {
+          $("washCureWatts").value = w;
+          $("washCureWatts").dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      });
+    }
+
+    // ── Importar histórico JSON ──
+    $("btnImportJSON").addEventListener("click", () => {
+      $("importFileInput").click();
+    });
+    $("importFileInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const imported = JSON.parse(evt.target.result);
+          if (!Array.isArray(imported)) {
+            alert("❌ Arquivo inválido. Deve conter uma lista de orçamentos.");
+            return;
+          }
+          const atual = loadJSON(STORAGE_KEY, []);
+          if (atual.length === 0) {
+            saveJSON(STORAGE_KEY, imported);
+            alert("✅ " + imported.length + " orçamento(s) carregado(s) com sucesso!");
+          } else {
+            const modo = confirm(
+              "Você já tem " + atual.length + " orçamento(s) salvo(s) neste navegador.\n\n" +
+              "Clique OK para JUNTAR os " + imported.length + " novos aos existentes.\n" +
+              "Clique CANCELAR para SUBSTITUIR tudo pelos importados."
+            );
+            if (modo) {
+              const combinados = [...imported, ...atual];
+              saveJSON(STORAGE_KEY, combinados);
+              alert("✅ " + imported.length + " orçamento(s) adicionado(s). Total agora: " + combinados.length);
+            } else {
+              saveJSON(STORAGE_KEY, imported);
+              alert("✅ Histórico substituído. Total: " + imported.length);
+            }
+          }
+          renderHistory();
+          $("importFileInput").value = "";
+        } catch (err) {
+          alert("❌ Erro ao ler o arquivo: " + err.message);
+          $("importFileInput").value = "";
+        }
+      };
+      reader.readAsText(file);
+    });
       $("btnExportCSV").addEventListener("click", exportCSV);
       $("btnClearHistory").addEventListener("click", () => {
         if (confirm("Apagar todo o histórico salvo neste navegador?")) {
