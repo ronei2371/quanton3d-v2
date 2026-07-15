@@ -1655,3 +1655,24 @@ main > section:not(.hero-home) {
 main > section:not(.hero-home):hover {
   border-color: rgba(184,156,255,0.4) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v8 — fundo mais visível (imagem completa)
+   ═══════════════════════════════════════════════════════════ */
+
+/* Diminuir overlay escuro sobre o fundo para os circuitos aparecerem */
+body {
+  background:
+    linear-gradient(180deg, rgba(6,13,31,0.25) 0%, rgba(6,13,31,0.15) 50%, rgba(6,13,31,0.35) 100%),
+    url("/fundo3.jpg") center top / cover no-repeat fixed #060d1f !important;
+  background-attachment: fixed !important;
+}
+
+@media (max-width: 768px) {
+  body {
+    background:
+      linear-gradient(180deg, rgba(6,13,31,0.30) 0%, rgba(6,13,31,0.40) 100%),
+      url("/fundo1.jpg") center / cover no-repeat #060d1f !important;
+    background-attachment: scroll !important;
+  }
+}
