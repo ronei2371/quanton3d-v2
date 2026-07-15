@@ -1488,3 +1488,170 @@ section.hero-home button:hover {
 .section-label {
   gap: 4px;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v9 — Layout preview: ELIO centro + grade de botões
+   ═══════════════════════════════════════════════════════════ */
+
+/* Hero: ELIO centralizada em cima (não do lado) */
+.hero-home {
+  grid-template-columns: 1fr !important;
+  min-height: auto !important;
+  padding: 24px 0 20px !important;
+  gap: 20px !important;
+  text-align: center !important;
+}
+
+/* Card do ELIO centralizado */
+.assistant-card {
+  min-height: auto !important;
+  padding: 20px !important;
+  max-width: 400px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 16px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Container das seções — vira grade de botões */
+.hero-home > div:last-child {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+@media (max-width: 900px) {
+  .hero-home > div:last-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (max-width: 500px) {
+  .hero-home > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Cada bloco do accordion vira um botão grande */
+.hero-home > div:last-child > div {
+  background: rgba(10,20,45,0.65) !important;
+  border: 1px solid rgba(79,209,255,0.25) !important;
+  border-radius: 18px !important;
+  padding: 20px 16px !important;
+  backdrop-filter: blur(14px) !important;
+  transition: all 0.25s ease !important;
+}
+.hero-home > div:last-child > div:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(184,156,255,0.5) !important;
+  box-shadow: 0 12px 30px rgba(124,58,237,0.3) !important;
+  background: rgba(15,25,55,0.8) !important;
+}
+
+/* Cabeçalho do accordion (agora funciona como botão principal do card) */
+.hero-home > div:last-child > div > button:first-child {
+  flex-direction: column !important;
+  gap: 4px !important;
+  align-items: center !important;
+  text-align: center !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  font-family: inherit !important;
+}
+
+/* Esconder a seta ▾ */
+.hero-home > div:last-child > div > button:first-child > span:last-child {
+  display: none !important;
+}
+
+/* Section-label centralizada */
+.hero-home > div:last-child > div .section-label {
+  font-size: 0.72rem !important;
+  padding: 6px 12px !important;
+  margin: 0 auto 4px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+}
+
+/* Descrição da seção */
+.hero-home > div:last-child > div p {
+  font-size: 0.75rem !important;
+  color: #9fb4c7 !important;
+  margin: 4px 0 0 !important;
+  text-align: center !important;
+}
+
+/* Botões dentro (Falar conosco, Compartilhar peça, resinas, etc) */
+.hero-home > div:last-child > div .home-actions,
+.hero-home > div:last-child > div > div[style*="flex-wrap"] {
+  margin-top: 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  grid-template-columns: 1fr !important;
+}
+.hero-home > div:last-child > div .home-actions button,
+.hero-home > div:last-child > div > div[style*="flex-wrap"] > button {
+  width: 100% !important;
+  border-radius: 999px !important;
+  padding: 9px 14px !important;
+  font-size: 0.75rem !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  min-height: auto !important;
+}
+
+/* Cabeçalho Atendimento (que tinha botão em texto) - alinhar centro */
+.hero-home > div:last-child > div > button:first-child > span:first-child {
+  display: block !important;
+  text-align: center !important;
+  font-size: 0.85rem !important;
+  padding: 6px 14px !important;
+  letter-spacing: 0.06em !important;
+  border-radius: 999px !important;
+  background: rgba(79,209,255,0.1) !important;
+  border: 1px solid rgba(79,209,255,0.3) !important;
+  color: #4fd1ff !important;
+}
+
+/* ELIO menor pra caber com layout centralizado */
+.bot-face { height: 240px !important; }
+.elio-container { width: 210px !important; height: 210px !important; }
+.elio-avatar { width: 180px !important; height: 180px !important; }
+
+/* Botão Falar com ELIO destacado */
+.assistant-card button {
+  padding: 14px 30px !important;
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+  font-size: 0.95rem !important;
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 6px 24px rgba(124,58,237,0.5) !important;
+  transition: all 0.25s ease !important;
+  min-width: 260px !important;
+}
+.assistant-card button:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 30px rgba(184,156,255,0.6) !important;
+}
+
+/* Section fora do hero (Fotos, Catálogo, Comunidade, etc que estão fora) */
+/* Vamos identificar por padrão e transformar em cards similares */
+main > section:not(.hero-home) {
+  border-radius: 20px !important;
+  background: rgba(10,20,45,0.6) !important;
+  backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(79,209,255,0.2) !important;
+  transition: all 0.25s ease !important;
+}
+main > section:not(.hero-home):hover {
+  border-color: rgba(184,156,255,0.4) !important;
+}
