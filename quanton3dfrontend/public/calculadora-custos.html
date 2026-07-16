@@ -1089,7 +1089,7 @@
       const breakEvenPrice = totalCost / Math.max(0.01, 1 - sellCostPct);
 
       const groups = [
-        { key: "resina", label: "Resina + perda técnica", value: resinCost, hint: `${num(resinKgEffective, 3)} kg efetivos, incluindo ${pct(wastePct)} de perda` },
+        { key: "resina", label: wastePct > 0 ? "Resina + perda técnica" : "Resina", value: resinCost, hint: wastePct > 0 ? `${num(resinKgEffective, 3)} kg efetivos, incluindo ${pct(wastePct)} de perda` : `${num(resinKgBase, 3)} kg de resina (sem perda técnica)` },
         { key: "lavagem", label: "Lavagem, acabamento e embalagem", value: alcoholCost + consumablesCost, hint: `Álcool ${money(alcoholCost)} + consumíveis ${money(consumablesCost)}` },
         { key: "energia", label: "Energia elétrica", value: energyCost, hint: `${num(totalKwh, 3)} kWh estimados` },
         { key: "mao", label: "Mão de obra", value: laborCost, hint: `${num(laborHours, 2)} h de trabalho humano` },
