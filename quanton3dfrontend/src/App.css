@@ -1843,3 +1843,36 @@ body {
 .app-shell > section:not(.hero-home) > button:first-child > div > p {
   display: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v14 — Tamanho compacto igual Atendimento/Guias
+   ═══════════════════════════════════════════════════════════ */
+
+/* Reduzir padding vertical/horizontal das seções abaixo do hero */
+.app-shell > main > section:not(.hero-home),
+.app-shell > section:not(.hero-home) {
+  padding: 14px 20px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Cabeçalho mais compacto (sem margens extras) */
+.app-shell > main > section:not(.hero-home) > button:first-child,
+.app-shell > section:not(.hero-home) > button:first-child {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: auto !important;
+}
+
+/* Section-label mesmo tamanho do Atendimento */
+section:not(.hero-home) .section-label {
+  font-size: 0.75rem !important;
+  padding: 5px 14px !important;
+  letter-spacing: 0.08em !important;
+  font-weight: 900 !important;
+}
+
+/* Ocultar descrição quando fechado (Nossas Resinas, Parceria e Comunidade, etc.) */
+.app-shell > main > section:not(.hero-home) > button:first-child > div > p,
+.app-shell > section:not(.hero-home) > button:first-child > div > p {
+  display: none !important;
+}
