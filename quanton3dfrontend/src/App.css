@@ -1676,3 +1676,79 @@ body {
     background-attachment: scroll !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v10 — Largura total + Atendimento/Guias em colunas
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── LARGURA TOTAL DO SITE ── */
+/* De 1240px vai para 1600px para aproveitar telas maiores */
+.app-shell {
+  width: min(1600px, calc(100% - 32px)) !important;
+}
+
+/* ── ATENDIMENTO E GUIAS TÉCNICOS: título em cima, botões um por linha ── */
+/* Isso deixa igual ao print do preview: coluna vertical com botões grandes */
+
+/* O grid de seções (primeira linha ATENDIMENTO + GUIAS) — 2 colunas fixas */
+.hero-home > div:last-child {
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+}
+
+/* No mobile vira 1 coluna */
+@media (max-width: 700px) {
+  .hero-home > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Cada bloco (Atendimento, Guias, Fotos, etc) fica mais alto e organizado */
+.hero-home > div:last-child > div {
+  padding: 22px 20px !important;
+  min-height: 200px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Cabeçalho fixo em cima */
+.hero-home > div:last-child > div > button:first-child {
+  border-bottom: 1px solid rgba(184,156,255,0.15) !important;
+  padding-bottom: 12px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Container dos botões dentro vira coluna vertical */
+.hero-home > div:last-child > div .home-actions,
+.hero-home > div:last-child > div > div[style*="flex-wrap"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  grid-template-columns: 1fr !important;
+  width: 100% !important;
+}
+
+/* Botões dentro ocupam largura toda, mais bonitos e destacados */
+.hero-home > div:last-child > div .home-actions button,
+.hero-home > div:last-child > div > div[style*="flex-wrap"] > button {
+  width: 100% !important;
+  padding: 12px 16px !important;
+  border-radius: 999px !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  min-height: 44px !important;
+  border: 1px solid rgba(79,209,255,0.35) !important;
+  background: rgba(10,20,45,0.5) !important;
+  color: #eaf3ff !important;
+  transition: all 0.2s ease !important;
+}
+
+.hero-home > div:last-child > div .home-actions button:hover,
+.hero-home > div:last-child > div > div[style*="flex-wrap"] > button:hover {
+  background: rgba(30,50,90,0.7) !important;
+  border-color: rgba(184,156,255,0.6) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.25) !important;
+}
