@@ -252,7 +252,7 @@ PROBLEMAS E SOLUÇÕES:
 
 router.post('/', async (req, res) => {
     try {
-        const { message = '', historico = [], clienteId = '', clienteNome = '' } = req.body || {};
+        const { message = '', historico = [], clienteId = '', clienteNome = '', clienteTelefone = '' } = req.body || {};
         const text = String(message || '').trim();
 
         if (!text) {
@@ -292,9 +292,15 @@ router.post('/', async (req, res) => {
             systemFinal += `\n\n--- ${conhecimentoAprovado} ---\nUse esses casos validados como referência de tom e precisão, mas não copie literalmente se a pergunta atual for diferente.`;
         }
 
-        // 3b. Reconhecimento do fundador — tratamento diferenciado quando o nome bate
-        const nomeNormalizado = (clienteNome || '').toLowerCase();
-        const ehFundador = nomeNormalizado.includes('ronei') && nomeNormalizado.includes('fonseca');
+        // 3b. Reconhecimento do fundador — por telefone OU nome (mais robusto)
+        const nomeNormalizado = (clienteNome || '').toLowerCase().trim();
+        const telefoneNormalizado = (clienteTelefone || '').replace(/\D/g, '');
+        // Reconhece se o telefone bate com um dos números do fundador
+        const TELEFONES_FUNDADOR = ['31983340053', '31983340055'];
+        const ehFundadorPorTelefone = TELEFONES_FUNDADOR.some(t => telefoneNormalizado.endsWith(t.slice(-9)));
+        // Ou se o nome contém ronei + fonseca (fallback)
+        const ehFundadorPorNome = nomeNormalizado.includes('ronei') && nomeNormalizado.includes('fonseca');
+        const ehFundador = ehFundadorPorTelefone || ehFundadorPorNome;
         if (ehFundador) {
             systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVocê está falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir você (o ELIO) junto com a IA Claude. Reconheça isso de forma natural quando fizer sentido (ex: na primeira mensagem da conversa), sem exagerar toda hora. Trate-o com mais informalidade e proximidade técnica — pode ser mais direto, pular explicações básicas de "o que é" cada resina, e ir direto ao ponto técnico como falaria com um colega de equipe. Ainda assim, mantenha precisão técnica e não invente informações.`;
         }
