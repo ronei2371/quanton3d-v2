@@ -1752,3 +1752,50 @@ body {
   transform: translateX(4px) !important;
   box-shadow: 0 4px 16px rgba(124,58,237,0.25) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v11 — corrigir espaço + títulos maiores
+   ═══════════════════════════════════════════════════════════ */
+
+/* 🐛 FIX: Remover min-height que criava espaço vazio nas seções */
+.hero-home > div:last-child > div {
+  min-height: auto !important;
+  padding: 18px 20px !important;
+}
+
+/* Cabeçalho sem borda embaixo quando accordion fechado */
+.hero-home > div:last-child > div > button:first-child {
+  border-bottom: none !important;
+  padding-bottom: 4px !important;
+  margin-bottom: 4px !important;
+}
+
+/* Botões dentro só aparecem quando accordion abre — margem só nesse caso */
+.hero-home > div:last-child > div .home-actions,
+.hero-home > div:last-child > div > div[style*="flex-wrap"] {
+  margin-top: 12px !important;
+}
+
+/* Título "Quanton3D" maior e mais destacado */
+.brand h1 {
+  font-size: 1.9rem !important;
+  filter: drop-shadow(0 0 16px rgba(79,209,255,0.5)) !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.1 !important;
+}
+
+/* Subtítulo mais visível */
+.brand p {
+  font-size: 0.95rem !important;
+  color: #cfe0f5 !important;
+  font-weight: 600 !important;
+  margin-top: 6px !important;
+  letter-spacing: 0.02em !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4) !important;
+}
+
+/* Logo (imagem) também aumenta um pouco */
+.brand-logo, .brand img {
+  width: 60px !important;
+  height: 60px !important;
+}
