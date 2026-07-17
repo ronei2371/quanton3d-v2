@@ -2096,3 +2096,56 @@ section:not(.hero-home) .section-label {
   font-size: 0.82rem !important;
   padding: 6px 14px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v25 — Seções abaixo ocupam 2 colunas quando abertas
+   + Fontes maiores em TUDO
+   ═══════════════════════════════════════════════════════════ */
+
+/* Quando section abre, ocupa as 2 colunas (igual Guias/Atendimento) */
+main.app-shell > section:not(.hero-home),
+.app-shell > section:not(.hero-home) {
+  display: inline-block !important;
+  width: calc(50% - 8px) !important;
+  vertical-align: top !important;
+}
+
+/* Quando tem conteúdo aberto (tem filhos além do botão), ocupa tudo */
+main.app-shell > section:not(.hero-home):has(div > button),
+main.app-shell > section:not(.hero-home):has(div[style*="column"]),
+main.app-shell > section:not(.hero-home):has(> div),
+.app-shell > section:not(.hero-home):has(> div) {
+  width: 100% !important;
+  display: block !important;
+  margin-bottom: 12px !important;
+}
+
+/* Sub-botões dentro: LETRAS GRANDES */
+main.app-shell > section:not(.hero-home) > div > button,
+.app-shell > section:not(.hero-home) > div > button,
+main.app-shell > section:not(.hero-home) > div > a,
+.app-shell > section:not(.hero-home) > div > a {
+  font-size: 0.95rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.08em !important;
+  min-height: 52px !important;
+  padding: 14px 20px !important;
+}
+
+/* Labels de todas seções — maiores */
+.section-label,
+section:not(.hero-home) .section-label {
+  font-size: 0.88rem !important;
+  padding: 7px 16px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* Sub-botões da primeira linha (Atendimento/Guias) — FONTES GRANDES */
+.hero-home > div:last-child > div .home-actions button {
+  font-size: 0.95rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.08em !important;
+  min-height: 52px !important;
+  padding: 14px 20px !important;
+}
