@@ -365,7 +365,7 @@ function App() {
         <button type="button" onClick={() => alternarSecao("catalogo")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span className="section-label">Catálogo</span>
+            <span className="section-label">🧪 Catálogo</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.95rem" }}>Nossas Resinas</span>
           </div>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.catalogo ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
@@ -399,7 +399,7 @@ function App() {
         <button type="button" onClick={() => alternarSecao("comunidade")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span className="section-label">Comunidade</span>
+            <span className="section-label">🤝 Comunidade</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parceria e Comunidade</span>
           </div>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.comunidade ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
@@ -426,7 +426,7 @@ function App() {
         <button type="button" onClick={() => alternarSecao("ferramentas")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span className="section-label">Ferramentas</span>
+            <span className="section-label">🛠️ Ferramentas</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Calculadoras Técnicas</span>
           </div>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.ferramentas ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
@@ -468,7 +468,7 @@ function App() {
         <button type="button" onClick={() => alternarSecao("consulta")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span className="section-label">Consulta rápida</span>
+            <span className="section-label">⚡ Consulta rápida</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parâmetros de impressão</span>
           </div>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.consulta ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
@@ -1503,25 +1503,36 @@ function AdminContent() {
   }
 
   const ABAS_ADM = [
-    { id: "metricas", label: "Metricas" },
-    { id: "conversas", label: "Conversas Bot (" + (dados.conversas?.length || 0) + ")" },
-    { id: "parametros_adm", label: "Parametros" },
-    { id: "galeria", label: "Galeria (" + dados.galeria.length + ")" },
-    { id: "clientes", label: "Clientes (" + dados.clientes.length + ")" },
-    { id: "formulacoes", label: "Formulacoes (" + dados.formulacoes.length + ")" },
-    { id: "chamados", label: "Chamados (" + dados.chamados.length + ")" },
-    { id: "parceiros", label: "Parceiros (" + (dados.parceiros?.length || 0) + ")" },
-    { id: "mensagens", label: "Mensagens (" + dados.mensagens.length + ")" },
+    { id: "metricas", label: "Métricas", icon: "📊", count: null },
+    { id: "clientes", label: "Clientes", icon: "👥", count: dados.clientes.length },
+    { id: "chamados", label: "Chamados", icon: "🔧", count: dados.chamados.length },
+    { id: "mensagens", label: "Mensagens", icon: "✉️", count: dados.mensagens.length },
+    { id: "formulacoes", label: "Formulações", icon: "🧪", count: dados.formulacoes.length },
+    { id: "galeria", label: "Galeria", icon: "📸", count: dados.galeria.length },
+    { id: "parceiros", label: "Parceiros", icon: "🤝", count: dados.parceiros?.length || 0 },
+    { id: "conversas", label: "Conversas Bot", icon: "🤖", count: dados.conversas?.length || 0 },
+    { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
   ];
 
   return (
     <div className="admin-gallery-panel">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
-        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: "8px", width: "100%", marginBottom: "8px" }}>
           {ABAS_ADM.map((a) => (
             <button key={a.id} type="button" onClick={() => setAba(a.id)}
-              style={{ padding: "8px 14px", borderRadius: "10px", fontSize: "0.82rem", border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.3)", background: aba === a.id ? "rgba(79,209,255,0.15)" : "rgba(255,255,255,0.06)", color: aba === a.id ? "#4fd1ff" : "#eaf3ff", cursor: "pointer", fontWeight: aba === a.id ? "900" : "600", fontFamily: "inherit", WebkitTextFillColor: aba === a.id ? "#4fd1ff" : "#eaf3ff" }}>
-              {a.label}
+              style={{
+                padding: "10px 8px", borderRadius: "12px", fontSize: "0.72rem",
+                border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.2)",
+                background: aba === a.id ? "linear-gradient(135deg,rgba(37,99,235,0.3),rgba(124,58,237,0.3))" : "rgba(255,255,255,0.04)",
+                color: aba === a.id ? "#4fd1ff" : "#9fb4c7",
+                cursor: "pointer", fontWeight: aba === a.id ? "900" : "600",
+                fontFamily: "inherit", display: "flex", flexDirection: "column",
+                alignItems: "center", gap: "4px", transition: "all 0.2s",
+                boxShadow: aba === a.id ? "0 4px 16px rgba(79,209,255,0.2)" : "none"
+              }}>
+              <span style={{ fontSize: "1.4rem" }}>{a.icon}</span>
+              <span style={{ color: aba === a.id ? "#4fd1ff" : "#9fb4c7", fontSize: "0.7rem", fontWeight: 800, textAlign: "center", lineHeight: 1.2 }}>{a.label}</span>
+              {a.count !== null && <span style={{ fontSize: "0.65rem", color: aba === a.id ? "#4fd1ff" : "#6b8aad", fontWeight: 700 }}>({a.count})</span>}
             </button>
           ))}
         </div>
