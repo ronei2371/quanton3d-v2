@@ -1895,3 +1895,41 @@ section:not(.hero-home) .section-label {
   width: 100% !important;
   gap: 0 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v17 — Altura FINAL igual Atendimento/Guias
+   ═══════════════════════════════════════════════════════════ */
+
+/* Cards abaixo do hero — mesmo padding do Atendimento/Guias */
+.app-shell > main > section:not(.hero-home),
+.app-shell > section:not(.hero-home),
+section.panel {
+  padding: 6px 20px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Cabeçalho sem padding interno — só o botão */
+.app-shell > main > section:not(.hero-home) > button:first-child,
+.app-shell > section:not(.hero-home) > button:first-child {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 40px !important;
+  height: 40px !important;
+}
+
+/* Div interno do cabeçalho: sem padding, alinhado ao centro */
+.app-shell > main > section:not(.hero-home) > button:first-child > div,
+.app-shell > section:not(.hero-home) > button:first-child > div {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Label pequeno igual atendimento */
+section:not(.hero-home) .section-label {
+  font-size: 0.75rem !important;
+  padding: 4px 12px !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+}
