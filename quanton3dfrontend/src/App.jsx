@@ -30,6 +30,7 @@ const SERVICE_BUTTONS = [
   // Guias técnicos
   { label: "NIVELAMENTO DE PLATAFORMA", kind: "guide", id: "nivelamento", grupo: "guias" },
   { label: "CONFIGURAÇÃO DE FATIADOR", kind: "guide", id: "fatiadores", grupo: "guias" },
+  { label: "PARÂMETROS CHITUBOX", kind: "guide", id: "parametrosDetalhados", grupo: "guias" },
   { label: "CALIBRAÇÃO DE RESINA", kind: "guide", id: "calibracao", grupo: "guias" },
   { label: "GABARITO QUANTON3D", kind: "guide", id: "calibracaoQuanton3D", grupo: "guias" },
   { label: "DIAGNÓSTICO DE FALHAS", kind: "guide", id: "diagnostico", grupo: "guias" },
@@ -374,8 +375,6 @@ function App() {
           <>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
               <button type="button" onClick={() => setActiveModal("qualidade")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Alta Qualidade</button>
-              <button type="button" onClick={() => abrirGuia("parametrosDetalhados")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parâmetros Chitubox</button>
-              <button type="button" onClick={() => setActiveModal("parceirosPublico")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Parceiros e cursos</button>
             </div>
 
             {/* FISPQs — botão único abre modal com lista */}
@@ -647,7 +646,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
             ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
             ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "18px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)" }
-            : {}
+            : { width: "min(1100px, calc(100vw - 20px))", maxHeight: "calc(100vh - 30px)" }
         }>
         <div className="guide-header">
           <h2>{nomeFispq || titles[type] || "Informações"}</h2>
@@ -1238,7 +1237,7 @@ function AdminContent() {
   const [aba, setAba] = useState("galeria");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
-  const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], conversas: [], parceiros: [], totais: {} });
+  const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], conversas: [], parceiros: [], totais: { width: "min(1100px, calc(100vw - 20px))", maxHeight: "calc(100vh - 30px)" } });
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
   const [diagnostico, setDiagnostico] = useState({});
