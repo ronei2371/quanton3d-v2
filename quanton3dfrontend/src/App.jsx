@@ -303,7 +303,7 @@ function App() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
           {/* Grupo Atendimento — acordeão */}
-          <div>
+          <div style={{ gridColumn: secoesAbertas.atendimento ? "1 / -1" : "auto" }}>
             <button type="button" onClick={() => alternarSecao("atendimento")}
               style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
               <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>💬 Atendimento</span>
@@ -322,7 +322,7 @@ function App() {
           </div>
 
           {/* Grupo Guias — acordeão */}
-          <div>
+          <div style={{ gridColumn: secoesAbertas.guias ? "1 / -1" : "auto" }}>
             <button type="button" onClick={() => alternarSecao("guias")}
               style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
               <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#b89cff", textTransform: "uppercase" }}>📚 Guias Técnicos</span>
