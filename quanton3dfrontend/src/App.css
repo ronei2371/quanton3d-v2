@@ -2149,3 +2149,31 @@ section:not(.hero-home) .section-label {
   min-height: 52px !important;
   padding: 14px 20px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v26 — Fundo do painel ADM
+   ═══════════════════════════════════════════════════════════ */
+
+.admin-gallery-panel {
+  background-image: url("/fundo-adm.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  position: relative !important;
+}
+
+/* Overlay escuro pra texto ficar legível */
+.admin-gallery-panel::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(5, 10, 30, 0.82) !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Conteúdo do ADM fica acima do overlay */
+.admin-gallery-panel > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
