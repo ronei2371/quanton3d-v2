@@ -1933,3 +1933,27 @@ section:not(.hero-home) .section-label {
   margin: 0 !important;
   line-height: 1 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v18 — Todas as seções em PARES (2 colunas)
+   ═══════════════════════════════════════════════════════════ */
+
+/* Sections abaixo do hero em grid 2 colunas — usando float esquerdo simples 
+   Cada section ocupa 50% menos gap */
+.app-shell > section:not(.hero-home),
+main.app-shell > section:not(.hero-home) {
+  display: inline-block !important;
+  width: calc(50% - 8px) !important;
+  vertical-align: top !important;
+  margin: 0 4px 12px !important;
+  box-sizing: border-box !important;
+}
+
+/* Mobile: volta pra 1 coluna */
+@media (max-width: 700px) {
+  .app-shell > section:not(.hero-home),
+  main.app-shell > section:not(.hero-home) {
+    width: 100% !important;
+    margin: 0 0 12px !important;
+  }
+}
