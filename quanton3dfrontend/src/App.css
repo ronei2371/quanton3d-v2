@@ -2025,3 +2025,26 @@ main.app-shell > section:not(.hero-home) > div[style*="flex"] > a:hover,
   transform: translateX(4px) !important;
   box-shadow: 0 4px 16px rgba(124,58,237,0.25) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v23 — Nivelar altura primeira linha com as demais
+   ═══════════════════════════════════════════════════════════ */
+
+/* Igualar padding das seções da primeira linha (Atendimento/Guias) */
+.hero-home > div:last-child > div {
+  padding: 6px 20px !important;
+  min-height: auto !important;
+}
+
+.hero-home > div:last-child > div > button:first-child {
+  padding: 0 !important;
+  min-height: 40px !important;
+  height: 40px !important;
+}
+
+/* Sub-botões da primeira linha (Atendimento/Guias) - igual aos outros */
+.hero-home > div:last-child > div .home-actions button {
+  min-height: 44px !important;
+  font-size: 0.78rem !important;
+  border-radius: 999px !important;
+}
