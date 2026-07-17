@@ -2048,3 +2048,51 @@ main.app-shell > section:not(.hero-home) > div[style*="flex"] > a:hover,
   font-size: 0.78rem !important;
   border-radius: 999px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Redesign v24 — Letras maiores + corrigir grid 2 colunas
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── PRIMEIRA LINHA: quando UMA abre, ocupa LARGURA TOTAL ── */
+/* Atendimento e Guias ficam em 2 colunas APENAS quando ambos fechados */
+/* Quando qualquer um abre, o conteúdo precisa de espaço */
+.hero-home > div:last-child {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+/* Sub-botões da primeira linha — LETRAS MAIORES */
+.hero-home > div:last-child > div .home-actions button {
+  font-size: 0.88rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.06em !important;
+  min-height: 48px !important;
+  padding: 13px 16px !important;
+}
+
+/* Sub-botões de todas as outras seções — LETRAS MAIORES */
+main.app-shell > section:not(.hero-home) > div[style*="flex"] > button,
+.app-shell > section:not(.hero-home) > div[style*="flex"] > button,
+main.app-shell > section:not(.hero-home) > div[style*="flex"] > a,
+.app-shell > section:not(.hero-home) > div[style*="flex"] > a {
+  font-size: 0.88rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.06em !important;
+  min-height: 48px !important;
+  padding: 13px 16px !important;
+}
+
+/* Labels das seções (ATENDIMENTO, GUIAS, FOTOS, etc) — maiores */
+.section-label {
+  font-size: 0.82rem !important;
+  padding: 6px 14px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
+}
+
+section:not(.hero-home) .section-label {
+  font-size: 0.82rem !important;
+  padding: 6px 14px !important;
+}
