@@ -342,7 +342,7 @@ function App() {
         </div>
       </section>
 
-      <section style={{ padding: "12px 18px", borderRadius: "14px", background: "rgba(12,24,52,0.75)", border: "1px solid rgba(79,209,255,0.15)", marginBottom: "16px" }}>
+      <section style={{ padding: "12px 18px", borderRadius: "14px", background: "rgba(12,24,52,0.75)", border: "1px solid rgba(79,209,255,0.15)", marginBottom: "16px", ...(secoesAbertas.colaboracao ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("colaboracao")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ textAlign: "left" }}>
@@ -361,7 +361,7 @@ function App() {
 
 
 
-      <section id="produtos" className="panel" style={{ padding: "16px 20px" }}>
+      <section id="produtos" className="panel" style={{ padding: "16px 20px", ...(secoesAbertas.catalogo ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("catalogo")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -395,7 +395,7 @@ function App() {
         )}
       </section>
 
-      <section id="servicos" className="panel" style={{ padding: "14px 18px" }}>
+      <section id="servicos" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.comunidade ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("comunidade")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -422,7 +422,7 @@ function App() {
         )}
       </section>
 
-      <section id="calculadoras" className="panel" style={{ padding: "14px 18px" }}>
+      <section id="calculadoras" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.ferramentas ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("ferramentas")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -464,7 +464,7 @@ function App() {
 
 
 
-      <section id="parametros" className="panel" style={{ padding: "14px 18px" }}>
+      <section id="parametros" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.parametros ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("consulta")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
