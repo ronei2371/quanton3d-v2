@@ -397,24 +397,30 @@ function App() {
       </section>
 
       <section id="servicos" className="panel" style={{ padding: "14px 18px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
-          <span className="section-label">Comunidade</span>
-          <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parceria e Comunidade</span>
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-          <button type="button" onClick={abrirParceiroModal}
-            style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
-            🤝 Quero ser parceiro
-          </button>
-          <button type="button" onClick={() => setActiveModal("parceirosPublico")}
-            style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
-            🏆 Ver parceiros e cursos
-          </button>
-          <button type="button" onClick={() => setActiveModal("sobre")}
-            style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
-            ℹ️ Saiba mais sobre nós
-          </button>
-        </div>
+        <button type="button" onClick={() => alternarSecao("comunidade")}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span className="section-label">Comunidade</span>
+            <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parceria e Comunidade</span>
+          </div>
+          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.comunidade ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+        </button>
+        {secoesAbertas.comunidade && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "14px" }}>
+            <button type="button" onClick={abrirParceiroModal}
+              style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
+              🤝 Quero ser parceiro
+            </button>
+            <button type="button" onClick={() => setActiveModal("parceirosPublico")}
+              style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
+              🏆 Ver parceiros e cursos
+            </button>
+            <button type="button" onClick={() => setActiveModal("sobre")}
+              style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
+              ℹ️ Saiba mais sobre nós
+            </button>
+          </div>
+        )}
       </section>
 
       <section id="calculadoras" className="panel" style={{ padding: "14px 18px" }}>
