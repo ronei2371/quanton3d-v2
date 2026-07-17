@@ -1293,6 +1293,8 @@ function AdminContent() {
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
       } catch (_) {}
       const clientesCarregados = Array.isArray(m.clientes) ? m.clientes : [];
+      carregarAtendentes();
+      carregarLogs();
       setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
@@ -1334,6 +1336,10 @@ function AdminContent() {
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
+  const [atendentes, setAtendentes] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [novoAt, setNovoAt] = useState({ nome: "", email: "", senha: "" });
+  const [criandoAt, setCriandoAt] = useState(false);
   const [filtroClienteConv, setFiltroClienteConv] = useState("");
   const [buscaCliente, setBuscaCliente] = useState("");
   const [filtroOrigem, setFiltroOrigem] = useState("");
@@ -1428,6 +1434,41 @@ function AdminContent() {
     setTimeout(() => setContatoCopiado(""), 2000);
   }
 
+  async function carregarAtendentes() {
+    try {
+      const r = await api.get("/atendentes", { headers: { Authorization: "Bearer " + token } });
+      setAtendentes(r.data?.atendentes || []);
+    } catch (err) { console.error("Erro ao carregar atendentes:", err); }
+  }
+
+  async function carregarLogs() {
+    try {
+      const r = await api.get("/atendentes/logs?limit=200", { headers: { Authorization: "Bearer " + token } });
+      setLogs(r.data?.logs || []);
+    } catch (err) { console.error("Erro ao carregar logs:", err); }
+  }
+
+  async function criarAtendente() {
+    if (!novoAt.nome || !novoAt.email || !novoAt.senha) {
+      setErro("Preencha nome, email e senha."); return;
+    }
+    try {
+      setCriandoAt(true);
+      await api.post("/atendentes", novoAt, { headers: { Authorization: "Bearer " + token } });
+      setNovoAt({ nome: "", email: "", senha: "" });
+      await carregarAtendentes();
+      setErro("");
+    } catch (err) { setErro(err?.response?.data?.error || "Erro ao criar atendente."); }
+    finally { setCriandoAt(false); }
+  }
+
+  async function toggleAtendente(id, ativo) {
+    try {
+      await api.patch("/atendentes/" + id + "/status", { ativo }, { headers: { Authorization: "Bearer " + token } });
+      await carregarAtendentes();
+    } catch (err) { setErro("Erro ao atualizar atendente."); }
+  }
+
   async function atualizarStatusMensagem(id, status) {
     try {
       await api.patch("/contact-messages/" + id + "/status", { status }, { headers: { Authorization: "Bearer " + token } });
@@ -1512,6 +1553,8 @@ function AdminContent() {
     { id: "parceiros", label: "Parceiros", icon: "🤝", count: dados.parceiros?.length || 0 },
     { id: "conversas", label: "Conversas Bot", icon: "🤖", count: dados.conversas?.length || 0 },
     { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
+    { id: "atendentes", label: "Atendentes", icon: "👨‍💼", count: null },
+    { id: "logs", label: "Logs", icon: "📋", count: null },
   ];
 
   return (
@@ -2681,6 +2724,69 @@ function AdminContent() {
           ))}
         </div>
       )}
+      {aba === "atendentes" && (
+        <div>
+          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "18px", marginBottom: "20px" }}>
+            <p style={{ fontWeight: 900, color: "#4fd1ff", marginBottom: "14px", fontSize: "0.9rem" }}>➕ Novo Atendente</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+              <input value={novoAt.nome} onChange={e => setNovoAt(p => ({...p, nome: e.target.value}))} placeholder="Nome completo" style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.7)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem" }} />
+              <input value={novoAt.email} onChange={e => setNovoAt(p => ({...p, email: e.target.value}))} placeholder="Email" type="email" style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.7)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem" }} />
+              <input value={novoAt.senha} onChange={e => setNovoAt(p => ({...p, senha: e.target.value}))} placeholder="Senha (mín. 6 caracteres)" type="password" style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.7)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem" }} />
+            </div>
+            <button type="button" onClick={criarAtendente} disabled={criandoAt} style={{ padding: "9px 20px", borderRadius: "999px", border: "none", background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem", fontFamily: "inherit" }}>
+              {criandoAt ? "Criando..." : "✅ Criar Atendente"}
+            </button>
+            <p style={{ marginTop: "8px", fontSize: "0.72rem", color: "#9fb4c7" }}>💡 Código gerado automaticamente (AT001, AT002...). Login via email e senha.</p>
+          </div>
+          {atendentes.length === 0 && <div className="gallery-empty">Nenhum atendente cadastrado ainda.</div>}
+          {atendentes.map(at => (
+            <div key={at._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px 16px", background: at.ativo ? "rgba(255,255,255,0.04)" : "rgba(255,107,107,0.04)", marginBottom: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px", color: "#eaf3ff" }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ background: at.ativo ? "rgba(73,230,139,0.15)" : "rgba(255,107,107,0.15)", color: at.ativo ? "#49e68b" : "#ff8fab", padding: "2px 10px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800 }}>{at.codigo}</span>
+                  <strong>{at.nome}</strong>
+                  {!at.ativo && <span style={{ color: "#ff8fab", fontSize: "0.72rem" }}>⛔ DESATIVADO</span>}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#9fb4c7", marginTop: "4px" }}>
+                  ✉️ {at.email} · Cadastro: {new Date(at.createdAt).toLocaleDateString("pt-BR")}
+                  {at.ultimoAcesso && ` · Último acesso: ${new Date(at.ultimoAcesso).toLocaleString("pt-BR")}`}
+                </div>
+              </div>
+              <button type="button" onClick={() => toggleAtendente(at._id, !at.ativo)}
+                style={{ padding: "6px 14px", borderRadius: "999px", border: at.ativo ? "1px solid rgba(255,107,107,0.4)" : "1px solid rgba(73,230,139,0.4)", background: at.ativo ? "rgba(255,107,107,0.1)" : "rgba(73,230,139,0.1)", color: at.ativo ? "#ff8fab" : "#49e68b", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, fontFamily: "inherit" }}>
+                {at.ativo ? "⛔ Desativar" : "✅ Ativar"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {aba === "logs" && (
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+            <p style={{ fontWeight: 900, color: "#4fd1ff", fontSize: "0.9rem" }}>📋 Histórico de Ações ({logs.length})</p>
+            <button type="button" onClick={carregarLogs} style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.08)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700, fontFamily: "inherit" }}>🔄 Atualizar</button>
+          </div>
+          {logs.length === 0 && <div className="gallery-empty">Nenhuma ação registrada ainda.</div>}
+          {logs.map(log => (
+            <div key={log._id} style={{ border: `1px solid ${log.bloqueada ? "rgba(255,107,107,0.3)" : "rgba(113,159,219,0.15)"}`, borderRadius: "10px", padding: "10px 14px", background: log.bloqueada ? "rgba(255,107,107,0.06)" : "rgba(255,255,255,0.03)", marginBottom: "8px", color: "#eaf3ff" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "6px", marginBottom: "4px" }}>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  {log.bloqueada && <span style={{ background: "rgba(255,107,107,0.2)", color: "#ff8fab", padding: "1px 8px", borderRadius: "999px", fontSize: "0.65rem", fontWeight: 800 }}>⛔ BLOQUEADA</span>}
+                  <span style={{ background: log.tipo === "superadmin" ? "rgba(255,209,102,0.15)" : "rgba(79,209,255,0.1)", color: log.tipo === "superadmin" ? "#ffd166" : "#4fd1ff", padding: "1px 8px", borderRadius: "999px", fontSize: "0.68rem", fontWeight: 800 }}>{log.atendenteCod}</span>
+                  <strong style={{ fontSize: "0.82rem" }}>{log.atendenteNome}</strong>
+                </div>
+                <small style={{ color: "#6b8aad", fontSize: "0.7rem" }}>{new Date(log.createdAt).toLocaleString("pt-BR")}</small>
+              </div>
+              <div style={{ fontSize: "0.78rem", color: "#b8cfe8" }}>
+                <span style={{ color: "#9fb4c7" }}>[{log.modulo}]</span> {log.acao}
+                {log.detalhe && <span style={{ color: "#7a9bb5" }}> — {log.detalhe}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 }
