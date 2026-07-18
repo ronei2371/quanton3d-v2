@@ -1818,7 +1818,7 @@ function AdminContent({ tokenAtendente }) {
     { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
     { id: "atendentes", label: "Atendentes", icon: "👨‍💼", count: null },
     { id: "logs", label: "Logs", icon: "📋", count: null },
-    { id: "sugestoes_elio", label: "Sugestões ELIO", icon: "💡", count: null },
+    { id: "sugestoes_elio", label: "Sugestões ELIO", icon: "💡", count: sugestoesElio.filter(s => s.status === "pendente").length },
   ];
 
   return (
@@ -1837,7 +1837,14 @@ function AdminContent({ tokenAtendente }) {
                 alignItems: "center", gap: "4px", transition: "all 0.2s",
                 boxShadow: aba === a.id ? "0 4px 16px rgba(79,209,255,0.2)" : "none"
               }}>
-              <span style={{ fontSize: "1.4rem" }}>{a.icon}</span>
+              <span style={{ fontSize: "1.4rem", position: "relative" }}>
+                {a.icon}
+                {a.id === "sugestoes_elio" && sugestoesElio.filter(s => s.status === "pendente").length > 0 && (
+                  <span style={{ position: "absolute", top: "-4px", right: "-8px", background: "#ff4444", color: "#fff", borderRadius: "999px", fontSize: "0.55rem", fontWeight: 900, padding: "1px 5px", lineHeight: 1.4 }}>
+                    {sugestoesElio.filter(s => s.status === "pendente").length}
+                  </span>
+                )}
+              </span>
               <span style={{ color: aba === a.id ? "#4fd1ff" : "#9fb4c7", fontSize: "0.7rem", fontWeight: 800, textAlign: "center", lineHeight: 1.2 }}>{a.label}</span>
               {a.count !== null && <span style={{ fontSize: "0.65rem", color: aba === a.id ? "#4fd1ff" : "#6b8aad", fontWeight: 700 }}>({a.count})</span>}
             </button>
