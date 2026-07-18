@@ -130,6 +130,13 @@ function App() {
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(true);
   const [activeModal, setActiveModal] = useState(null);
+  const [atendenteLogado, setAtendenteLogado] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("quanton3d_atendente")); } catch { return null; }
+  });
+  const [showLoginAtendente, setShowLoginAtendente] = useState(false);
+  const [loginAtForm, setLoginAtForm] = useState({ email: "", senha: "" });
+  const [loginAtErro, setLoginAtErro] = useState("");
+  const [loginAtLoading, setLoginAtLoading] = useState(false);
   const [activeGuide, setActiveGuide] = useState(null);
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
@@ -1392,23 +1399,13 @@ function AdminContent() {
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
-  const [atendenteLogado, setAtendenteLogado] = useState(null);
-  const [showLoginAtendente, setShowLoginAtendente] = useState(false);
-  const [loginAtForm, setLoginAtForm] = useState({ email: "", senha: "" });
-  const [loginAtErro, setLoginAtErro] = useState("");
-  const [loginAtLoading, setLoginAtLoading] = useState(false);
+
   const [atendentes, setAtendentes] = useState([]);
   const [logs, setLogs] = useState([]);
   const [novoAt, setNovoAt] = useState({ nome: "", email: "", senha: "" });
   const [criandoAt, setCriandoAt] = useState(false);
   const [filtroClienteConv, setFiltroClienteConv] = useState("");
-  // Recuperar sessão do atendente
-  useState(() => {
-    try {
-      const saved = localStorage.getItem("quanton3d_atendente");
-      if (saved) setAtendenteLogado(JSON.parse(saved));
-    } catch (_) {}
-  });
+
   const [buscaCliente, setBuscaCliente] = useState("");
   const [filtroOrigem, setFiltroOrigem] = useState("");
   const [clienteExpandido, setClienteExpandido] = useState("");
