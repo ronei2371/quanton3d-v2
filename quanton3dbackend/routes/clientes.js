@@ -1,5 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { authAdminOuAtendente } from '../middlewares/authAtendente.js';
 import { criarCliente, listarClientes, excluirCliente, excluirClientesEmLote } from '../controllers/clientesController.js';
 
 const router = express.Router();
@@ -17,7 +18,7 @@ function authAdmin(req, res, next) {
 }
 
 router.post('/', criarCliente); // cadastro do cliente continua público
-router.get('/', authAdmin, listarClientes); // protegido — evita vazar nome/telefone/email de todos os clientes
+router.get('/', authAdminOuAtendente, listarClientes); // protegido — aceita superadmin e atendentes
 router.delete('/lote', authAdmin, excluirClientesEmLote); // precisa vir antes de /:id
 router.delete('/:id', authAdmin, excluirCliente);
 
