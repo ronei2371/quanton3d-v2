@@ -338,7 +338,9 @@ function App() {
             </div>
           </div>
           <nav className="main-nav">
-            <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
+            {!atendenteLogado && (
+              <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
+            )}
             {atendenteLogado ? (
               <button type="button" onClick={logoutAtendente}
                 style={{ background: "rgba(73,230,139,0.12)", borderColor: "rgba(73,230,139,0.4)", color: "#49e68b" }}>
@@ -744,7 +746,14 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
         {type === "galeria" && <GaleriaContent cliente={cliente} ocultarAbas />}
         {type === "galeriaPublica" && <GaleriaContent cliente={cliente} initialAba="ver" ocultarAbas />}
-        {type === "adm" && <AdminContent />}
+        {type === "adm" && !atendenteLogado && <AdminContent />}
+        {type === "adm" && atendenteLogado && (
+          <div style={{ padding: "40px", textAlign: "center" }}>
+            <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🔒</div>
+            <h2 style={{ color: "#ff8fab", marginBottom: "8px" }}>Acesso Negado</h2>
+            <p style={{ color: "#9fb4c7" }}>Atendentes não têm acesso ao painel administrativo.</p>
+          </div>
+        )}
         {type === "qualidade" && <QualidadeContent abrirGuia={abrirGuia} />}
         {type === "calc_exp" && <CalculadoraExposicao />}
         {type === "calc_vol" && <CalculadoraVolume />}
