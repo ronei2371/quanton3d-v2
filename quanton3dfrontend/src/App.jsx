@@ -137,6 +137,30 @@ function App() {
   const [loginAtForm, setLoginAtForm] = useState({ email: "", senha: "" });
   const [loginAtErro, setLoginAtErro] = useState("");
   const [loginAtLoading, setLoginAtLoading] = useState(false);
+
+  async function loginAtendente() {
+    if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha email e senha."); return; }
+    try {
+      setLoginAtLoading(true);
+      const r = await api.post("/atendentes/login", loginAtForm);
+      if (r.data?.success) {
+        setAtendenteLogado(r.data.atendente);
+        localStorage.setItem("quanton3d_atendente", JSON.stringify(r.data.atendente));
+        localStorage.setItem("quanton3d_atendente_token", r.data.token);
+        setShowLoginAtendente(false);
+        setLoginAtErro("");
+        setLoginAtForm({ email: "", senha: "" });
+      }
+    } catch (err) {
+      setLoginAtErro(err?.response?.data?.error || "Erro ao fazer login.");
+    } finally { setLoginAtLoading(false); }
+  }
+
+  function logoutAtendente() {
+    setAtendenteLogado(null);
+    localStorage.removeItem("quanton3d_atendente");
+    localStorage.removeItem("quanton3d_atendente_token");
+  }
   const [activeGuide, setActiveGuide] = useState(null);
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
@@ -1497,30 +1521,6 @@ function AdminContent() {
     catch (_) { const a = document.createElement("textarea"); a.value = texto; document.body.appendChild(a); a.select(); document.execCommand("copy"); document.body.removeChild(a); }
     setContatoCopiado(c._id);
     setTimeout(() => setContatoCopiado(""), 2000);
-  }
-
-  async function loginAtendente() {
-    if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha email e senha."); return; }
-    try {
-      setLoginAtLoading(true);
-      const r = await api.post("/atendentes/login", loginAtForm);
-      if (r.data?.success) {
-        setAtendenteLogado(r.data.atendente);
-        localStorage.setItem("quanton3d_atendente", JSON.stringify(r.data.atendente));
-        localStorage.setItem("quanton3d_atendente_token", r.data.token);
-        setShowLoginAtendente(false);
-        setLoginAtErro("");
-        setLoginAtForm({ email: "", senha: "" });
-      }
-    } catch (err) {
-      setLoginAtErro(err?.response?.data?.error || "Erro ao fazer login.");
-    } finally { setLoginAtLoading(false); }
-  }
-
-  function logoutAtendente() {
-    setAtendenteLogado(null);
-    localStorage.removeItem("quanton3d_atendente");
-    localStorage.removeItem("quanton3d_atendente_token");
   }
 
   async function carregarAtendentes() {
