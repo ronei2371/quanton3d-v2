@@ -1329,6 +1329,15 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   padding: 18px !important;
 }
 
+/* ═══ Calculadoras e modais largos (1400px) ═══ */
+.site-modal[style*="1400px"] {
+  width: min(1400px, calc(100vw - 16px)) !important;
+  max-width: min(1400px, calc(100vw - 16px)) !important;
+  height: calc(100vh - 16px) !important;
+  max-height: calc(100vh - 16px) !important;
+  padding: 12px !important;
+}
+
 /* ═══════════════════════════════════════════════════════════
    ATUALIZAÇÕES VISUAIS — Redesign v6 (regras mais fortes)
    ═══════════════════════════════════════════════════════════ */
@@ -2403,21 +2412,26 @@ section .section-label {
 }
 
 /* ═══════════════════════════════════════════════════════════ */
-/* v29 — Modais maiores para conteúdo técnico                 */
+/* v29 — Modais maiores: site-modal e guide-modal             */
 /* ═══════════════════════════════════════════════════════════ */
+
 /* GuideModal — ocupa quase a tela toda */
 .guide-modal {
   width: min(96vw, 1400px) !important;
   height: min(94vh, 960px) !important;
 }
 
-/* SiteModal padrão — mais espaçoso */
-.site-modal {
-  width: min(1000px, calc(100vw - 16px)) !important;
+/* SiteModal: o style inline do JSX define a largura,
+   mas o backdrop padding:20px limita o 100% disponível.
+   Zeramos o padding do backdrop e usamos margin no modal */
+.modal-backdrop {
+  padding: 8px !important;
 }
 
-/* SiteModal tipos que precisam de espaço extra (bot, adm já tem) */
-.site-modal:has(.sobre-container),
-.site-modal:has(.calc-container) {
-  width: min(1400px, calc(100vw - 16px)) !important;
+/* O style inline do JSX já coloca width correto.
+   Garantimos que o 100% disponível seja mesmo 100vw - 16px */
+.site-modal {
+  max-width: calc(100vw - 16px) !important;
+  max-height: calc(100vh - 16px) !important;
+  box-sizing: border-box !important;
 }
