@@ -2177,3 +2177,17 @@ section:not(.hero-home) .section-label {
   position: relative !important;
   z-index: 1 !important;
 }
+
+/* ═══ Fix campos de texto aba Atendentes ═══ */
+.admin-gallery-panel input[type="text"],
+.admin-gallery-panel input[type="email"],
+.admin-gallery-panel input[type="password"] {
+  color: #eaf3ff !important;
+  background: rgba(4,10,24,0.85) !important;
+  border: 1px solid rgba(113,159,219,0.4) !important;
+  -webkit-text-fill-color: #eaf3ff !important;
+}
+.admin-gallery-panel input::placeholder {
+  color: rgba(180,200,230,0.5) !important;
+  -webkit-text-fill-color: rgba(180,200,230,0.5) !important;
+}
