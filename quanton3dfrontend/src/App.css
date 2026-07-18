@@ -1452,37 +1452,12 @@ section.hero-home button:hover {
 }
 
 /* Cores personalizadas para as seções (por parágrafo pai) */
-/* ATENDIMENTO azul-ciano (padrão) */
-
-/* FOTOS E PEÇAS DE CLIENTES rosa */
-.hero-home > div:last-child > div:nth-of-type(3) .section-label {
-  color: #ff8fab !important;
-  background: rgba(255,143,171,0.1) !important;
-  border-color: rgba(255,143,171,0.35) !important;
+/* Todas as seções padronizadas em azul ciano */
+.hero-home > div:last-child .section-label {
+  color: #4fd1ff !important;
+  background: rgba(79,209,255,0.08) !important;
+  border-color: rgba(79,209,255,0.3) !important;
 }
-
-/* CATÁLOGO verde */
-.hero-home > div:last-child > div:nth-of-type(4) .section-label {
-  color: #49e68b !important;
-  background: rgba(73,230,139,0.1) !important;
-  border-color: rgba(73,230,139,0.35) !important;
-}
-
-/* COMUNIDADE amarelo */
-.hero-home > div:last-child > div:nth-of-type(5) .section-label {
-  color: #ffd166 !important;
-  background: rgba(255,209,102,0.1) !important;
-  border-color: rgba(255,209,102,0.35) !important;
-}
-
-/* FERRAMENTAS laranja */
-.hero-home > div:last-child > div:nth-of-type(6) .section-label {
-  color: #ffa07a !important;
-  background: rgba(255,160,122,0.1) !important;
-  border-color: rgba(255,160,122,0.35) !important;
-}
-
-/* CONSULTA RÁPIDA ciano brilhante (mantém padrão) */
 
 /* Ícones dos section-labels maiores dentro do texto */
 .section-label {
@@ -2414,4 +2389,15 @@ section:not(.hero-home) .section-label {
   .sobre-fundador-card img { width: 80px; height: 80px; }
   .sobre-resina-tabs { gap: 4px; }
   .sobre-resina-tab { padding: 5px 10px; font-size: 0.68rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* v28 — Padronização: todos section-labels em azul ciano     */
+/* ═══════════════════════════════════════════════════════════ */
+.section-label,
+.hero-home .section-label,
+section .section-label {
+  color: #4fd1ff !important;
+  background: rgba(79,209,255,0.08) !important;
+  border-color: rgba(79,209,255,0.25) !important;
 }
