@@ -338,7 +338,7 @@ function App() {
             </div>
           </div>
           <nav className="main-nav">
-            {!atendenteLogado && (
+            {(!atendenteLogado || atendenteLogado?.permissoes?.acessoAdmCompleto) && (
               <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
             )}
             {atendenteLogado ? (
@@ -756,7 +756,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
         {type === "galeria" && <GaleriaContent cliente={cliente} ocultarAbas />}
         {type === "galeriaPublica" && <GaleriaContent cliente={cliente} initialAba="ver" ocultarAbas />}
-        {type === "adm" && !atendenteLogado && <AdminContent />}
+        {type === "adm" && (!atendenteLogado || atendenteLogado?.permissoes?.acessoAdmCompleto) && <AdminContent />}
         {type === "painel_atendente" && atendenteLogado && <PainelAtendente atendente={atendenteLogado} onClose={() => setActiveModal(null)} />}
         {type === "adm" && atendenteLogado && (
           <div style={{ padding: "40px", textAlign: "center" }}>
@@ -1585,7 +1585,8 @@ function AdminContent() {
 
   const [atendentes, setAtendentes] = useState([]);
   const [logs, setLogs] = useState([]);
-  const [novoAt, setNovoAt] = useState({ nome: "", email: "", senha: "" });
+  const [novoAt, setNovoAt] = useState({ nome: "", email: "", senha: "", permissoes: { acessoAdmCompleto: false, mudarStatusChamados: true, sugerirConhecimento: true, aprovarGaleria: false, acessarMetricas: false } });
+  const [editandoPerms, setEditandoPerms] = useState(null);
   const [criandoAt, setCriandoAt] = useState(false);
   const [filtroClienteConv, setFiltroClienteConv] = useState("");
 
@@ -1703,7 +1704,7 @@ function AdminContent() {
     try {
       setCriandoAt(true);
       await api.post("/atendentes", novoAt, { headers: { Authorization: "Bearer " + token } });
-      setNovoAt({ nome: "", email: "", senha: "" });
+      setNovoAt({ nome: "", email: "", senha: "", permissoes: { acessoAdmCompleto: false, mudarStatusChamados: true, sugerirConhecimento: true, aprovarGaleria: false, acessarMetricas: false } });
       await carregarAtendentes();
       setErro("");
     } catch (err) { setErro(err?.response?.data?.error || "Erro ao criar atendente."); }
@@ -2982,31 +2983,97 @@ function AdminContent() {
               <input value={novoAt.email} onChange={e => setNovoAt(p => ({...p, email: e.target.value}))} placeholder="Email do atendente" type="text" autoComplete="off" name="at-email" style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.9)", color: "#eaf3ff", WebkitTextFillColor: "#eaf3ff", caretColor: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem", boxShadow: "0 0 0 9999px rgba(4,10,24,0.9) inset" }} />
               <input value={novoAt.senha} onChange={e => setNovoAt(p => ({...p, senha: e.target.value}))} placeholder="Senha (mín. 6 caracteres)" type="password" autoComplete="new-password" name="at-senha" style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,10,24,0.9)", color: "#eaf3ff", WebkitTextFillColor: "#eaf3ff", caretColor: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem", boxShadow: "0 0 0 9999px rgba(4,10,24,0.9) inset" }} />
             </div>
+            <p style={{ fontWeight: 800, color: "#b89cff", fontSize: "0.82rem", margin: "0 0 10px" }}>🔐 Permissões:</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "14px" }}>
+              {[
+                { key: "acessoAdmCompleto", label: "🔓 Acesso ADM completo (superadmin)" },
+                { key: "mudarStatusChamados", label: "🔧 Mudar status de chamados" },
+                { key: "sugerirConhecimento", label: "💡 Sugerir conhecimento (ELIO)" },
+                { key: "aprovarGaleria", label: "📸 Aprovar fotos da galeria" },
+                { key: "acessarMetricas", label: "📊 Ver métricas" },
+              ].map(p => (
+                <label key={p.key} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "0.82rem", color: "#c5d8e8" }}>
+                  <input type="checkbox" checked={!!novoAt.permissoes[p.key]}
+                    onChange={e => setNovoAt(prev => ({ ...prev, permissoes: { ...prev.permissoes, [p.key]: e.target.checked } }))}
+                    style={{ width: "18px", height: "18px", accentColor: "#4fd1ff", cursor: "pointer" }} />
+                  {p.label}
+                </label>
+              ))}
+            </div>
             <button type="button" onClick={criarAtendente} disabled={criandoAt} style={{ padding: "9px 20px", borderRadius: "999px", border: "none", background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem", fontFamily: "inherit" }}>
               {criandoAt ? "Criando..." : "✅ Criar Atendente"}
             </button>
             <p style={{ marginTop: "8px", fontSize: "0.72rem", color: "#9fb4c7" }}>💡 Código gerado automaticamente (AT001, AT002...). Login via email e senha.</p>
           </div>
           {atendentes.length === 0 && <div className="gallery-empty">Nenhum atendente cadastrado ainda.</div>}
-          {atendentes.map(at => (
-            <div key={at._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px 16px", background: at.ativo ? "rgba(255,255,255,0.04)" : "rgba(255,107,107,0.04)", marginBottom: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px", color: "#eaf3ff" }}>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ background: at.ativo ? "rgba(73,230,139,0.15)" : "rgba(255,107,107,0.15)", color: at.ativo ? "#49e68b" : "#ff8fab", padding: "2px 10px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800 }}>{at.codigo}</span>
-                  <strong>{at.nome}</strong>
-                  {!at.ativo && <span style={{ color: "#ff8fab", fontSize: "0.72rem" }}>⛔ DESATIVADO</span>}
+          {atendentes.map(at => {
+            const perms = at.permissoes || {};
+            const isExpanded = editandoPerms === at._id;
+            const PERM_LABELS = [
+              { key: "acessoAdmCompleto", label: "🔓 ADM completo", cor: "#ffd166" },
+              { key: "mudarStatusChamados", label: "🔧 Chamados", cor: "#4fd1ff" },
+              { key: "sugerirConhecimento", label: "💡 Sugestões", cor: "#b89cff" },
+              { key: "aprovarGaleria", label: "📸 Galeria", cor: "#49e68b" },
+              { key: "acessarMetricas", label: "📊 Métricas", cor: "#ff8fab" },
+            ];
+            async function salvarPerms(novasPerms) {
+              try {
+                await api.patch("/atendentes/" + at._id + "/permissoes", { permissoes: novasPerms }, { headers: { Authorization: "Bearer " + token } });
+                await carregarAtendentes();
+              } catch(e) { alert("Erro ao salvar permissões"); }
+            }
+            return (
+            <div key={at._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px 16px", background: at.ativo ? "rgba(255,255,255,0.04)" : "rgba(255,107,107,0.04)", marginBottom: "10px", color: "#eaf3ff" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                    <span style={{ background: at.ativo ? "rgba(73,230,139,0.15)" : "rgba(255,107,107,0.15)", color: at.ativo ? "#49e68b" : "#ff8fab", padding: "2px 10px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800 }}>{at.codigo}</span>
+                    <strong>{at.nome}</strong>
+                    {!at.ativo && <span style={{ color: "#ff8fab", fontSize: "0.72rem" }}>⛔ DESATIVADO</span>}
+                    {perms.acessoAdmCompleto && <span style={{ background: "rgba(255,209,102,0.15)", color: "#ffd166", padding: "2px 8px", borderRadius: "999px", fontSize: "0.65rem", fontWeight: 800 }}>ADMIN</span>}
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "#9fb4c7", marginTop: "4px" }}>
+                    ✉️ {at.email} · Cadastro: {new Date(at.createdAt).toLocaleDateString("pt-BR")}
+                    {at.ultimoAcesso && ` · Último acesso: ${new Date(at.ultimoAcesso).toLocaleString("pt-BR")}`}
+                  </div>
+                  {/* Badges de permissões */}
+                  <div style={{ display: "flex", gap: "4px", marginTop: "6px", flexWrap: "wrap" }}>
+                    {PERM_LABELS.filter(p => perms[p.key]).map(p => (
+                      <span key={p.key} style={{ background: `${p.cor}15`, color: p.cor, padding: "1px 8px", borderRadius: "999px", fontSize: "0.62rem", fontWeight: 700 }}>{p.label}</span>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#9fb4c7", marginTop: "4px" }}>
-                  ✉️ {at.email} · Cadastro: {new Date(at.createdAt).toLocaleDateString("pt-BR")}
-                  {at.ultimoAcesso && ` · Último acesso: ${new Date(at.ultimoAcesso).toLocaleString("pt-BR")}`}
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button type="button" onClick={() => setEditandoPerms(isExpanded ? null : at._id)}
+                    style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(184,156,255,0.4)", background: isExpanded ? "rgba(184,156,255,0.2)" : "rgba(184,156,255,0.08)", color: "#b89cff", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, fontFamily: "inherit" }}>
+                    🔐 Permissões
+                  </button>
+                  <button type="button" onClick={() => toggleAtendente(at._id, !at.ativo)}
+                    style={{ padding: "6px 14px", borderRadius: "999px", border: at.ativo ? "1px solid rgba(255,107,107,0.4)" : "1px solid rgba(73,230,139,0.4)", background: at.ativo ? "rgba(255,107,107,0.1)" : "rgba(73,230,139,0.1)", color: at.ativo ? "#ff8fab" : "#49e68b", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, fontFamily: "inherit" }}>
+                    {at.ativo ? "⛔ Desativar" : "✅ Ativar"}
+                  </button>
                 </div>
               </div>
-              <button type="button" onClick={() => toggleAtendente(at._id, !at.ativo)}
-                style={{ padding: "6px 14px", borderRadius: "999px", border: at.ativo ? "1px solid rgba(255,107,107,0.4)" : "1px solid rgba(73,230,139,0.4)", background: at.ativo ? "rgba(255,107,107,0.1)" : "rgba(73,230,139,0.1)", color: at.ativo ? "#ff8fab" : "#49e68b", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, fontFamily: "inherit" }}>
-                {at.ativo ? "⛔ Desativar" : "✅ Ativar"}
-              </button>
+              {/* Painel de permissões expandido */}
+              {isExpanded && (
+                <div style={{ marginTop: "12px", padding: "14px", borderRadius: "10px", background: "rgba(0,0,0,0.2)", border: "1px solid rgba(184,156,255,0.15)" }}>
+                  <p style={{ fontWeight: 800, color: "#b89cff", fontSize: "0.82rem", margin: "0 0 10px" }}>🔐 Permissões de {at.nome}:</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                    {PERM_LABELS.map(p => (
+                      <label key={p.key} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "0.82rem", color: "#c5d8e8" }}>
+                        <input type="checkbox" checked={!!perms[p.key]}
+                          onChange={e => salvarPerms({ ...perms, [p.key]: e.target.checked })}
+                          style={{ width: "18px", height: "18px", accentColor: "#4fd1ff", cursor: "pointer" }} />
+                        {p.label}
+                      </label>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: "0.68rem", color: "#6b8aad", marginTop: "8px", margin: "8px 0 0" }}>As alterações são salvas automaticamente ao marcar/desmarcar.</p>
+                </div>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -3484,8 +3551,8 @@ function PainelAtendente({ atendente, onClose }) {
     { id: "chamados", label: "🔧 Chamados", count: dados.chamados.length },
     { id: "mensagens", label: "✉️ Mensagens", count: dados.mensagens.length },
     { id: "clientes", label: "👥 Clientes", count: dados.clientes.length },
-    { id: "sugestoes", label: "💡 Sugestões", count: sugestoes.length },
-  ];
+    atendente.permissoes?.sugerirConhecimento !== false && { id: "sugestoes", label: "💡 Sugestões", count: sugestoes.length },
+  ].filter(Boolean);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", color: "#eaf3ff" }}>
@@ -3553,6 +3620,7 @@ function PainelAtendente({ atendente, onClose }) {
                     style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(37,211,102,0.4)", background: "rgba(37,211,102,0.1)", color: "#25d366", fontSize: "0.75rem", fontWeight: 800, textDecoration: "none" }}>
                     💬 WhatsApp
                   </a>
+                  {atendente.permissoes?.mudarStatusChamados !== false && <>
                   <button type="button" onClick={() => mudarStatus("em_analise")} disabled={c.status === "em_analise"}
                     style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(255,209,102,0.35)", background: "rgba(255,209,102,0.1)", color: "#ffd166", fontSize: "0.75rem", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", opacity: c.status === "em_analise" ? 0.4 : 1 }}>
                     🔍 Em análise
@@ -3561,7 +3629,8 @@ function PainelAtendente({ atendente, onClose }) {
                     style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(73,230,139,0.35)", background: "rgba(73,230,139,0.1)", color: "#49e68b", fontSize: "0.75rem", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", opacity: c.status === "fechado" ? 0.4 : 1 }}>
                     ✅ Resolvido
                   </button>
-                  {c.status === "fechado" && (
+                  </>}
+                  {atendente.permissoes?.mudarStatusChamados !== false && c.status === "fechado" && (
                     <button type="button" onClick={() => mudarStatus("novo")}
                       style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(255,107,107,0.06)", color: "#ff8fab", fontSize: "0.75rem", fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                       ↩️ Reabrir
