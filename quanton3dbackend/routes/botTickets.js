@@ -88,7 +88,7 @@ router.get("/", authAdminOuAtendente, async (req, res) => { // protegido — ace
   }
 });
 
-router.patch("/:id/status", authAdmin, async (req, res) => {
+router.patch("/:id/status", authAdminOuAtendente, async (req, res) => {
   try {
     const { id } = req.params;
     const status = limparTexto(req.body.status);
