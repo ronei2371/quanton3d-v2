@@ -19,6 +19,7 @@ import botTicketsRoutes from "./routes/botTickets.js";
 import conversasRoutes from "./routes/conversas.js";
 import visitasRoutes from "./routes/visitas.js";
 import atendentesRoutes from "./routes/atendentes.js";
+import sugestoesConhecimentoRoutes from "./routes/sugestoesConhecimento.js";
 
 dotenv.config();
 
@@ -82,6 +83,7 @@ app.use("/api/conversas", conversasRoutes);
 app.use("/api/visitas", visitasRoutes);
 app.use("/api/atendentes", atendentesRoutes);
 app.use("/api/contact-messages", contactMessagesRoutes);
+app.use("/api/sugestoes-conhecimento", sugestoesConhecimentoRoutes);
 
 // Rota coringa para o Frontend (Single Page Application)
 app.get("*", (req, res, next) => {
