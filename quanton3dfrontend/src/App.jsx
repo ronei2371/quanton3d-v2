@@ -1721,6 +1721,17 @@ function AdminContent({ tokenAtendente }) {
     } catch (err) { setErro("Erro ao atualizar atendente."); }
   }
 
+  const [sessoesAberta, setSessoesAberta] = useState(null);
+  const [sessoesData, setSessoesData] = useState({});
+  async function verSessoes(id) {
+    if (sessoesAberta === id) { setSessoesAberta(null); return; }
+    try {
+      const r = await api.get("/atendentes/" + id + "/sessoes", { headers: { Authorization: "Bearer " + token } });
+      setSessoesData(prev => ({ ...prev, [id]: r.data?.atendente || {} }));
+      setSessoesAberta(id);
+    } catch(e) { alert("Erro ao carregar sessões"); }
+  }
+
   async function atualizarStatusMensagem(id, status) {
     try {
       await api.patch("/contact-messages/" + id + "/status", { status }, { headers: { Authorization: "Bearer " + token } });
@@ -3034,6 +3045,9 @@ function AdminContent({ tokenAtendente }) {
                     <strong>{at.nome}</strong>
                     {!at.ativo && <span style={{ color: "#ff8fab", fontSize: "0.72rem" }}>⛔ DESATIVADO</span>}
                     {perms.acessoAdmCompleto && <span style={{ background: "rgba(255,209,102,0.15)", color: "#ffd166", padding: "2px 8px", borderRadius: "999px", fontSize: "0.65rem", fontWeight: 800 }}>ADMIN</span>}
+                    {at.ultimoAcesso && (new Date() - new Date(at.ultimoAcesso)) < 8 * 60 * 60 * 1000 && (
+                      <span style={{ background: "rgba(73,230,139,0.15)", color: "#49e68b", padding: "2px 8px", borderRadius: "999px", fontSize: "0.62rem", fontWeight: 800 }}>🟢 online</span>
+                    )}
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "#9fb4c7", marginTop: "4px" }}>
                     ✉️ {at.email} · Cadastro: {new Date(at.createdAt).toLocaleDateString("pt-BR")}
@@ -3047,6 +3061,10 @@ function AdminContent({ tokenAtendente }) {
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: "6px" }}>
+                  <button type="button" onClick={() => verSessoes(at._id)}
+                    style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.35)", background: sessoesAberta === at._id ? "rgba(79,209,255,0.2)" : "rgba(79,209,255,0.07)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, fontFamily: "inherit" }}>
+                    🖥️ Sessões
+                  </button>
                   <button type="button" onClick={() => setEditandoPerms(isExpanded ? null : at._id)}
                     style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(184,156,255,0.4)", background: isExpanded ? "rgba(184,156,255,0.2)" : "rgba(184,156,255,0.08)", color: "#b89cff", cursor: "pointer", fontSize: "0.78rem", fontWeight: 800, fontFamily: "inherit" }}>
                     🔐 Permissões
@@ -3057,6 +3075,53 @@ function AdminContent({ tokenAtendente }) {
                   </button>
                 </div>
               </div>
+              {/* Painel de sessões */}
+              {sessoesAberta === at._id && (() => {
+                const sd = sessoesData[at._id] || {};
+                const sessoes = sd.sessoes || [];
+                const agora = new Date();
+                return (
+                  <div style={{ marginTop: "12px", padding: "14px", borderRadius: "10px", background: "rgba(0,0,0,0.25)", border: "1px solid rgba(79,209,255,0.15)" }}>
+                    <p style={{ fontWeight: 800, color: "#4fd1ff", fontSize: "0.82rem", margin: "0 0 12px" }}>
+                      🖥️ Histórico de sessões de {at.nome}
+                    </p>
+                    {sessoes.length === 0 && (
+                      <p style={{ color: "#9fb4c7", fontSize: "0.8rem" }}>Nenhuma sessão registrada ainda.</p>
+                    )}
+                    {sessoes.map((s, i) => {
+                      const loginEm = new Date(s.loginEm);
+                      const expiresEm = s.expiresEm ? new Date(s.expiresEm) : null;
+                      const ativa = expiresEm && expiresEm > agora;
+                      const diffMin = Math.round((agora - loginEm) / 60000);
+                      const tempo = diffMin < 60 ? diffMin + " min atrás" : diffMin < 1440 ? Math.round(diffMin/60) + "h atrás" : Math.round(diffMin/1440) + "d atrás";
+                      return (
+                        <div key={i} style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "10px", alignItems: "center", padding: "8px 10px", borderRadius: "8px", background: ativa ? "rgba(73,230,139,0.06)" : "rgba(255,255,255,0.03)", border: `1px solid ${ativa ? "rgba(73,230,139,0.2)" : "rgba(113,159,219,0.1)"}`, marginBottom: "6px" }}>
+                          <div style={{ fontSize: "1.2rem" }}>{s.dispositivo?.includes("Android") || s.dispositivo?.includes("iOS") ? "📱" : "💻"}</div>
+                          <div>
+                            <div style={{ fontSize: "0.8rem", color: "#eaf3ff", fontWeight: 700 }}>{s.dispositivo || "Dispositivo desconhecido"}</div>
+                            <div style={{ fontSize: "0.72rem", color: "#9fb4c7", marginTop: "2px" }}>
+                              🌐 IP: <strong style={{ color: "#7dd3fc" }}>{s.ip || "—"}</strong>
+                              &nbsp;·&nbsp;{loginEm.toLocaleString("pt-BR")}
+                            </div>
+                          </div>
+                          <div>
+                            {ativa
+                              ? <span style={{ background: "rgba(73,230,139,0.15)", color: "#49e68b", padding: "2px 10px", borderRadius: "999px", fontSize: "0.68rem", fontWeight: 800 }}>🟢 ATIVA</span>
+                              : <span style={{ color: "#6b8aad", fontSize: "0.7rem" }}>{tempo}</span>
+                            }
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {sd.ultimoIp && (
+                      <p style={{ fontSize: "0.72rem", color: "#6b8aad", margin: "8px 0 0" }}>
+                        Último acesso: <strong style={{ color: "#9fb4c7" }}>{sd.ultimoDispositivo}</strong> — IP: <strong style={{ color: "#7dd3fc" }}>{sd.ultimoIp}</strong>
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
+
               {/* Painel de permissões expandido */}
               {isExpanded && (
                 <div style={{ marginTop: "12px", padding: "14px", borderRadius: "10px", background: "rgba(0,0,0,0.2)", border: "1px solid rgba(184,156,255,0.15)" }}>
