@@ -342,10 +342,16 @@ function App() {
               <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
             )}
             {atendenteLogado ? (
+              <>
+              <button type="button" onClick={() => setActiveModal("painel_atendente")}
+                style={{ background: "rgba(184,156,255,0.12)", borderColor: "rgba(184,156,255,0.4)", color: "#b89cff" }}>
+                📋 Painel
+              </button>
               <button type="button" onClick={logoutAtendente}
                 style={{ background: "rgba(73,230,139,0.12)", borderColor: "rgba(73,230,139,0.4)", color: "#49e68b" }}>
                 👨‍💼 {atendenteLogado.codigo}
               </button>
+              </>
             ) : (
               <button type="button" onClick={() => setShowLoginAtendente(true)}
                 style={{ background: "rgba(184,156,255,0.1)", borderColor: "rgba(184,156,255,0.35)", color: "#b89cff" }}>
@@ -747,6 +753,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "galeria" && <GaleriaContent cliente={cliente} ocultarAbas />}
         {type === "galeriaPublica" && <GaleriaContent cliente={cliente} initialAba="ver" ocultarAbas />}
         {type === "adm" && !atendenteLogado && <AdminContent />}
+        {type === "painel_atendente" && atendenteLogado && <PainelAtendente atendente={atendenteLogado} onClose={() => setActiveModal(null)} />}
         {type === "adm" && atendenteLogado && (
           <div style={{ padding: "40px", textAlign: "center" }}>
             <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🔒</div>
@@ -3214,6 +3221,139 @@ function ServiceLine({ title, onClick }) {
     <button type="button" className="service-line" onClick={onClick}>
       <span>✓</span><strong>{title}</strong>
     </button>
+  );
+}
+
+
+function PainelAtendente({ atendente, onClose }) {
+  const [aba, setAba] = useState("chamados");
+  const [dados, setDados] = useState({ chamados: [], mensagens: [], clientes: [] });
+  const [carregando, setCarregando] = useState(true);
+  const token = localStorage.getItem("quanton3d_atendente_token");
+
+  useEffect(() => {
+    async function carregar() {
+      try {
+        setCarregando(true);
+        const headers = { Authorization: "Bearer " + token };
+        const [ch, msg, cl] = await Promise.all([
+          api.get("/bot-tickets", { headers }),
+          api.get("/contact-messages", { headers }),
+          api.get("/clientes", { headers }),
+        ]);
+        setDados({
+          chamados: ch.data?.tickets || ch.data?.data || [],
+          mensagens: msg.data?.contactMessages || [],
+          clientes: cl.data?.clientes || [],
+        });
+      } catch (err) { console.error(err); }
+      finally { setCarregando(false); }
+    }
+    carregar();
+  }, []);
+
+  const ABAS = [
+    { id: "chamados", label: "🔧 Chamados", count: dados.chamados.length },
+    { id: "mensagens", label: "✉️ Mensagens", count: dados.mensagens.length },
+    { id: "clientes", label: "👥 Clientes", count: dados.clientes.length },
+  ];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", color: "#eaf3ff" }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", paddingBottom: "16px", borderBottom: "1px solid rgba(79,209,255,0.2)" }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 900, background: "linear-gradient(135deg,#4fd1ff,#b89cff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            📋 Painel do Atendente
+          </h2>
+          <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#9fb4c7" }}>
+            👨‍💼 {atendente.codigo} — {atendente.nome}
+          </p>
+        </div>
+        <button type="button" onClick={onClose}
+          style={{ padding: "8px 16px", borderRadius: "999px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff8fab", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>
+          Fechar
+        </button>
+      </div>
+
+      {/* Abas */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+        {ABAS.map(a => (
+          <button key={a.id} type="button" onClick={() => setAba(a.id)}
+            style={{ padding: "10px 18px", borderRadius: "999px", border: aba === a.id ? "2px solid #4fd1ff" : "1px solid rgba(113,159,219,0.3)", background: aba === a.id ? "rgba(79,209,255,0.15)" : "rgba(255,255,255,0.04)", color: aba === a.id ? "#4fd1ff" : "#9fb4c7", cursor: "pointer", fontWeight: 800, fontFamily: "inherit", fontSize: "0.82rem" }}>
+            {a.label} ({a.count})
+          </button>
+        ))}
+      </div>
+
+      {/* Conteúdo */}
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        {carregando && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "30px" }}>Carregando...</div>}
+
+        {/* CHAMADOS */}
+        {!carregando && aba === "chamados" && (
+          <div>
+            {dados.chamados.length === 0 && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "30px" }}>Nenhum chamado.</div>}
+            {dados.chamados.map(c => (
+              <div key={c._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px", color: "#eaf3ff" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <strong>{c.nome || "Cliente"}</strong>
+                  <span style={{ fontSize: "0.72rem", color: "#9fb4c7" }}>{c.telefone}</span>
+                </div>
+                <div style={{ fontSize: "0.8rem", color: "#b8cfe8", marginBottom: "8px" }}>
+                  🔧 {c.problema || c.resina || "Sem descrição"}
+                </div>
+                <a href={"https://wa.me/5531983340053?text=" + encodeURIComponent("Olá " + (c.nome||"") + ", vi seu chamado sobre " + (c.problema||c.resina||"") + ". Posso ajudar!")}
+                  target="_blank" rel="noreferrer"
+                  style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(37,211,102,0.4)", background: "rgba(37,211,102,0.1)", color: "#25d366", fontSize: "0.75rem", fontWeight: 800, textDecoration: "none" }}>
+                  💬 WhatsApp
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* MENSAGENS */}
+        {!carregando && aba === "mensagens" && (
+          <div>
+            {dados.mensagens.length === 0 && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "30px" }}>Nenhuma mensagem.</div>}
+            {dados.mensagens.map(m => (
+              <div key={m._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px", color: "#eaf3ff" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <strong>{m.nome}</strong>
+                  <span style={{ fontSize: "0.72rem", padding: "2px 8px", borderRadius: "999px", background: m.status === "resolvido" ? "rgba(73,230,139,0.15)" : "rgba(255,209,102,0.15)", color: m.status === "resolvido" ? "#49e68b" : "#ffd166" }}>{m.status || "pendente"}</span>
+                </div>
+                <div style={{ fontSize: "0.78rem", color: "#9fb4c7", marginBottom: "6px" }}>📱 {m.telefone} · ✉️ {m.email}</div>
+                <div style={{ fontSize: "0.82rem", color: "#b8cfe8", marginBottom: "8px" }}>{m.assunto}: {m.mensagem}</div>
+                <a href={"https://wa.me/5531983340053?text=" + encodeURIComponent("Olá " + (m.nome||"") + ", recebi sua mensagem sobre " + (m.assunto||"") + ". Posso ajudar!")}
+                  target="_blank" rel="noreferrer"
+                  style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(37,211,102,0.4)", background: "rgba(37,211,102,0.1)", color: "#25d366", fontSize: "0.75rem", fontWeight: 800, textDecoration: "none" }}>
+                  💬 WhatsApp
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* CLIENTES */}
+        {!carregando && aba === "clientes" && (
+          <div>
+            {dados.clientes.length === 0 && <div style={{ textAlign: "center", color: "#9pb4c7", padding: "30px" }}>Nenhum cliente.</div>}
+            {dados.clientes.filter(c => c && c._id).map(c => (
+              <div key={c._id} style={{ border: "1px solid rgba(113,159,219,0.18)", borderRadius: "12px", padding: "10px 14px", background: "rgba(255,255,255,0.04)", marginBottom: "8px", color: "#eaf3ff" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "8px", alignItems: "center" }}>
+                  <strong style={{ fontSize: "0.88rem" }}>{c.nome}</strong>
+                  <small style={{ color: "#6b8aad", fontSize: "0.7rem" }}>{c.origem}</small>
+                </div>
+                <div style={{ fontSize: "0.78rem", color: "#9fb4c7", marginTop: "4px" }}>
+                  📱 {c.telefone} · ✉️ {c.email}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
