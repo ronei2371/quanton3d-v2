@@ -2206,3 +2206,18 @@ section:not(.hero-home) .section-label {
   color: rgba(180,200,230,0.5) !important;
   -webkit-text-fill-color: rgba(180,200,230,0.5) !important;
 }
+
+/* ═══ Fix DEFINITIVO inputs do painel ADM ═══
+   O .site-modal input força branco, mas o ADM precisa de fundo escuro */
+.site-modal .admin-gallery-panel input[type="text"],
+.site-modal .admin-gallery-panel input[type="email"],
+.site-modal .admin-gallery-panel input[type="password"] {
+  background: rgba(4, 10, 24, 0.92) !important;
+  color: #eaf3ff !important;
+  -webkit-text-fill-color: #eaf3ff !important;
+  border: 1px solid rgba(79, 209, 255, 0.4) !important;
+}
+.site-modal .admin-gallery-panel input::placeholder {
+  color: rgba(159, 180, 199, 0.6) !important;
+  -webkit-text-fill-color: rgba(159, 180, 199, 0.6) !important;
+}
