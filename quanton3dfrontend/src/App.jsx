@@ -919,7 +919,7 @@ function ContatoContent() {
 
 function SobreContent({ abrirGuia, abrirParceiroModal }) {
   const [resinaSel, setResinaSel] = useState(0);
-  const driveImg = (id, sz = 800) => `https://drive.google.com/thumbnail?id=${id}&sz=w${sz}`;
+  const driveImg = (id, sz = 800) => id ? `https://drive.google.com/thumbnail?id=${id}&sz=w${sz}` : null;
   const resinas = [
     { id: "1EWI86JbINRFnfK1xZT_8cH0COX0-g7l2", nome: "PYROBLAST", cat: "Uso Geral", desc: "Básica e econômica, indicada para iniciantes e avançados. Alta precisão, dureza Shore D 73, impressão rápida com fluidez. Ideal para peças decorativas, artísticas e protótipos funcionais.", specs: "Odor médio | Viscosidade baixa | Densidade 1,296 g/cm³" },
     { id: "1TBXQTL5KUEbYlAC9jzCiLvyjKSXpGxSk", nome: "IRON", cat: "Engenharia", desc: "A primeira resina do Brasil com altíssima resistência mecânica e baixo custo. Alongamento de 50%, excelente memória elástica e resistência a impactos reais em peças técnicas acima de 2mm.", specs: "Odor baixo | Shore D 55 | Densidade 1,09 g/cm³" },
@@ -933,6 +933,8 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
     { id: "1PEF-C5mrOasfjXk0U5mqVX2Sp2j66Bs4", nome: "70/30", cat: "Engenharia", desc: "Fórmula balanceada que combina 70% de rigidez com 30% de flexibilidade. Alta resistência com elevado nível de detalhes, perfeita para peças que exigem equilíbrio mecânico.", specs: "Alta resistência | Detalhamento fino" },
     { id: "1DA_QGLGvZsDXKksBB2XSXPmj75pSKXDI", nome: "LOWSMELL", cat: "Uso Geral", desc: "Resina rígida com odor praticamente imperceptível. Cura rápida e excelente precisão, ideal para ambientes fechados e uso profissional contínuo sem desconforto.", specs: "Baixíssimo odor | Rígida" },
     { id: "1GSCMNZ0ArGM3oyHDaGNKYhykyf-djNFN", nome: "ALCHEMIST", cat: "Action Figures", desc: "Efeitos especiais em cores translúcidas e vibrantes, exclusivas da Quanton3D. Rápida polimerização, durabilidade e acabamento refinado. Perfeita para colecionáveis e itens de decoração.", specs: "Translúcida | Cores vibrantes" },
+    { id: null, nome: "VULCAN CAST", cat: "Fundição", desc: "Desenvolvida para cera perdida e fundição de precisão. Alta taxa de cinzas mínima após queima, permitindo fundição em ouro, prata e outros metais. Ideal para joias e peças de alta fidelidade.", specs: "Fundição de precisão | Queima limpa" },
+    { id: null, nome: "VELVET SKIN", cat: "Uso Geral", desc: "Superfície com acabamento aveludado único. Textura especial que dispensa acabamento manual, ideal para produtos finais e protótipos com aparência premium.", specs: "Acabamento aveludado | Peças finais" },
   ];
   const r = resinas[resinaSel];
 
@@ -1027,7 +1029,14 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
         </div>
         <div className="sobre-resina-detalhe">
           <div className="sobre-resina-img-wrap">
-            <img src={driveImg(r.id, 800)} alt={r.nome} loading="lazy" />
+            {r.id
+              ? <img src={driveImg(r.id, 800)} alt={r.nome} loading="lazy" />
+              : <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "300px", borderRadius: "12px", border: "1px dashed rgba(79,209,255,0.2)", background: "rgba(0,0,0,0.2)", color: "#4fd1ff", gap: "12px" }}>
+                  <span style={{ fontSize: "3rem" }}>🧪</span>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#9fb4c7" }}>Foto em breve</span>
+                  <span style={{ fontSize: "0.72rem", color: "#6b8aad" }}>Envie a foto no Drive</span>
+                </div>
+            }
           </div>
           <div className="sobre-resina-info">
             <div className="sobre-resina-cat">{r.cat}</div>
