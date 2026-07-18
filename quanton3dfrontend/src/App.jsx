@@ -322,7 +322,7 @@ function App() {
       )}
 
       {activeModal && (
-        <SiteModal type={activeModal} cliente={cliente} onClose={() => setActiveModal(null)} abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} setActiveModal={setActiveModal} />
+        <SiteModal type={activeModal} cliente={cliente} onClose={() => setActiveModal(null)} abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} setActiveModal={setActiveModal} atendenteLogado={atendenteLogado} />
       )}
       <PartnerRequestModal aberto={mostrarParceiroModal} aoFechar={() => setMostrarParceiroModal(false)} cliente={cliente} />
 
@@ -724,7 +724,7 @@ function GuideModal({ guide, onClose }) {
   );
 }
 
-function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setActiveModal }) {
+function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setActiveModal, atendenteLogado }) {
   const nomeFispq = type && type.startsWith("fispq_") ? "FISPQ — " + type.replace("fispq_","").replace(".pdf","") : null;
   const titles = {
     contato: "Fale Conosco", sobre: "Sobre a Quanton3D", formulacao: "Formulação Personalizada",
