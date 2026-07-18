@@ -5,327 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guia Completo de Calibração de Resina | Quanton3D</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 60px 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .header p {
-            font-size: 1.3em;
-            opacity: 0.95;
-        }
-
-        .logo {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .content {
-            padding: 60px 40px;
-        }
-
-        .intro {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .intro h2 {
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-
-        .intro p {
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-
-        .warning-box {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 20px;
-            margin: 30px 0;
-            border-radius: 10px;
-        }
-
-        .warning-box h3 {
-            color: #856404;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .warning-box p {
-            color: #856404;
-            font-size: 1.05em;
-        }
-
-        .step {
-            margin: 50px 0;
-            padding: 40px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .step:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .step-number {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 60px;
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .step h3 {
-            font-size: 1.8em;
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-
-        .step-image {
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            border-radius: 15px;
-            margin: 25px 0;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .step-description {
-            font-size: 1.15em;
-            line-height: 1.9;
-            color: #555;
-            margin: 20px 0;
-        }
-
-        .step-list {
-            list-style: none;
-            margin: 20px 0;
-        }
-
-        .step-list li {
-            padding: 15px;
-            margin: 10px 0;
-            background: white;
-            border-left: 4px solid #667eea;
-            border-radius: 8px;
-            font-size: 1.1em;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .step-list li strong {
-            color: #667eea;
-        }
-
-        .tip-box {
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            color: #155724;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 25px 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .tip-box h4 {
-            font-size: 1.4em;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .tip-box p {
-            font-size: 1.1em;
-            line-height: 1.7;
-        }
-
-        .error-box {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: #721c24;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 25px 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .error-box h4 {
-            font-size: 1.4em;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .error-box p {
-            font-size: 1.1em;
-            line-height: 1.7;
-        }
-
-        .download-box {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 40px 0;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .download-box h3 {
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-
-        .download-box p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .download-button {
-            display: inline-block;
-            background: white;
-            color: #4facfe;
-            padding: 15px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.2em;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .download-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 30px 0;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .comparison-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-size: 1.1em;
-        }
-
-        .comparison-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 1.05em;
-        }
-
-        .comparison-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        .footer {
-            background: #2c3e50;
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .footer h3 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-        }
-
-        .footer p {
-            font-size: 1.1em;
-            margin: 10px 0;
-        }
-
-        .footer a {
-            color: #84fab0;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-
-            .content {
-                padding: 30px 20px;
-            }
-
-            .step {
-                padding: 25px;
-            }
-
-            .step h3 {
-                font-size: 1.5em;
-            }
-        }
-    </style>
+    :root {
+        --bg:#060e1e; --surface:#0a1425; --card:#0f1e35;
+        --border:rgba(79,209,255,0.15); --cyan:#4fd1ff; --purple:#b89cff;
+        --green:#49e68b; --yellow:#ffd166; --red:#ff6b8a;
+        --text:#c5d8e8; --title:#eaf7ff;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding:20px; }
+    .container { max-width:960px; margin:0 auto; background:var(--surface); border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5); }
+    .header { background:linear-gradient(135deg,rgba(21,101,192,0.4),rgba(123,31,162,0.3)); border-bottom:1px solid var(--border); padding:40px 36px 32px; text-align:center; position:relative; }
+    .header::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(79,209,255,0.07) 0%,transparent 70%); pointer-events:none; }
+    .logo { display:inline-block; padding:4px 16px; border-radius:999px; background:rgba(79,209,255,0.1); border:1px solid rgba(79,209,255,0.3); color:var(--cyan); font-size:0.75rem; font-weight:700; letter-spacing:0.1em; margin-bottom:14px; }
+    .header h1 { font-size:clamp(1.4rem,3.5vw,2rem); font-weight:900; background:linear-gradient(135deg,#4fd1ff,#b89cff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
+    .header p { font-size:0.9rem; color:#9fb4c7; }
+    .content { padding:32px 36px 40px; }
+    .intro { background:rgba(79,209,255,0.05); border:1px solid var(--border); border-radius:12px; padding:22px 26px; margin-bottom:24px; }
+    .intro h2 { font-size:1rem; color:var(--cyan); font-weight:800; margin-bottom:10px; }
+    .intro p { font-size:0.88rem; }
+    .step { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:26px; margin:18px 0; transition:border-color 0.2s; }
+    .step:hover { border-color:rgba(79,209,255,0.3); }
+    .step-number { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#1565c0,#7c3aed); color:#fff; font-size:1.1rem; font-weight:900; margin-bottom:14px; box-shadow:0 4px 14px rgba(79,209,255,0.2); }
+    .step h3 { font-size:1rem; font-weight:800; color:var(--title); margin-bottom:14px; }
+    .step-image { width:100%; max-width:720px; height:auto; border-radius:10px; margin:16px auto; display:block; border:1px solid var(--border); box-shadow:0 8px 28px rgba(0,0,0,0.4); object-fit:cover; }
+    .step-description { font-size:0.88rem; margin-bottom:12px; }
+    .step-list { list-style:none; margin:12px 0; display:grid; gap:7px; }
+    .step-list li { background:rgba(255,255,255,0.02); border:1px solid rgba(79,209,255,0.07); border-left:3px solid var(--cyan); border-radius:7px; padding:10px 14px; font-size:0.865rem; }
+    .step-list li strong { color:var(--cyan); }
+    .tip-box { background:rgba(73,230,139,0.05); border:1px solid rgba(73,230,139,0.18); border-radius:10px; padding:14px 18px; margin:14px 0; }
+    .tip-box h3,.tip-box h4 { color:var(--green); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
+    .tip-box p { font-size:0.84rem; color:#9fcfad; line-height:1.65; }
+    .warning-box { background:rgba(255,209,102,0.05); border:1px solid rgba(255,209,102,0.2); border-left:3px solid var(--yellow); border-radius:10px; padding:14px 18px; margin:14px 0; }
+    .warning-box h3,.warning-box h4 { color:var(--yellow); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
+    .warning-box p { font-size:0.84rem; color:#c9a84c; line-height:1.65; }
+    .error-box { background:rgba(255,107,138,0.05); border:1px solid rgba(255,107,138,0.18); border-left:3px solid var(--red); border-radius:10px; padding:14px 18px; margin:14px 0; }
+    .error-box h3,.error-box h4 { color:var(--red); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
+    .error-box p { font-size:0.84rem; color:#c49aab; line-height:1.65; }
+    .info-box { background:rgba(184,156,255,0.05); border:1px solid rgba(184,156,255,0.2); border-left:3px solid var(--purple); border-radius:10px; padding:14px 18px; margin:14px 0; }
+    .info-box h3,.info-box h4 { color:var(--purple); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
+    .info-box p { font-size:0.84rem; color:#b8a8d4; line-height:1.65; }
+    .download-btn { display:inline-flex; align-items:center; gap:10px; padding:14px 28px; border-radius:10px; background:linear-gradient(135deg,rgba(21,101,192,0.4),rgba(79,209,255,0.2)); border:1px solid rgba(79,209,255,0.35); color:var(--title); font-size:0.9rem; font-weight:800; text-decoration:none; margin:14px 0; transition:all 0.2s; }
+    .download-btn:hover { background:rgba(79,209,255,0.2); border-color:var(--cyan); }
+    .encaixe-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:14px 0; }
+    .encaixe-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; }
+    .encaixe-card h4 { font-size:0.82rem; font-weight:800; margin-bottom:6px; }
+    .encaixe-card p { font-size:0.8rem; color:var(--text); }
+    .encaixe-card.ok h4 { color:var(--green); }
+    .encaixe-card.sub h4 { color:var(--yellow); }
+    .encaixe-card.sup h4 { color:var(--red); }
+    .footer { background:rgba(0,0,0,0.25); border-top:1px solid var(--border); padding:28px 36px; text-align:center; }
+    .footer h3 { color:var(--cyan); font-size:1rem; margin-bottom:12px; font-weight:800; }
+    .footer p { font-size:0.84rem; color:#9fb4c7; margin:6px 0; }
+    .footer a { color:var(--cyan); text-decoration:none; font-weight:700; }
+    .footer a:hover { text-decoration:underline; }
+    p { font-size:0.88rem; margin:8px 0; }
+    ul:not(.step-list) { padding-left:20px; margin:8px 0; }
+    ul:not(.step-list) li { font-size:0.88rem; margin:4px 0; }
+    @media(max-width:640px) { body{padding:10px;} .content{padding:20px 16px 32px;} .header{padding:28px 16px 22px;} .step{padding:18px 14px;} .encaixe-grid{grid-template-columns:1fr;} }
+</style>
 </head>
 <body>
     <div class="container">
@@ -700,7 +437,7 @@
             <p>🌐 Site: <a href="https://quanton3d.com.br">quanton3d.com.br</a></p>
             <p>📥 Baixe o gabarito: <a href="https://quanton3d.com.br/calibrador/">quanton3d.com.br/calibrador</a></p>
             <br>
-            <p style="font-size: 0.9em; opacity: 0.8;">© 2024 Quanton3D - Todos os direitos reservados</p>
+            <p style="font-size: 0.9em; opacity: 0.8;">© 2025 Quanton3D - Todos os direitos reservados</p>
             <p style="font-size: 0.85em; opacity: 0.7; margin-top: 10px;">Guia de calibração usando o Gabarito Quanton3D oficial</p>
         </div>
     </div>
