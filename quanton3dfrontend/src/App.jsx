@@ -532,31 +532,102 @@ function App() {
         </button>
 
         {secoesAbertas.ferramentas && (
-          <div className="selector-grid" style={{ marginTop: "12px" }}>
-            <div className="field clickable-card" onClick={() => setActiveModal("calc_exp")}>
-              <span>📐 Calculadora de Exposição</span>
-              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Ajuste fino baseado na temperatura.</p>
+          <div style={{ marginTop: "14px" }}>
+
+            {/* ── CALCULADORAS DE CUSTO — destaque principal ── */}
+            <div style={{ marginBottom: "14px" }}>
+              <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "#ffd166", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ width: "20px", height: "1px", background: "#ffd166", display: "inline-block" }} />
+                💰 Calculadoras de Custo
+                <span style={{ flex: 1, height: "1px", background: "rgba(255,209,102,0.2)", display: "inline-block" }} />
+              </div>
+
+              {/* Card grande com as 2 calculadoras e explicação */}
+              <div style={{ background: "rgba(255,209,102,0.05)", border: "1px solid rgba(255,209,102,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "10px" }}>
+                <p style={{ fontSize: "0.78rem", color: "#c9a84c", margin: "0 0 12px", lineHeight: 1.5 }}>
+                  Temos <strong style={{ color: "#ffd166" }}>2 calculadoras de custo</strong> — escolha conforme sua necessidade:
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  {/* Simples */}
+                  <div onClick={() => setActiveModal("calc_vol")} style={{ cursor: "pointer", background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.25)", borderRadius: "12px", padding: "14px", transition: "all 0.2s" }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,209,255,0.5)"}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(79,209,255,0.25)"}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <span style={{ fontSize: "1.3rem" }}>⚡</span>
+                      <div>
+                        <div style={{ fontWeight: 800, color: "#4fd1ff", fontSize: "0.88rem" }}>Modo Simples</div>
+                        <div style={{ fontSize: "0.68rem", color: "#9fb4c7" }}>Resultado em segundos</div>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: "0.78rem", color: "#9fb4c7", margin: "0 0 10px", lineHeight: 1.5 }}>
+                      Informe resina, volume e tempo — veja o custo na hora. Sem cadastro, sem complicação.
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                      {["Resina", "Energia", "Falha", "Custo/peça"].map(t => (
+                        <span key={t} style={{ fontSize: "0.65rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(79,209,255,0.1)", border: "1px solid rgba(79,209,255,0.2)", color: "#7dd3fc" }}>{t}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Avançado */}
+                  <div onClick={() => setActiveModal("calc_custos")} style={{ cursor: "pointer", background: "rgba(184,156,255,0.06)", border: "1px solid rgba(184,156,255,0.25)", borderRadius: "12px", padding: "14px", transition: "all 0.2s" }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(184,156,255,0.5)"}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(184,156,255,0.25)"}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <span style={{ fontSize: "1.3rem" }}>🔬</span>
+                      <div>
+                        <div style={{ fontWeight: 800, color: "#b89cff", fontSize: "0.88rem" }}>Modo Avançado</div>
+                        <div style={{ fontSize: "0.68rem", color: "#9fb4c7" }}>Orçamento profissional</div>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: "0.78rem", color: "#9fb4c7", margin: "0 0 10px", lineHeight: 1.5 }}>
+                      Orçamento completo com cliente, mão de obra, frete, impostos, PDF e histórico.
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                      {["Cliente", "Mão de obra", "Frete", "Impostos", "PDF", "Histórico"].map(t => (
+                        <span key={t} style={{ fontSize: "0.65rem", padding: "2px 8px", borderRadius: "999px", background: "rgba(184,156,255,0.1)", border: "1px solid rgba(184,156,255,0.2)", color: "#c9b0ff" }}>{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Toggle simples/avançado em destaque */}
+                <div style={{ marginTop: "12px", padding: "10px 14px", borderRadius: "10px", background: "rgba(73,230,139,0.05)", border: "1px solid rgba(73,230,139,0.18)", display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ fontSize: "1rem" }}>💡</span>
+                  <p style={{ fontSize: "0.78rem", color: "#9fcfad", margin: 0, lineHeight: 1.5 }}>
+                    Na <strong style={{ color: "#49e68b" }}>Calculadora Avançada</strong>, use o botão <strong style={{ color: "#4fd1ff" }}>⚡ Modo Simples</strong> no topo para esconder os campos que não precisa — ou <strong style={{ color: "#b89cff" }}>🔬 Modo Avançado</strong> para ver tudo.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="field clickable-card" onClick={() => setActiveModal("calc_vol")}>
-              <span>📦 Calculadora de Volume</span>
-              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Estime o custo real da sua peça.</p>
+
+            {/* ── OUTRAS FERRAMENTAS ── */}
+            <div>
+              <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "#4fd1ff", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ width: "20px", height: "1px", background: "#4fd1ff", display: "inline-block" }} />
+                🛠️ Outras Ferramentas
+                <span style={{ flex: 1, height: "1px", background: "rgba(79,209,255,0.2)", display: "inline-block" }} />
+              </div>
+              <div className="selector-grid">
+                <div className="field clickable-card" onClick={() => setActiveModal("calc_exp")}>
+                  <span>📐 Calculadora de Exposição</span>
+                  <p style={{ fontSize: "0.82rem", color: "#9fb4c7" }}>Parâmetros UV reais por resina e impressora. Ajuste fino por temperatura e altura de camada.</p>
+                </div>
+                <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
+                  <span>📏 Calculadora de Tolerância</span>
+                  <p style={{ fontSize: "0.82rem", color: "#9fb4c7" }}>Compensação X/Y para encaixes perfeitos entre peças impressas.</p>
+                </div>
+                <div className="field clickable-card" onClick={() => setActiveModal("calc_tempo")}>
+                  <span>⏱️ Tempo de Impressão</span>
+                  <p style={{ fontSize: "0.82rem", color: "#9fb4c7" }}>Calcule e compare tempos por camadas, delays e rest time.</p>
+                </div>
+                <div className="field clickable-card" onClick={() => setActiveModal("calc_compensacao")}>
+                  <span>🔧 Compensação Chitubox/Lychee</span>
+                  <p style={{ fontSize: "0.82rem", color: "#9fb4c7" }}>Calibre a estimativa do fatiador com o tempo real da impressora.</p>
+                </div>
+              </div>
             </div>
-            <div className="field clickable-card" onClick={() => setActiveModal("calc_tolerancia")}>
-              <span>📏 Calculadora de Tolerância</span>
-              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Compensação X/Y para encaixes perfeitos.</p>
-            </div>
-            <div className="field clickable-card" onClick={() => setActiveModal("calc_custos")}>
-              <span>💰 Calculadora de Custos</span>
-              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Precifique seu job com margem real.</p>
-            </div>
-            <div className="field clickable-card" onClick={() => setActiveModal("calc_tempo")}>
-              <span>⏱️ Tempo de Impressão</span>
-              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Calcule e compare tempos por camadas e delays.</p>
-            </div>
-            <div className="field clickable-card" onClick={() => setActiveModal("calc_compensacao")}>
-              <span>🔧 Compensação Chitubox</span>
-              <p style={{ fontSize: "0.85rem", color: "#9fb4c7" }}>Calibre a estimativa do fatiador com o tempo real.</p>
-            </div>
+
           </div>
         )}
       </section>
