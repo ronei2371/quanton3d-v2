@@ -358,6 +358,10 @@ function App() {
                 👨‍💼 Atendente
               </button>
             )}
+            <button type="button" onClick={() => setActiveModal("sobre")}
+                style={{ background: "rgba(79,209,255,0.1)", borderColor: "rgba(79,209,255,0.3)", color: "#7dd3fc" }}>
+                ℹ️ Quem Somos
+              </button>
             <button type="button" onClick={abrirCadastro}>
               {cliente ? `👤 ${cliente.nome.split(" ")[0]}` : "Cliente"}
             </button>
@@ -914,124 +918,136 @@ function ContatoContent() {
 }
 
 function SobreContent({ abrirGuia, abrirParceiroModal }) {
-  const [bannerIdx, setBannerIdx] = useState(0);
-  const banners = [
-    { id: "1EWI86JbINRFnfK1xZT_8cH0COX0-g7l2", nome: "PYROBLAST", desc: "Básica e econômica para uso geral" },
-    { id: "1TBXQTL5KUEbYlAC9jzCiLvyjKSXpGxSk", nome: "IRON", desc: "Ultra resistência mecânica" },
-    { id: "1yQdfGOoKAohRUcii2jYCrca7B2p-1HuD", nome: "POSEIDON", desc: "Lavável em água, baixo odor" },
-    { id: "1z5bF_xbFE65HLygNpGJDd-UtF-nWy8Bh", nome: "FLEXFORM", desc: "Ultra flexibilidade para protótipos" },
-    { id: "1KdOOVOQJZDDzcrCBMZrX9x6YViKsAE8D", nome: "SPIN", desc: "Grandes formatos com precisão" },
-    { id: "1DjhUGrp2zdI7QCAumNnvCDhWAvoBSR0d", nome: "ATHOM DENTAL", desc: "Fidelidade para odontologia digital" },
-    { id: "1Q46F4CJ3ARAjFKcoPQDgYUGf4_lu5_7S", nome: "ATHOM ALINHADORES", desc: "Precisão térmica para alinhadores" },
-    { id: "1T8JReoS9HmNb0xgzdKb3qCh1z8T2_a_s", nome: "ATHOM WASHABLE", desc: "Lavável com baixo odor" },
-    { id: "1MYbXZtKp_Q_3DO7LvhK4A487HABuqzOP", nome: "SPARK", desc: "Rígida translúcida" },
-    { id: "1PEF-C5mrOasfjXk0U5mqVX2Sp2j66Bs4", nome: "70/30", desc: "Alta resistência com detalhes" },
-    { id: "1DA_QGLGvZsDXKksBB2XSXPmj75pSKXDI", nome: "LOWSMELL", desc: "Rígida de baixo odor" },
-    { id: "1GSCMNZ0ArGM3oyHDaGNKYhykyf-djNFN", nome: "ALCHEMIST", desc: "Translúcida, cores vibrantes" },
-  ];
+  const [resinaSel, setResinaSel] = useState(0);
   const driveImg = (id, sz = 800) => `https://drive.google.com/thumbnail?id=${id}&sz=w${sz}`;
-
-  useEffect(() => {
-    const timer = setInterval(() => setBannerIdx(i => (i + 1) % banners.length), 4000);
-    return () => clearInterval(timer);
-  }, []);
+  const resinas = [
+    { id: "1EWI86JbINRFnfK1xZT_8cH0COX0-g7l2", nome: "PYROBLAST", cat: "Uso Geral", desc: "Básica e econômica, indicada para iniciantes e avançados. Alta precisão, dureza Shore D 73, impressão rápida com fluidez. Ideal para peças decorativas, artísticas e protótipos funcionais.", specs: "Odor médio | Viscosidade baixa | Densidade 1,296 g/cm³" },
+    { id: "1TBXQTL5KUEbYlAC9jzCiLvyjKSXpGxSk", nome: "IRON", cat: "Engenharia", desc: "A primeira resina do Brasil com altíssima resistência mecânica e baixo custo. Alongamento de 50%, excelente memória elástica e resistência a impactos reais em peças técnicas acima de 2mm.", specs: "Odor baixo | Shore D 55 | Densidade 1,09 g/cm³" },
+    { id: "1yQdfGOoKAohRUcii2jYCrca7B2p-1HuD", nome: "POSEIDON", cat: "Uso Geral", desc: "Rígida com leve flexibilidade, dispensa o uso de álcool — lavável em água. Detalhamento impecável, baixo odor e ampla compatibilidade. Ideal para protótipos, miniaturas e peças funcionais.", specs: "Odor baixo | Shore D 64 | Densidade 1,10 g/cm³" },
+    { id: "1z5bF_xbFE65HLygNpGJDd-UtF-nWy8Bh", nome: "FLEXFORM", cat: "Engenharia", desc: "Desenvolvida para protótipos e peças que exigem alta flexibilidade e resistência. Adapta-se a diversas formas sem comprometer a integridade estrutural. Excelente precisão dimensional.", specs: "Ultra flexibilidade | Peças industriais" },
+    { id: "1KdOOVOQJZDDzcrCBMZrX9x6YViKsAE8D", nome: "SPIN", cat: "Action Figures", desc: "Maior rigidez e velocidade de impressão para peças de grande formato com alto nível de detalhes. Rigidez com leve flexibilidade — ideal para protótipos funcionais e encaixes que exigem firmeza.", specs: "Odor médio | Shore D 73 | Densidade 1,39 g/cm³" },
+    { id: "1DjhUGrp2zdI7QCAumNnvCDhWAvoBSR0d", nome: "ATHOM DENTAL", cat: "Odontologia", desc: "Alta precisão para modelos de estudo, troquéis e protótipos dentários. Desenvolvida para fluxo digital odontológico com qualidade excepcional. Dica: para modelos com encaixe, prefira a Spin.", specs: "Alta precisão | Uso externo" },
+    { id: "1Q46F4CJ3ARAjFKcoPQDgYUGf4_lu5_7S", nome: "ATHOM ALINHADORES", cat: "Odontologia", desc: "Projetada para modelos que exigem resistência à temperatura em termoformação. Baixíssima variação dimensional para alinhadores, contenções, placas de bruxismo e protetores bucais.", specs: "Resistência térmica | Baixa contração" },
+    { id: "1T8JReoS9HmNb0xgzdKb3qCh1z8T2_a_s", nome: "ATHOM WASHABLE", cat: "Odontologia", desc: "Lavável em água, elimina o álcool do processo. Alta rigidez com leve flexibilidade, detalhamento superficial excepcional. Ideal para modelos odontológicos de alta precisão.", specs: "Lavável em água | Baixo odor" },
+    { id: "1MYbXZtKp_Q_3DO7LvhK4A487HABuqzOP", nome: "SPARK", cat: "Action Figures", desc: "Acabamento cristalino e visual limpo com alta rigidez. Altamente pigmentada, permite personalização com cores vibrantes. Cura rápida que reduz tempo de produção.", specs: "Translúcida rígida | Cura rápida" },
+    { id: "1PEF-C5mrOasfjXk0U5mqVX2Sp2j66Bs4", nome: "70/30", cat: "Engenharia", desc: "Fórmula balanceada que combina 70% de rigidez com 30% de flexibilidade. Alta resistência com elevado nível de detalhes, perfeita para peças que exigem equilíbrio mecânico.", specs: "Alta resistência | Detalhamento fino" },
+    { id: "1DA_QGLGvZsDXKksBB2XSXPmj75pSKXDI", nome: "LOWSMELL", cat: "Uso Geral", desc: "Resina rígida com odor praticamente imperceptível. Cura rápida e excelente precisão, ideal para ambientes fechados e uso profissional contínuo sem desconforto.", specs: "Baixíssimo odor | Rígida" },
+    { id: "1GSCMNZ0ArGM3oyHDaGNKYhykyf-djNFN", nome: "ALCHEMIST", cat: "Action Figures", desc: "Efeitos especiais em cores translúcidas e vibrantes, exclusivas da Quanton3D. Rápida polimerização, durabilidade e acabamento refinado. Perfeita para colecionáveis e itens de decoração.", specs: "Translúcida | Cores vibrantes" },
+  ];
+  const r = resinas[resinaSel];
 
   return (
     <div className="sobre-container">
       {/* HERO */}
       <div className="sobre-hero">
         <div className="sobre-hero-text">
-          <div className="sobre-badge">Desde abril de 2020</div>
+          <div className="sobre-badge">Fundada em abril de 2020</div>
           <h2 className="sobre-titulo">Quanton3D</h2>
           <p className="sobre-lema">Para quem transforma resina em resultado.</p>
-          <p className="sobre-intro">
-            Nascida em Belo Horizonte no início da pandemia, a Quanton3D foi fundada por <strong>Ronei Fonseca</strong> e <strong>Gislene</strong>, um casal 
-            que transformou incertezas em oportunidade. Com experiência sólida na fabricação industrial de manequins, 
-            trouxeram rigor técnico e visão comercial para revolucionar o mercado de resinas UV no Brasil.
-          </p>
         </div>
         <div className="sobre-fundadores">
           <div className="sobre-fundador-card">
             <img src={driveImg("1DKLHuIybHolw5qlQ8t_75FXDX8LDVH67", 400)} alt="Ronei Fonseca" loading="lazy" />
             <span>Ronei Fonseca</span>
-            <small>Fundador & Químico</small>
+            <small>Fundador &amp; Químico</small>
           </div>
           <div className="sobre-fundador-card">
             <img src={driveImg("1ax4Q7JkZNr444UsOPZkUZcXRyMKfTjwT", 400)} alt="Gislene" loading="lazy" />
             <span>Gislene</span>
-            <small>Cofundadora & Gestão</small>
+            <small>Cofundadora &amp; Gestão</small>
           </div>
         </div>
+      </div>
+
+      {/* HISTÓRIA COMPLETA */}
+      <div className="sobre-section">
+        <h3>🏭 O Começo de Tudo: Desafio e União</h3>
+        <p>
+          A Quanton3D não nasceu apenas para ser mais uma marca no mercado — ela nasceu de uma virada de chave em um momento histórico. 
+          Fundada em <strong>abril de 2020</strong>, no início da pandemia da COVID-19 em <strong>Belo Horizonte (MG)</strong>, a empresa ganhou vida 
+          através da coragem e da união de seus fundadores, <strong>Ronei e Gislene</strong>.
+        </p>
+        <p style={{ marginTop: "12px" }}>
+          Trabalhando lado a lado como casal e sócios, eles decidiram transformar um período de incertezas globais em uma oportunidade 
+          para revolucionar a manufatura digital no Brasil. Trazendo na bagagem uma sólida experiência industrial — vinda da 
+          <strong> fabricação técnica de manequins</strong> —, o casal aplicou o rigor de produção, o olho clínico para o acabamento e a 
+          seriedade comercial no universo da impressão 3D.
+        </p>
       </div>
 
       {/* PIONEIRISMO */}
       <div className="sobre-section">
-        <h3>🏆 Pioneirismo Nacional</h3>
+        <h3>🏆 Pioneirismo Nacional e o Verdadeiro Preço Justo</h3>
         <p>
-          Fomos a <strong>primeira fábrica nacional</strong> focada em resinas UV SLA/DLP de altíssima performance com preço justo. 
-          Entramos no mercado oferecendo o quilo na faixa de R$ 170,00, democratizando o acesso para milhares de makers, 
-          clínicas e laboratórios. Forçamos o mercado a se reposicionar — provando que qualidade não precisa ser sinônimo de preço abusivo.
+          Antes da Quanton3D, os profissionais brasileiros sofriam com o monopólio de insumos importados e insustentavelmente caros, 
+          que limitavam o crescimento do mercado de impressão 3D. Fomos a <strong>primeira fábrica nacional</strong> focada em entregar resinas 
+          de altíssima performance com um preço genuinamente justo.
         </p>
-      </div>
-
-      {/* NÚMEROS */}
-      <div className="sobre-stats">
-        <div className="sobre-stat"><span className="sobre-stat-num">14</span><span>Linhas de resinas</span></div>
-        <div className="sobre-stat"><span className="sobre-stat-num">200+</span><span>Clientes ativos</span></div>
-        <div className="sobre-stat"><span className="sobre-stat-num">6+</span><span>Anos no mercado</span></div>
-        <div className="sobre-stat"><span className="sobre-stat-num">🇧🇷</span><span>Fabricação 100% nacional</span></div>
+        <p style={{ marginTop: "12px" }}>
+          Entramos no mercado revolucionando e provando que qualidade não precisa ser sinônimo de preço abusivo: iniciamos nossa 
+          trajetória oferecendo o <strong>quilo da resina na faixa de R$ 170,00</strong>. Esse marco histórico não apenas democratizou o acesso 
+          para milhares de novos makers, clínicas e laboratórios, mas também forçou o mercado nacional a se reposicionar.
+        </p>
+        <p style={{ marginTop: "12px", fontStyle: "italic", color: "#b89cff" }}>
+          Para nós, não é só sobre vender resina. É sobre o que você consegue criar com ela.
+        </p>
       </div>
 
       {/* VALORES */}
       <div className="sobre-section">
-        <h3>🎯 Nossos Valores</h3>
+        <h3>🎯 Nossos Valores e Compromisso Industrial</h3>
         <div className="sobre-valores-grid">
           <div className="sobre-valor-card">
             <div className="sobre-valor-icon">🔬</div>
             <h4>Qualidade e Rigor Técnico</h4>
-            <p>Fórmulas com testes rigorosos: cura rápida, baixíssima contração e estabilidade dimensional impecável.</p>
+            <p>Nossas fórmulas passam por testes rigorosos para oferecer cura rápida, baixíssima contração e estabilidade dimensional impecável.</p>
           </div>
           <div className="sobre-valor-card">
             <div className="sobre-valor-icon">🤝</div>
             <h4>Suporte Próximo</h4>
-            <p>Atendimento humano, técnico e rápido. Ajudamos a calibrar máquinas e alcançar a peça perfeita.</p>
+            <p>Atendemos de forma humana, técnica e rápida, ajudando quem imprime a calibrar suas máquinas e alcançar a peça perfeita.</p>
           </div>
           <div className="sobre-valor-card">
             <div className="sobre-valor-icon">🛡️</div>
-            <h4>Responsabilidade</h4>
-            <p>Indústria regularizada: IBAMA, Licença Ambiental, AVCB Bombeiros e certificação CRQ – 2ª Região.</p>
+            <h4>Responsabilidade e Segurança</h4>
+            <p>Indústria totalmente regularizada: Certificado IBAMA, Licença Ambiental, AVCB Bombeiros e certificação CRQ – 2ª Região.</p>
           </div>
         </div>
       </div>
 
-      {/* CARROSSEL DE RESINAS */}
+      {/* NOSSAS RESINAS — LAYOUT GRANDE COM CARACTERÍSTICAS */}
       <div className="sobre-section">
-        <h3>🧪 Nossas Resinas</h3>
-        <div className="sobre-carousel">
-          <button className="sobre-carousel-btn" onClick={() => setBannerIdx(i => (i - 1 + banners.length) % banners.length)}>◀</button>
-          <div className="sobre-carousel-slide">
-            <img src={driveImg(banners[bannerIdx].id, 600)} alt={banners[bannerIdx].nome} loading="lazy" />
-            <div className="sobre-carousel-info">
-              <strong>{banners[bannerIdx].nome}</strong>
-              <span>{banners[bannerIdx].desc}</span>
-            </div>
-          </div>
-          <button className="sobre-carousel-btn" onClick={() => setBannerIdx(i => (i + 1) % banners.length)}>▶</button>
-        </div>
-        <div className="sobre-carousel-dots">
-          {banners.map((_, i) => (
-            <button key={i} className={`sobre-dot ${i === bannerIdx ? "active" : ""}`} onClick={() => setBannerIdx(i)} />
+        <h3>🧪 Nossas Resinas — 14 Linhas Exclusivas</h3>
+        <div className="sobre-resina-tabs">
+          {resinas.map((res, i) => (
+            <button key={i} className={`sobre-resina-tab ${i === resinaSel ? "active" : ""}`} onClick={() => setResinaSel(i)}>
+              {res.nome}
+            </button>
           ))}
         </div>
+        <div className="sobre-resina-detalhe">
+          <div className="sobre-resina-img-wrap">
+            <img src={driveImg(r.id, 800)} alt={r.nome} loading="lazy" />
+          </div>
+          <div className="sobre-resina-info">
+            <div className="sobre-resina-cat">{r.cat}</div>
+            <h4>{r.nome}</h4>
+            <p>{r.desc}</p>
+            <div className="sobre-resina-specs">{r.specs}</div>
+            <a href={`https://quanton3d.com.br`} target="_blank" rel="noopener noreferrer" className="sobre-resina-comprar">
+              🛒 Ver na loja
+            </a>
+          </div>
+        </div>
       </div>
 
-      {/* LOCALIZAÇÃO */}
+      {/* ONDE ESTAMOS */}
       <div className="sobre-section">
         <h3>📍 Onde Estamos</h3>
         <p>
-          <strong>Av. Dom Pedro II, 5056 – Jardim Montanhês</strong><br />
-          Belo Horizonte – MG<br />
-          Daqui enviamos tecnologia e inovação diariamente para todo o Brasil.
+          Nossa fábrica e centro de distribuição ficam estrategicamente localizados na <strong>Avenida Dom Pedro II, 5056 — Jardim Montanhês, 
+          Belo Horizonte – MG</strong>. Daqui, enviamos tecnologia e inovação diariamente para laboratórios, clínicas, estúdios de arte e 
+          indústrias em todos os cantos do Brasil.
         </p>
       </div>
 
