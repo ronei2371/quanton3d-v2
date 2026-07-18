@@ -949,7 +949,7 @@ function SobreContent({ abrirGuia, abrirParceiroModal }) {
           <div className="sobre-fundador-card">
             <img src={driveImg("1DKLHuIybHolw5qlQ8t_75FXDX8LDVH67", 400)} alt="Ronei Fonseca" loading="lazy" />
             <span>Ronei Fonseca</span>
-            <small>Fundador &amp; Químico</small>
+            <small>Fundador &amp; Desenvolvimento</small>
           </div>
           <div className="sobre-fundador-card">
             <img src={driveImg("1ax4Q7JkZNr444UsOPZkUZcXRyMKfTjwT", 400)} alt="Gislene" loading="lazy" />
@@ -1490,6 +1490,7 @@ function AdminContent() {
   const [msgParam, setMsgParam] = useState("");
   const [parametrosAdm, setParametrosAdm] = useState([]);
   const [buscaParam, setBuscaParam] = useState("");
+  const [sugestoesElio, setSugestoesElio] = useState([]);
 
   async function entrar(e) {
     e.preventDefault(); setErro("");
@@ -1539,6 +1540,7 @@ function AdminContent() {
       const clientesCarregados = Array.isArray(m.clientes) ? m.clientes : [];
       carregarAtendentes();
       carregarLogs();
+      try { const sResp = await api.get("/sugestoes-conhecimento", { headers }); setSugestoesElio(sResp.data?.sugestoes || []); } catch(_) {}
       setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
@@ -1801,6 +1803,7 @@ function AdminContent() {
     { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
     { id: "atendentes", label: "Atendentes", icon: "👨‍💼", count: null },
     { id: "logs", label: "Logs", icon: "📋", count: null },
+    { id: "sugestoes_elio", label: "Sugestões ELIO", icon: "💡", count: null },
   ];
 
   return (
@@ -3033,6 +3036,59 @@ function AdminContent() {
         </div>
       )}
 
+      {aba === "sugestoes_elio" && (
+        <div>
+          <p style={{ fontWeight: 900, color: "#4fd1ff", fontSize: "0.9rem", marginBottom: "14px" }}>💡 Sugestões de Conhecimento para o ELIO ({sugestoesElio.length})</p>
+          {sugestoesElio.length === 0 && <div className="gallery-empty">Nenhuma sugestão enviada pelos atendentes.</div>}
+          {sugestoesElio.map(s => {
+            const cores = { pendente: "#ffd166", aprovado: "#49e68b", rejeitado: "#ff8fab" };
+            const catIcons = { resina: "🧪", impressora: "🖨️", problema: "⚠️", dica: "💡", outro: "📝" };
+            return (
+              <div key={s._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
+                  <div>
+                    <strong style={{ color: "#eaf3ff", fontSize: "0.92rem" }}>{s.titulo}</strong>
+                    <div style={{ fontSize: "0.72rem", color: "#9fb4c7", marginTop: "2px" }}>
+                      {catIcons[s.categoria] || "📝"} {s.categoria} · 👨‍💼 {s.codigoAtendente} ({s.nomeAtendente}) · {new Date(s.createdAt).toLocaleDateString("pt-BR")}
+                    </div>
+                  </div>
+                  <span style={{ fontSize: "0.72rem", padding: "3px 10px", borderRadius: "999px", background: `${cores[s.status]}20`, color: cores[s.status], fontWeight: 800 }}>
+                    {s.status === "pendente" ? "⏳ Pendente" : s.status === "aprovado" ? "✅ Aprovado" : "❌ Rejeitado"}
+                  </span>
+                </div>
+                <p style={{ fontSize: "0.82rem", color: "#b8cfe8", margin: "0 0 10px", lineHeight: 1.6, background: "rgba(0,0,0,0.15)", padding: "10px 12px", borderRadius: "8px" }}>{s.conteudo}</p>
+                {s.status === "pendente" && (
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button type="button" onClick={async () => {
+                      try {
+                        await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "aprovado" }, { headers: { Authorization: "Bearer " + token } });
+                        const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+                        setSugestoesElio(r.data?.sugestoes || []);
+                      } catch(e) { alert("Erro"); }
+                    }}
+                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.1)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                      ✅ Aprovar
+                    </button>
+                    <button type="button" onClick={async () => {
+                      const obs = prompt("Motivo da rejeição (opcional):");
+                      try {
+                        await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "rejeitado", observacaoAdmin: obs || "" }, { headers: { Authorization: "Bearer " + token } });
+                        const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+                        setSugestoesElio(r.data?.sugestoes || []);
+                      } catch(e) { alert("Erro"); }
+                    }}
+                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                      ❌ Rejeitar
+                    </button>
+                  </div>
+                )}
+                {s.observacaoAdmin && <p style={{ fontSize: "0.75rem", color: "#ffd166", margin: "8px 0 0", fontStyle: "italic" }}>Obs: {s.observacaoAdmin}</p>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
     </div>
   );
 }
@@ -3393,10 +3449,42 @@ function PainelAtendente({ atendente, onClose }) {
     carregar();
   }, []);
 
+  const [sugestoes, setSugestoes] = useState([]);
+  const [formSugestao, setFormSugestao] = useState({ categoria: "dica", titulo: "", conteudo: "" });
+  const [enviandoSugestao, setEnviandoSugestao] = useState(false);
+
+  useEffect(() => {
+    async function carregarSugestoes() {
+      try {
+        const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+        setSugestoes(r.data?.sugestoes || []);
+      } catch(_) {}
+    }
+    carregarSugestoes();
+  }, []);
+
+  async function enviarSugestao() {
+    if (!formSugestao.titulo.trim() || !formSugestao.conteudo.trim()) { alert("Preencha título e conteúdo."); return; }
+    try {
+      setEnviandoSugestao(true);
+      await api.post("/sugestoes-conhecimento", {
+        ...formSugestao,
+        codigoAtendente: atendente.codigo,
+        nomeAtendente: atendente.nome,
+      }, { headers: { Authorization: "Bearer " + token } });
+      setFormSugestao({ categoria: "dica", titulo: "", conteudo: "" });
+      const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+      setSugestoes(r.data?.sugestoes || []);
+      alert("Sugestão enviada! O administrador será notificado.");
+    } catch(e) { alert("Erro ao enviar sugestão."); }
+    finally { setEnviandoSugestao(false); }
+  }
+
   const ABAS = [
     { id: "chamados", label: "🔧 Chamados", count: dados.chamados.length },
     { id: "mensagens", label: "✉️ Mensagens", count: dados.mensagens.length },
     { id: "clientes", label: "👥 Clientes", count: dados.clientes.length },
+    { id: "sugestoes", label: "💡 Sugestões", count: sugestoes.length },
   ];
 
   return (
@@ -3435,22 +3523,54 @@ function PainelAtendente({ atendente, onClose }) {
         {!carregando && aba === "chamados" && (
           <div>
             {dados.chamados.length === 0 && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "30px" }}>Nenhum chamado.</div>}
-            {dados.chamados.map(c => (
+            {dados.chamados.map(c => {
+              const statusCores = { novo: { bg: "rgba(255,209,102,0.12)", border: "rgba(255,209,102,0.35)", color: "#ffd166", label: "Novo" }, em_analise: { bg: "rgba(79,209,255,0.12)", border: "rgba(79,209,255,0.35)", color: "#4fd1ff", label: "Em análise" }, respondido: { bg: "rgba(184,156,255,0.12)", border: "rgba(184,156,255,0.35)", color: "#b89cff", label: "Respondido" }, fechado: { bg: "rgba(73,230,139,0.12)", border: "rgba(73,230,139,0.35)", color: "#49e68b", label: "Resolvido" }, encaminhado: { bg: "rgba(255,107,107,0.12)", border: "rgba(255,107,107,0.35)", color: "#ff8fab", label: "Encaminhado" } };
+              const st = statusCores[c.status] || statusCores.novo;
+              const mudarStatus = async (novoStatus) => {
+                try {
+                  await api.patch("/bot-tickets/" + c._id + "/status", { status: novoStatus }, { headers: { Authorization: "Bearer " + token } });
+                  const r = await api.get("/bot-tickets", { headers: { Authorization: "Bearer " + token } });
+                  setDados(prev => ({ ...prev, chamados: r.data?.botTickets || [] }));
+                } catch(e) { alert("Erro ao atualizar status"); }
+              };
+              return (
               <div key={c._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px", color: "#eaf3ff" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <strong>{c.nome || "Cliente"}</strong>
-                  <span style={{ fontSize: "0.72rem", color: "#9fb4c7" }}>{c.telefone}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px", flexWrap: "wrap", gap: "6px" }}>
+                  <div>
+                    <strong>{c.nome || "Cliente"}</strong>
+                    <div style={{ fontSize: "0.72rem", color: "#9fb4c7" }}>📱 {c.telefone} · ✉️ {c.email || "-"}</div>
+                  </div>
+                  <span style={{ fontSize: "0.72rem", padding: "3px 10px", borderRadius: "999px", background: st.bg, border: "1px solid " + st.border, color: st.color, fontWeight: 800 }}>{st.label}</span>
                 </div>
+                {c.resina && <div style={{ fontSize: "0.78rem", color: "#4fd1ff", marginBottom: "4px" }}>🧪 {c.resina} {c.impressora ? "· 🖨️ " + c.impressora : ""}</div>}
                 <div style={{ fontSize: "0.8rem", color: "#b8cfe8", marginBottom: "8px" }}>
-                  🔧 {c.problema || c.resina || "Sem descrição"}
+                  🔧 {c.problema || "Sem descrição"}
+                  {c.descricao && <p style={{ margin: "6px 0 0", fontSize: "0.78rem", color: "#9fb4c7" }}>{c.descricao}</p>}
                 </div>
-                <a href={"https://wa.me/5531983340053?text=" + encodeURIComponent("Olá " + (c.nome||"") + ", vi seu chamado sobre " + (c.problema||c.resina||"") + ". Posso ajudar!")}
-                  target="_blank" rel="noreferrer"
-                  style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(37,211,102,0.4)", background: "rgba(37,211,102,0.1)", color: "#25d366", fontSize: "0.75rem", fontWeight: 800, textDecoration: "none" }}>
-                  💬 WhatsApp
-                </a>
+                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                  <a href={"https://wa.me/5531983340053?text=" + encodeURIComponent("Olá " + (c.nome||"") + ", vi seu chamado sobre " + (c.problema||c.resina||"") + ". Posso ajudar!")}
+                    target="_blank" rel="noreferrer"
+                    style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(37,211,102,0.4)", background: "rgba(37,211,102,0.1)", color: "#25d366", fontSize: "0.75rem", fontWeight: 800, textDecoration: "none" }}>
+                    💬 WhatsApp
+                  </a>
+                  <button type="button" onClick={() => mudarStatus("em_analise")} disabled={c.status === "em_analise"}
+                    style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(255,209,102,0.35)", background: "rgba(255,209,102,0.1)", color: "#ffd166", fontSize: "0.75rem", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", opacity: c.status === "em_analise" ? 0.4 : 1 }}>
+                    🔍 Em análise
+                  </button>
+                  <button type="button" onClick={() => mudarStatus("fechado")} disabled={c.status === "fechado"}
+                    style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(73,230,139,0.35)", background: "rgba(73,230,139,0.1)", color: "#49e68b", fontSize: "0.75rem", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", opacity: c.status === "fechado" ? 0.4 : 1 }}>
+                    ✅ Resolvido
+                  </button>
+                  {c.status === "fechado" && (
+                    <button type="button" onClick={() => mudarStatus("novo")}
+                      style={{ padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(255,107,107,0.06)", color: "#ff8fab", fontSize: "0.75rem", fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                      ↩️ Reabrir
+                    </button>
+                  )}
+                </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -3473,6 +3593,52 @@ function PainelAtendente({ atendente, onClose }) {
                 </a>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* SUGESTÕES DE CONHECIMENTO */}
+        {!carregando && aba === "sugestoes" && (
+          <div>
+            <div style={{ border: "1px solid rgba(79,209,255,0.2)", borderRadius: "12px", padding: "16px", background: "rgba(79,209,255,0.04)", marginBottom: "16px" }}>
+              <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>💡 Sugerir conhecimento pro ELIO</p>
+              <div style={{ display: "grid", gap: "10px" }}>
+                <select value={formSugestao.categoria} onChange={e => setFormSugestao(f => ({ ...f, categoria: e.target.value }))}
+                  style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(0,0,0,0.3)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.82rem" }}>
+                  <option value="resina">🧪 Resina</option>
+                  <option value="impressora">🖨️ Impressora</option>
+                  <option value="problema">⚠️ Problema/Solução</option>
+                  <option value="dica">💡 Dica Técnica</option>
+                  <option value="outro">📝 Outro</option>
+                </select>
+                <input placeholder="Título (ex: Iron não adere em Elegoo Mars 3)" value={formSugestao.titulo}
+                  onChange={e => setFormSugestao(f => ({ ...f, titulo: e.target.value }))}
+                  style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(0,0,0,0.3)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.82rem" }} />
+                <textarea rows={4} placeholder="Conteúdo detalhado que o ELIO deveria saber..." value={formSugestao.conteudo}
+                  onChange={e => setFormSugestao(f => ({ ...f, conteudo: e.target.value }))}
+                  style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(0,0,0,0.3)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.82rem", resize: "vertical" }} />
+                <button type="button" onClick={enviarSugestao} disabled={enviandoSugestao}
+                  style={{ padding: "10px", borderRadius: "8px", border: "none", background: "linear-gradient(135deg, rgba(21,101,192,0.4), rgba(79,209,255,0.2))", color: "#eaf7ff", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", fontSize: "0.85rem" }}>
+                  {enviandoSugestao ? "Enviando..." : "📤 Enviar Sugestão"}
+                </button>
+              </div>
+            </div>
+            {sugestoes.length === 0 && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "20px" }}>Nenhuma sugestão enviada ainda.</div>}
+            {sugestoes.map(s => {
+              const cores = { pendente: "#ffd166", aprovado: "#49e68b", rejeitado: "#ff8fab" };
+              return (
+                <div key={s._id} style={{ border: "1px solid rgba(113,159,219,0.18)", borderRadius: "12px", padding: "12px 14px", background: "rgba(255,255,255,0.04)", marginBottom: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <strong style={{ fontSize: "0.88rem", color: "#eaf3ff" }}>{s.titulo}</strong>
+                    <span style={{ fontSize: "0.7rem", padding: "2px 10px", borderRadius: "999px", background: `${cores[s.status]}20`, color: cores[s.status], fontWeight: 800 }}>
+                      {s.status === "pendente" ? "⏳ Pendente" : s.status === "aprovado" ? "✅ Aprovado" : "❌ Rejeitado"}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: "0.72rem", color: "#7dd3fc", marginBottom: "6px" }}>{s.categoria}</div>
+                  <p style={{ fontSize: "0.8rem", color: "#b8cfe8", margin: 0, lineHeight: 1.5 }}>{s.conteudo}</p>
+                  {s.observacaoAdmin && <p style={{ fontSize: "0.75rem", color: "#ffd166", margin: "8px 0 0", fontStyle: "italic" }}>Admin: {s.observacaoAdmin}</p>}
+                </div>
+              );
+            })}
           </div>
         )}
 
