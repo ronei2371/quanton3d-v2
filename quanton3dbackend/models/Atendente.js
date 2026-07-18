@@ -2,6 +2,14 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const SessaoSchema = new mongoose.Schema({
+  ip:         { type: String, default: '' },
+  dispositivo:{ type: String, default: '' }, // resumo legível: "Chrome / Windows"
+  userAgent:  { type: String, default: '' },
+  loginEm:    { type: Date, default: Date.now },
+  expiresEm:  { type: Date, default: null },
+}, { _id: false });
+
 const AtendenteSchema = new mongoose.Schema({
   codigo:   { type: String, required: true, unique: true, uppercase: true, trim: true },
   nome:     { type: String, required: true, trim: true },
@@ -24,6 +32,9 @@ const AtendenteSchema = new mongoose.Schema({
     editarParametros:     { type: Boolean, default: false },
   },
   ultimoAcesso: { type: Date, default: null },
+  ultimoIp:     { type: String, default: '' },
+  ultimoDispositivo: { type: String, default: '' },
+  sessoes:      { type: [SessaoSchema], default: [] }, // últimas 10 sessões
   criadoPor:    { type: String, default: 'superadmin' },
 }, { timestamps: true });
 
