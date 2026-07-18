@@ -95,6 +95,24 @@ router.patch('/:id/status', authAdmin, async (req, res) => {
   }
 });
 
+// ── EDITAR PERMISSÕES (só superadmin) ─────────────────────────────────────────
+router.patch('/:id/permissoes', authAdmin, async (req, res) => {
+  try {
+    const { permissoes } = req.body || {};
+    if (!permissoes || typeof permissoes !== 'object')
+      return res.status(400).json({ success: false, error: 'Permissões inválidas.' });
+    const at = await Atendente.findById(req.params.id);
+    if (!at) return res.status(404).json({ success: false, error: 'Atendente não encontrado.' });
+    Object.keys(permissoes).forEach(k => {
+      if (at.permissoes[k] !== undefined) at.permissoes[k] = !!permissoes[k];
+    });
+    await at.save();
+    res.json({ success: true, atendente: { id: at._id, codigo: at.codigo, nome: at.nome, permissoes: at.permissoes } });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Erro interno.' });
+  }
+});
+
 // ── TROCAR SENHA (superadmin pode trocar de qualquer um) ─────────────────────
 router.patch('/:id/senha', authAdmin, async (req, res) => {
   try {
