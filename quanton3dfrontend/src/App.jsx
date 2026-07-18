@@ -737,7 +737,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
   return (
     <div className="modal-backdrop">
       <section className="site-modal" style={
-          (type === "calc_custos" || type === "parceirosPublico" || (type && type.startsWith("fispq_")))
+          (type === "calc_custos" || type === "parceirosPublico" || type === "sobre" || (type && type.startsWith("fispq_")))
             ? { width: "min(1400px, calc(100vw - 16px))", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
             ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "18px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)" }
@@ -914,13 +914,138 @@ function ContatoContent() {
 }
 
 function SobreContent({ abrirGuia, abrirParceiroModal }) {
+  const [bannerIdx, setBannerIdx] = useState(0);
+  const banners = [
+    { id: "1EWI86JbINRFnfK1xZT_8cH0COX0-g7l2", nome: "PYROBLAST", desc: "Básica e econômica para uso geral" },
+    { id: "1TBXQTL5KUEbYlAC9jzCiLvyjKSXpGxSk", nome: "IRON", desc: "Ultra resistência mecânica" },
+    { id: "1yQdfGOoKAohRUcii2jYCrca7B2p-1HuD", nome: "POSEIDON", desc: "Lavável em água, baixo odor" },
+    { id: "1z5bF_xbFE65HLygNpGJDd-UtF-nWy8Bh", nome: "FLEXFORM", desc: "Ultra flexibilidade para protótipos" },
+    { id: "1KdOOVOQJZDDzcrCBMZrX9x6YViKsAE8D", nome: "SPIN", desc: "Grandes formatos com precisão" },
+    { id: "1DjhUGrp2zdI7QCAumNnvCDhWAvoBSR0d", nome: "ATHOM DENTAL", desc: "Fidelidade para odontologia digital" },
+    { id: "1Q46F4CJ3ARAjFKcoPQDgYUGf4_lu5_7S", nome: "ATHOM ALINHADORES", desc: "Precisão térmica para alinhadores" },
+    { id: "1T8JReoS9HmNb0xgzdKb3qCh1z8T2_a_s", nome: "ATHOM WASHABLE", desc: "Lavável com baixo odor" },
+    { id: "1MYbXZtKp_Q_3DO7LvhK4A487HABuqzOP", nome: "SPARK", desc: "Rígida translúcida" },
+    { id: "1PEF-C5mrOasfjXk0U5mqVX2Sp2j66Bs4", nome: "70/30", desc: "Alta resistência com detalhes" },
+    { id: "1DA_QGLGvZsDXKksBB2XSXPmj75pSKXDI", nome: "LOWSMELL", desc: "Rígida de baixo odor" },
+    { id: "1GSCMNZ0ArGM3oyHDaGNKYhykyf-djNFN", nome: "ALCHEMIST", desc: "Translúcida, cores vibrantes" },
+  ];
+  const driveImg = (id, sz = 800) => `https://drive.google.com/thumbnail?id=${id}&sz=w${sz}`;
+
+  useEffect(() => {
+    const timer = setInterval(() => setBannerIdx(i => (i + 1) % banners.length), 4000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <div className="modal-rich-content">
-      <p>A Quanton3D é especialista em resinas UV de alta performance com mais de 20 anos de experiência em fabricação.</p>
-      <div className="modal-action-grid">
-        <button type="button" onClick={() => setActiveModal("parceirosPublico")}>Ver parceiros</button>
-        <button type="button" onClick={() => abrirGuia("diagnostico")}>Guia de diagnóstico</button>
-        <button type="button" onClick={abrirParceiroModal}>Quero ser parceiro</button>
+    <div className="sobre-container">
+      {/* HERO */}
+      <div className="sobre-hero">
+        <div className="sobre-hero-text">
+          <div className="sobre-badge">Desde abril de 2020</div>
+          <h2 className="sobre-titulo">Quanton3D</h2>
+          <p className="sobre-lema">Para quem transforma resina em resultado.</p>
+          <p className="sobre-intro">
+            Nascida em Belo Horizonte no início da pandemia, a Quanton3D foi fundada por <strong>Ronei Fonseca</strong> e <strong>Gislene</strong>, um casal 
+            que transformou incertezas em oportunidade. Com experiência sólida na fabricação industrial de manequins, 
+            trouxeram rigor técnico e visão comercial para revolucionar o mercado de resinas UV no Brasil.
+          </p>
+        </div>
+        <div className="sobre-fundadores">
+          <div className="sobre-fundador-card">
+            <img src={driveImg("1DKLHuIybHolw5qlQ8t_75FXDX8LDVH67", 400)} alt="Ronei Fonseca" loading="lazy" />
+            <span>Ronei Fonseca</span>
+            <small>Fundador & Químico</small>
+          </div>
+          <div className="sobre-fundador-card">
+            <img src={driveImg("1ax4Q7JkZNr444UsOPZkUZcXRyMKfTjwT", 400)} alt="Gislene" loading="lazy" />
+            <span>Gislene</span>
+            <small>Cofundadora & Gestão</small>
+          </div>
+        </div>
+      </div>
+
+      {/* PIONEIRISMO */}
+      <div className="sobre-section">
+        <h3>🏆 Pioneirismo Nacional</h3>
+        <p>
+          Fomos a <strong>primeira fábrica nacional</strong> focada em resinas UV SLA/DLP de altíssima performance com preço justo. 
+          Entramos no mercado oferecendo o quilo na faixa de R$ 170,00, democratizando o acesso para milhares de makers, 
+          clínicas e laboratórios. Forçamos o mercado a se reposicionar — provando que qualidade não precisa ser sinônimo de preço abusivo.
+        </p>
+      </div>
+
+      {/* NÚMEROS */}
+      <div className="sobre-stats">
+        <div className="sobre-stat"><span className="sobre-stat-num">14</span><span>Linhas de resinas</span></div>
+        <div className="sobre-stat"><span className="sobre-stat-num">200+</span><span>Clientes ativos</span></div>
+        <div className="sobre-stat"><span className="sobre-stat-num">6+</span><span>Anos no mercado</span></div>
+        <div className="sobre-stat"><span className="sobre-stat-num">🇧🇷</span><span>Fabricação 100% nacional</span></div>
+      </div>
+
+      {/* VALORES */}
+      <div className="sobre-section">
+        <h3>🎯 Nossos Valores</h3>
+        <div className="sobre-valores-grid">
+          <div className="sobre-valor-card">
+            <div className="sobre-valor-icon">🔬</div>
+            <h4>Qualidade e Rigor Técnico</h4>
+            <p>Fórmulas com testes rigorosos: cura rápida, baixíssima contração e estabilidade dimensional impecável.</p>
+          </div>
+          <div className="sobre-valor-card">
+            <div className="sobre-valor-icon">🤝</div>
+            <h4>Suporte Próximo</h4>
+            <p>Atendimento humano, técnico e rápido. Ajudamos a calibrar máquinas e alcançar a peça perfeita.</p>
+          </div>
+          <div className="sobre-valor-card">
+            <div className="sobre-valor-icon">🛡️</div>
+            <h4>Responsabilidade</h4>
+            <p>Indústria regularizada: IBAMA, Licença Ambiental, AVCB Bombeiros e certificação CRQ – 2ª Região.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* CARROSSEL DE RESINAS */}
+      <div className="sobre-section">
+        <h3>🧪 Nossas Resinas</h3>
+        <div className="sobre-carousel">
+          <button className="sobre-carousel-btn" onClick={() => setBannerIdx(i => (i - 1 + banners.length) % banners.length)}>◀</button>
+          <div className="sobre-carousel-slide">
+            <img src={driveImg(banners[bannerIdx].id, 600)} alt={banners[bannerIdx].nome} loading="lazy" />
+            <div className="sobre-carousel-info">
+              <strong>{banners[bannerIdx].nome}</strong>
+              <span>{banners[bannerIdx].desc}</span>
+            </div>
+          </div>
+          <button className="sobre-carousel-btn" onClick={() => setBannerIdx(i => (i + 1) % banners.length)}>▶</button>
+        </div>
+        <div className="sobre-carousel-dots">
+          {banners.map((_, i) => (
+            <button key={i} className={`sobre-dot ${i === bannerIdx ? "active" : ""}`} onClick={() => setBannerIdx(i)} />
+          ))}
+        </div>
+      </div>
+
+      {/* LOCALIZAÇÃO */}
+      <div className="sobre-section">
+        <h3>📍 Onde Estamos</h3>
+        <p>
+          <strong>Av. Dom Pedro II, 5056 – Jardim Montanhês</strong><br />
+          Belo Horizonte – MG<br />
+          Daqui enviamos tecnologia e inovação diariamente para todo o Brasil.
+        </p>
+      </div>
+
+      {/* AÇÕES */}
+      <div className="sobre-actions">
+        <a href="https://quanton3d.com.br" target="_blank" rel="noopener noreferrer" className="sobre-action-btn sobre-action-primary">
+          🛒 Visite nossa loja
+        </a>
+        <a href="https://wa.me/5531983340053?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Quanton3D!" target="_blank" rel="noopener noreferrer" className="sobre-action-btn sobre-action-whatsapp">
+          💬 Fale no WhatsApp
+        </a>
+        <button type="button" onClick={abrirParceiroModal} className="sobre-action-btn">
+          🤝 Quero ser parceiro
+        </button>
       </div>
     </div>
   );
