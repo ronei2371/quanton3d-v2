@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import authAdmin from "../middlewares/authAdmin.js";
+import { authAdminOuAtendente } from "../middlewares/authAtendente.js";
 import BotTicket from "../models/BotTicket.js";
 
 const router = express.Router();
@@ -66,7 +67,7 @@ router.post("/", upload.array("fotos", 4), async (req, res) => {
   }
 });
 
-router.get("/", authAdmin, async (req, res) => { // protegido — evita vazar dados de clientes e fotos
+router.get("/", authAdminOuAtendente, async (req, res) => { // protegido — aceita superadmin e atendentes
   try {
     const limite = Math.min(300, Math.max(1, Number.parseInt(req.query.limit, 10) || 100));
     const filtro = {};
