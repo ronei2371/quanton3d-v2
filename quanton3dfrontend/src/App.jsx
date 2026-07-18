@@ -343,9 +343,9 @@ function App() {
             )}
             {atendenteLogado ? (
               <>
-              <button type="button" onClick={() => setActiveModal("painel_atendente")}
+              <button type="button" onClick={() => setActiveModal(atendenteLogado?.permissoes?.acessoAdmCompleto ? "adm" : "painel_atendente")}
                 style={{ background: "rgba(184,156,255,0.12)", borderColor: "rgba(184,156,255,0.4)", color: "#b89cff" }}>
-                📋 Painel
+                {atendenteLogado?.permissoes?.acessoAdmCompleto ? "🔓 ADM" : "📋 Painel"}
               </button>
               <button type="button" onClick={logoutAtendente}
                 style={{ background: "rgba(73,230,139,0.12)", borderColor: "rgba(73,230,139,0.4)", color: "#49e68b" }}>
@@ -757,8 +757,8 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "galeria" && <GaleriaContent cliente={cliente} ocultarAbas />}
         {type === "galeriaPublica" && <GaleriaContent cliente={cliente} initialAba="ver" ocultarAbas />}
         {type === "adm" && (!atendenteLogado || atendenteLogado?.permissoes?.acessoAdmCompleto) && <AdminContent />}
-        {type === "painel_atendente" && atendenteLogado && <PainelAtendente atendente={atendenteLogado} onClose={() => setActiveModal(null)} />}
-        {type === "adm" && atendenteLogado && (
+        {type === "painel_atendente" && atendenteLogado && !atendenteLogado?.permissoes?.acessoAdmCompleto && <PainelAtendente atendente={atendenteLogado} onClose={() => setActiveModal(null)} />}
+        {type === "adm" && atendenteLogado && !atendenteLogado?.permissoes?.acessoAdmCompleto && (
           <div style={{ padding: "40px", textAlign: "center" }}>
             <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🔒</div>
             <h2 style={{ color: "#ff8fab", marginBottom: "8px" }}>Acesso Negado</h2>
