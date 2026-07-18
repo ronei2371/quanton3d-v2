@@ -3242,9 +3242,9 @@ function PainelAtendente({ atendente, onClose }) {
           api.get("/clientes", { headers }),
         ]);
         setDados({
-          chamados: ch.data?.tickets || ch.data?.data || [],
+          chamados: ch.data?.botTickets || ch.data?.tickets || [],
           mensagens: msg.data?.contactMessages || [],
-          clientes: cl.data?.clientes || [],
+          clientes: cl.data?.clientes || cl.data?.data || [],
         });
       } catch (err) { console.error(err); }
       finally { setCarregando(false); }
