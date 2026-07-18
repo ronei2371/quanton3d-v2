@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -582,6 +583,11 @@
       .print-table th { background: #eef5ff; color: #1565c0 !important; }
       .no-print { display: none !important; }
     }
+    /* Modo simples/avancado */
+    .secao-avancada { transition: opacity 0.2s; }
+    .modo-simples .secao-avancada { display: none !important; }
+    #btnModo.modo-ativo { background: rgba(184,156,255,0.15) !important; border-color: rgba(184,156,255,0.4) !important; color: #b89cff !important; }
+    @keyframes flashPreset { 0% { opacity:0; transform:translateY(10px); } 100% { opacity:1; transform:translateY(0); } }
   </style>
 </head>
 <body>
@@ -620,6 +626,7 @@
         </div>
         <div class="toolbar">
           <button type="button" id="btnCalc">Calcular</button>
+          <button type="button" id="btnModo" class="secondary" style="background:rgba(79,209,255,0.15);border-color:rgba(79,209,255,0.4);color:#4fd1ff;font-weight:800;">⚡ Modo Simples</button>
           <button type="button" class="secondary" id="btnTheme">Modo claro</button>
           <button type="button" class="ghost" id="btnReset">Limpar orçamento</button>
         </div>
@@ -669,7 +676,7 @@
             </div>
           </div>
 
-          <div class="card">
+          <div class="card secao-avancada" id="sec3">
             <h2>3. Lavagem, acabamento e consumíveis</h2>
             <p class="section-note">Aqui entram itens que parecem pequenos, mas somem com a margem no fim do mês.</p>
             <div class="grid">
@@ -691,39 +698,39 @@
                 <select id="printerModel" style="width:100%;padding:.5rem .75rem;border-radius:8px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-family:inherit;font-size:.875rem">
                   <option value="">-- Preencha o consumo manualmente --</option>
                   <optgroup label="Anycubic">
-                    <option value="45">Anycubic Photon Mono</option>
-                    <option value="50">Anycubic Photon Mono X</option>
-                    <option value="55">Anycubic Photon Mono X 6K</option>
-                    <option value="45">Anycubic Photon M3</option>
-                    <option value="65">Anycubic Photon M3 Max</option>
-                    <option value="55">Anycubic Photon M3 Plus</option>
-                    <option value="60">Anycubic Photon M5</option>
-                    <option value="65">Anycubic Photon M5s</option>
-                    <option value="75">Anycubic Photon M7</option>
+                    <option value="45" data-valor="3500" data-vida="2000" data-fep="45" data-fep-jobs="30" data-lcd="180" data-lcd-h="2000">Anycubic Photon Mono</option>
+                    <option value="50" data-valor="4500" data-vida="2500" data-fep="50" data-fep-jobs="30" data-lcd="200" data-lcd-h="2000">Anycubic Photon Mono X</option>
+                    <option value="55" data-valor="5500" data-vida="2500" data-fep="50" data-fep-jobs="30" data-lcd="220" data-lcd-h="2000">Anycubic Photon Mono X 6K</option>
+                    <option value="45" data-valor="3800" data-vida="2000" data-fep="45" data-fep-jobs="30" data-lcd="180" data-lcd-h="2000">Anycubic Photon M3</option>
+                    <option value="65" data-valor="9500" data-vida="3000" data-fep="80" data-fep-jobs="25" data-lcd="450" data-lcd-h="2000">Anycubic Photon M3 Max</option>
+                    <option value="55" data-valor="6500" data-vida="2500" data-fep="55" data-fep-jobs="30" data-lcd="280" data-lcd-h="2000">Anycubic Photon M3 Plus</option>
+                    <option value="60" data-valor="7500" data-vida="2500" data-fep="60" data-fep-jobs="30" data-lcd="320" data-lcd-h="2000">Anycubic Photon M5</option>
+                    <option value="65" data-valor="8500" data-vida="3000" data-fep="65" data-fep-jobs="30" data-lcd="380" data-lcd-h="2500">Anycubic Photon M5s</option>
+                    <option value="75" data-valor="11000" data-vida="3000" data-fep="70" data-fep-jobs="30" data-lcd="420" data-lcd-h="2500">Anycubic Photon M7</option>
                   </optgroup>
                   <optgroup label="Elegoo">
-                    <option value="40">Elegoo Mars 2</option>
-                    <option value="45">Elegoo Mars 3</option>
-                    <option value="50">Elegoo Mars 4</option>
-                    <option value="55">Elegoo Mars 4 Ultra</option>
-                    <option value="60">Elegoo Saturn</option>
-                    <option value="65">Elegoo Saturn 2</option>
-                    <option value="70">Elegoo Saturn 3 Ultra</option>
-                    <option value="75">Elegoo Saturn 4 Ultra</option>
-                    <option value="90">Elegoo Jupiter</option>
-                    <option value="95">Elegoo Jupiter SE</option>
+                    <option value="40" data-valor="2800" data-vida="2000" data-fep="40" data-fep-jobs="30" data-lcd="160" data-lcd-h="2000">Elegoo Mars 2</option>
+                    <option value="45" data-valor="3500" data-vida="2000" data-fep="45" data-fep-jobs="30" data-lcd="180" data-lcd-h="2000">Elegoo Mars 3</option>
+                    <option value="50" data-valor="4200" data-vida="2000" data-fep="45" data-fep-jobs="30" data-lcd="200" data-lcd-h="2000">Elegoo Mars 4</option>
+                    <option value="55" data-valor="5500" data-vida="2500" data-fep="50" data-fep-jobs="30" data-lcd="240" data-lcd-h="2000">Elegoo Mars 4 Ultra</option>
+                    <option value="60" data-valor="5800" data-vida="2500" data-fep="55" data-fep-jobs="28" data-lcd="280" data-lcd-h="2000">Elegoo Saturn</option>
+                    <option value="65" data-valor="7000" data-vida="2500" data-fep="60" data-fep-jobs="28" data-lcd="320" data-lcd-h="2000">Elegoo Saturn 2</option>
+                    <option value="70" data-valor="8500" data-vida="3000" data-fep="65" data-fep-jobs="28" data-lcd="380" data-lcd-h="2500">Elegoo Saturn 3 Ultra</option>
+                    <option value="75" data-valor="10500" data-vida="3000" data-fep="70" data-fep-jobs="28" data-lcd="450" data-lcd-h="2500">Elegoo Saturn 4 Ultra</option>
+                    <option value="90" data-valor="18000" data-vida="3500" data-fep="100" data-fep-jobs="25" data-lcd="650" data-lcd-h="2500">Elegoo Jupiter</option>
+                    <option value="95" data-valor="20000" data-vida="3500" data-fep="110" data-fep-jobs="25" data-lcd="700" data-lcd-h="2500">Elegoo Jupiter SE</option>
                   </optgroup>
                   <optgroup label="Creality">
-                    <option value="45">Creality Halot One</option>
-                    <option value="70">Creality Halot Mage</option>
-                    <option value="75">Creality Halot Mage Pro</option>
+                    <option value="45" data-valor="3200" data-vida="2000" data-fep="45" data-fep-jobs="30" data-lcd="180" data-lcd-h="2000">Creality Halot One</option>
+                    <option value="70" data-valor="7500" data-vida="2500" data-fep="65" data-fep-jobs="28" data-lcd="350" data-lcd-h="2000">Creality Halot Mage</option>
+                    <option value="75" data-valor="9000" data-vida="3000" data-fep="70" data-fep-jobs="28" data-lcd="420" data-lcd-h="2500">Creality Halot Mage Pro</option>
                   </optgroup>
                   <optgroup label="Phrozen">
-                    <option value="60">Phrozen Sonic Mini 8K</option>
-                    <option value="75">Phrozen Sonic Mighty 8K</option>
+                    <option value="60" data-valor="6500" data-vida="2500" data-fep="55" data-fep-jobs="30" data-lcd="300" data-lcd-h="2000">Phrozen Sonic Mini 8K</option>
+                    <option value="75" data-valor="9500" data-vida="3000" data-fep="70" data-fep-jobs="28" data-lcd="420" data-lcd-h="2500">Phrozen Sonic Mighty 8K</option>
                   </optgroup>
                   <optgroup label="Bambu Lab">
-                    <option value="50">Bambu Lab</option>
+                    <option value="50" data-valor="5500" data-vida="2000" data-fep="50" data-fep-jobs="30" data-lcd="220" data-lcd-h="2000">Bambu Lab</option>
                   </optgroup>
                 </select>
               </div>
@@ -776,7 +783,7 @@
             </div>
           </div>
 
-          <div class="card">
+          <div class="card secao-avancada" id="sec5">
             <h2>5. Mão de obra e desgaste</h2>
             <p class="section-note">O erro mais caro é achar que a impressora trabalha de graça e que seu tempo não entra no preço.</p>
             <div class="grid">
@@ -792,7 +799,7 @@
             </div>
           </div>
 
-          <div class="card">
+          <div class="card secao-avancada" id="sec6">
             <h2>6. Frete, estoque e validade</h2>
             <p class="section-note">Frete e estoque são vilões silenciosos. Coloque nem que seja uma média simples para não vender no escuro.</p>
             <div class="grid">
@@ -1418,14 +1425,71 @@
       });
       $("btnExportJSON").addEventListener("click", exportJSON);
 
+    // ── MODO SIMPLES / AVANÇADO ──
+    let modoSimples = false;
+    const btnModo = $("btnModo");
+    const form = $("costForm");
+    if (btnModo && form) {
+      btnModo.addEventListener("click", () => {
+        modoSimples = !modoSimples;
+        if (modoSimples) {
+          form.classList.add("modo-simples");
+          btnModo.textContent = "🔬 Modo Avançado";
+          btnModo.classList.add("modo-ativo");
+          // Mostrar aviso
+          if (!$("avisoSimples")) {
+            const av = document.createElement("div");
+            av.id = "avisoSimples";
+            av.style.cssText = "padding:10px 14px;border-radius:10px;margin-bottom:12px;background:rgba(79,209,255,0.08);border:1px solid rgba(79,209,255,0.2);color:#7dd3fc;font-size:0.82rem;display:flex;gap:8px;align-items:center;";
+            av.innerHTML = "<span>⚡</span><span><strong>Modo Simples ativo</strong> — mostrando apenas os campos essenciais. Campos ocultos (lavagem, mão de obra, frete) usam os valores já preenchidos.</span>";
+            form.insertBefore(av, form.firstChild);
+          }
+        } else {
+          form.classList.remove("modo-simples");
+          btnModo.textContent = "⚡ Modo Simples";
+          btnModo.classList.remove("modo-ativo");
+          const av = $("avisoSimples");
+          if (av) av.remove();
+        }
+      });
+    }
+
     // ── Selects de impressora e lavadora preenchem o W automaticamente ──
     const printerModelSelect = $("printerModel");
     if (printerModelSelect) {
       printerModelSelect.addEventListener("change", (e) => {
+        const opt = e.target.options[e.target.selectedIndex];
         const w = e.target.value;
         if (w) {
           $("printerWatts").value = w;
           $("printerWatts").dispatchEvent(new Event("input", { bubbles: true }));
+          // Preencher valores típicos (modo avançado)
+          const presets = {
+            printerValue:    opt.dataset.valor,
+            printerLifeHours: opt.dataset.vida,
+            fepCost:         opt.dataset.fep,
+            fepLifeJobs:     opt.dataset.fepJobs,
+            lcdCost:         opt.dataset.lcd,
+            lcdLifeHours:    opt.dataset.lcdH,
+          };
+          let algumPreenchido = false;
+          Object.entries(presets).forEach(([id, val]) => {
+            const el = $(id);
+            if (el && val && !el.value) {
+              el.value = val;
+              el.dispatchEvent(new Event("input", { bubbles: true }));
+              algumPreenchido = true;
+            }
+          });
+          // Toast de feedback
+          if (algumPreenchido) {
+            const nomeMaquina = opt.textContent.trim();
+            const toast = document.createElement("div");
+            toast.style.cssText = "position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 18px;border-radius:10px;background:#0f1e35;border:1px solid rgba(79,209,255,0.35);color:#4fd1ff;font-size:0.82rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:flashPreset 0.3s ease;";
+            toast.innerHTML = "⚡ Valores típicos de <strong>" + nomeMaquina + "</strong> preenchidos!";
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+          }
         }
       });
     }
