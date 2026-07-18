@@ -338,7 +338,7 @@ function App() {
             </div>
           </div>
           <nav className="main-nav">
-            {(!atendenteLogado || atendenteLogado?.permissoes?.acessoAdmCompleto) && (
+            {!atendenteLogado && (
               <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
             )}
             {atendenteLogado ? (
@@ -756,7 +756,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "formulacao" && <FormulacaoContent cliente={cliente} />}
         {type === "galeria" && <GaleriaContent cliente={cliente} ocultarAbas />}
         {type === "galeriaPublica" && <GaleriaContent cliente={cliente} initialAba="ver" ocultarAbas />}
-        {type === "adm" && (!atendenteLogado || atendenteLogado?.permissoes?.acessoAdmCompleto) && <AdminContent />}
+        {type === "adm" && (!atendenteLogado || atendenteLogado?.permissoes?.acessoAdmCompleto) && <AdminContent tokenAtendente={atendenteLogado?.permissoes?.acessoAdmCompleto ? localStorage.getItem("quanton3d_atendente_token") : null} />}
         {type === "painel_atendente" && atendenteLogado && !atendenteLogado?.permissoes?.acessoAdmCompleto && <PainelAtendente atendente={atendenteLogado} onClose={() => setActiveModal(null)} />}
         {type === "adm" && atendenteLogado && !atendenteLogado?.permissoes?.acessoAdmCompleto && (
           <div style={{ padding: "40px", textAlign: "center" }}>
@@ -1475,9 +1475,12 @@ function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false })
   );
 }
 
-function AdminContent() {
+function AdminContent({ tokenAtendente }) {
   const [credenciais, setCredenciais] = useState({ user: "", password: "" });
-  const [token, setToken] = useState(() => localStorage.getItem("quanton3d_admin_token") || "");
+  const [token, setToken] = useState(() => {
+    if (tokenAtendente) return tokenAtendente;
+    return localStorage.getItem("quanton3d_admin_token") || "";
+  });
   const [aba, setAba] = useState("galeria");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
