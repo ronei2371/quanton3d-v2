@@ -245,6 +245,51 @@ function App() {
       )}
       {activeGuide && <GuideModal guide={activeGuide} onClose={() => setActiveGuide(null)} />}
       <ContactMessageModal aberto={mostrarContatoMensagem} aoFechar={() => setMostrarContatoMensagem(false)} cliente={cliente} />
+      {showLoginAtendente && (
+        <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && setShowLoginAtendente(false)}>
+          <div className="site-modal" style={{ maxWidth: "420px", padding: "32px" }}>
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <div style={{ fontSize: "2.5rem", marginBottom: "8px" }}>👨‍💼</div>
+              <h2 style={{ color: "#b89cff", margin: 0, fontSize: "1.2rem", fontWeight: 900 }}>Login de Atendente</h2>
+              <p style={{ color: "#9fb4c7", fontSize: "0.78rem", marginTop: "4px" }}>Área exclusiva para a equipe Quanton3D</p>
+            </div>
+            {loginAtErro && <div style={{ background: "rgba(255,107,107,0.12)", border: "1px solid rgba(255,107,107,0.3)", borderRadius: "8px", padding: "10px 14px", marginBottom: "16px", color: "#ff8fab", fontSize: "0.82rem" }}>{loginAtErro}</div>}
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+              <input
+                value={loginAtForm.email}
+                onChange={e => setLoginAtForm(p => ({...p, email: e.target.value}))}
+                placeholder="Seu email"
+                type="text"
+                autoComplete="off"
+                style={{ padding: "12px 16px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(4,10,24,0.9)", color: "#eaf3ff", WebkitTextFillColor: "#eaf3ff", caretColor: "#eaf3ff", fontFamily: "inherit", fontSize: "0.9rem", boxShadow: "0 0 0 9999px rgba(4,10,24,0.9) inset" }}
+              />
+              <input
+                value={loginAtForm.senha}
+                onChange={e => setLoginAtForm(p => ({...p, senha: e.target.value}))}
+                onKeyDown={e => e.key === "Enter" && loginAtendente()}
+                placeholder="Sua senha"
+                type="password"
+                autoComplete="new-password"
+                style={{ padding: "12px 16px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(4,10,24,0.9)", color: "#eaf3ff", WebkitTextFillColor: "#eaf3ff", caretColor: "#eaf3ff", fontFamily: "inherit", fontSize: "0.9rem", boxShadow: "0 0 0 9999px rgba(4,10,24,0.9) inset" }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button type="button" onClick={loginAtendente} disabled={loginAtLoading}
+                style={{ flex: 1, padding: "12px", borderRadius: "999px", border: "none", background: "linear-gradient(135deg,#7c3aed,#b89cff)", color: "#fff", fontWeight: 900, cursor: "pointer", fontSize: "0.9rem", fontFamily: "inherit" }}>
+                {loginAtLoading ? "Entrando..." : "✅ Entrar"}
+              </button>
+              <button type="button" onClick={() => { setShowLoginAtendente(false); setLoginAtErro(""); }}
+                style={{ padding: "12px 20px", borderRadius: "999px", border: "1px solid rgba(113,159,219,0.3)", background: "transparent", color: "#9fb4c7", cursor: "pointer", fontFamily: "inherit" }}>
+                Cancelar
+              </button>
+            </div>
+            <p style={{ textAlign: "center", marginTop: "16px", fontSize: "0.72rem", color: "#6b8aad" }}>
+              Código e credenciais fornecidos pelo administrador
+            </p>
+          </div>
+        </div>
+      )}
+
       {activeModal && (
         <SiteModal type={activeModal} cliente={cliente} onClose={() => setActiveModal(null)} abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} setActiveModal={setActiveModal} />
       )}
@@ -263,6 +308,17 @@ function App() {
           </div>
           <nav className="main-nav">
             <button type="button" onClick={() => setActiveModal("adm")}>ADM</button>
+            {atendenteLogado ? (
+              <button type="button" onClick={logoutAtendente}
+                style={{ background: "rgba(73,230,139,0.12)", borderColor: "rgba(73,230,139,0.4)", color: "#49e68b" }}>
+                👨‍💼 {atendenteLogado.codigo}
+              </button>
+            ) : (
+              <button type="button" onClick={() => setShowLoginAtendente(true)}
+                style={{ background: "rgba(184,156,255,0.1)", borderColor: "rgba(184,156,255,0.35)", color: "#b89cff" }}>
+                👨‍💼 Atendente
+              </button>
+            )}
             <button type="button" onClick={abrirCadastro}>
               {cliente ? `👤 ${cliente.nome.split(" ")[0]}` : "Cliente"}
             </button>
@@ -1336,11 +1392,23 @@ function AdminContent() {
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
+  const [atendenteLogado, setAtendenteLogado] = useState(null);
+  const [showLoginAtendente, setShowLoginAtendente] = useState(false);
+  const [loginAtForm, setLoginAtForm] = useState({ email: "", senha: "" });
+  const [loginAtErro, setLoginAtErro] = useState("");
+  const [loginAtLoading, setLoginAtLoading] = useState(false);
   const [atendentes, setAtendentes] = useState([]);
   const [logs, setLogs] = useState([]);
   const [novoAt, setNovoAt] = useState({ nome: "", email: "", senha: "" });
   const [criandoAt, setCriandoAt] = useState(false);
   const [filtroClienteConv, setFiltroClienteConv] = useState("");
+  // Recuperar sessão do atendente
+  useState(() => {
+    try {
+      const saved = localStorage.getItem("quanton3d_atendente");
+      if (saved) setAtendenteLogado(JSON.parse(saved));
+    } catch (_) {}
+  });
   const [buscaCliente, setBuscaCliente] = useState("");
   const [filtroOrigem, setFiltroOrigem] = useState("");
   const [clienteExpandido, setClienteExpandido] = useState("");
@@ -1432,6 +1500,30 @@ function AdminContent() {
     catch (_) { const a = document.createElement("textarea"); a.value = texto; document.body.appendChild(a); a.select(); document.execCommand("copy"); document.body.removeChild(a); }
     setContatoCopiado(c._id);
     setTimeout(() => setContatoCopiado(""), 2000);
+  }
+
+  async function loginAtendente() {
+    if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha email e senha."); return; }
+    try {
+      setLoginAtLoading(true);
+      const r = await api.post("/atendentes/login", loginAtForm);
+      if (r.data?.success) {
+        setAtendenteLogado(r.data.atendente);
+        localStorage.setItem("quanton3d_atendente", JSON.stringify(r.data.atendente));
+        localStorage.setItem("quanton3d_atendente_token", r.data.token);
+        setShowLoginAtendente(false);
+        setLoginAtErro("");
+        setLoginAtForm({ email: "", senha: "" });
+      }
+    } catch (err) {
+      setLoginAtErro(err?.response?.data?.error || "Erro ao fazer login.");
+    } finally { setLoginAtLoading(false); }
+  }
+
+  function logoutAtendente() {
+    setAtendenteLogado(null);
+    localStorage.removeItem("quanton3d_atendente");
+    localStorage.removeItem("quanton3d_atendente_token");
   }
 
   async function carregarAtendentes() {
