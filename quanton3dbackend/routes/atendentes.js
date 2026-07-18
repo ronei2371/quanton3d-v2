@@ -8,6 +8,27 @@ import LogAcao from '../models/LogAcao.js';
 
 const router = express.Router();
 
+// ── Utilitário: resumir dispositivo a partir do User-Agent ──────────────────
+function resumirDispositivo(ua = '') {
+  if (!ua) return 'Dispositivo desconhecido';
+  let browser = 'Navegador desconhecido';
+  let os = 'Sistema desconhecido';
+
+  if (/Edg\//.test(ua))           browser = 'Edge';
+  else if (/OPR\/|Opera/.test(ua))browser = 'Opera';
+  else if (/Chrome\//.test(ua))   browser = 'Chrome';
+  else if (/Firefox\//.test(ua))  browser = 'Firefox';
+  else if (/Safari\//.test(ua))   browser = 'Safari';
+
+  if (/Windows NT/.test(ua))      os = 'Windows';
+  else if (/Android/.test(ua))    os = 'Android';
+  else if (/iPhone|iPad/.test(ua))os = 'iOS';
+  else if (/Mac OS X/.test(ua))   os = 'Mac';
+  else if (/Linux/.test(ua))      os = 'Linux';
+
+  return `${browser} / ${os}`;
+}
+
 // ── LOGIN do atendente ──────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
   try {
@@ -22,19 +43,36 @@ router.post('/login', async (req, res) => {
     const ok = await at.verificarSenha(senha);
     if (!ok) return res.status(401).json({ success: false, error: 'Credenciais inválidas.' });
 
+    const expiresEm = new Date(Date.now() + 8 * 60 * 60 * 1000); // +8h
     const token = jwt.sign(
       { atendenteId: at._id, codigo: at.codigo },
       process.env.ADMIN_JWT_SECRET,
       { expiresIn: '8h' }
     );
 
-    await Atendente.findByIdAndUpdate(at._id, { ultimoAcesso: new Date() });
+    // IP real (considerando proxy/Render)
+    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '';
+    const ua = req.headers['user-agent'] || '';
+    const dispositivo = resumirDispositivo(ua);
+
+    // Histórico: mantém só as últimas 10 sessões
+    const novaSessao = { ip, dispositivo, userAgent: ua, loginEm: new Date(), expiresEm };
+    const sessoesAtuais = at.sessoes || [];
+    const novasSessoes = [novaSessao, ...sessoesAtuais].slice(0, 10);
+
+    await Atendente.findByIdAndUpdate(at._id, {
+      ultimoAcesso: new Date(),
+      ultimoIp: ip,
+      ultimoDispositivo: dispositivo,
+      sessoes: novasSessoes,
+    });
+
     await LogAcao.create({
       tipo: 'atendente', atendenteId: at._id,
       atendenteCod: at.codigo, atendenteNome: at.nome,
       acao: 'LOGIN', modulo: 'auth',
-      detalhe: 'Login realizado com sucesso',
-      ip: req.ip || '', userAgent: req.headers['user-agent'] || '',
+      detalhe: `Login de ${dispositivo} — IP: ${ip}`,
+      ip, userAgent: ua,
     });
 
     res.json({
@@ -124,6 +162,17 @@ router.patch('/:id/senha', authAdmin, async (req, res) => {
     at.senha = novaSenha;
     await at.save();
     res.json({ success: true, message: 'Senha atualizada com sucesso.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Erro interno.' });
+  }
+});
+
+// ── SESSÕES de um atendente (só superadmin) ───────────────────────────────────
+router.get('/:id/sessoes', authAdmin, async (req, res) => {
+  try {
+    const at = await Atendente.findById(req.params.id).select('codigo nome sessoes ultimoIp ultimoDispositivo ultimoAcesso').lean();
+    if (!at) return res.status(404).json({ success: false, error: 'Atendente não encontrado.' });
+    res.json({ success: true, atendente: at });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Erro interno.' });
   }
