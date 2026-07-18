@@ -3493,7 +3493,9 @@ function ServiceLine({ title, onClick }) {
 
 
 function PainelAtendente({ atendente, onClose }) {
-  const [aba, setAba] = useState("chamados");
+  const p = atendente.permissoes || {};
+  const primeiraAba = p.verChamados !== false ? "chamados" : p.verMensagens !== false ? "mensagens" : p.verClientes !== false ? "clientes" : p.sugerirConhecimento ? "sugestoes" : "chamados";
+  const [aba, setAba] = useState(primeiraAba);
   const [dados, setDados] = useState({ chamados: [], mensagens: [], clientes: [] });
   const [carregando, setCarregando] = useState(true);
   const token = localStorage.getItem("quanton3d_atendente_token");
@@ -3551,10 +3553,10 @@ function PainelAtendente({ atendente, onClose }) {
   }
 
   const ABAS = [
-    { id: "chamados", label: "🔧 Chamados", count: dados.chamados.length },
-    { id: "mensagens", label: "✉️ Mensagens", count: dados.mensagens.length },
-    { id: "clientes", label: "👥 Clientes", count: dados.clientes.length },
-    atendente.permissoes?.sugerirConhecimento !== false && { id: "sugestoes", label: "💡 Sugestões", count: sugestoes.length },
+    p.verChamados !== false     && { id: "chamados",  label: "🔧 Chamados",   count: dados.chamados.length },
+    p.verMensagens !== false    && { id: "mensagens", label: "✉️ Mensagens",  count: dados.mensagens.length },
+    p.verClientes !== false     && { id: "clientes",  label: "👥 Clientes",   count: dados.clientes.length },
+    p.sugerirConhecimento       && { id: "sugestoes", label: "💡 Sugestões",  count: sugestoes.length },
   ].filter(Boolean);
 
   return (
