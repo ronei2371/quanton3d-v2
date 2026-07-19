@@ -823,9 +823,16 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
             ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "18px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)" }
             : { width: "min(1100px, calc(100vw - 20px))", maxHeight: "calc(100vh - 30px)" }
         }>
-        <div className="guide-header">
-          <h2>{nomeFispq || titles[type] || "Informações"}</h2>
-          <button type="button" onClick={onClose}>Fechar</button>
+        <div className="guide-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+            <h2 style={{ margin: 0, fontSize: "clamp(0.82rem, 3vw, 1.1rem)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#eaf7ff" }}>
+              {nomeFispq || titles[type] || "Informações"}
+            </h2>
+          </div>
+          <button type="button" onClick={onClose}
+            style={{ flexShrink: 0, padding: "7px 16px", borderRadius: "999px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.1)", color: "#ff8fab", fontWeight: 800, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+            ✕ Fechar
+          </button>
         </div>
         {type === "contato" && <ContatoContent cliente={cliente} />}
         {type === "sobre" && <SobreContent abrirGuia={abrirGuia} abrirParceiroModal={abrirParceiroModal} />}
