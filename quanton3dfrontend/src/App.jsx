@@ -472,15 +472,22 @@ function App() {
 
         {secoesAbertas.catalogo && (
           <>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
-              <button type="button" onClick={() => setActiveModal("qualidade")} style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(79,209,255,0.06)", color: "#9fb4c7", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Alta Qualidade</button>
+            {/* Ver todas as resinas */}
+            <div style={{ marginTop: "12px" }}>
+              <a href="https://quanton3d.com.br/produtos" target="_blank" rel="noreferrer"
+                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", borderRadius: "14px", border: "1px solid rgba(73,230,139,0.3)", background: "rgba(73,230,139,0.06)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", width: "100%", textDecoration: "none" }}>
+                <span style={{ fontSize: "1.4rem" }}>🧪</span>
+                <div style={{ textAlign: "left" }}>
+                  <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.92rem" }}>Ver todas as resinas Quanton3D</strong>
+                  <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>14 linhas exclusivas — PYROBLAST, IRON, POSEIDON, FLEXFORM, SPIN, ATHOM e muito mais</span>
+                </div>
+                <span style={{ marginLeft: "auto", color: "#49e68b", fontSize: "0.82rem", fontWeight: 700 }}>Ver →</span>
+              </a>
             </div>
 
-            {/* FISPQs — botão único abre modal com lista */}
-            <div style={{ marginTop: "16px" }}>
-              <button
-                type="button"
-                onClick={() => setActiveModal("fispqs")}
+            {/* FISPQs */}
+            <div style={{ marginTop: "10px" }}>
+              <button type="button" onClick={() => setActiveModal("fispqs")}
                 style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", borderRadius: "14px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.07)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", width: "100%" }}>
                 <span style={{ fontSize: "1.4rem" }}>📄</span>
                 <div style={{ textAlign: "left" }}>
