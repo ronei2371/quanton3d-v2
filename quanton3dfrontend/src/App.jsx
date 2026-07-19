@@ -328,7 +328,7 @@ function App() {
 
       <header className="site-header">
         <div className="header-inner">
-          <div className="brand">
+          <div className="brand" style={{ display: "flex", alignItems: "center", gap: "14px" }}>
             <img src="/logo-quanton3d.png" alt="Quanton3D" className="brand-logo" />
             <div>
               <h1 translate="no" style={{ margin: 0, fontSize: "1.2rem", color: "#eaf7ff", display: "flex", alignItems: "baseline", gap: "3px" }}>
@@ -336,6 +336,10 @@ function App() {
               </h1>
               <p style={{ margin: "3px 0 0", color: "#8ba3be", fontSize: "0.75rem" }}>Resinas UV SLA/DLP de Alta Performance</p>
             </div>
+            <button type="button" onClick={() => setActiveModal("sobre")}
+              style={{ padding: "5px 14px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.08)", color: "#7dd3fc", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+              ℹ️ Quem Somos
+            </button>
           </div>
           <nav className="main-nav">
             {!atendenteLogado && (
@@ -358,10 +362,7 @@ function App() {
                 👨‍💼 Atendente
               </button>
             )}
-            <button type="button" onClick={() => setActiveModal("sobre")}
-                style={{ background: "rgba(79,209,255,0.1)", borderColor: "rgba(79,209,255,0.3)", color: "#7dd3fc" }}>
-                ℹ️ Quem Somos
-              </button>
+
             <button type="button" onClick={abrirCadastro}>
               {cliente ? `👤 ${cliente.nome.split(" ")[0]}` : "Cliente"}
             </button>
@@ -520,10 +521,7 @@ function App() {
               style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
               🏆 Ver parceiros e cursos
             </button>
-            <button type="button" onClick={() => setActiveModal("sobre")}
-              style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
-              ℹ️ Saiba mais sobre nós
-            </button>
+
           </div>
         )}
       </section>
