@@ -3358,7 +3358,13 @@ function BotContent({ cliente }) {
   const [paramsFeedback, setParamsFeedback] = useState({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" });
   const scrollRef = useRef(null);
 
-  useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [mensagens]);
+  useEffect(() => {
+    if (!scrollRef.current) return;
+    const el = scrollRef.current;
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+    });
+  }, [mensagens]);
 
   useEffect(() => {
     api.get("/parametros/impressoras").then(res => {
@@ -3541,11 +3547,11 @@ Como posso te ajudar hoje?`;
           <button type="button" onClick={() => setEtapa("contexto")} style={{ marginLeft: "auto", color: "#4fd1ff", background: "none", border: "none", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700 }}>Alterar</button>
         </div>
       )}
-      <div className="chat-messages" ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div className="chat-messages" ref={scrollRef} style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "16px", display: "flex", flexDirection: "column", gap: "12px", scrollBehavior: "smooth" }}>
         {mensagens.map((m, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", maxWidth: "85%", alignSelf: m.isBot ? "flex-start" : "flex-end" }}>
+          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", width: "100%", boxSizing: "border-box" }}>
             <div
-              style={{ padding: "10px 14px", borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px", background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)", border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)", color: "#eaf3ff", fontSize: "0.92rem", lineHeight: 1.55 }}
+              style={{ padding: "10px 14px", borderRadius: m.isBot ? "4px 18px 18px 18px" : "18px 4px 18px 18px", background: m.isBot ? "rgba(26,115,232,0.18)" : "rgba(79,209,255,0.18)", border: m.isBot ? "1px solid rgba(26,115,232,0.35)" : "1px solid rgba(79,209,255,0.35)", color: "#eaf3ff", fontSize: "0.92rem", lineHeight: 1.55, maxWidth: "85%", wordBreak: "break-word", overflowWrap: "break-word", boxSizing: "border-box" }}
               dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
             />
 
