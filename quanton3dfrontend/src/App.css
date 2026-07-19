@@ -2435,3 +2435,206 @@ section .section-label {
   max-height: calc(100vh - 16px) !important;
   box-sizing: border-box !important;
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* v30 — MOBILE RESPONSIVO (≤ 768px)                          */
+/* Corrige: overflow, botões, modais, imagens, header         */
+/* ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* BODY — sem scroll horizontal, tela fixa */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+
+  /* APP SHELL — padding menor nas laterais */
+  .app-shell {
+    width: calc(100% - 16px) !important;
+    margin: 0 auto !important;
+    padding-bottom: 20px !important;
+  }
+
+  /* HEADER — empilha brand e nav em coluna */
+  .site-header {
+    position: sticky !important;
+    top: 6px !important;
+    margin-bottom: 12px !important;
+  }
+  .header-inner {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 10px 14px !important;
+    border-radius: 18px !important;
+    align-items: flex-start !important;
+  }
+  .brand {
+    width: 100% !important;
+    gap: 10px !important;
+  }
+  .brand-logo { height: 36px !important; width: 36px !important; }
+  .brand h1 { font-size: 1rem !important; }
+  .brand p { font-size: 0.7rem !important; }
+
+  /* Botão "Quem Somos" ao lado do logo — menor no mobile */
+  .brand button {
+    padding: 3px 10px !important;
+    font-size: 0.65rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* NAV — botões em linha compacta */
+  .main-nav {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+  }
+  .main-nav button {
+    padding: 5px 10px !important;
+    font-size: 0.72rem !important;
+    border-radius: 999px !important;
+  }
+
+  /* MODAL BACKDROP — sem padding lateral */
+  .modal-backdrop {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  /* SITE MODAL — ocupa tela toda, com scroll interno */
+  .site-modal {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 95vh !important;
+    max-height: 95vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 16px 14px 24px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Barra de arraste no topo do modal */
+  .site-modal::before {
+    content: '' !important;
+    display: block !important;
+    width: 40px !important;
+    height: 4px !important;
+    border-radius: 999px !important;
+    background: rgba(79,209,255,0.3) !important;
+    margin: 0 auto 14px !important;
+  }
+
+  /* GUIDE MODAL — tela cheia no mobile */
+  .guide-modal {
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  .guide-frame {
+    height: calc(100vh - 56px) !important;
+  }
+  .guide-header {
+    border-radius: 0 !important;
+    padding: 10px 14px !important;
+  }
+
+  /* IMAGENS — nunca ultrapassar a tela */
+  img, iframe, video {
+    max-width: 100% !important;
+  }
+
+  /* GRIDS — virar coluna única */
+  .selector-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .sobre-hero {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    padding: 16px !important;
+  }
+  .sobre-fundadores {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .sobre-resina-detalhe {
+    grid-template-columns: 1fr !important;
+  }
+  .sobre-valores-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .sobre-actions {
+    grid-template-columns: 1fr !important;
+  }
+  .sobre-resina-tabs {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  .sobre-resina-tab {
+    font-size: 0.68rem !important;
+    padding: 4px 8px !important;
+  }
+
+  /* CALCULADORAS — sem corte */
+  .site-modal iframe {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+
+  /* BOTÕES — nunca sair da caixa */
+  button, .field, .clickable-card, .modal-action-grid button, .modal-action-grid a {
+    max-width: 100% !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+  }
+  .modal-action-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* PAINEL ADM — coluna única */
+  .admin-tabs {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  .admin-icon-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* CARDS DO HERO */
+  .hero-home > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+  .hero-home > div:last-child > div {
+    min-height: unset !important;
+    padding: 14px 12px !important;
+  }
+
+  /* HOME ACTIONS — botões menores */
+  .home-actions button {
+    font-size: 0.8rem !important;
+    padding: 8px 10px !important;
+  }
+
+  /* SECTION LABEL — tamanho menor */
+  .section-label {
+    font-size: 0.7rem !important;
+    padding: 4px 10px !important;
+  }
+
+  /* PAINEL ATENDENTE — tabs compactas */
+  .painel-tabs {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+}
+
+/* ── MOBILE PEQUENO (≤ 390px) ── */
+@media (max-width: 390px) {
+  .admin-icon-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .brand h1 { font-size: 0.88rem !important; }
+  .main-nav button { font-size: 0.65rem !important; padding: 4px 8px !important; }
+  .site-modal { padding: 12px 10px 20px !important; }
+}
