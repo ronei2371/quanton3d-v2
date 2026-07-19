@@ -2638,3 +2638,39 @@ section .section-label {
   .main-nav button { font-size: 0.65rem !important; padding: 4px 8px !important; }
   .site-modal { padding: 12px 10px 20px !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* v31 — Estabilidade do chat (sem tremor/vibração)           */
+/* ═══════════════════════════════════════════════════════════ */
+.chat-messages {
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+  contain: layout style;
+}
+
+.chat-messages > div {
+  width: 100%;
+  box-sizing: border-box;
+  contain: layout;
+}
+
+/* Mensagens não ultrapassam o container */
+.chat-messages > div > div {
+  max-width: 85%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
+
+/* No mobile o chat fica mais estável */
+@media (max-width: 768px) {
+  .chat-messages {
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
+  .chat-messages > div > div {
+    max-width: 92%;
+    font-size: 0.88rem !important;
+  }
+}
