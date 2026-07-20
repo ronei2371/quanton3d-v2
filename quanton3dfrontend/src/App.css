@@ -2837,3 +2837,79 @@ section .section-label {
     padding-bottom: max(24px, calc(env(safe-area-inset-bottom) + 16px)) !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* v33 — HERO MOBILE: ELIO compacto + botões corretos         */
+/* ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Hero: coluna única, sem min-height */
+  .hero-home {
+    grid-template-columns: 1fr !important;
+    min-height: unset !important;
+    gap: 14px !important;
+    padding: 16px 0 !important;
+  }
+
+  /* ELIO — faixa horizontal compacta no topo */
+  .assistant-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 14px 16px !important;
+    min-height: unset !important;
+  }
+
+  /* Avatar ELIO menor */
+  .bot-face {
+    flex-shrink: 0 !important;
+    width: 64px !important;
+    height: 64px !important;
+    min-height: unset !important;
+  }
+  .elio-container {
+    width: 64px !important;
+    height: 64px !important;
+  }
+  .elio-avatar {
+    width: 64px !important;
+    height: 64px !important;
+  }
+
+  /* Botão "Assistente IA Quanton3D" ao lado do avatar */
+  .assistant-card > button {
+    flex: 1 !important;
+    margin-top: 0 !important;
+    padding: 10px 16px !important;
+    font-size: 0.82rem !important;
+    text-align: center !important;
+  }
+
+  /* Partículas e glow menores no mobile */
+  .elio-glow-ring {
+    width: 72px !important;
+    height: 72px !important;
+  }
+  .elio-particles { display: none !important; }
+
+  /* Seções home — padding compacto */
+  .hero-home > div:last-child {
+    padding: 0 !important;
+    gap: 8px !important;
+  }
+}
+
+/* ── LANDSCAPE MOBILE (horizontal) ── */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero-home {
+    grid-template-columns: 200px 1fr !important;
+    padding: 10px 0 !important;
+  }
+  .assistant-card {
+    flex-direction: column !important;
+  }
+  .site-modal {
+    height: 98vh !important;
+  }
+}
