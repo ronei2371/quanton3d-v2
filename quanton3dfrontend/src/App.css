@@ -3019,3 +3019,77 @@ section .section-label {
     min-height: 0 !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* v35 — Fontes mobile forçadas + Consulta Rápida corrigida   */
+/* ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* CONSULTA RÁPIDA — texto não quebra linha */
+  .section-label {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 200px !important;
+  }
+
+  /* Botões de seção — forçar tamanho correto */
+  .hero-home > div:last-child > div > button,
+  .hero-home > div:last-child > div > div > button {
+    font-size: 0.75rem !important;
+    padding: 10px 12px !important;
+    min-height: 44px !important;
+  }
+
+  /* Sub-botões dentro das seções */
+  .home-actions button,
+  .selector-grid button,
+  .field.clickable-card {
+    font-size: 0.78rem !important;
+    padding: 9px 12px !important;
+  }
+
+  /* Textos descritivos dos botões */
+  .home-actions button p,
+  .field.clickable-card p,
+  .selector-grid .field p {
+    font-size: 0.7rem !important;
+    margin: 3px 0 0 !important;
+  }
+
+  /* Texto secundário ao lado do section-label */
+  .hero-home > div:last-child > div > button span:not(.section-label),
+  .hero-home > div:last-child > div > div > button span:not(.section-label) {
+    display: none !important;
+  }
+
+  /* Nav buttons */
+  .main-nav button {
+    font-size: 0.68rem !important;
+    padding: 5px 8px !important;
+  }
+
+  /* Mensagens do chat */
+  .chat-messages > div > div {
+    font-size: 0.82rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Textos gerais dos modais */
+  .site-modal p { font-size: 0.82rem !important; }
+  .site-modal h2 { font-size: 1rem !important; }
+  .site-modal h3 { font-size: 0.9rem !important; }
+  .site-modal label { font-size: 0.78rem !important; }
+  .site-modal input, .site-modal select, .site-modal textarea {
+    font-size: 0.85rem !important;
+  }
+
+  /* Rodapé */
+  footer, .site-footer { font-size: 0.72rem !important; }
+}
+
+@media (max-width: 390px) {
+  .section-label { max-width: 150px !important; font-size: 0.65rem !important; }
+  .main-nav button { font-size: 0.6rem !important; padding: 4px 6px !important; }
+  .home-actions button { font-size: 0.72rem !important; }
+}
