@@ -769,9 +769,12 @@ function PerfilModal({ cliente, onClose, onSalvo }) {
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <div style={{ fontSize: "2rem", marginBottom: "8px" }}>📋</div>
           <h2 style={{ margin: 0, color: "#eaf7ff", fontSize: "1.1rem" }}>Completar Perfil</h2>
-          <p style={{ margin: "6px 0 0", color: "#9fb4c7", fontSize: "0.82rem" }}>
-            Informações opcionais para agilizar seu atendimento.<br/>
-            <strong style={{ color: "#4fd1ff" }}>Nenhum campo é obrigatório.</strong>
+          <p style={{ margin: "8px 0 0", color: "#9fb4c7", fontSize: "0.82rem", lineHeight: 1.6 }}>
+            Deixe seu CPF ou CNPJ para ser localizado rapidamente no nosso cadastro da Quanton3D e ter um atendimento ainda mais ágil.
+          </p>
+          <p style={{ margin: "6px 0 0", fontSize: "0.78rem" }}>
+            <strong style={{ color: "#49e68b" }}>Não é obrigatório</strong>
+            <span style={{ color: "#6b8aad" }}> — você pode preencher quando quiser.</span>
           </p>
         </div>
 
