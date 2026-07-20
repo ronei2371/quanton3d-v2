@@ -124,6 +124,7 @@ function App() {
   const [cliente, setCliente] = useState(clienteSalvoInicial);
   const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!privacidadeAceitaInicial);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
+  const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [mostrarCadastro, setMostrarCadastro] = useState(privacidadeAceitaInicial && !clienteSalvoInicial);
   const [formCliente, setFormCliente] = useState({ nome: "", telefone: "", email: "", origem: "Instagram" });
   const [salvandoCliente, setSalvandoCliente] = useState(false);
@@ -275,6 +276,13 @@ function App() {
         <BoasVindasModal onEntrar={() => { setMostrarBoasVindas(false); setMostrarPrivacidade(true); }} />
       )}
       {!mostrarBoasVindas && mostrarPrivacidade && <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />}
+      {mostrarPerfil && cliente && (
+        <PerfilModal
+          cliente={cliente}
+          onClose={() => setMostrarPerfil(false)}
+          onSalvo={(clienteAtualizado) => { setCliente(clienteAtualizado); localStorage.setItem("quanton3d_cliente", JSON.stringify(clienteAtualizado)); setMostrarPerfil(false); }}
+        />
+      )}
       {mostrarCadastro && !mostrarPrivacidade && (
         <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} />
       )}
@@ -378,6 +386,10 @@ function App() {
         <div className="client-chip">
           <strong>Cliente ativo:</strong> {cliente.nome} • {cliente.telefone}
           <button type="button" onClick={abrirCadastro} style={{ marginLeft: "12px", fontSize: "0.75rem", padding: "2px 8px" }}>Atualizar dados</button>
+          <button type="button" onClick={() => setMostrarPerfil(true)}
+            style={{ marginLeft: "6px", fontSize: "0.75rem", padding: "2px 8px", background: "rgba(73,230,139,0.12)", border: "1px solid rgba(73,230,139,0.3)", color: "#49e68b", borderRadius: "6px", cursor: "pointer", fontFamily: "inherit" }}>
+            {cliente.cpfCnpj ? "✅ Perfil completo" : "📋 Completar perfil"}
+          </button>
         </div>
       )}
 
@@ -716,6 +728,115 @@ function App() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function PerfilModal({ cliente, onClose, onSalvo }) {
+  const [tipo, setTipo] = useState(cliente.tipoPessoa || "pf");
+  const [cpfCnpj, setCpfCnpj] = useState(cliente.cpfCnpj || "");
+  const [nomeEmpresa, setNomeEmpresa] = useState(cliente.nomeEmpresa || "");
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState("");
+
+  function formatarDoc(val, tipo) {
+    const d = val.replace(/\D/g, "");
+    if (tipo === "pf") {
+      return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4").slice(0, 14);
+    } else {
+      return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5").slice(0, 18);
+    }
+  }
+
+  async function salvar() {
+    const digits = cpfCnpj.replace(/\D/g, "");
+    if (cpfCnpj && tipo === "pf" && digits.length !== 11) { setErro("CPF deve ter 11 dígitos."); return; }
+    if (cpfCnpj && tipo === "pj" && digits.length !== 14) { setErro("CNPJ deve ter 14 dígitos."); return; }
+    if (tipo === "pj" && !nomeEmpresa.trim()) { setErro("Informe o nome da empresa."); return; }
+    try {
+      setSalvando(true); setErro("");
+      const r = await api.patch(`/clientes/${cliente._id}/perfil`, { cpfCnpj: digits, tipoPessoa: tipo, nomeEmpresa });
+      onSalvo(r.data.cliente);
+    } catch(e) {
+      setErro(e.response?.data?.error || "Erro ao salvar. Tente novamente.");
+    } finally { setSalvando(false); }
+  }
+
+  const iStyle = { width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.8)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.9rem", outline: "none", boxSizing: "border-box" };
+
+  return (
+    <div className="modal-backdrop">
+      <section className="registration-modal" style={{ maxWidth: "460px" }}>
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <div style={{ fontSize: "2rem", marginBottom: "8px" }}>📋</div>
+          <h2 style={{ margin: 0, color: "#eaf7ff", fontSize: "1.1rem" }}>Completar Perfil</h2>
+          <p style={{ margin: "6px 0 0", color: "#9fb4c7", fontSize: "0.82rem" }}>
+            Informações opcionais para agilizar seu atendimento.<br/>
+            <strong style={{ color: "#4fd1ff" }}>Nenhum campo é obrigatório.</strong>
+          </p>
+        </div>
+
+        {/* Info do cliente */}
+        <div style={{ background: "rgba(79,209,255,0.05)", border: "1px solid rgba(79,209,255,0.15)", borderRadius: "10px", padding: "12px 14px", marginBottom: "18px" }}>
+          <p style={{ margin: 0, fontSize: "0.82rem", color: "#c5d8e8" }}>
+            👤 <strong>{cliente.nome}</strong> · 📱 {cliente.telefone}
+          </p>
+        </div>
+
+        {/* Tipo de pessoa */}
+        <p style={{ fontSize: "0.78rem", fontWeight: 800, color: "#9fb4c7", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Tipo de pessoa</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "16px" }}>
+          {[{ id: "pf", label: "👤 Pessoa Física", sub: "CPF" }, { id: "pj", label: "🏢 Pessoa Jurídica", sub: "CNPJ" }].map(t => (
+            <button key={t.id} type="button" onClick={() => { setTipo(t.id); setCpfCnpj(""); }}
+              style={{ padding: "12px", borderRadius: "10px", border: `1px solid ${tipo === t.id ? "rgba(79,209,255,0.5)" : "rgba(113,159,219,0.2)"}`, background: tipo === t.id ? "rgba(79,209,255,0.1)" : "rgba(255,255,255,0.03)", color: tipo === t.id ? "#4fd1ff" : "#9fb4c7", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: "0.82rem" }}>
+              <div>{t.label}</div>
+              <div style={{ fontSize: "0.7rem", opacity: 0.7, marginTop: "3px" }}>{t.sub}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* CPF ou CNPJ */}
+        <div style={{ marginBottom: "14px" }}>
+          <label style={{ fontSize: "0.78rem", fontWeight: 800, color: "#9fb4c7", display: "block", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            {tipo === "pf" ? "CPF" : "CNPJ"} <span style={{ color: "#6b8aad", fontWeight: 400 }}>(opcional)</span>
+          </label>
+          <input value={cpfCnpj} onChange={e => setCpfCnpj(formatarDoc(e.target.value, tipo))}
+            placeholder={tipo === "pf" ? "000.000.000-00" : "00.000.000/0000-00"}
+            style={iStyle} maxLength={tipo === "pf" ? 14 : 18} />
+        </div>
+
+        {/* Nome da empresa (só PJ) */}
+        {tipo === "pj" && (
+          <div style={{ marginBottom: "14px" }}>
+            <label style={{ fontSize: "0.78rem", fontWeight: 800, color: "#9fb4c7", display: "block", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Nome da Empresa
+            </label>
+            <input value={nomeEmpresa} onChange={e => setNomeEmpresa(e.target.value)}
+              placeholder="Razão social ou nome fantasia"
+              style={iStyle} />
+          </div>
+        )}
+
+        {/* Aviso LGPD */}
+        <div style={{ background: "rgba(73,230,139,0.05)", border: "1px solid rgba(73,230,139,0.15)", borderRadius: "8px", padding: "10px 14px", marginBottom: "16px" }}>
+          <p style={{ margin: 0, fontSize: "0.75rem", color: "#9fcfad", lineHeight: 1.5 }}>
+            🔒 Seus dados são protegidos pela LGPD. Usamos apenas para identificação e histórico de compras.
+          </p>
+        </div>
+
+        {erro && <p style={{ color: "#ff8fab", fontSize: "0.82rem", margin: "0 0 12px", textAlign: "center" }}>{erro}</p>}
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+          <button type="button" onClick={onClose}
+            style={{ padding: "11px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.25)", background: "rgba(255,255,255,0.04)", color: "#9fb4c7", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>
+            Agora não
+          </button>
+          <button type="button" onClick={salvar} disabled={salvando}
+            style={{ padding: "11px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg,#1565c0,#7c3aed)", color: "#fff", cursor: "pointer", fontFamily: "inherit", fontWeight: 900, fontSize: "0.9rem" }}>
+            {salvando ? "Salvando..." : "✅ Salvar"}
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -2880,6 +3001,18 @@ function AdminContent({ tokenAtendente }) {
                               <div style={{ fontSize:"0.65rem", color:"#6b8aad", marginBottom:"2px" }}>CADASTRO</div>
                               <div style={{ fontSize:"0.82rem", color:"#eaf3ff" }}>{new Date(c.createdAt).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" })}</div>
                             </div>
+                            {c.cpfCnpj && (
+                              <div style={{ background:"rgba(73,230,139,0.07)", borderRadius:"8px", padding:"7px 10px", border:"1px solid rgba(73,230,139,0.15)", gridColumn:"1 / -1" }}>
+                                <div style={{ fontSize:"0.65rem", color:"#49e68b", marginBottom:"2px", fontWeight:800 }}>{c.tipoPessoa === "pj" ? "🏢 CNPJ" : "👤 CPF"}</div>
+                                <div style={{ fontSize:"0.85rem", color:"#eaf3ff", fontWeight:700, letterSpacing:"0.05em" }}>{c.cpfCnpj}</div>
+                                {c.nomeEmpresa && <div style={{ fontSize:"0.78rem", color:"#9fcfad", marginTop:"3px" }}>🏢 {c.nomeEmpresa}</div>}
+                              </div>
+                            )}
+                            {!c.cpfCnpj && (
+                              <div style={{ background:"rgba(255,209,102,0.05)", borderRadius:"8px", padding:"7px 10px", border:"1px solid rgba(255,209,102,0.12)", gridColumn:"1 / -1" }}>
+                                <div style={{ fontSize:"0.72rem", color:"#9fb4c7" }}>⚠️ CPF/CNPJ não informado pelo cliente</div>
+                              </div>
+                            )}
                           </div>
                           {c.observacao && (
                             <div style={{ background:"rgba(184,156,255,0.07)", borderRadius:"8px", padding:"8px 10px", marginBottom:"8px", border:"1px solid rgba(184,156,255,0.15)" }}>
