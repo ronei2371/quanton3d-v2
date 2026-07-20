@@ -1008,7 +1008,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
           (type === "calc_custos" || type === "calc_exp" || type === "calc_vol" || type === "calc_tolerancia" || type === "calc_tempo" || type === "calc_compensacao" || type === "parceirosPublico" || type === "sobre" || (type && type.startsWith("fispq_")))
             ? { width: "min(1400px, calc(100vw - 16px))", height: "calc(100vh - 16px)", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
-            ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "18px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)" }
+            ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "12px 14px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)", display: "flex", flexDirection: "column", overflow: "hidden" }
             : { width: "min(1100px, calc(100vw - 20px))", maxHeight: "calc(100vh - 30px)" }
         }>
         <div className="guide-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexShrink: 0 }}>
@@ -1043,7 +1043,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "calc_custos" && <CalculadoraCustos cliente={cliente} />}
         {type === "calc_tempo" && <CalculadoraTempo />}
         {type === "calc_compensacao" && <CalculadoraCompensacao />}
-        {type === "bot" && <BotContent cliente={cliente} />}
+        {type === "bot" && <BotContent cliente={cliente} style={{ flex: 1, minHeight: 0 }} />}
         {type === "chamado" && <ChamadoTecnicoContent cliente={cliente} />}
         {type === "parceirosPublico" && <ParceirosPublicoContent abrirParceiroModal={abrirParceiroModal} />}
         {type === "fispqs" && (
@@ -3963,7 +3963,7 @@ Como posso te ajudar hoje?`;
   );
 
   return (
-    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "min(78vh, 780px)", flex: 1, minHeight: 0 }}>
+    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, height: "100%" }}>
       {(ctx.resina || ctx.impressora) && (
         <div style={{ padding: "8px 14px", background: "rgba(79,209,255,0.06)", borderBottom: "1px solid rgba(79,209,255,0.15)", fontSize: "0.78rem", color: "#8ba3be", display: "flex", gap: "12px", flexWrap: "wrap" }}>
           {ctx.resina && <span>🧪 {ctx.resina}</span>}
