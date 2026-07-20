@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { authAdminOuAtendente } from '../middlewares/authAtendente.js';
 import { criarCliente, listarClientes, excluirCliente, excluirClientesEmLote } from '../controllers/clientesController.js';
+import Cliente from '../models/Cliente.js';
 
 const router = express.Router();
 
