@@ -22,31 +22,21 @@ router.get('/', authAdminOuAtendente, listarClientes); // protegido — aceita s
 router.delete('/lote', authAdmin, excluirClientesEmLote); // precisa vir antes de /:id
 router.delete('/:id', authAdmin, excluirCliente);
 
-export default router;
-
 // ── ATUALIZAR PERFIL DO CLIENTE (CPF/CNPJ, nome empresa) ─────────────────────
 router.patch('/:id/perfil', async (req, res) => {
   try {
     const { cpfCnpj, tipoPessoa, nomeEmpresa } = req.body || {};
-
-    // Validar CPF (11 dígitos) ou CNPJ (14 dígitos)
-    if (cpfCnpj) {
-      const digits = String(cpfCnpj).replace(/\D/g, '');
-      if (digits.length !== 11 && digits.length !== 14) {
-        return res.status(400).json({ success: false, error: 'CPF deve ter 11 dígitos ou CNPJ 14 dígitos.' });
-      }
-    }
-
     const cliente = await Cliente.findByIdAndUpdate(
       req.params.id,
       { cpfCnpj: cpfCnpj || '', tipoPessoa: tipoPessoa || '', nomeEmpresa: nomeEmpresa || '' },
       { new: true }
     );
     if (!cliente) return res.status(404).json({ success: false, error: 'Cliente não encontrado.' });
-
     res.json({ success: true, cliente });
   } catch (err) {
     console.error('Erro ao atualizar perfil:', err);
     res.status(500).json({ success: false, error: 'Erro interno.' });
   }
 });
+
+export default router;
