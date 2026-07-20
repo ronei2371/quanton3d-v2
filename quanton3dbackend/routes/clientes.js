@@ -26,16 +26,21 @@ router.delete('/:id', authAdmin, excluirCliente);
 router.patch('/:id/perfil', async (req, res) => {
   try {
     const { cpfCnpj, tipoPessoa, nomeEmpresa } = req.body || {};
+    const update = {
+      cpfCnpj: (cpfCnpj || '').replace(/\D/g, ''),
+      tipoPessoa: tipoPessoa || '',
+      nomeEmpresa: nomeEmpresa || ''
+    };
     const cliente = await Cliente.findByIdAndUpdate(
       req.params.id,
-      { cpfCnpj: cpfCnpj || '', tipoPessoa: tipoPessoa || '', nomeEmpresa: nomeEmpresa || '' },
-      { new: true }
+      { $set: update },
+      { new: true, runValidators: false }
     );
     if (!cliente) return res.status(404).json({ success: false, error: 'Cliente não encontrado.' });
     res.json({ success: true, cliente });
   } catch (err) {
-    console.error('Erro ao atualizar perfil:', err);
-    res.status(500).json({ success: false, error: 'Erro interno.' });
+    console.error('Erro ao atualizar perfil:', err.message, err.stack);
+    res.status(500).json({ success: false, error: 'Erro interno: ' + err.message });
   }
 });
 
