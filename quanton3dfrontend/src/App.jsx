@@ -1561,7 +1561,7 @@ function AdminContent({ tokenAtendente }) {
     if (tokenAtendente) return tokenAtendente;
     return localStorage.getItem("quanton3d_admin_token") || "";
   });
-  const [aba, setAba] = useState("galeria");
+  const [aba, setAba] = useState("dashboard");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
   const [dados, setDados] = useState({ clientes: [], formulacoes: [], chamados: [], mensagens: [], galeria: [], conversas: [], parceiros: [], totais: { width: "min(1100px, calc(100vw - 20px))", maxHeight: "calc(100vh - 30px)" } });
@@ -1887,7 +1887,8 @@ function AdminContent({ tokenAtendente }) {
   }
 
   const ABAS_ADM = [
-    { id: "metricas", label: "Métricas", icon: "📊", count: null },
+    { id: "dashboard",    label: "Dashboard",    icon: "🏠", count: null },
+    { id: "metricas",     label: "Métricas",     icon: "📊", count: null },
     { id: "clientes", label: "Clientes", icon: "👥", count: dados.clientes.length },
     { id: "chamados", label: "Chamados", icon: "🔧", count: dados.chamados.length },
     { id: "mensagens", label: "Mensagens", icon: "✉️", count: dados.mensagens.length },
@@ -1938,6 +1939,116 @@ function AdminContent({ tokenAtendente }) {
       </div>
       {erro && <div className="modal-error">{erro}</div>}
       {carregando && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "20px" }}>Carregando...</div>}
+
+      {aba === "dashboard" && (
+        <div>
+          {/* Saudação */}
+          <div style={{ background: "linear-gradient(135deg, rgba(21,101,192,0.25), rgba(123,31,162,0.2))", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "16px", padding: "20px 24px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "16px" }}>
+            <span style={{ fontSize: "2.5rem" }}>👋</span>
+            <div>
+              <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 900, color: "#eaf7ff" }}>
+                Bem-vindo ao Painel Quanton3D!
+              </h2>
+              <p style={{ margin: "4px 0 0", fontSize: "0.82rem", color: "#9fb4c7" }}>
+                {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
+              </p>
+            </div>
+          </div>
+
+          {/* Cards de resumo */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+            {[
+              { icon: "👥", label: "Clientes", valor: dados.clientes.length, cor: "#4fd1ff", bg: "rgba(79,209,255,0.08)", border: "rgba(79,209,255,0.2)", aba: "clientes" },
+              { icon: "🔧", label: "Chamados", valor: dados.chamados.filter(c => c.status !== "fechado").length, cor: "#ffd166", bg: "rgba(255,209,102,0.08)", border: "rgba(255,209,102,0.2)", aba: "chamados", suffix: " abertos" },
+              { icon: "✉️", label: "Mensagens", valor: dados.mensagens.length, cor: "#b89cff", bg: "rgba(184,156,255,0.08)", border: "rgba(184,156,255,0.2)", aba: "mensagens" },
+              { icon: "🧪", label: "Formulações", valor: dados.formulacoes.length, cor: "#49e68b", bg: "rgba(73,230,139,0.08)", border: "rgba(73,230,139,0.2)", aba: "formulacoes" },
+              { icon: "📸", label: "Galeria", valor: dados.galeria.filter(g => g.status === "pendente").length, cor: "#ff8fab", bg: "rgba(255,143,171,0.08)", border: "rgba(255,143,171,0.2)", aba: "galeria", suffix: " pendentes" },
+              { icon: "💡", label: "Sugestões ELIO", valor: sugestoesElio.filter(s => s.status === "pendente").length, cor: "#ffd166", bg: "rgba(255,209,102,0.08)", border: "rgba(255,209,102,0.2)", aba: "sugestoes_elio", suffix: " pendentes" },
+            ].map(item => (
+              <button key={item.aba} type="button" onClick={() => setAba(item.aba)}
+                style={{ background: item.bg, border: `1px solid ${item.border}`, borderRadius: "14px", padding: "16px 14px", textAlign: "center", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
+                <div style={{ fontSize: "1.6rem", marginBottom: "6px" }}>{item.icon}</div>
+                <div style={{ fontSize: "1.8rem", fontWeight: 900, color: item.cor, lineHeight: 1 }}>{item.valor}</div>
+                <div style={{ fontSize: "0.72rem", color: "#9fb4c7", marginTop: "4px", fontWeight: 600 }}>{item.label}{item.suffix || ""}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Alertas de pendências */}
+          {(dados.chamados.filter(c => c.status === "novo").length > 0 || sugestoesElio.filter(s => s.status === "pendente").length > 0 || dados.galeria.filter(g => g.status === "pendente").length > 0) && (
+            <div style={{ background: "rgba(255,209,102,0.05)", border: "1px solid rgba(255,209,102,0.2)", borderRadius: "14px", padding: "16px 20px", marginBottom: "20px" }}>
+              <p style={{ fontWeight: 800, color: "#ffd166", fontSize: "0.88rem", margin: "0 0 10px" }}>⚠️ Itens que precisam da sua atenção:</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {dados.chamados.filter(c => c.status === "novo").length > 0 && (
+                  <button type="button" onClick={() => setAba("chamados")}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,209,102,0.08)", border: "1px solid rgba(255,209,102,0.2)", borderRadius: "10px", padding: "10px 14px", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
+                    <span style={{ fontSize: "1.1rem" }}>🔧</span>
+                    <span style={{ color: "#ffd166", fontWeight: 700, fontSize: "0.85rem" }}>{dados.chamados.filter(c => c.status === "novo").length} chamado(s) novo(s) aguardando atendimento</span>
+                    <span style={{ marginLeft: "auto", color: "#ffd166", fontSize: "0.8rem" }}>Ver →</span>
+                  </button>
+                )}
+                {sugestoesElio.filter(s => s.status === "pendente").length > 0 && (
+                  <button type="button" onClick={() => setAba("sugestoes_elio")}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "10px", padding: "10px 14px", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
+                    <span style={{ fontSize: "1.1rem" }}>💡</span>
+                    <span style={{ color: "#4fd1ff", fontWeight: 700, fontSize: "0.85rem" }}>{sugestoesElio.filter(s => s.status === "pendente").length} sugestão(ões) de conhecimento aguardando aprovação</span>
+                    <span style={{ marginLeft: "auto", color: "#4fd1ff", fontSize: "0.8rem" }}>Ver →</span>
+                  </button>
+                )}
+                {dados.galeria.filter(g => g.status === "pendente").length > 0 && (
+                  <button type="button" onClick={() => setAba("galeria")}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,143,171,0.08)", border: "1px solid rgba(255,143,171,0.2)", borderRadius: "10px", padding: "10px 14px", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
+                    <span style={{ fontSize: "1.1rem" }}>📸</span>
+                    <span style={{ color: "#ff8fab", fontWeight: 700, fontSize: "0.85rem" }}>{dados.galeria.filter(g => g.status === "pendente").length} foto(s) da galeria aguardando aprovação</span>
+                    <span style={{ marginLeft: "auto", color: "#ff8fab", fontSize: "0.8rem" }}>Ver →</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Últimos clientes */}
+          {dados.clientes.length > 0 && (
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(79,209,255,0.1)", borderRadius: "14px", padding: "16px 20px", marginBottom: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                <p style={{ fontWeight: 800, color: "#4fd1ff", fontSize: "0.88rem", margin: 0 }}>👥 Últimos clientes cadastrados</p>
+                <button type="button" onClick={() => setAba("clientes")}
+                  style={{ fontSize: "0.75rem", color: "#4fd1ff", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>Ver todos →</button>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                {dados.clientes.slice(-5).reverse().map(c => (
+                  <div key={c._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderRadius: "8px", background: "rgba(79,209,255,0.04)", border: "1px solid rgba(79,209,255,0.08)" }}>
+                    <div>
+                      <span style={{ fontWeight: 700, color: "#eaf3ff", fontSize: "0.85rem" }}>{c.nome}</span>
+                      <span style={{ color: "#9fb4c7", fontSize: "0.75rem", marginLeft: "10px" }}>📱 {c.telefone}</span>
+                    </div>
+                    <span style={{ color: "#6b8aad", fontSize: "0.72rem" }}>{new Date(c.createdAt).toLocaleDateString("pt-BR")}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Acesso rápido */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(79,209,255,0.1)", borderRadius: "14px", padding: "16px 20px" }}>
+            <p style={{ fontWeight: 800, color: "#9fb4c7", fontSize: "0.82rem", margin: "0 0 12px", textTransform: "uppercase", letterSpacing: "0.08em" }}>⚡ Acesso Rápido</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "8px" }}>
+              {[
+                { icon: "📊", label: "Ver Métricas", aba: "metricas" },
+                { icon: "👨‍💼", label: "Atendentes", aba: "atendentes" },
+                { icon: "⚙️", label: "Parâmetros", aba: "parametros" },
+                { icon: "🧹", label: "Limpeza", aba: "limpeza" },
+              ].map(item => (
+                <button key={item.aba} type="button" onClick={() => setAba(item.aba)}
+                  style={{ padding: "10px 8px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.12)", background: "rgba(79,209,255,0.04)", color: "#9fb4c7", cursor: "pointer", fontFamily: "inherit", fontSize: "0.78rem", fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", transition: "all 0.2s" }}>
+                  <span style={{ fontSize: "1.2rem" }}>{item.icon}</span>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {aba === "metricas" && (
         <div>
