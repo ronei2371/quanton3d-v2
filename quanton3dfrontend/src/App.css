@@ -2502,15 +2502,24 @@ section .section-label {
   /* SECTION LABELS — nunca quebrar */
   .section-label { white-space: nowrap !important; font-size: 0.68rem !important; padding: 3px 8px !important; letter-spacing: 0.05em !important; }
 
-  /* Botões de seção principais — texto não quebra linha */
+  /* HERO — seções em 1 coluna no mobile */
+  .hero-home > div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .hero-home > div:last-child > div,
+  .hero-home > div:last-child > section {
+    grid-column: unset !important;
+    width: 100% !important;
+  }
+
+  /* Botões de seção — texto inteiro sem cortar */
   section > button > span:first-child,
   section > button[style] > span:first-child {
-    font-size: 0.68rem !important;
+    font-size: 0.72rem !important;
     letter-spacing: 0.05em !important;
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    max-width: calc(100% - 24px) !important;
   }
 
   /* SUB-BOTÕES */
