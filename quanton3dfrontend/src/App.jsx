@@ -3892,7 +3892,7 @@ Como posso te ajudar hoje?`;
   }
 
   if (etapa === "contexto") return (
-    <div style={{ padding: "8px 4px" }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, height: "100%", overflowY: "auto", padding: "8px 4px" }}>
       <div style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
         <p style={{ margin: "0 0 4px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.85rem" }}>🤖 ELIO — Assistente Técnico Quanton3D</p>
         <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.55 }}>
