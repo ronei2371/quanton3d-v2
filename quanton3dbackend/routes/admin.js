@@ -54,3 +54,44 @@ router.get('/metrics', auth, async (_req, res) => {
 });
 
 export default router;
+
+// ── LIMPEZA DE DADOS DE TESTE ─────────────────────────────────────────────────
+router.delete('/limpar-testes', auth, async (req, res) => {
+  try {
+    const { colecoes } = req.body || {};
+    if (!Array.isArray(colecoes) || colecoes.length === 0)
+      return res.status(400).json({ success: false, error: 'Nenhuma coleção selecionada.' });
+
+    // Lista branca — só essas podem ser limpas, nunca parametros/atendentes
+    const PERMITIDAS = ['clientes', 'visitas', 'conversas', 'bottickets', 'contactmessages', 'formulacoes', 'logacoes', 'partnerrequests'];
+    const invalidas = colecoes.filter(c => !PERMITIDAS.includes(c));
+    if (invalidas.length > 0)
+      return res.status(400).json({ success: false, error: `Coleções não permitidas: ${invalidas.join(', ')}` });
+
+    // Importar modelos dinamicamente
+    const { default: Cliente }        = await import('../models/Cliente.js');
+    const { default: Visita }         = await import('../models/Visita.js');
+    const { default: Conversa }       = await import('../models/Conversa.js');
+    const { default: BotTicket }      = await import('../models/BotTicket.js');
+    const { default: ContactMessage } = await import('../models/ContactMessage.js');
+    const { default: Formulacao }     = await import('../models/Formulacao.js');
+    const { default: LogAcao }        = await import('../models/LogAcao.js');
+    const { default: PartnerRequest } = await import('../models/PartnerRequest.js');
+
+    const MAPA = { clientes: Cliente, visitas: Visita, conversas: Conversa, bottickets: BotTicket, contactmessages: ContactMessage, formulacoes: Formulacao, logacoes: LogAcao, partnerrequests: PartnerRequest };
+
+    const resultados = {};
+    for (const nome of colecoes) {
+      const Model = MAPA[nome];
+      if (Model) {
+        const r = await Model.deleteMany({});
+        resultados[nome] = r.deletedCount;
+      }
+    }
+
+    res.json({ success: true, resultados, mensagem: 'Dados limpos com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao limpar dados:', err);
+    res.status(500).json({ success: false, error: 'Erro interno ao limpar dados.' });
+  }
+});
