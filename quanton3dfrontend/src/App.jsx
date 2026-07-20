@@ -2902,7 +2902,7 @@ function AdminContent({ tokenAtendente }) {
           {/* ── TOOLBAR: busca + selecionar + excluir ── */}
           <div style={{ display:"flex", gap:"8px", marginBottom:"12px", flexWrap:"wrap", alignItems:"center" }}>
             <input value={buscaCliente} onChange={e => setBuscaCliente(e.target.value)}
-              placeholder="🔍 Buscar por nome, telefone ou email..."
+              placeholder="🔍 Buscar por nome, telefone, email ou CPF/CNPJ..."
               style={{ flex:1, minWidth:"200px", padding:"8px 12px", borderRadius:"8px", border:"1px solid rgba(113,159,219,0.3)", background:"rgba(255,255,255,0.05)", color:"#eaf3ff", fontSize:"0.82rem", fontFamily:"inherit" }} />
             {buscaCliente && <button type="button" onClick={() => setBuscaCliente("")}
               style={{ padding:"7px 10px", borderRadius:"8px", border:"1px solid rgba(255,107,107,0.3)", background:"rgba(255,107,107,0.08)", color:"#ff8fab", cursor:"pointer", fontSize:"0.78rem" }}>✕</button>}
@@ -2914,8 +2914,9 @@ function AdminContent({ tokenAtendente }) {
               .filter(c => !filtroOrigem || (c.origem || "outros") === filtroOrigem)
               .filter(c => {
                 if (!buscaCliente) return true;
-                const q = buscaCliente.toLowerCase();
-                return (c.nome||"").toLowerCase().includes(q) || (c.telefone||"").includes(q) || (c.email||"").toLowerCase().includes(q);
+                const q = buscaCliente.toLowerCase().replace(/\D/g, '') || buscaCliente.toLowerCase();
+                const qNum = buscaCliente.replace(/\D/g, '');
+                return (c.nome||"").toLowerCase().includes(buscaCliente.toLowerCase()) || (c.telefone||"").includes(buscaCliente) || (c.email||"").toLowerCase().includes(buscaCliente.toLowerCase()) || (qNum && (c.cpfCnpj||"").includes(qNum));
               });
             const suspeitos = filtrados.filter(c => /^(.)\1{2,}$/.test(c.nome?.replace(/\s/g,"")||"") || (c.nome||"").length < 3 || /^(kk|ll|xx|zz|qq|asd|qwe|teste|test)/i.test(c.nome||"")).length;
             return (
@@ -2970,6 +2971,7 @@ function AdminContent({ tokenAtendente }) {
                             <strong style={{ color:"#eaf3ff", fontSize:"0.88rem", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{c.nome || "Sem nome"}</strong>
                             {suspeito && <span style={{ fontSize:"0.62rem", padding:"1px 5px", borderRadius:"999px", background:"rgba(255,209,102,0.15)", color:"#ffd166", fontWeight:800, flexShrink:0 }}>⚠️ teste</span>}
                             {c.origem && <span style={{ fontSize:"0.62rem", padding:"1px 6px", borderRadius:"999px", background: origCor+"22", color: origCor, fontWeight:700, flexShrink:0, border:`1px solid ${origCor}44` }}>{c.origem}</span>}
+                            {c.cpfCnpj && <span style={{ fontSize:"0.62rem", padding:"1px 6px", borderRadius:"999px", background:"rgba(73,230,139,0.12)", color:"#49e68b", fontWeight:700, flexShrink:0, border:"1px solid rgba(73,230,139,0.25)" }}>{c.tipoPessoa === "pj" ? "🏢 CNPJ" : "👤 CPF"} ✓</span>}
                           </div>
                           <div style={{ fontSize:"0.75rem", color:"#7a9bb5", marginTop:"2px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                             {c.telefone || "-"} · {c.email || "-"}
