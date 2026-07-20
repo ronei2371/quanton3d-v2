@@ -3328,6 +3328,7 @@ function LimpezaContent({ token }) {
     { id: "formulacoes",     label: "🧪 Formulações",       desc: "Pedidos de formulação" },
     { id: "logacoes",        label: "📋 Logs de Ações",     desc: "Logs de ações dos atendentes" },
     { id: "partnerrequests", label: "🤝 Parceiros",         desc: "Pedidos de parceria" },
+    { id: "galleryitems",    label: "📸 Fotos da Galeria",  desc: "Fotos enviadas por clientes" },
   ];
   const [selecionadas, setSelecionadas] = useState([]);
   const [confirmando, setConfirmando]   = useState(false);
