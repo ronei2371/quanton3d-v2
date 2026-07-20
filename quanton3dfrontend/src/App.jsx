@@ -122,7 +122,8 @@ function App() {
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
   const [resultado, setResultado] = useState(null);
   const [cliente, setCliente] = useState(clienteSalvoInicial);
-  const [mostrarPrivacidade, setMostrarPrivacidade] = useState(!privacidadeAceitaInicial);
+  const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!privacidadeAceitaInicial);
+  const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
   const [mostrarCadastro, setMostrarCadastro] = useState(privacidadeAceitaInicial && !clienteSalvoInicial);
   const [formCliente, setFormCliente] = useState({ nome: "", telefone: "", email: "", origem: "Instagram" });
   const [salvandoCliente, setSalvandoCliente] = useState(false);
@@ -270,7 +271,10 @@ function App() {
 
   return (
     <main className="app-shell">
-      {mostrarPrivacidade && <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />}
+      {mostrarBoasVindas && (
+        <BoasVindasModal onEntrar={() => { setMostrarBoasVindas(false); setMostrarPrivacidade(true); }} />
+      )}
+      {!mostrarBoasVindas && mostrarPrivacidade && <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />}
       {mostrarCadastro && !mostrarPrivacidade && (
         <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} />
       )}
@@ -712,6 +716,78 @@ function App() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function BoasVindasModal({ onEntrar }) {
+  const [saindo, setSaindo] = useState(false);
+  function handleEntrar() {
+    setSaindo(true);
+    setTimeout(onEntrar, 600);
+  }
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      textAlign: "center", padding: "32px 20px",
+      backgroundImage: "linear-gradient(rgba(4,10,24,0.55), rgba(4,10,24,0.72)), url('/fundo-boas-vindas.jpg')",
+      backgroundSize: "cover", backgroundPosition: "center",
+      animation: saindo ? "bvFadeOut 0.6s ease forwards" : "bvFadeIn 1s ease",
+    }}>
+      <style>{`
+        @keyframes bvFadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes bvFadeOut { from { opacity:1; } to { opacity:0; } }
+        @keyframes bvSlideDown { from { opacity:0; transform:translateY(-30px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes bvSlideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes bvGlow { from { filter:drop-shadow(0 0 10px rgba(79,209,255,0.3)); } to { filter:drop-shadow(0 0 28px rgba(79,209,255,0.8)); } }
+        @keyframes bvPulse { 0%,100% { box-shadow:0 8px 32px rgba(21,101,192,0.4),0 0 20px rgba(79,209,255,0.2); } 50% { box-shadow:0 12px 40px rgba(21,101,192,0.7),0 0 40px rgba(79,209,255,0.4); } }
+        .bv-btn:hover { transform:translateY(-3px) !important; }
+      `}</style>
+
+      {/* Linha de luz */}
+      <div style={{ position: "absolute", width: "100%", height: "1px", top: "52%", left: 0, background: "linear-gradient(90deg, transparent 0%, rgba(0,100,255,0.15) 20%, rgba(0,150,255,0.5) 50%, rgba(0,100,255,0.15) 80%, transparent 100%)", pointerEvents: "none" }} />
+
+      {/* Logo */}
+      <div style={{ animation: "bvSlideDown 0.8s ease", marginBottom: "24px" }}>
+        <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "linear-gradient(135deg,#0a1530,#1a3060)", border: "2px solid rgba(79,209,255,0.6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.2rem", margin: "0 auto 16px", boxShadow: "0 0 30px rgba(79,209,255,0.3)" }}>
+          ⚛️
+        </div>
+      </div>
+
+      {/* Nome principal */}
+      <h1 style={{ fontSize: "clamp(3rem, 12vw, 6.5rem)", fontWeight: 900, letterSpacing: "-2px", lineHeight: 1, margin: "0 0 10px", background: "linear-gradient(135deg, #ffffff 0%, #4fd1ff 50%, #b89cff 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "bvGlow 2s ease-in-out infinite alternate, bvSlideDown 0.8s ease" }}>
+        Quanton3D<sup style={{ fontSize: "0.3em", WebkitTextFillColor: "#4fd1ff", verticalAlign: "super" }}>®</sup>
+      </h1>
+
+      {/* Taglines */}
+      <p style={{ fontSize: "clamp(0.82rem, 2.5vw, 1.05rem)", color: "rgba(196,216,232,0.9)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, margin: "0 0 6px", animation: "bvSlideUp 1s ease 0.3s both" }}>
+        Resinas UV SLA/DLP de Alta Performance
+      </p>
+      <p style={{ fontSize: "clamp(0.72rem, 2vw, 0.88rem)", color: "rgba(130,160,190,0.8)", margin: "0 0 36px", animation: "bvSlideUp 1s ease 0.45s both" }}>
+        Fabricação nacional · Belo Horizonte, MG · Desde 2020
+      </p>
+
+      {/* Divisor */}
+      <div style={{ width: "min(400px, 80vw)", height: "1px", background: "linear-gradient(90deg, transparent, #4fd1ff, transparent)", marginBottom: "32px", animation: "bvSlideUp 1s ease 0.55s both" }} />
+
+      {/* Badges */}
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center", marginBottom: "40px", animation: "bvSlideUp 1s ease 0.65s both" }}>
+        {["🧪 14 linhas exclusivas", "🇧🇷 100% nacional", "🏆 Pioneer no Brasil"].map(b => (
+          <span key={b} style={{ padding: "6px 16px", borderRadius: "999px", background: "rgba(79,209,255,0.1)", border: "1px solid rgba(79,209,255,0.3)", color: "#7dd3fc", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.05em" }}>{b}</span>
+        ))}
+      </div>
+
+      {/* Botão entrar */}
+      <button type="button" onClick={handleEntrar} className="bv-btn"
+        style={{ padding: "16px 52px", borderRadius: "999px", background: "linear-gradient(135deg,#1565c0,#7c3aed)", border: "1px solid rgba(79,209,255,0.4)", color: "#fff", fontSize: "1rem", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.05em", animation: "bvSlideUp 1s ease 0.8s both, bvPulse 2s ease 1.8s infinite", transition: "transform 0.3s" }}>
+        ▶ Acessar o Suporte Técnico
+      </button>
+
+      {/* Rodapé */}
+      <p style={{ position: "absolute", bottom: "16px", fontSize: "0.68rem", color: "rgba(100,130,160,0.6)", letterSpacing: "0.05em" }}>
+        © 2025 Quanton3D LTDA · quanton3d.com.br
+      </p>
+    </div>
   );
 }
 
