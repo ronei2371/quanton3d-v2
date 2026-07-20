@@ -2913,3 +2913,109 @@ section .section-label {
     height: 98vh !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* v34 — Bot mobile + fontes menores no celular               */
+/* ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* BOT — container ocupa altura disponível do modal */
+  .site-modal > div[style*="flex-direction: column"][style*="height"] {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+
+  /* BOT — área de mensagens cresce e empurra input pra baixo */
+  .chat-messages {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* BOT — input fica sempre visível no fundo */
+  .chat-messages + div {
+    flex-shrink: 0 !important;
+    padding: 8px 10px !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: #0a1425 !important;
+    border-top: 1px solid rgba(79,209,255,0.15) !important;
+    z-index: 5 !important;
+  }
+
+  /* BOT — input menor no mobile */
+  .chat-messages + div input {
+    font-size: 0.82rem !important;
+    padding: 8px 12px !important;
+  }
+  .chat-messages + div button {
+    padding: 8px 14px !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* ── FONTES MENORES NO MOBILE sem afetar desktop ── */
+
+  /* Textos gerais do site */
+  body { font-size: 14px !important; }
+
+  /* Botões de seção */
+  .home-actions button,
+  .field.clickable-card span,
+  .selector-grid .field span {
+    font-size: 0.78rem !important;
+  }
+
+  /* Descrições dos botões */
+  .home-actions button p,
+  .field.clickable-card p,
+  .selector-grid .field p {
+    font-size: 0.72rem !important;
+  }
+
+  /* Textos dos modais */
+  .site-modal p,
+  .site-modal span,
+  .site-modal li {
+    font-size: 0.82rem !important;
+  }
+
+  /* Títulos dos modais */
+  .site-modal h2 { font-size: 1rem !important; }
+  .site-modal h3 { font-size: 0.9rem !important; }
+
+  /* Mensagens do bot */
+  .chat-messages > div > div {
+    font-size: 0.82rem !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Labels e badges */
+  .section-label {
+    font-size: 0.68rem !important;
+    padding: 3px 8px !important;
+  }
+
+  /* Botões do nav */
+  .main-nav button {
+    font-size: 0.68rem !important;
+    padding: 5px 8px !important;
+  }
+}
+
+/* Telas muito pequenas ≤ 390px */
+@media (max-width: 390px) {
+  body { font-size: 13px !important; }
+  .chat-messages > div > div { font-size: 0.78rem !important; }
+  .main-nav button { font-size: 0.62rem !important; }
+}
+
+/* Bot container mobile */
+@media (max-width: 768px) {
+  .bot-chat-container {
+    height: calc(95vh - 120px) !important;
+    max-height: unset !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+  }
+}
