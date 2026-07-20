@@ -2500,11 +2500,18 @@ section .section-label {
   .assistant-card > button { flex: 1 !important; margin-top: 0 !important; font-size: 0.8rem !important; }
 
   /* SECTION LABELS — nunca quebrar */
-  .section-label { white-space: nowrap !important; font-size: 0.7rem !important; padding: 4px 10px !important; max-width: 200px !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+  .section-label { white-space: nowrap !important; font-size: 0.68rem !important; padding: 3px 8px !important; letter-spacing: 0.05em !important; }
 
-  /* Texto secundário dos botões de seção — ocultar no mobile */
-  .hero-home > div:last-child > div > button > div > span:last-child,
-  .hero-home > div:last-child > div > div > button > div > span:last-child { display: none !important; }
+  /* Botões de seção principais — texto não quebra linha */
+  section > button > span:first-child,
+  section > button[style] > span:first-child {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.05em !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(100% - 24px) !important;
+  }
 
   /* SUB-BOTÕES */
   .home-actions button { font-size: 0.78rem !important; padding: 8px 10px !important; }
