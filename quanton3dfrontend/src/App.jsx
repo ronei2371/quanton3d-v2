@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import api from "./api";
 import "./App.css";
 import ContactMessageModal from "./components/ContactMessageModal";
@@ -3337,7 +3337,6 @@ function BotContent({ cliente }) {
   const [etapa, setEtapa] = useState("contexto"); // "contexto" | "chat"
   const [ctx, setCtx] = useState({ resina: "", impressora: "", altura: "0.05" });
   const [mensagens, setMensagens] = useState([]);
-  const [input, setInput] = useState("");
   const [pensando, setPensando] = useState(false);
   const [impressorasBot, setImpressorasBot] = useState([]);
   const [feedbackAberto, setFeedbackAberto] = useState(null); // índice da mensagem com form de feedback aberto
@@ -3377,10 +3376,8 @@ Como posso te ajudar hoje?`;
     setEtapa("chat");
   }
 
-  async function enviar() {
-    if (!input.trim() || pensando) return;
-    const userMsg = input;
-    setInput("");
+  async function enviar(userMsg) {
+    if (!userMsg?.trim() || pensando) return;
     const novasMensagens = [...mensagens, { text: userMsg, isBot: false }];
     setMensagens(novasMensagens);
     setPensando(true);
@@ -3621,13 +3618,36 @@ Como posso te ajudar hoje?`;
         ))}
         {pensando && <div style={{ alignSelf: "flex-start", padding: "10px 16px", borderRadius: "4px 18px 18px 18px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.25)", color: "#9fb4c7", fontSize: "0.88rem" }}>⏳ Analisando base técnica...</div>}
       </div>
-      <div style={{ display: "flex", gap: "10px", padding: "12px 16px", borderTop: "1px solid rgba(113,159,219,0.2)" }}>
-        <input value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === "Enter" && enviar()} placeholder="Tire sua dúvida técnica..." style={{ flex: 1 }} />
-        <button type="button" onClick={enviar} disabled={pensando} style={{ whiteSpace: "nowrap", padding: "10px 18px", borderRadius: "10px", border: 0, background: "linear-gradient(135deg, #2563eb, #7c3aed)", color: "#fff", fontWeight: 900, cursor: "pointer" }}>{pensando ? "..." : "Enviar"}</button>
-      </div>
+      <ChatInput onEnviar={enviar} pensando={pensando} />
     </div>
   );
 }
+
+// Componente separado — input isolado do resto do chat
+// Assim digitar NÃO causa re-render das mensagens
+const ChatInput = React.memo(function ChatInput({ onEnviar, pensando }) {
+  const [valor, setValor] = useState("");
+  function handleEnviar() {
+    if (!valor.trim() || pensando) return;
+    onEnviar(valor);
+    setValor("");
+  }
+  return (
+    <div style={{ display: "flex", gap: "10px", padding: "12px 16px", borderTop: "1px solid rgba(113,159,219,0.2)", flexShrink: 0 }}>
+      <input
+        value={valor}
+        onChange={e => setValor(e.target.value)}
+        onKeyPress={e => e.key === "Enter" && handleEnviar()}
+        placeholder="Tire sua dúvida técnica..."
+        style={{ flex: 1, background: "rgba(255,255,255,0.07)", border: "1px solid rgba(79,209,255,0.25)", borderRadius: "12px", padding: "10px 14px", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.9rem", outline: "none" }}
+      />
+      <button type="button" onClick={handleEnviar} disabled={pensando}
+        style={{ whiteSpace: "nowrap", padding: "10px 18px", borderRadius: "10px", border: 0, background: "linear-gradient(135deg, #2563eb, #7c3aed)", color: "#fff", fontWeight: 900, cursor: "pointer", flexShrink: 0 }}>
+        {pensando ? "..." : "Enviar"}
+      </button>
+    </div>
+  );
+});
 
 function ParamItem({ label, value }) {
   return <div className="param-item"><span>{label}</span><strong>{value || "-"}</strong></div>;
