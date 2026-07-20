@@ -3963,7 +3963,7 @@ Como posso te ajudar hoje?`;
   );
 
   return (
-    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "78vh", maxHeight: "780px" }}>
+    <div className="bot-chat-container" style={{ display: "flex", flexDirection: "column", height: "min(78vh, 780px)", flex: 1, minHeight: 0 }}>
       {(ctx.resina || ctx.impressora) && (
         <div style={{ padding: "8px 14px", background: "rgba(79,209,255,0.06)", borderBottom: "1px solid rgba(79,209,255,0.15)", fontSize: "0.78rem", color: "#8ba3be", display: "flex", gap: "12px", flexWrap: "wrap" }}>
           {ctx.resina && <span>🧪 {ctx.resina}</span>}
