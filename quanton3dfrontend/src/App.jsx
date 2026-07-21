@@ -112,11 +112,6 @@ function formatarMarkdown(texto) {
 
 function App() {
   // Controle de seções em acordeão (clica no título pra abrir/fechar os itens)
-  useEffect(() => {
-    document.body.classList.toggle("tema-claro", temaClaro);
-    localStorage.setItem("quanton3d_tema", temaClaro ? "claro" : "escuro");
-  }, [temaClaro]);
-
   const [secoesAbertas, setSecoesAbertas] = useState({});
   function alternarSecao(nome) { setSecoesAbertas(s => ({ ...s, [nome]: !s[nome] })); }
 
@@ -128,6 +123,10 @@ function App() {
   const [resultado, setResultado] = useState(null);
   const [cliente, setCliente] = useState(clienteSalvoInicial);
   const [temaClaro, setTemaClaro] = useState(() => localStorage.getItem("quanton3d_tema") === "claro");
+  useEffect(() => {
+    document.body.classList.toggle("tema-claro", temaClaro);
+    localStorage.setItem("quanton3d_tema", temaClaro ? "claro" : "escuro");
+  }, [temaClaro]);
   const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!privacidadeAceitaInicial);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
