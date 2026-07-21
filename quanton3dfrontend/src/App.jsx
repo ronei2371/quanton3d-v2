@@ -112,6 +112,11 @@ function formatarMarkdown(texto) {
 
 function App() {
   // Controle de seções em acordeão (clica no título pra abrir/fechar os itens)
+  useEffect(() => {
+    document.body.classList.toggle("tema-claro", temaClaro);
+    localStorage.setItem("quanton3d_tema", temaClaro ? "claro" : "escuro");
+  }, [temaClaro]);
+
   const [secoesAbertas, setSecoesAbertas] = useState({});
   function alternarSecao(nome) { setSecoesAbertas(s => ({ ...s, [nome]: !s[nome] })); }
 
@@ -122,6 +127,7 @@ function App() {
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
   const [resultado, setResultado] = useState(null);
   const [cliente, setCliente] = useState(clienteSalvoInicial);
+  const [temaClaro, setTemaClaro] = useState(() => localStorage.getItem("quanton3d_tema") === "claro");
   const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!privacidadeAceitaInicial);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
@@ -351,6 +357,10 @@ function App() {
             <button type="button" onClick={() => setActiveModal("sobre")}
               style={{ padding: "5px 14px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.08)", color: "#7dd3fc", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
               ℹ️ Quem Somos
+            </button>
+            <button type="button" onClick={() => setTemaClaro(prev => !prev)}
+              style={{ padding: "5px 10px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", color: "#7dd3fc", fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+              {temaClaro ? "🌙" : "☀️"}
             </button>
           </div>
           <nav className="main-nav">
@@ -1008,7 +1018,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
           (type === "calc_custos" || type === "calc_exp" || type === "calc_vol" || type === "calc_tolerancia" || type === "calc_tempo" || type === "calc_compensacao" || type === "parceirosPublico" || type === "sobre" || (type && type.startsWith("fispq_")))
             ? { width: "min(1400px, calc(100vw - 16px))", height: "calc(100vh - 16px)", maxHeight: "calc(100vh - 16px)", padding: "12px" }
             : type === "bot"
-            ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "12px 14px", backgroundImage: "url(/fundo-bot.jpg)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)", display: "flex", flexDirection: "column", overflow: "hidden" }
+            ? { width: "98vw", maxWidth: "98vw", height: "98vh", maxHeight: "98vh", padding: "12px 14px", backgroundImage: "url(/fundo-bot-novo.webp)", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(184,156,255,0.4)", display: "flex", flexDirection: "column", overflow: "hidden" }
             : { width: "min(1100px, calc(100vw - 20px))", maxHeight: "calc(100vh - 30px)" }
         }>
         <div className="guide-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexShrink: 0 }}>
