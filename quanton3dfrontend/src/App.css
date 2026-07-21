@@ -1510,11 +1510,6 @@ section.hero-home button:hover {
 }
 @media (max-width: 900px) {
   .hero-home > div:last-child {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-@media (max-width: 500px) {
-  .hero-home > div:last-child {
     grid-template-columns: 1fr !important;
   }
 }
@@ -1523,8 +1518,8 @@ section.hero-home button:hover {
 .hero-home > div:last-child > div {
   background: rgba(10,20,45,0.65) !important;
   border: 1px solid rgba(79,209,255,0.25) !important;
-  border-radius: 18px !important;
-  padding: 20px 16px !important;
+  border-radius: 14px !important;
+  padding: 14px 12px !important;
   backdrop-filter: blur(14px) !important;
   transition: all 0.25s ease !important;
 }
@@ -1934,11 +1929,14 @@ main.app-shell > section:not(.hero-home) {
 }
 
 /* Mobile: volta pra 1 coluna */
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .app-shell > section:not(.hero-home),
-  main.app-shell > section:not(.hero-home) {
+  main.app-shell > section:not(.hero-home),
+  main > section:not(.hero-home) {
+    display: block !important;
     width: 100% !important;
-    margin: 0 0 12px !important;
+    margin: 0 0 10px !important;
+    box-sizing: border-box !important;
   }
 }
 
@@ -2534,12 +2532,21 @@ section .section-label {
     white-space: nowrap !important;
   }
 
-  /* OVERFLOW — corrigir site torto pra direita */
+  /* APP SHELL — 1 coluna, sem overflow */
   .app-shell {
     width: calc(100% - 16px) !important;
     max-width: 100vw !important;
     margin: 0 auto !important;
     overflow-x: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .app-shell > section,
+  .app-shell > main > section {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
   }
 
   /* SUB-BOTÕES */
