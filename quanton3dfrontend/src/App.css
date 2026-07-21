@@ -1883,14 +1883,19 @@ section:not(.hero-home) .section-label {
 /* Cards abaixo do hero — mesmo padding do Atendimento/Guias */
 .app-shell > main > section:not(.hero-home),
 .app-shell > section:not(.hero-home),
+/* Seções fora do hero — MESMO visual dos cards do hero */
 section.panel,
 .app-shell > section:not(.hero-home),
 main > section:not(.hero-home) {
-  padding: 14px 20px !important;
+  background: rgba(10,20,45,0.65) !important;
+  border: 1px solid rgba(79,209,255,0.25) !important;
+  border-radius: 18px !important;
+  padding: 20px 16px !important;
   margin-bottom: 14px !important;
+  backdrop-filter: blur(14px) !important;
 }
 
-/* Botões das seções fora do hero — mesmo tamanho dos de dentro */
+/* Botões das seções fora do hero — MESMO tamanho dos de dentro */
 .app-shell > section:not(.hero-home) > button:first-child,
 main > section:not(.hero-home) > button:first-child {
   padding: 10px 14px !important;
@@ -1898,14 +1903,26 @@ main > section:not(.hero-home) > button:first-child {
   border: 1px solid rgba(79,209,255,0.25) !important;
   background: rgba(79,209,255,0.06) !important;
   min-height: 48px !important;
+  height: auto !important;
 }
 
-/* Label das seções fora do hero — mesma fonte */
-.app-shell > section:not(.hero-home) .section-label,
-main > section:not(.hero-home) .section-label {
+/* Spans dentro dos botões — MESMA fonte que Atendimento/Guias */
+.app-shell > section:not(.hero-home) > button:first-child span,
+main > section:not(.hero-home) > button:first-child span {
   font-size: 0.75rem !important;
   font-weight: 900 !important;
   letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+/* Section-label dentro de seções — mesma fonte */
+.app-shell > section:not(.hero-home) .section-label,
+main > section:not(.hero-home) .section-label,
+section:not(.hero-home) .section-label {
+  font-size: 0.75rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
+  padding: 5px 14px !important;
 }
 
 /* Cabeçalho sem padding interno — só o botão */
