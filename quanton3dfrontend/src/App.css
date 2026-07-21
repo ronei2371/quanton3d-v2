@@ -1339,1364 +1339,298 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ATUALIZAÇÕES VISUAIS — Redesign v6 (regras mais fortes)
+   CSS ORGANIZADO — Bloco único (substituiu Redesigns v6-v26)
+   Última revisão: Julho 2026
    ═══════════════════════════════════════════════════════════ */
 
-/* Botões dos accordions — TOTALMENTE arredondados como pill */
-.hero-home .home-actions button,
-.hero-home button.grid-cols-2,
-section.hero-home button {
-  border-radius: 999px !important;
-  min-height: auto !important;
-  padding: 12px 20px !important;
-  text-transform: none !important;
-  font-size: 0.82rem !important;
-  letter-spacing: 0 !important;
-  background: rgba(10,20,45,0.7) !important;
-  border: 1px solid rgba(79,209,255,0.35) !important;
-  backdrop-filter: blur(14px) !important;
-  transition: all 0.25s ease !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-}
-.hero-home .home-actions button:hover,
-section.hero-home button:hover {
-  transform: translateY(-3px) !important;
-  border-color: rgba(184,156,255,0.6) !important;
-  background: rgba(20,30,60,0.9) !important;
-  box-shadow: 0 10px 24px rgba(124,58,237,0.35), 0 0 20px rgba(184,156,255,0.2) !important;
-}
-
-/* Botão do bot com brilho maior */
-.assistant-card button {
-  padding: 15px 32px !important;
-  border-radius: 999px !important;
-  font-weight: 900 !important;
-  font-size: 1rem !important;
-  box-shadow: 0 8px 28px rgba(124,58,237,0.55) !important;
-  transition: all 0.25s ease !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-}
-.assistant-card button:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 12px 36px rgba(184,156,255,0.65) !important;
-}
-
-/* ELIO maior */
-.elio-container {
-  width: 240px !important;
-  height: 240px !important;
-}
-.elio-avatar {
-  width: 210px !important;
-  height: 210px !important;
-  border: 3px solid rgba(79,209,255,0.65) !important;
-  box-shadow: 0 0 60px rgba(79,209,255,0.35) !important;
-}
-.bot-face {
-  height: 280px !important;
-}
-
-/* Cabeçalhos das seções accordion arredondados */
-.hero-home > div:last-child > div > button:first-child {
-  border-radius: 16px !important;
-  padding: 12px 18px !important;
-  transition: all 0.2s ease !important;
-}
-.hero-home > div:last-child > div > button:first-child:hover {
-  background: rgba(79,209,255,0.12) !important;
-  transform: translateX(3px) !important;
-}
-
-/* Header e chip mais arredondados */
-.top-header { border-radius: 20px !important; }
-.client-chip {
-  border-radius: 14px !important;
-  backdrop-filter: blur(12px) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v7 — título brilhante + ícones maiores + cores
-   ═══════════════════════════════════════════════════════════ */
-
-/* Título "Quanton3D" brilhante com gradiente */
+/* ── BRAND / HEADER — títulos e labels maiores ── */
 .brand h1 {
-  background: linear-gradient(135deg, #4fd1ff 0%, #b89cff 60%, #ff6ec7 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  font-weight: 900 !important;
-  font-size: 1.4rem !important;
-  letter-spacing: -0.01em !important;
-  filter: drop-shadow(0 0 12px rgba(79,209,255,0.4)) !important;
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
 }
 .brand p {
-  color: #b8cfe8 !important;
-  font-weight: 500 !important;
+  font-size: 0.82rem;
+  color: #8ba3be;
 }
-
-/* Botões do header (ADM e Cliente) mais brilhantes */
+.brand-logo, .brand img {
+  height: 48px;
+  width: 48px;
+  border-radius: 14px;
+}
 .main-nav button {
-  padding: 9px 18px !important;
-  border-radius: 999px !important;
-  font-weight: 800 !important;
-  transition: all 0.2s ease !important;
-  border: 1px solid rgba(79,209,255,0.4) !important;
-  background: rgba(79,209,255,0.12) !important;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid rgba(79,209,255,0.2);
+  background: rgba(79,209,255,0.04);
+  color: #9fb4c7;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
 }
 .main-nav button:hover {
-  background: rgba(184,156,255,0.2) !important;
-  border-color: rgba(184,156,255,0.6) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 16px rgba(124,58,237,0.3) !important;
-}
-
-/* Section-labels (💬 ATENDIMENTO, 📸 FOTOS, etc) MAIORES */
-.section-label {
-  font-size: 0.9rem !important;
-  padding: 8px 16px !important;
-  letter-spacing: 0.08em !important;
-  font-weight: 900 !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
-}
-
-/* Cores personalizadas para as seções (por parágrafo pai) */
-/* Todas as seções padronizadas em azul ciano */
-.hero-home > div:last-child .section-label {
-  color: #4fd1ff !important;
-  background: rgba(79,209,255,0.08) !important;
-  border-color: rgba(79,209,255,0.3) !important;
-}
-
-/* Ícones dos section-labels maiores dentro do texto */
-.section-label {
-  gap: 4px;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v9 — Layout preview: ELIO centro + grade de botões
-   ═══════════════════════════════════════════════════════════ */
-
-/* Hero: ELIO centralizada em cima (não do lado) */
-.hero-home {
-  grid-template-columns: 1fr !important;
-  min-height: auto !important;
-  padding: 24px 0 20px !important;
-  gap: 20px !important;
-  text-align: center !important;
-}
-
-/* Card do ELIO centralizado */
-.assistant-card {
-  min-height: auto !important;
-  padding: 20px !important;
-  max-width: 400px !important;
-  margin: 0 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 16px !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Container das seções — vira grade de botões */
-.hero-home > div:last-child {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: 14px !important;
-  width: 100% !important;
-}
-@media (max-width: 900px) {
-  .hero-home > div:last-child {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Cada bloco do accordion vira um botão grande */
-.hero-home > div:last-child > div {
-  background: rgba(10,20,45,0.65) !important;
-  border: 1px solid rgba(79,209,255,0.25) !important;
-  border-radius: 14px !important;
-  padding: 16px 16px !important;
-  margin-bottom: 6px !important;
-  backdrop-filter: blur(14px) !important;
-  transition: all 0.25s ease !important;
-}
-.hero-home > div:last-child > div:hover {
-  transform: translateY(-4px) !important;
-  border-color: rgba(184,156,255,0.5) !important;
-  box-shadow: 0 12px 30px rgba(124,58,237,0.3) !important;
-  background: rgba(15,25,55,0.8) !important;
-}
-
-/* Cabeçalho do accordion (agora funciona como botão principal do card) */
-.hero-home > div:last-child > div > button:first-child {
-  flex-direction: column !important;
-  gap: 4px !important;
-  align-items: center !important;
-  text-align: center !important;
-  background: none !important;
-  border: none !important;
-  padding: 0 !important;
-  cursor: pointer !important;
-  width: 100% !important;
-  font-family: inherit !important;
-}
-
-/* Esconder a seta ▾ */
-.hero-home > div:last-child > div > button:first-child > span:last-child {
-  display: none !important;
-}
-
-/* Section-label centralizada */
-.hero-home > div:last-child > div .section-label {
-  font-size: 0.72rem !important;
-  padding: 6px 12px !important;
-  margin: 0 auto 4px !important;
-  display: inline-flex !important;
-  justify-content: center !important;
-}
-
-/* Descrição da seção */
-.hero-home > div:last-child > div p {
-  font-size: 0.75rem !important;
-  color: #9fb4c7 !important;
-  margin: 4px 0 0 !important;
-  text-align: center !important;
-}
-
-/* Botões dentro (Falar conosco, Compartilhar peça, resinas, etc) */
-.hero-home > div:last-child > div .home-actions,
-.hero-home > div:last-child > div > div[style*="flex-wrap"] {
-  margin-top: 14px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 6px !important;
-  grid-template-columns: 1fr !important;
-}
-.hero-home > div:last-child > div .home-actions button,
-.hero-home > div:last-child > div > div[style*="flex-wrap"] > button {
-  width: 100% !important;
-  border-radius: 999px !important;
-  padding: 9px 14px !important;
-  font-size: 0.75rem !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  min-height: auto !important;
-}
-
-/* Cabeçalho Atendimento (que tinha botão em texto) - alinhar centro */
-.hero-home > div:last-child > div > button:first-child > span:first-child {
-  display: block !important;
-  text-align: center !important;
-  font-size: 0.85rem !important;
-  padding: 6px 14px !important;
-  letter-spacing: 0.06em !important;
-  border-radius: 999px !important;
-  background: rgba(79,209,255,0.1) !important;
-  border: 1px solid rgba(79,209,255,0.3) !important;
-  color: #4fd1ff !important;
-}
-
-/* ELIO menor pra caber com layout centralizado */
-.bot-face { height: 240px !important; }
-.elio-container { width: 210px !important; height: 210px !important; }
-.elio-avatar { width: 180px !important; height: 180px !important; }
-
-/* Botão Falar com ELIO destacado */
-.assistant-card button {
-  padding: 14px 30px !important;
-  border-radius: 999px !important;
-  font-weight: 900 !important;
-  font-size: 0.95rem !important;
-  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: 0 6px 24px rgba(124,58,237,0.5) !important;
-  transition: all 0.25s ease !important;
-  min-width: 260px !important;
-}
-.assistant-card button:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 10px 30px rgba(184,156,255,0.6) !important;
-}
-
-/* Section fora do hero (Fotos, Catálogo, Comunidade, etc que estão fora) */
-/* Vamos identificar por padrão e transformar em cards similares */
-main > section:not(.hero-home) {
-  border-radius: 20px !important;
-  background: rgba(10,20,45,0.6) !important;
-  backdrop-filter: blur(14px) !important;
-  border: 1px solid rgba(79,209,255,0.2) !important;
-  transition: all 0.25s ease !important;
-}
-main > section:not(.hero-home):hover {
-  border-color: rgba(184,156,255,0.4) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v8 — fundo mais visível (imagem completa)
-   ═══════════════════════════════════════════════════════════ */
-
-/* Diminuir overlay escuro sobre o fundo para os circuitos aparecerem */
-body {
-  background:
-    linear-gradient(180deg, rgba(6,13,31,0.25) 0%, rgba(6,13,31,0.15) 50%, rgba(6,13,31,0.35) 100%),
-    url("/fundo3.jpg") center top / cover no-repeat fixed #060d1f !important;
-  background-attachment: fixed !important;
-}
-
-@media (max-width: 768px) {
-  body {
-    background:
-      linear-gradient(180deg, rgba(6,13,31,0.30) 0%, rgba(6,13,31,0.40) 100%),
-      url("/fundo1.jpg") center / cover no-repeat #060d1f !important;
-    background-attachment: scroll !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v10 — Largura total + Atendimento/Guias em colunas
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── LARGURA TOTAL DO SITE ── */
-/* De 1240px vai para 1600px para aproveitar telas maiores */
-.app-shell {
-  width: min(1600px, calc(100% - 32px)) !important;
-}
-
-/* ── ATENDIMENTO E GUIAS TÉCNICOS: título em cima, botões um por linha ── */
-/* Isso deixa igual ao print do preview: coluna vertical com botões grandes */
-
-/* O grid de seções (primeira linha ATENDIMENTO + GUIAS) — 2 colunas fixas */
-.hero-home > div:last-child {
-  grid-template-columns: 1fr 1fr !important;
-  gap: 16px !important;
-}
-
-/* No mobile vira 1 coluna */
-@media (max-width: 700px) {
-  .hero-home > div:last-child {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Cada bloco (Atendimento, Guias, Fotos, etc) fica mais alto e organizado */
-.hero-home > div:last-child > div {
-  padding: 22px 20px !important;
-  min-height: 200px !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* Cabeçalho fixo em cima */
-.hero-home > div:last-child > div > button:first-child {
-  border-bottom: 1px solid rgba(184,156,255,0.15) !important;
-  padding-bottom: 12px !important;
-  margin-bottom: 12px !important;
-}
-
-/* Container dos botões dentro vira coluna vertical */
-.hero-home > div:last-child > div .home-actions,
-.hero-home > div:last-child > div > div[style*="flex-wrap"] {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-  grid-template-columns: 1fr !important;
-  width: 100% !important;
-}
-
-/* Botões dentro ocupam largura toda, mais bonitos e destacados */
-.hero-home > div:last-child > div .home-actions button,
-.hero-home > div:last-child > div > div[style*="flex-wrap"] > button {
-  width: 100% !important;
-  padding: 12px 16px !important;
-  border-radius: 999px !important;
-  font-size: 0.78rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
-  min-height: 44px !important;
-  border: 1px solid rgba(79,209,255,0.35) !important;
-  background: rgba(10,20,45,0.5) !important;
-  color: #eaf3ff !important;
-  transition: all 0.2s ease !important;
-}
-
-.hero-home > div:last-child > div .home-actions button:hover,
-.hero-home > div:last-child > div > div[style*="flex-wrap"] > button:hover {
-  background: rgba(30,50,90,0.7) !important;
-  border-color: rgba(184,156,255,0.6) !important;
-  transform: translateX(4px) !important;
-  box-shadow: 0 4px 16px rgba(124,58,237,0.25) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v11 — corrigir espaço + títulos maiores
-   ═══════════════════════════════════════════════════════════ */
-
-/* 🐛 FIX: Remover min-height que criava espaço vazio nas seções */
-.hero-home > div:last-child > div {
-  min-height: auto !important;
-  padding: 18px 20px !important;
-}
-
-/* Cabeçalho sem borda embaixo quando accordion fechado */
-.hero-home > div:last-child > div > button:first-child {
-  border-bottom: none !important;
-  padding-bottom: 4px !important;
-  margin-bottom: 4px !important;
-}
-
-/* Botões dentro só aparecem quando accordion abre — margem só nesse caso */
-.hero-home > div:last-child > div .home-actions,
-.hero-home > div:last-child > div > div[style*="flex-wrap"] {
-  margin-top: 12px !important;
-}
-
-/* Título "Quanton3D" maior e mais destacado */
-.brand h1 {
-  font-size: 1.9rem !important;
-  filter: drop-shadow(0 0 16px rgba(79,209,255,0.5)) !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1.1 !important;
-}
-
-/* Subtítulo mais visível */
-.brand p {
-  font-size: 0.95rem !important;
-  color: #cfe0f5 !important;
-  font-weight: 600 !important;
-  margin-top: 6px !important;
-  letter-spacing: 0.02em !important;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4) !important;
-}
-
-/* Logo (imagem) também aumenta um pouco */
-.brand-logo, .brand img {
-  width: 60px !important;
-  height: 60px !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v13 — CENTRALIZAR cabeçalho das seções abaixo do hero
-   igual ao ATENDIMENTO/GUIAS
-   ═══════════════════════════════════════════════════════════ */
-
-/* O botão cabeçalho tem justify-content: space-between — vamos centralizar */
-.app-shell > main > section:not(.hero-home) > button:first-child,
-.app-shell > section:not(.hero-home) > button:first-child {
-  justify-content: center !important;
-  position: relative !important;
-}
-
-/* Esconder a seta ▾ que fica no canto direito (fica visual poluído centralizando) */
-.app-shell > main > section:not(.hero-home) > button:first-child > span:last-child,
-.app-shell > section:not(.hero-home) > button:first-child > span:last-child {
-  position: absolute !important;
-  right: 12px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
-/* Quando aberto, girar a seta */
-.app-shell > main > section:not(.hero-home) > button:first-child[aria-expanded="true"] > span:last-child,
-.app-shell > section:not(.hero-home) > button:first-child[aria-expanded="true"] > span:last-child {
-  transform: translateY(-50%) rotate(180deg) !important;
-}
-
-/* Centralizar o div do label + descrição */
-.app-shell > main > section:not(.hero-home) > button:first-child > div,
-.app-shell > section:not(.hero-home) > button:first-child > div {
-  text-align: center !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 4px !important;
-}
-
-/* Ocultar descrição abaixo do label (Compartilhe sua peça..., Fichas técnicas..., etc)
-   pra ficar limpo igual atendimento/guias — a descrição fica só quando abre */
-.app-shell > main > section:not(.hero-home) > button:first-child > div > p,
-.app-shell > section:not(.hero-home) > button:first-child > div > p {
-  display: none !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v14 — Tamanho compacto igual Atendimento/Guias
-   ═══════════════════════════════════════════════════════════ */
-
-/* Reduzir padding vertical/horizontal das seções abaixo do hero */
-.app-shell > main > section:not(.hero-home),
-.app-shell > section:not(.hero-home) {
-  padding: 14px 20px !important;
-  margin-bottom: 12px !important;
-}
-
-/* Cabeçalho mais compacto (sem margens extras) */
-.app-shell > main > section:not(.hero-home) > button:first-child,
-.app-shell > section:not(.hero-home) > button:first-child {
-  padding: 0 !important;
-  margin: 0 !important;
-  min-height: auto !important;
-}
-
-/* Section-label mesmo tamanho do Atendimento */
-section:not(.hero-home) .section-label {
-  font-size: 0.75rem !important;
-  padding: 5px 14px !important;
-  letter-spacing: 0.08em !important;
-  font-weight: 900 !important;
-}
-
-/* Ocultar descrição quando fechado (Nossas Resinas, Parceria e Comunidade, etc.) */
-.app-shell > main > section:not(.hero-home) > button:first-child > div > p,
-.app-shell > section:not(.hero-home) > button:first-child > div > p {
-  display: none !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v16 — Ocultar descrição em <span> também
-   ═══════════════════════════════════════════════════════════ */
-
-/* Estrutura das seções: <div><span.section-label></span><span>Descrição</span></div>
-   Precisamos esconder o SEGUNDO span (a descrição) */
-.app-shell > main > section:not(.hero-home) > button:first-child > div > span:not(.section-label),
-.app-shell > section:not(.hero-home) > button:first-child > div > span:not(.section-label) {
-  display: none !important;
-}
-
-/* Centralizar o label dentro do div (agora fica só ele) */
-.app-shell > main > section:not(.hero-home) > button:first-child > div,
-.app-shell > section:not(.hero-home) > button:first-child > div {
-  justify-content: center !important;
-  width: 100% !important;
-  gap: 0 !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v17 — Altura FINAL igual Atendimento/Guias
-   ═══════════════════════════════════════════════════════════ */
-
-/* Cards abaixo do hero — mesmo padding do Atendimento/Guias */
-.app-shell > main > section:not(.hero-home),
-.app-shell > section:not(.hero-home),
-/* Seções fora do hero — MESMO visual dos cards do hero */
-section.panel,
-.app-shell > section:not(.hero-home),
-main > section:not(.hero-home) {
-  background: rgba(10,20,45,0.65) !important;
-  border: 1px solid rgba(79,209,255,0.25) !important;
-  border-radius: 18px !important;
-  padding: 20px 16px !important;
-  margin-bottom: 14px !important;
-  backdrop-filter: blur(14px) !important;
-}
-
-/* Botões das seções fora do hero — MESMO tamanho dos de dentro */
-.app-shell > section:not(.hero-home) > button:first-child,
-main > section:not(.hero-home) > button:first-child {
-  padding: 10px 14px !important;
-  border-radius: 10px !important;
-  border: 1px solid rgba(79,209,255,0.25) !important;
-  background: rgba(79,209,255,0.06) !important;
-  min-height: 48px !important;
-  height: auto !important;
-}
-
-/* Spans dentro dos botões — MESMA fonte que Atendimento/Guias */
-.app-shell > section:not(.hero-home) > button:first-child span,
-main > section:not(.hero-home) > button:first-child span {
-  font-size: 0.75rem !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.1em !important;
-  text-transform: uppercase !important;
-}
-
-/* Section-label dentro de seções — mesma fonte */
-.app-shell > section:not(.hero-home) .section-label,
-main > section:not(.hero-home) .section-label,
-section:not(.hero-home) .section-label {
-  font-size: 0.75rem !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.1em !important;
-  padding: 5px 14px !important;
-}
-
-/* Cabeçalho dos botões de seção */
-.app-shell > main > section:not(.hero-home) > button:first-child,
-.app-shell > section:not(.hero-home) > button:first-child {
-  padding: 10px 14px !important;
-  margin: 0 !important;
-}
-
-
-
-/* Label pequeno igual atendimento */
-section:not(.hero-home) .section-label {
-  font-size: 0.75rem !important;
-  padding: 4px 12px !important;
-  margin: 0 !important;
-  line-height: 1 !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v18 — Todas as seções em PARES (2 colunas)
-   ═══════════════════════════════════════════════════════════ */
-
-/* Sections abaixo do hero em grid 2 colunas — usando float esquerdo simples 
-   Cada section ocupa 50% menos gap */
-.app-shell > section:not(.hero-home),
-main.app-shell > section:not(.hero-home) {
-  display: inline-block !important;
-  width: calc(50% - 8px) !important;
-  vertical-align: top !important;
-  margin: 0 4px 12px !important;
-  box-sizing: border-box !important;
-}
-
-/* Mobile: volta pra 1 coluna */
-@media (max-width: 768px) {
-  .app-shell > section:not(.hero-home),
-  main.app-shell > section:not(.hero-home),
-  main > section:not(.hero-home) {
-    display: block !important;
-    width: 100% !important;
-    margin: 0 0 10px !important;
-    box-sizing: border-box !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v21 — Nivelar altura Atendimento/Guias com outras
-   ═══════════════════════════════════════════════════════════ */
-
-/* Igualar padding das 2 primeiras (Atendimento/Guias) com as outras seções */
-.hero-home > div:last-child > div {
-  padding: 6px 20px !important;
-  min-height: auto !important;
-}
-
-.hero-home > div:last-child > div > button:first-child {
-  padding: 0 !important;
-  min-height: 40px !important;
-  height: 40px !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v22 — FORÇAR sub-botões empilhados igual Atendimento
-   ═══════════════════════════════════════════════════════════ */
-
-/* Sub-botões dentro de qualquer section abaixo do hero em COLUNA */
-main.app-shell > section:not(.hero-home) > div[style*="flex"],
-.app-shell > section:not(.hero-home) > div[style*="flex"] {
-  display: flex !important;
-  flex-direction: column !important;
-  flex-wrap: nowrap !important;
-  gap: 8px !important;
-  width: 100% !important;
-  margin-top: 12px !important;
-}
-
-/* Cada sub-botão largura total, arredondado, texto GRANDE igual Atendimento */
-main.app-shell > section:not(.hero-home) > div[style*="flex"] > button,
-.app-shell > section:not(.hero-home) > div[style*="flex"] > button,
-main.app-shell > section:not(.hero-home) > div[style*="flex"] > a,
-.app-shell > section:not(.hero-home) > div[style*="flex"] > a {
-  width: 100% !important;
-  padding: 12px 16px !important;
-  border-radius: 999px !important;
-  font-size: 0.78rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
-  min-height: 44px !important;
-  border: 1px solid rgba(79,209,255,0.35) !important;
-  background: rgba(10,20,45,0.5) !important;
-  color: #eaf3ff !important;
-  transition: all 0.2s ease !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-decoration: none !important;
-  box-sizing: border-box !important;
-  flex: none !important;
-  max-width: none !important;
-  margin: 0 !important;
-}
-
-main.app-shell > section:not(.hero-home) > div[style*="flex"] > button:hover,
-.app-shell > section:not(.hero-home) > div[style*="flex"] > button:hover,
-main.app-shell > section:not(.hero-home) > div[style*="flex"] > a:hover,
-.app-shell > section:not(.hero-home) > div[style*="flex"] > a:hover {
-  background: rgba(30,50,90,0.7) !important;
-  border-color: rgba(184,156,255,0.6) !important;
-  transform: translateX(4px) !important;
-  box-shadow: 0 4px 16px rgba(124,58,237,0.25) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v23 — Nivelar altura primeira linha com as demais
-   ═══════════════════════════════════════════════════════════ */
-
-/* Igualar padding das seções da primeira linha (Atendimento/Guias) */
-.hero-home > div:last-child > div {
-  padding: 6px 20px !important;
-  min-height: auto !important;
-}
-
-.hero-home > div:last-child > div > button:first-child {
-  padding: 0 !important;
-  min-height: 40px !important;
-  height: 40px !important;
-}
-
-/* Sub-botões da primeira linha (Atendimento/Guias) - igual aos outros */
-.hero-home > div:last-child > div .home-actions button {
-  min-height: 44px !important;
-  font-size: 0.78rem !important;
-  border-radius: 999px !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v24 — Letras maiores + corrigir grid 2 colunas
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── PRIMEIRA LINHA: quando UMA abre, ocupa LARGURA TOTAL ── */
-/* Atendimento e Guias ficam em 2 colunas APENAS quando ambos fechados */
-/* Quando qualquer um abre, o conteúdo precisa de espaço */
-.hero-home > div:last-child {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 14px !important;
-  align-items: start !important;
-}
-
-/* Sub-botões da primeira linha — LETRAS MAIORES */
-.hero-home > div:last-child > div .home-actions button {
-  font-size: 0.88rem !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.06em !important;
-  min-height: 48px !important;
-  padding: 13px 16px !important;
-}
-
-/* Sub-botões de todas as outras seções — LETRAS MAIORES */
-main.app-shell > section:not(.hero-home) > div[style*="flex"] > button,
-.app-shell > section:not(.hero-home) > div[style*="flex"] > button,
-main.app-shell > section:not(.hero-home) > div[style*="flex"] > a,
-.app-shell > section:not(.hero-home) > div[style*="flex"] > a {
-  font-size: 0.88rem !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.06em !important;
-  min-height: 48px !important;
-  padding: 13px 16px !important;
-}
-
-/* Labels das seções (ATENDIMENTO, GUIAS, FOTOS, etc) — maiores */
-.section-label {
-  font-size: 0.82rem !important;
-  padding: 6px 14px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.1em !important;
-}
-
-section:not(.hero-home) .section-label {
-  font-size: 0.82rem !important;
-  padding: 6px 14px !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v25 — Seções abaixo ocupam 2 colunas quando abertas
-   + Fontes maiores em TUDO
-   ═══════════════════════════════════════════════════════════ */
-
-/* Quando section abre, ocupa as 2 colunas (igual Guias/Atendimento) */
-main.app-shell > section:not(.hero-home),
-.app-shell > section:not(.hero-home) {
-  display: inline-block !important;
-  width: calc(50% - 8px) !important;
-  vertical-align: top !important;
-}
-
-/* Quando tem conteúdo aberto (tem filhos além do botão), ocupa tudo */
-main.app-shell > section:not(.hero-home):has(div > button),
-main.app-shell > section:not(.hero-home):has(div[style*="column"]),
-main.app-shell > section:not(.hero-home):has(> div),
-.app-shell > section:not(.hero-home):has(> div) {
-  width: 100% !important;
-  display: block !important;
-  margin-bottom: 12px !important;
-}
-
-/* Sub-botões dentro: LETRAS GRANDES */
-main.app-shell > section:not(.hero-home) > div > button,
-.app-shell > section:not(.hero-home) > div > button,
-main.app-shell > section:not(.hero-home) > div > a,
-.app-shell > section:not(.hero-home) > div > a {
-  font-size: 0.95rem !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.08em !important;
-  min-height: 52px !important;
-  padding: 14px 20px !important;
-}
-
-/* Labels de todas seções — maiores */
-.section-label,
-section:not(.hero-home) .section-label {
-  font-size: 0.88rem !important;
-  padding: 7px 16px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.1em !important;
-}
-
-/* Sub-botões da primeira linha (Atendimento/Guias) — FONTES GRANDES */
-.hero-home > div:last-child > div .home-actions button {
-  font-size: 0.95rem !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.08em !important;
-  min-height: 52px !important;
-  padding: 14px 20px !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Redesign v26 — Fundo do painel ADM
-   ═══════════════════════════════════════════════════════════ */
-
-.admin-gallery-panel {
-  background-image: url("/fundo-adm.jpg") !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  position: relative !important;
-}
-
-/* Overlay escuro pra texto ficar legível */
-.admin-gallery-panel::before {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: rgba(5, 10, 30, 0.82) !important;
-  z-index: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Conteúdo do ADM fica acima do overlay */
-.admin-gallery-panel > * {
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-/* ═══ Fix campos de texto aba Atendentes ═══ */
-.admin-gallery-panel input[type="text"],
-.admin-gallery-panel input[type="email"],
-.admin-gallery-panel input[type="password"] {
-  color: #eaf3ff !important;
-  background: rgba(4,10,24,0.85) !important;
-  border: 1px solid rgba(113,159,219,0.4) !important;
-  -webkit-text-fill-color: #eaf3ff !important;
-}
-.admin-gallery-panel input::placeholder {
-  color: rgba(180,200,230,0.5) !important;
-  -webkit-text-fill-color: rgba(180,200,230,0.5) !important;
-}
-
-/* ═══ Fix campos input aba Atendentes ═══ */
-.admin-gallery-panel input[type="text"],
-.admin-gallery-panel input[type="email"],
-.admin-gallery-panel input[type="password"],
-.admin-gallery-panel input:not([type="checkbox"]) {
-  color: #eaf3ff !important;
-  -webkit-text-fill-color: #eaf3ff !important;
-  background: rgba(4,10,24,0.85) !important;
-  border: 1px solid rgba(113,159,219,0.4) !important;
-}
-.admin-gallery-panel input::placeholder {
-  color: rgba(180,200,230,0.5) !important;
-  -webkit-text-fill-color: rgba(180,200,230,0.5) !important;
-}
-
-/* ═══ Fix DEFINITIVO inputs do painel ADM ═══
-   O .site-modal input força branco, mas o ADM precisa de fundo escuro */
-.site-modal .admin-gallery-panel input[type="text"],
-.site-modal .admin-gallery-panel input[type="email"],
-.site-modal .admin-gallery-panel input[type="password"] {
-  background: rgba(4, 10, 24, 0.92) !important;
-  color: #eaf3ff !important;
-  -webkit-text-fill-color: #eaf3ff !important;
-  border: 1px solid rgba(79, 209, 255, 0.4) !important;
-}
-.site-modal .admin-gallery-panel input::placeholder {
-  color: rgba(159, 180, 199, 0.6) !important;
-  -webkit-text-fill-color: rgba(159, 180, 199, 0.6) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════ */
-/* v27 — SOBRE NÓS                                           */
-/* ═══════════════════════════════════════════════════════════ */
-.sobre-container { padding: 8px 0 0; }
-
-/* HERO */
-.sobre-hero {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  align-items: center;
-  padding: 28px 24px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(21,101,192,0.15) 0%, rgba(123,31,162,0.12) 100%);
-  border: 1px solid rgba(79,209,255,0.15);
-  margin-bottom: 24px;
-}
-.sobre-hero-text { display: flex; flex-direction: column; gap: 12px; }
-.sobre-badge {
-  display: inline-block; width: fit-content;
-  padding: 4px 14px; border-radius: 20px;
-  background: rgba(79,209,255,0.12); border: 1px solid rgba(79,209,255,0.3);
-  color: #7dd3fc; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
-}
-.sobre-titulo {
-  font-size: 2rem; font-weight: 900; margin: 0;
-  background: linear-gradient(135deg, #4fd1ff, #b89cff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.sobre-lema {
-  font-size: 1rem; color: #b89cff; font-style: italic; font-weight: 600; margin: 0;
-}
-.sobre-intro {
-  font-size: 0.88rem; color: #c5d8e8; line-height: 1.65; margin: 0;
-}
-.sobre-intro strong { color: #eaf7ff; }
-
-/* FUNDADORES */
-.sobre-fundadores {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-}
-.sobre-fundador-card {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  padding: 16px; border-radius: 14px;
-  background: rgba(0,0,0,0.25); border: 1px solid rgba(79,209,255,0.12);
-  transition: transform 0.2s, border-color 0.2s;
-}
-.sobre-fundador-card:hover {
-  transform: translateY(-3px); border-color: rgba(79,209,255,0.35);
-}
-.sobre-fundador-card img {
-  width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
-  border: 3px solid rgba(79,209,255,0.3);
-  box-shadow: 0 4px 20px rgba(79,209,255,0.15);
-}
-.sobre-fundador-card span {
-  font-weight: 800; color: #eaf7ff; font-size: 0.92rem;
-}
-.sobre-fundador-card small {
-  color: #7dd3fc; font-size: 0.75rem; font-weight: 600;
-}
-
-/* SECTIONS */
-.sobre-section {
-  margin-bottom: 24px; padding: 20px 24px; border-radius: 14px;
-  background: rgba(0,0,0,0.2); border: 1px solid rgba(79,209,255,0.08);
-}
-.sobre-section h3 {
-  font-size: 1.1rem; font-weight: 800; color: #4fd1ff;
-  margin: 0 0 12px; border-bottom: 1px solid rgba(79,209,255,0.12); padding-bottom: 8px;
-}
-.sobre-section p {
-  font-size: 0.88rem; color: #c5d8e8; line-height: 1.65; margin: 0;
-}
-.sobre-section p strong { color: #eaf7ff; }
-
-/* RESINA TABS + DETALHE */
-.sobre-resina-tabs {
-  display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0;
-}
-.sobre-resina-tab {
-  padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
-  background: rgba(79,209,255,0.06); border: 1px solid rgba(79,209,255,0.15);
-  color: #9fb4c7; cursor: pointer; transition: all 0.2s; font-family: inherit;
-}
-.sobre-resina-tab:hover { background: rgba(79,209,255,0.12); color: #eaf7ff; }
-.sobre-resina-tab.active {
-  background: rgba(79,209,255,0.18); border-color: #4fd1ff; color: #4fd1ff;
-}
-.sobre-resina-detalhe {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center;
-  margin-top: 8px; padding: 20px; border-radius: 14px;
-  background: rgba(0,0,0,0.2); border: 1px solid rgba(79,209,255,0.1);
-}
-.sobre-resina-img-wrap {
-  display: flex; justify-content: center; align-items: center;
-}
-.sobre-resina-img-wrap img {
-  max-height: 380px; max-width: 100%; border-radius: 12px; object-fit: contain;
-  border: 1px solid rgba(79,209,255,0.12);
-  box-shadow: 0 6px 30px rgba(0,0,0,0.4);
-}
-.sobre-resina-info {
-  display: flex; flex-direction: column; gap: 10px;
-}
-.sobre-resina-cat {
-  display: inline-block; width: fit-content;
-  padding: 3px 12px; border-radius: 16px; font-size: 0.7rem; font-weight: 700;
-  background: rgba(184,156,255,0.12); border: 1px solid rgba(184,156,255,0.3);
-  color: #b89cff; letter-spacing: 0.5px; text-transform: uppercase;
-}
-.sobre-resina-info h4 {
-  font-size: 1.3rem; font-weight: 900; color: #eaf7ff; margin: 0;
-}
-.sobre-resina-info p {
-  font-size: 0.88rem; color: #c5d8e8; line-height: 1.7; margin: 0;
-}
-.sobre-resina-specs {
-  font-size: 0.78rem; color: #7dd3fc; font-weight: 600;
-  padding: 8px 14px; border-radius: 10px;
-  background: rgba(79,209,255,0.06); border: 1px solid rgba(79,209,255,0.1);
-}
-.sobre-resina-comprar {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 10px 20px; border-radius: 10px; font-weight: 800; font-size: 0.85rem;
-  background: linear-gradient(135deg, rgba(21,101,192,0.25), rgba(79,209,255,0.12));
-  border: 1px solid rgba(79,209,255,0.3); color: #eaf7ff;
-  text-decoration: none; transition: all 0.2s; width: fit-content;
-}
-.sobre-resina-comprar:hover { background: rgba(79,209,255,0.2); border-color: #4fd1ff; }
-
-/* VALORES GRID */
-.sobre-valores-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px;
-}
-.sobre-valor-card {
-  padding: 18px; border-radius: 12px;
-  background: rgba(79,209,255,0.04); border: 1px solid rgba(79,209,255,0.1);
-  text-align: center; transition: border-color 0.2s;
-}
-.sobre-valor-card:hover { border-color: rgba(79,209,255,0.3); }
-.sobre-valor-icon { font-size: 1.8rem; margin-bottom: 8px; }
-.sobre-valor-card h4 {
-  font-size: 0.88rem; color: #eaf7ff; font-weight: 800; margin: 0 0 8px;
-}
-.sobre-valor-card p {
-  font-size: 0.8rem; color: #9fb4c7; line-height: 1.5; margin: 0;
-}
-
-
-
-/* AÇÕES */
-.sobre-actions {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-  margin-top: 8px;
-}
-.sobre-action-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 48px; padding: 12px 18px; border-radius: 12px;
-  font-weight: 800; font-size: 0.88rem; cursor: pointer; font-family: inherit;
-  text-decoration: none; text-align: center; transition: all 0.2s;
-  background: rgba(79,209,255,0.08); border: 1px solid rgba(79,209,255,0.2);
+  background: rgba(79,209,255,0.12);
+  border-color: rgba(79,209,255,0.4);
   color: #eaf7ff;
 }
-.sobre-action-btn:hover { background: rgba(79,209,255,0.18); border-color: rgba(79,209,255,0.4); }
-.sobre-action-primary {
-  background: linear-gradient(135deg, rgba(21,101,192,0.3), rgba(79,209,255,0.15)) !important;
-  border-color: rgba(79,209,255,0.35) !important;
-}
-.sobre-action-whatsapp {
-  background: rgba(37,211,102,0.12) !important; border-color: rgba(37,211,102,0.3) !important;
-  color: #86efac !important;
-}
-.sobre-action-whatsapp:hover { background: rgba(37,211,102,0.22) !important; }
 
-/* RESPONSIVO — SOBRE */
-@media (max-width: 768px) {
-  .sobre-hero { grid-template-columns: 1fr; text-align: center; padding: 20px 16px; }
-  .sobre-hero-text { align-items: center; }
-  .sobre-badge { margin: 0 auto; }
-  .sobre-fundadores { grid-template-columns: 1fr 1fr; }
-  .sobre-valores-grid { grid-template-columns: 1fr; }
-  .sobre-actions { grid-template-columns: 1fr; }
-  .sobre-resina-detalhe { grid-template-columns: 1fr; }
-  .sobre-resina-img-wrap img { max-height: 280px; }
-}
-@media (max-width: 480px) {
-  .sobre-titulo { font-size: 1.5rem; }
-  .sobre-fundador-card img { width: 80px; height: 80px; }
-  .sobre-resina-tabs { gap: 4px; }
-  .sobre-resina-tab { padding: 5px 10px; font-size: 0.68rem; }
+/* ── SECTION LABELS ── */
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 5px 14px;
+  color: #4fd1ff;
+  background: rgba(79,209,255,0.08);
+  border: 1px solid rgba(79,209,255,0.2);
+  border-radius: 999px;
+  text-transform: uppercase;
 }
 
-/* ═══════════════════════════════════════════════════════════ */
-/* v28 — Padronização: todos section-labels em azul ciano     */
-/* ═══════════════════════════════════════════════════════════ */
-.section-label,
-.hero-home .section-label,
+/* Todas as cores de section-labels padronizadas em azul */
+.hero-home > div:last-child .section-label,
 section .section-label {
   color: #4fd1ff !important;
   background: rgba(79,209,255,0.08) !important;
   border-color: rgba(79,209,255,0.25) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════ */
-/* v29 — Modais maiores: site-modal e guide-modal             */
-/* ═══════════════════════════════════════════════════════════ */
-
-/* GuideModal — ocupa quase a tela toda */
-.guide-modal {
-  width: min(96vw, 1400px) !important;
-  height: min(94vh, 960px) !important;
+/* ── HERO HOME — cards de seção ── */
+.hero-home > div:last-child {
+  display: grid;
+  gap: 14px;
 }
 
-/* SiteModal: o style inline do JSX define a largura,
-   mas o backdrop padding:20px limita o 100% disponível.
-   Zeramos o padding do backdrop e usamos margin no modal */
-.modal-backdrop {
-  padding: 8px !important;
+/* Grid 2 colunas fixo (ATENDIMENTO + GUIAS lado a lado) */
+@media (min-width: 769px) {
+  .hero-home > div:last-child {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .hero-home > div:last-child {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* O style inline do JSX já coloca width correto.
-   Garantimos que o 100% disponível seja mesmo 100vw - 16px */
-.site-modal {
-  max-width: calc(100vw - 16px) !important;
+/* Cards do hero (ATENDIMENTO, GUIAS) */
+.hero-home > div:last-child > div {
+  background: rgba(10,20,45,0.65);
+  border: 1px solid rgba(79,209,255,0.25);
+  border-radius: 18px;
+  padding: 20px 16px;
+  backdrop-filter: blur(14px);
+  transition: all 0.25s ease;
+}
+.hero-home > div:last-child > div:hover {
+  border-color: rgba(79,209,255,0.45);
+  box-shadow: 0 8px 24px rgba(79,209,255,0.1);
+}
+
+/* Botões dentro dos cards do hero */
+.hero-home > div:last-child > div > button:first-child {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(79,209,255,0.25);
+  background: rgba(79,209,255,0.06);
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hero-home > div:last-child > div > button:first-child:hover {
+  background: rgba(79,209,255,0.12);
+}
+
+/* Sub-botões dentro do hero */
+.home-actions button,
+.hero-home button.grid-cols-2,
+section.hero-home button {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #c5d8e8;
+  border: 1px solid rgba(79,209,255,0.2);
+  background: rgba(79,209,255,0.04);
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.home-actions button:hover,
+section.hero-home button:hover {
+  background: rgba(79,209,255,0.12);
+  border-color: rgba(79,209,255,0.4);
+  color: #eaf7ff;
+}
+
+/* ── SEÇÕES FORA DO HERO (Fotos, Catálogo, Comunidade, etc) ── */
+
+/* 2 colunas no desktop */
+@media (min-width: 769px) {
+  .app-shell > section:not(.hero-home),
+  main > section:not(.hero-home),
+  .app-shell > main > section:not(.hero-home) {
+    display: inline-block;
+    width: calc(50% - 8px);
+    vertical-align: top;
+  }
+}
+
+/* Quando expandido, ocupa largura total */
+.app-shell > section:not(.hero-home):has(div > button),
+.app-shell > section:not(.hero-home):has(div[style*="column"]),
+.app-shell > section:not(.hero-home):has(> div),
+main > section:not(.hero-home):has(> div) {
+  width: 100%;
+  display: block;
+  margin-bottom: 12px;
+}
+
+/* ── ELIO AVATAR ── */
+.elio-container { width: 120px; height: 120px; }
+.elio-avatar { width: 120px; height: 120px; border-radius: 50%; }
+.bot-face { min-height: 140px; display: flex; align-items: center; justify-content: center; }
+
+/* ── BOT em tela cheia ── */
+.site-modal[style*="98vw"] {
+  width: 98vw !important;
+  max-width: 98vw !important;
+  height: 98vh !important;
+  max-height: 98vh !important;
+  padding: 12px !important;
+}
+
+/* Calculadoras e modais largos */
+.site-modal[style*="1400px"] {
+  width: min(1400px, calc(100vw - 16px)) !important;
+  max-width: min(1400px, calc(100vw - 16px)) !important;
+  height: calc(100vh - 16px) !important;
   max-height: calc(100vh - 16px) !important;
-  box-sizing: border-box !important;
+  padding: 12px !important;
 }
 
-/* ═══════════════════════════════════════════════════════════ */
-/* MOBILE — Bloco único organizado (substitui v30-v35)        */
-/* ═══════════════════════════════════════════════════════════ */
-
-/* ── Safe area iPhone ── */
-@supports (padding: max(0px)) {
-  .site-header { padding-left: max(0px, env(safe-area-inset-left)) !important; padding-right: max(0px, env(safe-area-inset-right)) !important; }
-  .modal-backdrop { padding-bottom: max(0px, env(safe-area-inset-bottom)) !important; }
+/* ── GUIDE MODAL MAIOR ── */
+.guide-modal {
+  width: min(96vw, 1400px);
+  height: min(94vh, 960px);
 }
 
-/* ── Chat estável ── */
-.chat-messages { will-change: scroll-position; -webkit-overflow-scrolling: touch; contain: layout style; }
+/* ── FUNDO ADM ── */
+.admin-icon-grid {
+  background-image: url("/fundo-adm.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+/* ── CHAT ESTÁVEL ── */
+.chat-messages {
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+  contain: layout style;
+}
 .chat-messages > div { width: 100%; box-sizing: border-box; }
-.chat-messages > div > div { max-width: 85%; word-break: break-word; overflow-wrap: break-word; box-sizing: border-box; }
+.chat-messages > div > div {
+  max-width: 85%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
+
+/* ══════════════════════════════════════════
+   TEMA CLARO
+   ══════════════════════════════════════════ */
+body.tema-claro { background: #f0f4f8 !important; }
+body.tema-claro .site-header,
+body.tema-claro .header-inner { background: #ffffff !important; border-color: rgba(21,101,192,0.1) !important; }
+body.tema-claro .brand h1 { color: #0f172a !important; }
+body.tema-claro .brand p { color: #64748b !important; }
+body.tema-claro .main-nav button { color: #334155 !important; border-color: rgba(21,101,192,0.15) !important; background: rgba(21,101,192,0.05) !important; }
+body.tema-claro .hero-home > div:last-child > div { background: #ffffff !important; border-color: rgba(21,101,192,0.12) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
+body.tema-claro section.panel,
+body.tema-claro .app-shell > section:not(.hero-home) { background: #ffffff !important; border-color: rgba(21,101,192,0.12) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
+body.tema-claro .section-label { color: #1565c0 !important; background: rgba(21,101,192,0.08) !important; border-color: rgba(21,101,192,0.2) !important; }
+body.tema-claro .home-actions button { background: #f8fafc !important; border-color: rgba(21,101,192,0.15) !important; color: #334155 !important; }
+body.tema-claro .client-chip { background: #ffffff !important; border-color: rgba(21,101,192,0.15) !important; color: #334155 !important; }
+body.tema-claro .assistant-card { background: #ffffff !important; border-color: rgba(21,101,192,0.12) !important; }
+body.tema-claro footer { background: #ffffff !important; border-color: rgba(21,101,192,0.1) !important; color: #64748b !important; }
+body.tema-claro footer a { color: #1565c0 !important; }
+body.tema-claro .site-modal { background: #0a1425 !important; color: #eaf7ff !important; }
+
+/* ══════════════════════════════════════════
+   MOBILE RESPONSIVO (≤ 768px)
+   ══════════════════════════════════════════ */
+
+/* Safe area iPhone */
+@supports (padding: max(0px)) {
+  .site-header { padding-left: max(0px, env(safe-area-inset-left)); padding-right: max(0px, env(safe-area-inset-right)); }
+  .modal-backdrop { padding-bottom: max(0px, env(safe-area-inset-bottom)); }
+}
 
 @media (max-width: 768px) {
-
-  /* GERAL */
   html, body { overflow-x: hidden !important; width: 100% !important; }
 
   /* HEADER */
-  .site-header { position: sticky !important; top: 6px !important; }
   .header-inner { flex-direction: column !important; gap: 8px !important; padding: 10px 14px !important; align-items: flex-start !important; }
   .brand { flex-wrap: wrap !important; gap: 8px !important; }
-  .brand > div { flex: 1 !important; min-width: 0 !important; }
-  .brand > button { width: 100% !important; text-align: center !important; padding: 5px 0 !important; font-size: 0.68rem !important; }
+  .brand > button { width: 100% !important; text-align: center !important; font-size: 0.68rem !important; }
   .brand-logo { height: 36px !important; width: 36px !important; }
   .brand h1 { font-size: 1rem !important; }
   .brand p { font-size: 0.7rem !important; }
-  .main-nav { width: 100% !important; display: flex !important; flex-wrap: wrap !important; gap: 5px !important; }
+  .main-nav { width: 100% !important; flex-wrap: wrap !important; gap: 5px !important; }
   .main-nav button { font-size: 0.7rem !important; padding: 5px 8px !important; white-space: nowrap !important; }
 
-  /* MODAL BACKDROP */
+  /* MODAIS */
   .modal-backdrop { padding: 0 !important; align-items: flex-end !important; }
-
-  /* SITE MODAL padrão — sheet bottom */
-  .site-modal { width: 100vw !important; max-width: 100vw !important; height: 95vh !important; max-height: 95vh !important; border-radius: 20px 20px 0 0 !important; padding: 14px 12px 20px !important; overflow-y: auto !important; overflow-x: hidden !important; box-sizing: border-box !important; }
-
-  /* BOT — tela cheia */
-  .site-modal[style*="98vw"] { width: 100vw !important; max-width: 100vw !important; height: 100vh !important; max-height: 100vh !important; border-radius: 0 !important; padding: 8px !important; }
-
-  /* GUIDE MODAL */
+  .site-modal { width: 100vw !important; max-width: 100vw !important; height: 95vh !important; max-height: 95vh !important; border-radius: 20px 20px 0 0 !important; padding: 14px 12px 20px !important; overflow-y: auto !important; overflow-x: hidden !important; }
+  .site-modal[style*="98vw"] { width: 100vw !important; height: 100vh !important; border-radius: 0 !important; padding: 8px !important; }
   .guide-modal { width: 100vw !important; height: 100vh !important; border-radius: 0 !important; }
   .guide-frame { height: calc(100vh - 56px) !important; }
-  .guide-header { border-radius: 0 !important; padding: 8px 12px !important; min-height: 48px !important; }
-  .guide-header h2 { font-size: 0.8rem !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; max-width: calc(100% - 90px) !important; }
+  .guide-header { padding: 8px 12px !important; min-height: 48px !important; }
+  .guide-header h2 { font-size: 0.8rem !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
   .guide-header button { font-size: 0.7rem !important; padding: 4px 10px !important; white-space: nowrap !important; }
-
-  /* BOT container */
-  .bot-chat-container { height: calc(100vh - 80px) !important; display: flex !important; flex-direction: column !important; }
-  .chat-messages { flex: 1 1 0 !important; min-height: 0 !important; overflow-y: auto !important; }
-  .chat-messages + div { flex-shrink: 0 !important; padding: 8px !important; position: sticky !important; bottom: 0 !important; background: rgba(10,20,37,0.98) !important; border-top: 1px solid rgba(79,209,255,0.15) !important; }
-  .chat-messages + div input { font-size: 0.82rem !important; padding: 8px 12px !important; }
-  .chat-messages + div button { padding: 8px 12px !important; font-size: 0.8rem !important; }
-  .chat-messages > div > div { max-width: 92% !important; font-size: 0.82rem !important; }
 
   /* HERO */
   .hero-home { grid-template-columns: 1fr !important; min-height: unset !important; gap: 10px !important; padding: 12px 0 !important; }
   .assistant-card { flex-direction: row !important; align-items: center !important; gap: 12px !important; padding: 12px 14px !important; min-height: unset !important; }
-  .bot-face, .elio-container, .elio-avatar { width: 56px !important; height: 56px !important; flex-shrink: 0 !important; }
+  .bot-face, .elio-container, .elio-avatar { width: 56px !important; height: 56px !important; min-height: unset !important; flex-shrink: 0 !important; }
   .elio-particles { display: none !important; }
   .assistant-card > button { flex: 1 !important; margin-top: 0 !important; font-size: 0.8rem !important; }
 
-  /* SECTION LABELS — nunca quebrar */
-  .section-label { white-space: nowrap !important; font-size: 0.68rem !important; padding: 3px 8px !important; letter-spacing: 0.05em !important; }
-
-  /* HERO e SEÇÕES — tudo em 1 coluna no mobile */
-  .hero-home > div:last-child {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-  }
-  .hero-home > div:last-child > div {
-    grid-column: unset !important;
-    width: 100% !important;
-    min-height: unset !important;
-    padding: 14px 12px !important;
-  }
-
-  /* Seções fora do hero (Fotos, Catálogo, Comunidade, Ferramentas, Consulta) */
+  /* SEÇÕES FORA DO HERO — 1 coluna */
   .app-shell > section:not(.hero-home),
-  .app-shell > main > section:not(.hero-home),
-  main > section:not(.hero-home) {
-    display: block !important;
-    width: 100% !important;
-    padding: 12px !important;
-    margin-bottom: 8px !important;
-  }
+  main > section:not(.hero-home),
+  .app-shell > main > section:not(.hero-home) { display: block !important; width: 100% !important; }
 
-  /* Botões de seção — texto completo sem cortar */
-  section > button > span:first-child,
-  section > button[style] > span:first-child,
-  .section-label {
-    font-size: 0.72rem !important;
-    letter-spacing: 0.05em !important;
-    white-space: nowrap !important;
-  }
+  /* BOT */
+  .bot-chat-container { height: calc(100vh - 80px) !important; }
+  .chat-messages { flex: 1 1 0 !important; min-height: 0 !important; overflow-y: auto !important; }
+  .chat-messages + div { flex-shrink: 0 !important; padding: 8px !important; position: sticky !important; bottom: 0 !important; background: rgba(10,20,37,0.98) !important; border-top: 1px solid rgba(79,209,255,0.15) !important; }
+  .chat-messages > div > div { max-width: 92% !important; font-size: 0.82rem !important; }
 
-  /* APP SHELL — 1 coluna, sem overflow */
-  .app-shell {
-    width: calc(100% - 16px) !important;
-    max-width: 100vw !important;
-    margin: 0 auto !important;
-    overflow-x: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  .app-shell > section,
-  .app-shell > main > section {
-    width: 100% !important;
-    max-width: 100% !important;
-    display: block !important;
-    box-sizing: border-box !important;
-  }
-
-  /* SUB-BOTÕES */
-  .home-actions button { font-size: 0.78rem !important; padding: 8px 10px !important; }
-  .field.clickable-card { font-size: 0.78rem !important; }
-  .field.clickable-card p { font-size: 0.72rem !important; }
+  /* GRIDS */
   .selector-grid { grid-template-columns: 1fr !important; }
-
-  /* IMAGENS */
-  img, iframe { max-width: 100% !important; }
-
-  /* SOBRE NÓS */
-  .sobre-hero { grid-template-columns: 1fr !important; text-align: center !important; }
+  .modal-action-grid { grid-template-columns: 1fr !important; }
+  .sobre-hero { grid-template-columns: 1fr !important; }
   .sobre-resina-detalhe { grid-template-columns: 1fr !important; }
   .sobre-valores-grid { grid-template-columns: 1fr !important; }
   .sobre-actions { grid-template-columns: 1fr !important; }
-  .sobre-fundadores { grid-template-columns: 1fr 1fr !important; }
-  .sobre-resina-tab { font-size: 0.68rem !important; padding: 4px 8px !important; }
-
-  /* ADM */
   .admin-icon-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
-  .admin-icon-grid button { padding: 10px 6px !important; font-size: 0.7rem !important; }
 
-  /* TEXTOS GERAIS MODAIS */
-  .site-modal p { font-size: 0.82rem !important; }
-  .site-modal h2 { font-size: 1rem !important; }
-  .site-modal h3 { font-size: 0.9rem !important; }
-  .site-modal input, .site-modal select, .site-modal textarea { font-size: 0.85rem !important; }
-
-  /* CALCULADORAS */
-  .site-modal iframe { width: 100% !important; }
-
-  /* BOTÕES MODAIS */
-  .modal-action-grid { grid-template-columns: 1fr !important; }
-  button, .field, .clickable-card { max-width: 100% !important; }
+  /* IMAGENS */
+  img, iframe { max-width: 100% !important; }
 }
 
-/* ── TELAS ≤ 390px ── */
 @media (max-width: 390px) {
   .brand h1 { font-size: 0.85rem !important; }
   .brand p { display: none !important; }
-  .main-nav button { font-size: 0.62rem !important; padding: 4px 6px !important; }
+  .main-nav button { font-size: 0.62rem !important; }
   .admin-icon-grid { grid-template-columns: repeat(2, 1fr) !important; }
-  .section-label { font-size: 0.65rem !important; max-width: 160px !important; }
-  .site-modal { padding: 10px 8px 16px !important; }
 }
-
-/* ── LANDSCAPE MOBILE ── */
-@media (max-width: 768px) and (orientation: landscape) {
-  .hero-home { grid-template-columns: 180px 1fr !important; }
-  .site-modal { height: 98vh !important; }
-  .bot-chat-container { height: calc(100vh - 60px) !important; }
-}
-
-/* ═══════════════════════════════════════════════════════════ */
-/* TEMA CLARO — ativado via classe .tema-claro no body        */
-/* ═══════════════════════════════════════════════════════════ */
-body.tema-claro {
-  background: #f0f4f8 !important;
-}
-body.tema-claro .site-header,
-body.tema-claro .header-inner {
-  background: #ffffff !important;
-  border-color: rgba(21,101,192,0.1) !important;
-}
-body.tema-claro .brand h1 { color: #0f172a !important; }
-body.tema-claro .brand p { color: #64748b !important; }
-body.tema-claro .main-nav button {
-  color: #334155 !important;
-  border-color: rgba(21,101,192,0.15) !important;
-  background: rgba(21,101,192,0.05) !important;
-}
-body.tema-claro .main-nav button:hover {
-  background: rgba(21,101,192,0.1) !important;
-}
-body.tema-claro .hero-home > div:last-child > div {
-  background: #ffffff !important;
-  border-color: rgba(21,101,192,0.12) !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-}
-body.tema-claro section.panel,
-body.tema-claro .app-shell > section:not(.hero-home) {
-  background: #ffffff !important;
-  border-color: rgba(21,101,192,0.12) !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-}
-body.tema-claro .section-label {
-  color: #1565c0 !important;
-  background: rgba(21,101,192,0.08) !important;
-  border-color: rgba(21,101,192,0.2) !important;
-}
-body.tema-claro .home-actions button {
-  background: #f8fafc !important;
-  border-color: rgba(21,101,192,0.15) !important;
-  color: #334155 !important;
-}
-body.tema-claro .home-actions button:hover {
-  background: rgba(21,101,192,0.06) !important;
-}
-body.tema-claro .client-chip {
-  background: #ffffff !important;
-  border-color: rgba(21,101,192,0.15) !important;
-  color: #334155 !important;
-}
-body.tema-claro .client-chip strong { color: #0f172a !important; }
-body.tema-claro .assistant-card {
-  background: #ffffff !important;
-  border-color: rgba(21,101,192,0.12) !important;
-}
-body.tema-claro .assistant-card button {
-  color: #0f172a !important;
-  border-color: rgba(21,101,192,0.2) !important;
-}
-/* Footer claro */
-body.tema-claro footer,
-body.tema-claro .site-footer {
-  background: #ffffff !important;
-  border-color: rgba(21,101,192,0.1) !important;
-  color: #64748b !important;
-}
-body.tema-claro footer a { color: #1565c0 !important; }
-/* Modais ficam escuros mesmo no modo claro */
-body.tema-claro .site-modal { background: #0a1425 !important; color: #eaf7ff !important; }
-body.tema-claro .guide-modal { background: #0a1425 !important; }
