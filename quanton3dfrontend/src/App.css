@@ -1883,9 +1883,29 @@ section:not(.hero-home) .section-label {
 /* Cards abaixo do hero — mesmo padding do Atendimento/Guias */
 .app-shell > main > section:not(.hero-home),
 .app-shell > section:not(.hero-home),
-section.panel {
-  padding: 10px 20px !important;
-  margin-bottom: 18px !important;
+section.panel,
+.app-shell > section:not(.hero-home),
+main > section:not(.hero-home) {
+  padding: 14px 20px !important;
+  margin-bottom: 14px !important;
+}
+
+/* Botões das seções fora do hero — mesmo tamanho dos de dentro */
+.app-shell > section:not(.hero-home) > button:first-child,
+main > section:not(.hero-home) > button:first-child {
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(79,209,255,0.25) !important;
+  background: rgba(79,209,255,0.06) !important;
+  min-height: 48px !important;
+}
+
+/* Label das seções fora do hero — mesma fonte */
+.app-shell > section:not(.hero-home) .section-label,
+main > section:not(.hero-home) .section-label {
+  font-size: 0.75rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
 }
 
 /* Cabeçalho sem padding interno — só o botão */
