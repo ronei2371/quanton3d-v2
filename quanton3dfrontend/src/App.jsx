@@ -358,8 +358,8 @@ function App() {
               ℹ️ Quem Somos
             </button>
             <button type="button" onClick={() => setTemaClaro(prev => !prev)}
-              style={{ padding: "5px 10px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", color: "#7dd3fc", fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
-              {temaClaro ? "🌙" : "☀️"}
+              style={{ padding: "5px 14px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", color: "#7dd3fc", fontSize: "0.72rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", fontWeight: 700 }}>
+              {temaClaro ? "🌙 Modo escuro" : "☀️ Modo claro"}
             </button>
           </div>
           <nav className="main-nav">
@@ -450,7 +450,7 @@ function App() {
           <div style={{ gridColumn: secoesAbertas.guias ? "1 / -1" : "auto" }}>
             <button type="button" onClick={() => alternarSecao("guias")}
               style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-              <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.05em", color: "#b89cff", textTransform: "uppercase", whiteSpace: "nowrap" }}>📚 Guias Técnicos</span>
+              <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#b89cff", textTransform: "uppercase" }}>📚 Guias Técnicos</span>
               <span style={{ color: "#b89cff", fontSize: "0.9rem", transform: secoesAbertas.guias ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
             </button>
             {secoesAbertas.guias && (
@@ -470,7 +470,7 @@ function App() {
       <section style={{ padding: "12px 18px", borderRadius: "14px", background: "rgba(12,24,52,0.75)", border: "1px solid rgba(79,209,255,0.15)", marginBottom: "16px", ...(secoesAbertas.colaboracao ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("colaboracao")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.05em", color: "#4fd1ff", textTransform: "uppercase", whiteSpace: "nowrap" }}>📸 Fotos e Peças</span>
+          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>📸 Fotos e Peças</span>
           <span style={{ color: "#4fd1ff", fontSize: "0.9rem", transform: secoesAbertas.colaboracao ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▾</span>
         </button>
         {secoesAbertas.colaboracao && (
@@ -486,7 +486,7 @@ function App() {
       <section id="produtos" className="panel" style={{ padding: "16px 20px", ...(secoesAbertas.catalogo ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("catalogo")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.05em", color: "#4fd1ff", textTransform: "uppercase", whiteSpace: "nowrap" }}>🧪 Catálogo</span>
+          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🧪 Catálogo</span>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.catalogo ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
         </button>
 
@@ -524,7 +524,7 @@ function App() {
       <section id="servicos" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.comunidade ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("comunidade")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.05em", color: "#4fd1ff", textTransform: "uppercase", whiteSpace: "nowrap" }}>🤝 Comunidade</span>
+          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🤝 Comunidade</span>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.comunidade ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
         </button>
         {secoesAbertas.comunidade && (
@@ -545,7 +545,7 @@ function App() {
       <section id="calculadoras" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.ferramentas ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("ferramentas")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.05em", color: "#4fd1ff", textTransform: "uppercase", whiteSpace: "nowrap" }}>🛠️ Ferramentas</span>
+          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🛠️ Ferramentas</span>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.ferramentas ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
         </button>
 
@@ -3047,6 +3047,16 @@ function AdminContent({ tokenAtendente }) {
                               style={{ padding:"6px 14px", borderRadius:"8px", border:"1px solid rgba(113,159,219,0.25)", background:"rgba(255,255,255,0.04)", color:"#9fb4c7", fontSize:"0.78rem", fontWeight:800, textDecoration:"none" }}>
                               ✉️ Email
                             </a>
+                            <button type="button" onClick={async () => {
+                              if (!window.confirm(`Excluir o cliente "${c.nome}"? Essa ação não pode ser desfeita.`)) return;
+                              try {
+                                await api.delete("/clientes/" + c._id, { headers: { Authorization: "Bearer " + token } });
+                                setDados(prev => ({ ...prev, clientes: prev.clientes.filter(x => x._id !== c._id) }));
+                              } catch(e) { alert("Erro ao excluir cliente."); }
+                            }}
+                              style={{ padding:"6px 14px", borderRadius:"8px", border:"1px solid rgba(255,107,107,0.3)", background:"rgba(255,107,107,0.08)", color:"#ff8fab", cursor:"pointer", fontSize:"0.78rem", fontWeight:800, fontFamily:"inherit" }}>
+                              🗑️ Excluir
+                            </button>
                           </div>
                         </div>
                       )}
