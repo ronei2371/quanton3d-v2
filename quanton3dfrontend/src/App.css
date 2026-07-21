@@ -1519,7 +1519,8 @@ section.hero-home button:hover {
   background: rgba(10,20,45,0.65) !important;
   border: 1px solid rgba(79,209,255,0.25) !important;
   border-radius: 14px !important;
-  padding: 14px 12px !important;
+  padding: 16px 16px !important;
+  margin-bottom: 6px !important;
   backdrop-filter: blur(14px) !important;
   transition: all 0.25s ease !important;
 }
@@ -1883,8 +1884,8 @@ section:not(.hero-home) .section-label {
 .app-shell > main > section:not(.hero-home),
 .app-shell > section:not(.hero-home),
 section.panel {
-  padding: 6px 20px !important;
-  margin-bottom: 12px !important;
+  padding: 10px 20px !important;
+  margin-bottom: 18px !important;
 }
 
 /* Cabeçalho sem padding interno — só o botão */
@@ -2600,3 +2601,74 @@ section .section-label {
   .site-modal { height: 98vh !important; }
   .bot-chat-container { height: calc(100vh - 60px) !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* TEMA CLARO — ativado via classe .tema-claro no body        */
+/* ═══════════════════════════════════════════════════════════ */
+body.tema-claro {
+  background: #f0f4f8 !important;
+}
+body.tema-claro .site-header,
+body.tema-claro .header-inner {
+  background: #ffffff !important;
+  border-color: rgba(21,101,192,0.1) !important;
+}
+body.tema-claro .brand h1 { color: #0f172a !important; }
+body.tema-claro .brand p { color: #64748b !important; }
+body.tema-claro .main-nav button {
+  color: #334155 !important;
+  border-color: rgba(21,101,192,0.15) !important;
+  background: rgba(21,101,192,0.05) !important;
+}
+body.tema-claro .main-nav button:hover {
+  background: rgba(21,101,192,0.1) !important;
+}
+body.tema-claro .hero-home > div:last-child > div {
+  background: #ffffff !important;
+  border-color: rgba(21,101,192,0.12) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+body.tema-claro section.panel,
+body.tema-claro .app-shell > section:not(.hero-home) {
+  background: #ffffff !important;
+  border-color: rgba(21,101,192,0.12) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+body.tema-claro .section-label {
+  color: #1565c0 !important;
+  background: rgba(21,101,192,0.08) !important;
+  border-color: rgba(21,101,192,0.2) !important;
+}
+body.tema-claro .home-actions button {
+  background: #f8fafc !important;
+  border-color: rgba(21,101,192,0.15) !important;
+  color: #334155 !important;
+}
+body.tema-claro .home-actions button:hover {
+  background: rgba(21,101,192,0.06) !important;
+}
+body.tema-claro .client-chip {
+  background: #ffffff !important;
+  border-color: rgba(21,101,192,0.15) !important;
+  color: #334155 !important;
+}
+body.tema-claro .client-chip strong { color: #0f172a !important; }
+body.tema-claro .assistant-card {
+  background: #ffffff !important;
+  border-color: rgba(21,101,192,0.12) !important;
+}
+body.tema-claro .assistant-card button {
+  color: #0f172a !important;
+  border-color: rgba(21,101,192,0.2) !important;
+}
+/* Footer claro */
+body.tema-claro footer,
+body.tema-claro .site-footer {
+  background: #ffffff !important;
+  border-color: rgba(21,101,192,0.1) !important;
+  color: #64748b !important;
+}
+body.tema-claro footer a { color: #1565c0 !important; }
+/* Modais ficam escuros mesmo no modo claro */
+body.tema-claro .site-modal { background: #0a1425 !important; color: #eaf7ff !important; }
+body.tema-claro .guide-modal { background: #0a1425 !important; }
