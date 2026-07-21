@@ -1925,23 +1925,14 @@ section:not(.hero-home) .section-label {
   padding: 5px 14px !important;
 }
 
-/* Cabeçalho sem padding interno — só o botão */
+/* Cabeçalho dos botões de seção */
 .app-shell > main > section:not(.hero-home) > button:first-child,
 .app-shell > section:not(.hero-home) > button:first-child {
-  padding: 0 !important;
+  padding: 10px 14px !important;
   margin: 0 !important;
-  min-height: 40px !important;
-  height: 40px !important;
 }
 
-/* Div interno do cabeçalho: sem padding, alinhado ao centro */
-.app-shell > main > section:not(.hero-home) > button:first-child > div,
-.app-shell > section:not(.hero-home) > button:first-child > div {
-  padding: 0 !important;
-  margin: 0 !important;
-  height: auto !important;
-  min-height: 0 !important;
-}
+
 
 /* Label pequeno igual atendimento */
 section:not(.hero-home) .section-label {
