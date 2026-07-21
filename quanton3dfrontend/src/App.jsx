@@ -467,7 +467,7 @@ function App() {
         </div>
       </section>
 
-      <section style={{ padding: "12px 18px", borderRadius: "14px", background: "rgba(12,24,52,0.75)", border: "1px solid rgba(79,209,255,0.15)", marginBottom: "16px", ...(secoesAbertas.colaboracao ? { width: "100%", display: "block" } : {}) }}>
+      <section style={{ padding: "16px 16px", borderRadius: "18px", background: "rgba(10,20,45,0.65)", border: "1px solid rgba(79,209,255,0.25)", marginBottom: "14px", ...(secoesAbertas.colaboracao ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("colaboracao")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
           <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>📸 Fotos e Peças</span>
@@ -483,7 +483,7 @@ function App() {
 
 
 
-      <section id="produtos" className="panel" style={{ padding: "16px 20px", ...(secoesAbertas.catalogo ? { width: "100%", display: "block" } : {}) }}>
+      <section id="produtos" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.catalogo ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("catalogo")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
           <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🧪 Catálogo</span>
@@ -521,7 +521,7 @@ function App() {
         )}
       </section>
 
-      <section id="servicos" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.comunidade ? { width: "100%", display: "block" } : {}) }}>
+      <section id="servicos" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.comunidade ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("comunidade")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
           <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🤝 Comunidade</span>
@@ -542,7 +542,7 @@ function App() {
         )}
       </section>
 
-      <section id="calculadoras" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.ferramentas ? { width: "100%", display: "block" } : {}) }}>
+      <section id="calculadoras" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.ferramentas ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("ferramentas")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
           <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🛠️ Ferramentas</span>
@@ -652,7 +652,7 @@ function App() {
 
 
 
-      <section id="parametros" className="panel" style={{ padding: "14px 18px", ...(secoesAbertas.parametros ? { width: "100%", display: "block" } : {}) }}>
+      <section id="parametros" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.parametros ? { width: "100%", display: "block" } : {}) }}>
         <button type="button" onClick={() => alternarSecao("consulta")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
