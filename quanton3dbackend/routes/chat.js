@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Parametro from '../models/Parametro.js';
 import Conversa from '../models/Conversa.js';
+import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
 import KNOWLEDGE_BASE from '../services/knowledge.js';
 
 const router = express.Router();
@@ -86,6 +87,56 @@ function extrairContextoHistorico(historico = []) {
 }
 
 // Busca conversas aprovadas pelo admin como conhecimento extra (RAG de aprendizado)
+async function buscarSugestoesConhecimentoAprovadas() {
+    try {
+        const sugestoes = await SugestaoConhecimento.find({ status: 'aprovado' })
+            .sort({ updatedAt: -1 })
+            .limit(12)
+            .lean();
+
+        if (!sugestoes.length) return null;
+
+        const itens = sugestoes.map(sugestao =>
+            `TÍTULO: ${sugestao.titulo}\nCONHECIMENTO APROVADO: ${sugestao.conteudo}`
+        );
+        return `CONHECIMENTOS APROVADOS NO PAINEL (informações oficiais da equipe; siga literalmente quando forem aplicáveis à pergunta):\n${itens.join('\n\n')}`;
+    } catch (err) {
+        console.error('[SUGESTÕES APROVADAS ERROR]', err.message);
+        return null;
+    }
+}
+
+async function buscarHistoricoCliente(clienteId, limite = 8) {
+    if (!clienteId || typeof clienteId !== 'string') return [];
+
+    try {
+        const conversas = await Conversa.find({ clienteId })
+            .sort({ createdAt: -1 })
+            .limit(limite)
+            .lean();
+
+        return conversas.reverse().flatMap(conversa => [
+            { role: 'user', content: conversa.pergunta },
+            { role: 'assistant', content: conversa.resposta },
+        ]);
+    } catch (err) {
+        console.error('[HISTÓRICO CLIENTE ERROR]', err.message);
+        return [];
+    }
+}
+
+function combinarHistoricos(historicoPersistido = [], historicoAtual = []) {
+    const mensagens = [...historicoPersistido, ...historicoAtual]
+        .filter(mensagem => mensagem?.role && mensagem?.content)
+        .map(mensagem => ({ role: mensagem.role, content: String(mensagem.content).trim() }))
+        .filter(mensagem => mensagem.content);
+
+    return mensagens.filter((mensagem, indice) => {
+        const anterior = mensagens[indice - 1];
+        return !anterior || anterior.role !== mensagem.role || anterior.content !== mensagem.content;
+    }).slice(-16);
+}
+
 async function buscarConhecimentoAprovado(textoAtual, resinaDetectada) {
     try {
         const query = { aprovado: true };
@@ -252,6 +303,22 @@ PROBLEMAS E SOLUÇÕES:
 - Peça porosa: Resina mal agitada ou vencida.
 - Racha após dias: Furo de drenagem 2-3mm em peças ocas. Pós-cura máx 5 min por lado.`;
 
+router.get('/historico/:clienteId', async (req, res) => {
+    const clienteId = String(req.params.clienteId || '').trim();
+    if (!clienteId) return res.status(400).json({ success: false, error: 'Cliente obrigatório' });
+
+    try {
+        const conversas = await Conversa.find({ clienteId })
+            .sort({ createdAt: 1 })
+            .limit(30)
+            .lean();
+        return res.json({ success: true, conversas });
+    } catch (err) {
+        console.error('[CARREGAR HISTÓRICO]', err.message);
+        return res.status(500).json({ success: false, error: 'Não foi possível carregar o histórico.' });
+    }
+});
+
 router.post('/', async (req, res) => {
     try {
         const { message = '', historico = [], clienteId = '', clienteNome = '', clienteTelefone = '' } = req.body || {};
@@ -272,18 +339,28 @@ router.post('/', async (req, res) => {
             return res.json({ success: true, reply: rule, source: 'rules', conversaId });
         }
 
-        // 2. RAG — busca no MongoDB usando mensagem atual + histórico
-        const contextRAG = await buscarParametrosRAG(text, historico);
+        // 2. Recupera o contexto persistido do cliente e combina com a sessão atual.
+        const historicoPersistido = await buscarHistoricoCliente(clienteId);
+        const historicoCompleto = combinarHistoricos(
+            historicoPersistido,
+            Array.isArray(historico) ? historico : []
+        );
+
+        // 3. RAG — busca no MongoDB usando mensagem atual + histórico
+        const contextRAG = await buscarParametrosRAG(text, historicoCompleto);
         if (contextRAG) {
             console.log('[RAG] Encontrado:', contextRAG.substring(0, 80));
         }
 
         // 2b. Detecta resina para buscar conhecimento aprovado + tracking
-        const ctxHistorico = extrairContextoHistorico(historico);
+        const ctxHistorico = extrairContextoHistorico(historicoCompleto);
         const resinaAtual = detectarResina(text) || ctxHistorico.resina;
         const impressoraAtual = detectarImpressora(text) || ctxHistorico.impressora;
 
-        const conhecimentoAprovado = await buscarConhecimentoAprovado(text, resinaAtual);
+        const [conhecimentoAprovado, sugestoesAprovadas] = await Promise.all([
+            buscarConhecimentoAprovado(text, resinaAtual),
+            buscarSugestoesConhecimentoAprovadas(),
+        ]);
 
         // 3. Monta system prompt com RAG + conhecimento aprovado
         let systemFinal = SYSTEM_PROMPT;
@@ -292,6 +369,9 @@ router.post('/', async (req, res) => {
         }
         if (conhecimentoAprovado) {
             systemFinal += `\n\n--- ${conhecimentoAprovado} ---\nUse esses casos validados como referência de tom e precisão, mas não copie literalmente se a pergunta atual for diferente.`;
+        }
+        if (sugestoesAprovadas) {
+            systemFinal += `\n\n--- ${sugestoesAprovadas} ---\nNão diga que não tem acesso a este conhecimento. Quando houver instrução aplicável, use-a como fonte oficial da equipe.`;
         }
 
         // 3b. Reconhecimento do fundador — por telefone OU nome (mais robusto)
@@ -308,9 +388,7 @@ router.post('/', async (req, res) => {
         }
 
         // 4. Monta histórico de conversa
-        const mensagensHistorico = Array.isArray(historico)
-            ? historico.slice(-8).filter(m => m.role && m.content)
-            : [];
+        const mensagensHistorico = historicoCompleto;
 
         const messages = [
             { role: 'system', content: systemFinal },

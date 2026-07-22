@@ -3805,6 +3805,39 @@ function BotContent({ cliente }) {
   const scrollRef = useRef(null);
 
   useEffect(() => {
+    const clienteId = cliente?._id || cliente?.id;
+    if (!clienteId) return;
+
+    let ativo = true;
+    setMensagens([]);
+    setEtapa("contexto");
+    setCtx({ resina: "", impressora: "", altura: "0.05" });
+    api.get(`/chat/historico/${encodeURIComponent(clienteId)}`)
+      .then(res => {
+        if (!ativo) return;
+        const conversas = Array.isArray(res.data?.conversas) ? res.data.conversas : [];
+        if (!conversas.length) return;
+
+        const restauradas = conversas.flatMap(conversa => [
+          { text: conversa.pergunta, isBot: false },
+          { text: conversa.resposta, isBot: true, conversaId: conversa._id },
+        ]).filter(mensagem => mensagem.text);
+        setMensagens(restauradas);
+        setEtapa("chat");
+
+        const ultima = conversas[conversas.length - 1];
+        setCtx(atual => ({
+          ...atual,
+          resina: atual.resina || ultima.resinaDetectada || "",
+          impressora: atual.impressora || ultima.impressoraDetectada || "",
+        }));
+      })
+      .catch(() => {});
+
+    return () => { ativo = false; };
+  }, [cliente?._id, cliente?.id]);
+
+  useEffect(() => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
     requestAnimationFrame(() => {
