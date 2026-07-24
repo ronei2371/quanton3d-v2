@@ -8,6 +8,23 @@ import KNOWLEDGE_BASE from '../services/knowledge.js';
 
 const router = express.Router();
 
+// ── Rate limit simples: 20 req por IP a cada 10 minutos ──────────────────────
+const _ratemap = new Map();
+function rateLimitChat(req, res, next) {
+    const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+    const agora = Date.now();
+    const JANELA = 10 * 60 * 1000; // 10 min
+    const LIMITE = 20;
+    const entry = _ratemap.get(ip) || { count: 0, inicio: agora };
+    if (agora - entry.inicio > JANELA) { entry.count = 0; entry.inicio = agora; }
+    entry.count++;
+    _ratemap.set(ip, entry);
+    if (entry.count > LIMITE) {
+        return res.status(429).json({ success: false, error: 'Muitas mensagens. Aguarde alguns minutos.' });
+    }
+    next();
+}
+
 function client() {
     const apiKey = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY;
     const baseURL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
@@ -86,20 +103,32 @@ function extrairContextoHistorico(historico = []) {
     return { resina, impressora };
 }
 
-// Busca conversas aprovadas pelo admin como conhecimento extra (RAG de aprendizado)
-async function buscarSugestoesConhecimentoAprovadas() {
+// Busca sugestões aprovadas com relevância por palavras-chave da pergunta
+async function buscarSugestoesConhecimentoAprovadas(pergunta = '') {
     try {
-        const sugestoes = await SugestaoConhecimento.find({ status: 'aprovado' })
+        const todas = await SugestaoConhecimento.find({ status: 'aprovado' })
             .sort({ updatedAt: -1 })
-            .limit(12)
+            .limit(50)
             .lean();
 
-        if (!sugestoes.length) return null;
+        if (!todas.length) return null;
 
-        const itens = sugestoes.map(sugestao =>
-            `TÍTULO: ${sugestao.titulo}\nCONHECIMENTO APROVADO: ${sugestao.conteudo}`
+        // Filtra por palavras-chave da pergunta (palavras > 3 chars)
+        const palavras = pergunta.toLowerCase().split(/\s+/).filter(p => p.length > 3);
+        const relevantes = palavras.length > 0
+            ? todas.filter(s => {
+                const texto = `${s.titulo} ${s.conteudo}`.toLowerCase();
+                return palavras.some(p => texto.includes(p));
+              }).slice(0, 5)
+            : todas.slice(0, 3);
+
+        const lista = relevantes.length > 0 ? relevantes : todas.slice(0, 3);
+        if (!lista.length) return null;
+
+        const itens = lista.map(s =>
+            `[${(s.categoria || 'GERAL').toUpperCase()}] ${s.titulo}: ${s.conteudo}`
         );
-        return `CONHECIMENTOS APROVADOS NO PAINEL (informações oficiais da equipe; siga literalmente quando forem aplicáveis à pergunta):\n${itens.join('\n\n')}`;
+        return `CONHECIMENTOS APROVADOS PELA EQUIPE QUANTON3D (use com prioridade quando aplicável):\n${itens.join('\n')}`;
     } catch (err) {
         console.error('[SUGESTÕES APROVADAS ERROR]', err.message);
         return null;
@@ -319,7 +348,7 @@ router.get('/historico/:clienteId', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', rateLimitChat, async (req, res) => {
     try {
         const { message = '', historico = [], clienteId = '', clienteNome = '', clienteTelefone = '' } = req.body || {};
         const text = String(message || '').trim();
@@ -340,11 +369,12 @@ router.post('/', async (req, res) => {
         }
 
         // 2. Recupera o contexto persistido do cliente e combina com a sessão atual.
+        // Filtro de segurança: aceita SOMENTE roles user/assistant vindos do front (nunca system)
+        const historicoFiltrado = Array.isArray(historico)
+            ? historico.filter(m => m?.role === 'user' || m?.role === 'assistant')
+            : [];
         const historicoPersistido = await buscarHistoricoCliente(clienteId);
-        const historicoCompleto = combinarHistoricos(
-            historicoPersistido,
-            Array.isArray(historico) ? historico : []
-        );
+        const historicoCompleto = combinarHistoricos(historicoPersistido, historicoFiltrado);
 
         // 3. RAG — busca no MongoDB usando mensagem atual + histórico
         const contextRAG = await buscarParametrosRAG(text, historicoCompleto);
@@ -359,7 +389,7 @@ router.post('/', async (req, res) => {
 
         const [conhecimentoAprovado, sugestoesAprovadas] = await Promise.all([
             buscarConhecimentoAprovado(text, resinaAtual),
-            buscarSugestoesConhecimentoAprovadas(),
+            buscarSugestoesConhecimentoAprovadas(text),
         ]);
 
         // 3. Monta system prompt com RAG + conhecimento aprovado
