@@ -3874,18 +3874,15 @@ Como posso te ajudar hoje?`;
     setMensagens(novasMensagens);
     setPensando(true);
     try {
-      // Injeta contexto da configuração no início do histórico
-      const ctxMsg = ctx.resina || ctx.impressora
-        ? [{ role: "user", content: `Contexto: resina ${ctx.resina || "não informada"}, impressora ${ctx.impressora || "não informada"}, altura camada ${ctx.altura || "0.05"}mm` },
-           { role: "assistant", content: "Contexto registrado. Pode me contar o problema." }]
-        : [];
-
-      const historico = [
-        ...ctxMsg,
-        ...novasMensagens.slice(-8).filter(m => m.text).map(m => ({ role: m.isBot ? "assistant" : "user", content: m.text }))
-      ];
-
-      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "" });
+      const res = await api.post("/chat", {
+        message: userMsg,
+        clienteId: cliente?._id || null,
+        clienteNome: cliente?.nome || "",
+        historico: novasMensagens
+          .slice(-10)
+          .filter(m => m.text && (m.isBot === true || m.isBot === false))
+          .map(m => ({ role: m.isBot ? "assistant" : "user", content: m.text }))
+      });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
       const conversaId = res.data.data?.conversaId || res.data.conversaId || null;
       setMensagens((prev) => [...prev, { text: reply, isBot: true, conversaId }]);
