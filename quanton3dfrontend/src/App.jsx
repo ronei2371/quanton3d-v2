@@ -4161,7 +4161,12 @@ function ServiceLine({ title, onClick }) {
 
 function PainelAtendente({ atendente, onClose }) {
   const p = atendente.permissoes || {};
-  const primeiraAba = p.verChamados !== false ? "chamados" : p.verMensagens !== false ? "mensagens" : p.verClientes !== false ? "clientes" : p.sugerirConhecimento ? "sugestoes" : "chamados";
+  // Usa permissões reais do backend — mudarStatusChamados, sugerirConhecimento, acessarMetricas
+  const podeChamados = p.mudarStatusChamados !== false;
+  const podeMensagens = true; // todos atendentes veem mensagens
+  const podeClientes = p.acessarMetricas || p.acessoAdmCompleto || true;
+  const podeSugestoes = p.sugerirConhecimento !== false;
+  const primeiraAba = podeChamados ? "chamados" : podeMensagens ? "mensagens" : podeSugestoes ? "sugestoes" : "chamados";
   const [aba, setAba] = useState(primeiraAba);
   const [dados, setDados] = useState({ chamados: [], mensagens: [], clientes: [] });
   const [carregando, setCarregando] = useState(true);
@@ -4220,10 +4225,10 @@ function PainelAtendente({ atendente, onClose }) {
   }
 
   const ABAS = [
-    p.verChamados !== false     && { id: "chamados",  label: "🔧 Chamados",   count: dados.chamados.length },
-    p.verMensagens !== false    && { id: "mensagens", label: "✉️ Mensagens",  count: dados.mensagens.length },
-    p.verClientes !== false     && { id: "clientes",  label: "👥 Clientes",   count: dados.clientes.length },
-    p.sugerirConhecimento       && { id: "sugestoes", label: "💡 Sugestões",  count: sugestoes.length },
+    podeChamados  && { id: "chamados",  label: "🔧 Chamados",  count: dados.chamados.length },
+    podeMensagens && { id: "mensagens", label: "✉️ Mensagens", count: dados.mensagens.length },
+    podeClientes  && { id: "clientes",  label: "👥 Clientes",  count: dados.clientes.length },
+    podeSugestoes && { id: "sugestoes", label: "💡 Sugestões", count: sugestoes.length },
   ].filter(Boolean);
 
   return (
