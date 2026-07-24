@@ -1396,3 +1396,5 @@ function FormulacaoContent({ cliente }) {
   );
 }
 
+
+export default App;
