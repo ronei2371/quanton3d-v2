@@ -473,8 +473,8 @@ function App() {
         {/* FOTOS E PEÇAS */}
         <section className="panel" style={{ padding: "14px", margin: 0 }}>
           <button type="button" onClick={() => alternarSecao("colaboracao")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#4fd1ff", textTransform: "uppercase" }}>📸 Fotos e Peças</span>
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>📸 Fotos e Peças</span>
             <span style={{ color: "#4fd1ff", fontSize: "0.9rem", transform: secoesAbertas.colaboracao ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
           </button>
           {secoesAbertas.colaboracao && (
@@ -494,8 +494,8 @@ function App() {
         {/* CATÁLOGO */}
         <section id="produtos" className="panel" style={{ padding: "14px", margin: 0 }}>
           <button type="button" onClick={() => alternarSecao("catalogo")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#4fd1ff", textTransform: "uppercase" }}>🧪 Catálogo</span>
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🧪 Catálogo</span>
             <span style={{ color: "#4fd1ff", fontSize: "0.9rem", transform: secoesAbertas.catalogo ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
           </button>
           {secoesAbertas.catalogo && (
@@ -523,8 +523,8 @@ function App() {
         {/* COMUNIDADE */}
         <section id="servicos" className="panel" style={{ padding: "14px", margin: 0 }}>
           <button type="button" onClick={() => alternarSecao("comunidade")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#b89cff", textTransform: "uppercase" }}>🤝 Comunidade</span>
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#b89cff", textTransform: "uppercase" }}>🤝 Comunidade</span>
             <span style={{ color: "#b89cff", fontSize: "0.9rem", transform: secoesAbertas.comunidade ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
           </button>
           {secoesAbertas.comunidade && (
@@ -544,8 +544,8 @@ function App() {
         {/* FERRAMENTAS */}
         <section id="calculadoras" className="panel" style={{ padding: "14px", margin: 0 }}>
           <button type="button" onClick={() => alternarSecao("ferramentas")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#b89cff", textTransform: "uppercase" }}>🛠️ Ferramentas</span>
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#b89cff", textTransform: "uppercase" }}>🛠️ Ferramentas</span>
             <span style={{ color: "#b89cff", fontSize: "0.9rem", transform: secoesAbertas.ferramentas ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
           </button>
 
