@@ -468,10 +468,10 @@ function App() {
       </section>
 
       {/* ── GRADE 2x2: Fotos | Catálogo / Comunidade | Ferramentas ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "10px" }}>
 
         {/* FOTOS E PEÇAS */}
-        <section className="panel" style={{ padding: "14px", margin: 0 }}>
+        <section className="panel" style={{ padding: "16px" }}>
           <button type="button" onClick={() => alternarSecao("colaboracao")}
             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>📸 Fotos e Peças</span>
@@ -492,7 +492,7 @@ function App() {
         </section>
 
         {/* CATÁLOGO */}
-        <section id="produtos" className="panel" style={{ padding: "14px", margin: 0 }}>
+        <section id="produtos" className="panel" style={{ padding: "16px" }}>
           <button type="button" onClick={() => alternarSecao("catalogo")}
             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🧪 Catálogo</span>
@@ -542,7 +542,7 @@ function App() {
         </section>
 
         {/* FERRAMENTAS */}
-        <section id="calculadoras" className="panel" style={{ padding: "14px", margin: 0 }}>
+        <section id="calculadoras" className="panel" style={{ padding: "16px" }}>
           <button type="button" onClick={() => alternarSecao("ferramentas")}
             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#b89cff", textTransform: "uppercase" }}>🛠️ Ferramentas</span>
