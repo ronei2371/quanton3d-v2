@@ -467,87 +467,87 @@ function App() {
         </div>
       </section>
 
-      <section style={{ padding: "16px 16px", borderRadius: "18px", background: "rgba(10,20,45,0.65)", border: "1px solid rgba(79,209,255,0.25)", marginBottom: "14px", ...(secoesAbertas.colaboracao ? { width: "100%", display: "block" } : {}) }}>
-        <button type="button" onClick={() => alternarSecao("colaboracao")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>📸 Fotos e Peças</span>
-          <span style={{ color: "#4fd1ff", fontSize: "0.9rem", transform: secoesAbertas.colaboracao ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▾</span>
-        </button>
-        {secoesAbertas.colaboracao && (
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
-            <button type="button" onClick={() => setActiveModal("galeria")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>📷 Compartilhar minha peça</button>
-            <button type="button" onClick={() => setActiveModal("galeriaPublica")} style={{ padding: "8px 14px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit" }}>🖼️ Ver fotos de clientes</button>
-          </div>
-        )}
-      </section>
+      {/* ── GRADE 2x2: Fotos | Catálogo / Comunidade | Ferramentas ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
 
-
-
-      <section id="produtos" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.catalogo ? { width: "100%", display: "block" } : {}) }}>
-        <button type="button" onClick={() => alternarSecao("catalogo")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🧪 Catálogo</span>
-          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.catalogo ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
-        </button>
-
-        {secoesAbertas.catalogo && (
-          <>
-            {/* Ver todas as resinas */}
-            <div style={{ marginTop: "12px" }}>
-              <a href="https://quanton3d.com.br/produtos" target="_blank" rel="noreferrer"
-                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", borderRadius: "14px", border: "1px solid rgba(73,230,139,0.3)", background: "rgba(73,230,139,0.06)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", width: "100%", textDecoration: "none" }}>
-                <span style={{ fontSize: "1.4rem" }}>🧪</span>
-                <div style={{ textAlign: "left" }}>
-                  <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.92rem" }}>Ver todas as resinas Quanton3D</strong>
-                  <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>14 linhas exclusivas — PYROBLAST, IRON, POSEIDON, FLEXFORM, SPIN, ATHOM e muito mais</span>
-                </div>
-                <span style={{ marginLeft: "auto", color: "#49e68b", fontSize: "0.82rem", fontWeight: 700 }}>Ver →</span>
-              </a>
-            </div>
-
-            {/* FISPQs */}
-            <div style={{ marginTop: "10px" }}>
-              <button type="button" onClick={() => setActiveModal("fispqs")}
-                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", borderRadius: "14px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.07)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", width: "100%" }}>
-                <span style={{ fontSize: "1.4rem" }}>📄</span>
-                <div style={{ textAlign: "left" }}>
-                  <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.92rem" }}>Fichas de Segurança — FISPQ</strong>
-                  <span style={{ color: "#8ba3be", fontSize: "0.78rem" }}>7 documentos disponíveis · POSEIDON, IRON, SPIN, SPARK, PYROBLAST, LOW SMELL, IRON 70/30</span>
-                </div>
-                <span style={{ marginLeft: "auto", color: "#4fd1ff", fontSize: "0.82rem", fontWeight: 700 }}>Ver →</span>
+        {/* FOTOS E PEÇAS */}
+        <section className="panel" style={{ padding: "14px", margin: 0 }}>
+          <button type="button" onClick={() => alternarSecao("colaboracao")}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#4fd1ff", textTransform: "uppercase" }}>📸 Fotos e Peças</span>
+            <span style={{ color: "#4fd1ff", fontSize: "0.9rem", transform: secoesAbertas.colaboracao ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+          </button>
+          {secoesAbertas.colaboracao && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "10px" }}>
+              <button type="button" onClick={() => setActiveModal("galeria")}
+                style={{ width: "100%", padding: "9px 12px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit", textAlign: "left" }}>
+                📷 Compartilhar minha peça
+              </button>
+              <button type="button" onClick={() => setActiveModal("galeriaPublica")}
+                style={{ width: "100%", padding: "9px 12px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.22)", background: "rgba(79,209,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem", fontFamily: "inherit", textAlign: "left" }}>
+                🖼️ Ver fotos de clientes
               </button>
             </div>
-          </>
-        )}
-      </section>
+          )}
+        </section>
 
-      <section id="servicos" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.comunidade ? { width: "100%", display: "block" } : {}) }}>
-        <button type="button" onClick={() => alternarSecao("comunidade")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🤝 Comunidade</span>
-          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.comunidade ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
-        </button>
-        {secoesAbertas.comunidade && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "14px" }}>
-            <button type="button" onClick={abrirParceiroModal}
-              style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
-              🤝 Quero ser parceiro
-            </button>
-            <button type="button" onClick={() => setActiveModal("parceirosPublico")}
-              style={{ padding: "10px 18px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.82rem" }}>
-              🏆 Ver parceiros e cursos
-            </button>
+        {/* CATÁLOGO */}
+        <section id="produtos" className="panel" style={{ padding: "14px", margin: 0 }}>
+          <button type="button" onClick={() => alternarSecao("catalogo")}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#4fd1ff", textTransform: "uppercase" }}>🧪 Catálogo</span>
+            <span style={{ color: "#4fd1ff", fontSize: "0.9rem", transform: secoesAbertas.catalogo ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+          </button>
+          {secoesAbertas.catalogo && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "10px" }}>
+              <a href="https://quanton3d.com.br/produtos" target="_blank" rel="noreferrer"
+                style={{ display: "flex", alignItems: "center", gap: "8px", padding: "9px 12px", borderRadius: "9px", border: "1px solid rgba(73,230,139,0.3)", background: "rgba(73,230,139,0.06)", textDecoration: "none" }}>
+                <span>🧪</span>
+                <div>
+                  <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.8rem" }}>Ver todas as resinas</strong>
+                  <span style={{ color: "#8ba3be", fontSize: "0.7rem" }}>14 linhas exclusivas</span>
+                </div>
+              </a>
+              <button type="button" onClick={() => setActiveModal("fispqs")}
+                style={{ display: "flex", alignItems: "center", gap: "8px", padding: "9px 12px", borderRadius: "9px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.07)", cursor: "pointer", fontFamily: "inherit", textAlign: "left", width: "100%" }}>
+                <span>📄</span>
+                <div>
+                  <strong style={{ color: "#eaf7ff", display: "block", fontSize: "0.8rem" }}>Fichas de Segurança</strong>
+                  <span style={{ color: "#8ba3be", fontSize: "0.7rem" }}>FISPQ — 7 documentos</span>
+                </div>
+              </button>
+            </div>
+          )}
+        </section>
 
-          </div>
-        )}
-      </section>
+        {/* COMUNIDADE */}
+        <section id="servicos" className="panel" style={{ padding: "14px", margin: 0 }}>
+          <button type="button" onClick={() => alternarSecao("comunidade")}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#b89cff", textTransform: "uppercase" }}>🤝 Comunidade</span>
+            <span style={{ color: "#b89cff", fontSize: "0.9rem", transform: secoesAbertas.comunidade ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+          </button>
+          {secoesAbertas.comunidade && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "10px" }}>
+              <button type="button" onClick={abrirParceiroModal}
+                style={{ width: "100%", padding: "9px 12px", borderRadius: "9px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem", textAlign: "left" }}>
+                🤝 Quero ser parceiro
+              </button>
+              <button type="button" onClick={() => setActiveModal("parceirosPublico")}
+                style={{ width: "100%", padding: "9px 12px", borderRadius: "9px", border: "1px solid rgba(184,156,255,0.3)", background: "rgba(184,156,255,0.07)", color: "#eaf7ff", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem", textAlign: "left" }}>
+                🏆 Ver parceiros e cursos
+              </button>
+            </div>
+          )}
+        </section>
 
-      <section id="calculadoras" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.ferramentas ? { width: "100%", display: "block" } : {}) }}>
-        <button type="button" onClick={() => alternarSecao("ferramentas")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>🛠️ Ferramentas</span>
-          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.ferramentas ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
-        </button>
+        {/* FERRAMENTAS */}
+        <section id="calculadoras" className="panel" style={{ padding: "14px", margin: 0 }}>
+          <button type="button" onClick={() => alternarSecao("ferramentas")}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(184,156,255,0.25)", background: "rgba(184,156,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: "0.72rem", fontWeight: 900, letterSpacing: "0.08em", color: "#b89cff", textTransform: "uppercase" }}>🛠️ Ferramentas</span>
+            <span style={{ color: "#b89cff", fontSize: "0.9rem", transform: secoesAbertas.ferramentas ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+          </button>
 
         {secoesAbertas.ferramentas && (
           <div style={{ marginTop: "14px" }}>
@@ -648,17 +648,13 @@ function App() {
 
           </div>
         )}
-      </section>
+        </section>
+      </div>{/* fim grid 2x2 */}
 
-
-
-      <section id="parametros" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.parametros ? { width: "100%", display: "block" } : {}) }}>
+      <section id="parametros" className="panel" style={{ padding: "16px 16px" }}>
         <button type="button" onClick={() => alternarSecao("consulta")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>⚡ Parâmetros de Impressão</span>
-            <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parâmetros de impressão</span>
-          </div>
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(79,209,255,0.06)", cursor: "pointer", fontFamily: "inherit" }}>
+          <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>⚡ Parâmetros de Impressão</span>
           <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.consulta ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
         </button>
 
