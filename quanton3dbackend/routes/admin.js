@@ -19,7 +19,7 @@ router.post('/login', (req, res) => {
   const { user, password } = req.body || {};
   if (user !== process.env.ADMIN_USER || password !== process.env.ADMIN_PASSWORD)
     return res.status(401).json({ success: false, error: 'Credenciais inválidas' });
-  const token = jwt.sign({ user }, process.env.ADMIN_JWT_SECRET, { expiresIn: '1d' });
+  const token = jwt.sign({ user, role: "superadmin" }, process.env.ADMIN_JWT_SECRET, { expiresIn: '1d' });
   res.json({ success: true, token });
 });
 
