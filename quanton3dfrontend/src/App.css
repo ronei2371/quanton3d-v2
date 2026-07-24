@@ -903,6 +903,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   height: 200px;
   display: grid;
   place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
 }
 .elio-avatar {
   width: 150px;
@@ -955,8 +957,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   box-shadow: 0 0 6px rgba(79,209,255,0.8);
 }
 @keyframes elioOrbit {
-  from { transform: rotate(var(--start)) translateX(105px); }
-  to   { transform: rotate(calc(var(--start) + 360deg)) translateX(105px); }
+  from { transform: rotate(var(--start)) translateX(88px); }
+  to   { transform: rotate(calc(var(--start) + 360deg)) translateX(88px); }
 }
 .elio-particle-0 { --start: 0deg;   animation: elioOrbit 3.0s linear infinite; }
 .elio-particle-1 { --start: 45deg;  animation: elioOrbit 3.5s linear infinite reverse; background: #b89cff; }
