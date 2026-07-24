@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
 
     const expiresEm = new Date(Date.now() + 8 * 60 * 60 * 1000); // +8h
     const token = jwt.sign(
-      { atendenteId: at._id, codigo: at.codigo },
+      { atendenteId: at._id, codigo: at.codigo, role: "atendente" },
       process.env.ADMIN_JWT_SECRET,
       { expiresIn: '8h' }
     );
