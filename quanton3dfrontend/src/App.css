@@ -1547,22 +1547,109 @@ main > section:not(.hero-home):has(> div) {
 /* ══════════════════════════════════════════
    TEMA CLARO
    ══════════════════════════════════════════ */
-body.tema-claro { background: #f0f4f8 !important; }
+/* ── TEMA CLARO ─────────────────────────────────────────────────── */
+body.tema-claro { background: #f0f4f8 !important; color: #1e293b !important; }
+
+/* Textos globais */
+body.tema-claro p,
+body.tema-claro span,
+body.tema-claro h1,
+body.tema-claro h2,
+body.tema-claro h3,
+body.tema-claro h4,
+body.tema-claro label,
+body.tema-claro li,
+body.tema-claro strong { color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; }
+
+/* Exceções — textos que devem manter cor específica no modo claro */
+body.tema-claro [style*="color: #4fd1ff"],
+body.tema-claro [style*="color:#4fd1ff"] { color: #1565c0 !important; -webkit-text-fill-color: #1565c0 !important; }
+body.tema-claro [style*="color: #b89cff"],
+body.tema-claro [style*="color:#b89cff"] { color: #6d28d9 !important; -webkit-text-fill-color: #6d28d9 !important; }
+body.tema-claro [style*="color: #49e68b"],
+body.tema-claro [style*="color:#49e68b"] { color: #15803d !important; -webkit-text-fill-color: #15803d !important; }
+body.tema-claro [style*="color: #ffd166"],
+body.tema-claro [style*="color:#ffd166"] { color: #b45309 !important; -webkit-text-fill-color: #b45309 !important; }
+body.tema-claro [style*="color: #ff8fab"],
+body.tema-claro [style*="color:#ff8fab"],
+body.tema-claro [style*="color: #ff6b6b"],
+body.tema-claro [style*="color:#ff6b6b"] { color: #dc2626 !important; -webkit-text-fill-color: #dc2626 !important; }
+body.tema-claro [style*="color: #9fb4c7"],
+body.tema-claro [style*="color:#9fb4c7"],
+body.tema-claro [style*="color: #8ba3be"],
+body.tema-claro [style*="color:#8ba3be"],
+body.tema-claro [style*="color: #6b8aad"],
+body.tema-claro [style*="color:#6b8aad"] { color: #475569 !important; -webkit-text-fill-color: #475569 !important; }
+body.tema-claro [style*="color: #eaf7ff"],
+body.tema-claro [style*="color:#eaf7ff"],
+body.tema-claro [style*="color: #eaf3ff"],
+body.tema-claro [style*="color:#eaf3ff"],
+body.tema-claro [style*="color: #ffffff"],
+body.tema-claro [style*="color:#ffffff"] { color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; }
+
+/* Inputs e selects */
+body.tema-claro input,
+body.tema-claro select,
+body.tema-claro textarea {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  -webkit-text-fill-color: #1e293b !important;
+  border-color: rgba(21,101,192,0.25) !important;
+  box-shadow: none !important;
+}
+body.tema-claro input::placeholder,
+body.tema-claro textarea::placeholder { color: #94a3b8 !important; }
+
+/* Botões gerais */
+body.tema-claro button:not([style]) { color: #334155 !important; }
+
+/* Header */
 body.tema-claro .site-header,
-body.tema-claro .header-inner { background: #ffffff !important; border-color: rgba(21,101,192,0.1) !important; }
-body.tema-claro .brand h1 { color: #0f172a !important; }
-body.tema-claro .brand p { color: #64748b !important; }
+body.tema-claro .header-inner { background: #ffffff !important; border-color: rgba(21,101,192,0.1) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; }
+body.tema-claro .brand h1 { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+body.tema-claro .brand p { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
 body.tema-claro .main-nav button { color: #334155 !important; border-color: rgba(21,101,192,0.15) !important; background: rgba(21,101,192,0.05) !important; }
-body.tema-claro .hero-home > div:last-child > div { background: #ffffff !important; border-color: rgba(21,101,192,0.12) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
+
+/* Seções e painéis */
 body.tema-claro section.panel,
 body.tema-claro .app-shell > section:not(.hero-home) { background: #ffffff !important; border-color: rgba(21,101,192,0.12) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
+body.tema-claro .hero-home > div:last-child > div { background: #ffffff !important; border-color: rgba(21,101,192,0.12) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
+
+/* Acordeões */
 body.tema-claro .section-label { color: #1565c0 !important; background: rgba(21,101,192,0.08) !important; border-color: rgba(21,101,192,0.2) !important; }
 body.tema-claro .home-actions button { background: #f8fafc !important; border-color: rgba(21,101,192,0.15) !important; color: #334155 !important; }
+
+/* Client chip */
 body.tema-claro .client-chip { background: #ffffff !important; border-color: rgba(21,101,192,0.15) !important; color: #334155 !important; }
+
+/* Assistente */
 body.tema-claro .assistant-card { background: #ffffff !important; border-color: rgba(21,101,192,0.12) !important; }
+
+/* Footer */
 body.tema-claro footer { background: #ffffff !important; border-color: rgba(21,101,192,0.1) !important; color: #64748b !important; }
-body.tema-claro footer a { color: #1565c0 !important; }
+body.tema-claro footer span { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
+body.tema-claro footer a { color: #1565c0 !important; -webkit-text-fill-color: #1565c0 !important; }
+
+/* Modais — mantém dark para não quebrar o conteúdo interno */
 body.tema-claro .site-modal { background: #0a1425 !important; color: #eaf7ff !important; }
+body.tema-claro .modal-backdrop { background: rgba(0,0,0,0.6) !important; }
+
+/* Result card e param items */
+body.tema-claro .result-card { background: #ffffff !important; border-color: rgba(21,101,192,0.15) !important; }
+body.tema-claro .result-card h3 { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+body.tema-claro .param-item { background: #f8fafc !important; border-color: rgba(21,101,192,0.12) !important; }
+body.tema-claro .param-item span:first-child { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
+body.tema-claro .param-item strong { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+
+/* Select e field */
+body.tema-claro .field { background: #f8fafc !important; border-color: rgba(21,101,192,0.12) !important; }
+body.tema-claro .field span { color: #334155 !important; -webkit-text-fill-color: #334155 !important; }
+body.tema-claro .field select { background: #ffffff !important; color: #1e293b !important; }
+
+/* Loading e error */
+body.tema-claro .error-box { background: rgba(220,38,38,0.08) !important; border-color: rgba(220,38,38,0.2) !important; color: #dc2626 !important; }
+body.tema-claro .empty-state { color: #475569 !important; }
+body.tema-claro .empty-state h3 { color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; }
 
 /* ══════════════════════════════════════════
    MOBILE RESPONSIVO (≤ 768px)
