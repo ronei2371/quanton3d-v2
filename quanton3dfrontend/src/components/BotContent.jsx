@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../api";
 
-import React from "react";
 function BotContent({ cliente }) {
   const [etapa, setEtapa] = useState("contexto"); // "contexto" | "chat"
   const [ctx, setCtx] = useState({ resina: "", impressora: "", altura: "0.05" });
