@@ -252,6 +252,4 @@ function PainelAtendente({ atendente, onClose }) {
   );
 }
 
-export default App;
-
 export default PainelAtendente;
