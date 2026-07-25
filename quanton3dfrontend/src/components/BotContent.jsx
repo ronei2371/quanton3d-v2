@@ -1,27 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../api";
+import { formatarMarkdown, escaparHtml, RESINAS_BOT } from "../utils";
 
 
-
-function escaparHtml(texto) {
-  const mapa = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
-  return texto.replace(/[&<>"']/g, (c) => mapa[c]);
-}
-
-function formatarMarkdown(texto) {
-  const seguro = escaparHtml(texto);
-  return seguro
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/`(.+?)`/g, "<code style=\"background:rgba(255,255,255,0.12);padding:2px 6px;border-radius:4px;font-size:0.88em\">$1</code>")
-    .replace(/\n{2,}/g, "</p><p style=\"margin:8px 0\">")
-    .replace(/\n/g, "<br/>");
-}
-
-const RESINAS_BOT = [
-  "ALCHEMIST","IRON","IRON 70/30","FLEXFORM","ATHOM DENTAL","ATHOM ALINHADORES",
-  "ATHOM WASHABLE","POSEIDON","PYROBLAST","VULCAN CAST","SPIN","SPARK","LOW SMELL","VELVET SKIN","Nao sei / Outra"
-];
 
 function BotContent({ cliente }) {
   const [etapa, setEtapa] = useState("contexto"); // "contexto" | "chat"
