@@ -4,7 +4,6 @@ import OpenAI from 'openai';
 const router = express.Router();
 
 function client() {
-  if (!process.env.DEEPSEEK_API_KEY) throw new Error('DEEPSEEK_API_KEY nao configurada');
   return new OpenAI({
     apiKey: process.env.DEEPSEEK_API_KEY,
     baseURL: 'https://api.deepseek.com'
@@ -98,7 +97,7 @@ router.post('/', async (req, res) => {
       .slice(-6);
 
     const completion = await client().chat.completions.create({
-      model: 'deepseek-chat',
+     model: process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash',
       temperature: 0.1,
       max_tokens: 400,
       messages: [
