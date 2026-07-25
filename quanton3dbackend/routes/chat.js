@@ -1,12 +1,14 @@
 import express from 'express';
 import OpenAI from 'openai';
+import Conversa from '../models/Conversa.js';
 
 const router = express.Router();
 
 function client() {
+  if (!process.env.DEEPSEEK_API_KEY) throw new Error('DEEPSEEK_API_KEY nao configurada');
   return new OpenAI({
     apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: 'https://api.deepseek.com'
+    baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com'
   });
 }
 
@@ -35,7 +37,7 @@ BURACOS OU POROS NA PECA:
 - FEP rasgado ou furado
 - Exposicao insuficiente (aumente 10-15%)
 - Arquivo STL corrompido
-- NAO e resina mal agitada (isso causa camadas irregulares, nao buracos)
+- NAO e resina mal agitada
 
 PECA NAO ADERE A PLATAFORMA:
 - Nivelamento incorreto (refaca com papel sulfite)
@@ -83,21 +85,55 @@ CONTATO:
 - WhatsApp: (31) 3271-6935
 - Loja: quanton3d.com.br`;
 
+async function buscarHistorico(clienteId) {
+  if (!clienteId) return [];
+  try {
+    const conversa = await Conversa.findOne({ clienteId }).lean();
+    if (!conversa?.mensagens?.length) return [];
+    return conversa.mensagens.slice(-10).map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+  } catch (e) {
+    console.error('[CHAT] Erro historico:', e.message);
+    return [];
+  }
+}
+
+async function salvarHistorico(clienteId, pergunta, resposta) {
+  if (!clienteId) return;
+  try {
+    let conversa = await Conversa.findOne({ clienteId });
+    if (!conversa) conversa = new Conversa({ clienteId, mensagens: [] });
+    conversa.mensagens.push(
+      { role: 'user', content: pergunta, timestamp: new Date() },
+      { role: 'assistant', content: resposta, timestamp: new Date() }
+    );
+    if (conversa.mensagens.length > 50) {
+      conversa.mensagens = conversa.mensagens.slice(-50);
+    }
+    conversa.updatedAt = new Date();
+    await conversa.save();
+  } catch (e) {
+    console.error('[CHAT] Erro salvar historico:', e.message);
+  }
+}
+
 router.post('/', async (req, res) => {
   try {
-    const { message = '', historico = [] } = req.body || {};
+    const { message = '', clienteId = null, historico = [] } = req.body || {};
     const text = String(message || '').trim();
 
     if (!text) {
       return res.status(400).json({ success: false, error: 'Mensagem obrigatoria' });
     }
 
-    const mensagensHistorico = (historico || [])
-      .filter(m => m.role === 'user' || m.role === 'assistant')
-      .slice(-6);
+    const historicoSalvo = await buscarHistorico(clienteId);
+    const mensagensHistorico = historicoSalvo.length > 0 ? historicoSalvo :
+      (historico || []).filter(m => m.role === 'user' || m.role === 'assistant').slice(-6);
 
     const completion = await client().chat.completions.create({
-     model: process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash',
+      model: process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash',
       temperature: 0.1,
       max_tokens: 400,
       messages: [
@@ -108,11 +144,23 @@ router.post('/', async (req, res) => {
     });
 
     const reply = completion.choices?.[0]?.message?.content || 'Nao consegui responder agora. Tente novamente.';
+
+    await salvarHistorico(clienteId, text, reply);
+
     res.json({ success: true, reply, source: 'deepseek' });
 
   } catch (e) {
     console.error('[CHAT ERROR]', e.message);
     res.status(500).json({ success: false, error: 'Erro interno. Tente novamente em instantes.' });
+  }
+});
+
+router.get('/historico/:clienteId', async (req, res) => {
+  try {
+    const conversa = await Conversa.findOne({ clienteId: req.params.clienteId }).lean();
+    res.json({ success: true, mensagens: conversa?.mensagens?.slice(-20) || [] });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
   }
 });
 
