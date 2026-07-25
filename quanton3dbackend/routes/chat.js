@@ -85,40 +85,7 @@ CONTATO:
 - WhatsApp: (31) 3271-6935
 - Loja: quanton3d.com.br`;
 
-async function buscarHistorico(clienteId) {
-  if (!clienteId) return [];
-  try {
-    const conversa = await Conversa.findOne({ clienteId }).lean();
-    if (!conversa?.mensagens?.length) return [];
-    return conversa.mensagens.slice(-10).map(m => ({
-      role: m.role,
-      content: m.content
-    }));
-  } catch (e) {
-    console.error('[CHAT] Erro historico:', e.message);
-    return [];
-  }
-}
-
-async function salvarHistorico(clienteId, pergunta, resposta) {
-  if (!clienteId) return;
-  try {
-    let conversa = await Conversa.findOne({ clienteId });
-    if (!conversa) conversa = new Conversa({ clienteId, mensagens: [] });
-    conversa.mensagens.push(
-      { role: 'user', content: pergunta, timestamp: new Date() },
-      { role: 'assistant', content: resposta, timestamp: new Date() }
-    );
-    if (conversa.mensagens.length > 50) {
-      conversa.mensagens = conversa.mensagens.slice(-50);
-    }
-    conversa.updatedAt = new Date();
-    await conversa.save();
-  } catch (e) {
-    console.error('[CHAT] Erro salvar historico:', e.message);
-  }
-}
-
+// ROTA PRINCIPAL
 router.post('/', async (req, res) => {
   try {
     const { message = '', clienteId = null, historico = [] } = req.body || {};
@@ -128,9 +95,28 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Mensagem obrigatoria' });
     }
 
-    const historicoSalvo = await buscarHistorico(clienteId);
-    const mensagensHistorico = historicoSalvo.length > 0 ? historicoSalvo :
-      (historico || []).filter(m => m.role === 'user' || m.role === 'assistant').slice(-6);
+    // Buscar historico do banco
+    let mensagensHistorico = [];
+    if (clienteId) {
+      try {
+        const conversa = await Conversa.findOne({ clienteId }).lean();
+        if (conversa?.mensagens?.length) {
+          mensagensHistorico = conversa.mensagens.slice(-10).map(m => ({
+            role: m.role,
+            content: m.content
+          }));
+        }
+      } catch (e) {
+        console.error('[CHAT] Erro historico:', e.message);
+      }
+    }
+
+    // Se nao tem historico no banco, usa o do frontend
+    if (!mensagensHistorico.length) {
+      mensagensHistorico = (historico || [])
+        .filter(m => m.role === 'user' || m.role === 'assistant')
+        .slice(-6);
+    }
 
     const completion = await client().chat.completions.create({
       model: process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash',
@@ -145,9 +131,28 @@ router.post('/', async (req, res) => {
 
     const reply = completion.choices?.[0]?.message?.content || 'Nao consegui responder agora. Tente novamente.';
 
-    await salvarHistorico(clienteId, text, reply);
+    // Salvar no banco e retornar o ID da conversa
+    let conversaId = null;
+    if (clienteId) {
+      try {
+        let conversa = await Conversa.findOne({ clienteId });
+        if (!conversa) conversa = new Conversa({ clienteId, mensagens: [] });
+        conversa.mensagens.push(
+          { role: 'user', content: text, timestamp: new Date() },
+          { role: 'assistant', content: reply, timestamp: new Date() }
+        );
+        if (conversa.mensagens.length > 50) {
+          conversa.mensagens = conversa.mensagens.slice(-50);
+        }
+        conversa.updatedAt = new Date();
+        await conversa.save();
+        conversaId = conversa._id;
+      } catch (e) {
+        console.error('[CHAT] Erro salvar:', e.message);
+      }
+    }
 
-    res.json({ success: true, reply, source: 'deepseek' });
+    res.json({ success: true, reply, conversaId });
 
   } catch (e) {
     console.error('[CHAT ERROR]', e.message);
@@ -155,11 +160,35 @@ router.post('/', async (req, res) => {
   }
 });
 
+// ROTA HISTORICO — formato que o BotContent espera
+// Retorna { conversas: [{ pergunta, resposta, _id }] }
 router.get('/historico/:clienteId', async (req, res) => {
   try {
     const conversa = await Conversa.findOne({ clienteId: req.params.clienteId }).lean();
-    res.json({ success: true, mensagens: conversa?.mensagens?.slice(-20) || [] });
+    if (!conversa?.mensagens?.length) {
+      return res.json({ success: true, conversas: [] });
+    }
+
+    // Converte pares user/assistant para formato { pergunta, resposta, _id }
+    const conversas = [];
+    const mensagens = conversa.mensagens.slice(-20);
+    for (let i = 0; i < mensagens.length - 1; i += 2) {
+      const user = mensagens[i];
+      const bot = mensagens[i + 1];
+      if (user?.role === 'user' && bot?.role === 'assistant') {
+        conversas.push({
+          _id: conversa._id + '_' + i,
+          pergunta: user.content,
+          resposta: bot.content,
+          resinaDetectada: '',
+          impressoraDetectada: ''
+        });
+      }
+    }
+
+    res.json({ success: true, conversas });
   } catch (e) {
+    console.error('[CHAT] Erro historico GET:', e.message);
     res.status(500).json({ success: false, error: e.message });
   }
 });
