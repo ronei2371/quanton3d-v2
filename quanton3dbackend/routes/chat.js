@@ -354,4 +354,29 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Rota historico — restaura conversa quando cliente volta
+router.get('/historico/:clienteId', async (req, res) => {
+  try {
+    const conversas = await Conversa.find({ 
+      clienteId: req.params.clienteId 
+    })
+    .sort({ createdAt: 1 })
+    .limit(20)
+    .lean();
+
+    res.json({ 
+      success: true, 
+      conversas: conversas.map(c => ({
+        _id: c._id,
+        pergunta: c.pergunta,
+        resposta: c.respostaMelhorada || c.resposta,
+        resinaDetectada: c.resinaDetectada || '',
+        impressoraDetectada: c.impressoraDetectada || ''
+      }))
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
 export default router;
