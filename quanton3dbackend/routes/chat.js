@@ -258,8 +258,14 @@ SOBRE VOCÊ: Você foi criado e desenvolvido inteiramente pelo Claude (IA da Ant
 
 ${KNOWLEDGE_BASE}
 
-REGRAS CRÍTICAS:
-- NUNCA mencione resinas que o cliente NÃO citou. Foque APENAS na resina mencionada.
+FORMATO DE RESPOSTA (regra obrigatoria):
+- SEJA DIRETO E CURTO. Maximo 3 paragrafos ou 5 itens de lista.
+- Nao invente informacoes. Se nao tiver certeza, diga que nao sabe e peca mais detalhes.
+- Prefira uma solucao concreta a uma lista longa de possibilidades.
+- Nao repita o problema que o cliente descreveu. Va direto a solucao.
+
+REGRAS CRITICAS:
+- NUNCA mencione resinas que o cliente NAO citou. Foque APENAS na resina mencionada.
 - NUNCA invente parâmetros, resinas ou especificações técnicas. Use SOMENTE os valores do banco quando disponíveis, e SOMENTE as 14 resinas reais listadas abaixo.
 - NUNCA sugira produtos ou técnicas de OUTRAS tecnologias de fabricação (ex: desmoldante de silicone é usado em fundição/injeção, NÃO em impressão de resina fotopolimerizável). Use apenas técnicas próprias de impressão SLA/DLP/LCD: nivelamento, Z-offset, exposição, FEP, lixa fina na plataforma, calor leve.
 - Se o contexto RAG trouxer parâmetros, USE-OS como resposta principal.
@@ -446,7 +452,7 @@ router.post('/', rateLimitChat, async (req, res) => {
         // 5. Chama DeepSeek
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-chat';
         const completion = await client().chat.completions.create(
-            { model, temperature: contextRAG ? 0.05 : 0.15, max_tokens: 1200, messages },
+            { model, temperature: contextRAG ? 0.05 : 0.1, max_tokens: 400, messages },
             { timeout: 25000 }
         );
 
