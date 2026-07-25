@@ -997,6 +997,21 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   height: 98vh;
   max-height: 98vh;
   padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.site-modal[style*="98vw"] .bot-chat-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.site-modal[style*="98vw"] .chat-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Calculadoras e modais largos (1400px) */
@@ -1281,7 +1296,11 @@ body.tema-claro .section-label { color: #1565c0 !important; background: rgba(21,
   /* BOT */
   .bot-chat-container { height: calc(100vh - 80px) !important; }
   .chat-messages { flex: 1 1 0 !important; min-height: 0 !important; overflow-y: auto !important; }
-  .chat-messages + div { flex-shrink: 0 !important; padding: 8px !important; position: sticky !important; bottom: 0 !important; background: rgba(10,20,37,0.98) !important; border-top: 1px solid rgba(79,209,255,0.15) !important; }
+  .chat-messages + div { flex-shrink: 0 !important; padding: 8px !important; position: sticky !important; bottom: 0 !important; background: rgba(10,20,37,0.98) !important; border-top: 1px solid rgba(79,209,255,0.15) !important; z-index: 20 !important; }
+  .site-modal[style*="98vw"] { display: flex !important; flex-direction: column !important; overflow: hidden !important; padding: 8px !important; }
+  .site-modal[style*="98vw"] > * { flex-shrink: 0; }
+  .site-modal[style*="98vw"] .bot-chat-container { flex: 1 !important; min-height: 0 !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
+  .site-modal[style*="98vw"] .chat-messages { flex: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
   .chat-messages > div > div { max-width: 92% !important; font-size: 0.82rem !important; }
 
   /* GRIDS */
