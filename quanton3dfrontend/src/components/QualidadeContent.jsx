@@ -1,4 +1,3 @@
-import { RESINAS_BOT } from "../utils";
 import React from "react";
 
 function QualidadeContent({ abrirGuia }) {
@@ -14,11 +13,5 @@ function QualidadeContent({ abrirGuia }) {
     </div>
   );
 }
-
-const RESINAS_BOT = [
-  "ALCHEMIST","IRON","IRON 70/30","FLEXFORM","ATHOM DENTAL","ATHOM ALINHADORES",
-  "ATHOM WASHABLE","POSEIDON","PYROBLAST","VULCAN CAST","SPIN","SPARK","LOW SMELL","VELVET SKIN","Não sei / Outra"
-];
-
 
 export default QualidadeContent;
