@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../api";
+import { criarConfiguracaoVazia, CAMPOS_CONFIGURACAO_GALERIA } from "../utils";
 
 const CAMPOS_CONFIGURACAO_GALERIA = [
   { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
