@@ -1,3 +1,4 @@
+import { RESINAS_BOT } from "../utils";
 import React from "react";
 
 function QualidadeContent({ abrirGuia }) {
