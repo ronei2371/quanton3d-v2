@@ -2,22 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../api";
 import { criarConfiguracaoVazia, CAMPOS_CONFIGURACAO_GALERIA } from "../utils";
 
-const CAMPOS_CONFIGURACAO_GALERIA = [
-  { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
-  { name: "camadasBase", label: "Camadas de base", placeholder: "Ex.: 4" },
-  { name: "exposicaoNormal", label: "Tempo exposicao", placeholder: "Ex.: 2,100 s" },
-  { name: "exposicaoBase", label: "Tempo exposicao base", placeholder: "Ex.: 37,000 s" },
-  { name: "contagemTransicao", label: "Contagem de transicao", placeholder: "Ex.: 0" },
-  { name: "tipoTransicao", label: "Tipo de transicao", placeholder: "Ex.: Linear" },
-  { name: "retardoDesligarUV", label: "Retardo desligar UV", placeholder: "Ex.: 2,000 s" },
-  { name: "distElevacaoInferior", label: "Dist. elevacao inferior", placeholder: "Ex.: 11,000 mm" },
-  { name: "distElevacao", label: "Distancia elevacao", placeholder: "Ex.: 11,000 mm" },
-  { name: "distRetracao", label: "Distancia de retracao", placeholder: "Ex.: 11,000 mm" },
-  { name: "velElevacaoInferior", label: "Vel. elevacao inferior", placeholder: "Ex.: 140,000 mm/min" },
-  { name: "velElevacao", label: "Vel. elevacao", placeholder: "Ex.: 140,000 mm/min" },
-  { name: "velRetracaoInferior", label: "Vel. retracao inferior", placeholder: "Ex.: 135,000 mm/min" },
-  { name: "velRetracao", label: "Vel. retracao", placeholder: "Ex.: 135,000 mm/min" },
-];
 
 function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false }) {
   const [aba, setAba] = useState(initialAba);
