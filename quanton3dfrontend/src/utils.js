@@ -1,4 +1,4 @@
-/* Utilitarios compartilhados entre componentes Quanton3D */
+/* Utilitarios compartilhados - Quanton3D */
 
 export function limparTexto(valor) { return String(valor || "").trim(); }
 
@@ -36,6 +36,24 @@ export function formatarMarkdown(texto) {
 export const RESINAS_BOT = [
   "ALCHEMIST","IRON","IRON 70/30","FLEXFORM","ATHOM DENTAL","ATHOM ALINHADORES",
   "ATHOM WASHABLE","POSEIDON","PYROBLAST","VULCAN CAST","SPIN","SPARK","LOW SMELL","VELVET SKIN","Nao sei / Outra"
+];
+
+export const RESINAS_QUANTON = [
+  "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "POSEIDON",
+  "PYROBLAST", "VULCAN CAST", "SPIN", "SPARK", "LOW SMELL", "VELVET SKIN",
+  "ATHOM DENTAL", "ATHOM ALINHADORES", "ATHOM WASHABLE",
+];
+
+export const IMPRESSORAS_COMUNS = [
+  "Anycubic Photon Mono", "Anycubic Photon Mono X", "Anycubic Photon Mono X 6K",
+  "Anycubic Photon M3", "Anycubic Photon M3 Max", "Anycubic Photon M3 Plus",
+  "Anycubic Photon M5", "Anycubic Photon M5s", "Anycubic Photon M7",
+  "Elegoo Mars 2", "Elegoo Mars 3", "Elegoo Mars 4", "Elegoo Mars 4 Ultra",
+  "Elegoo Saturn", "Elegoo Saturn 2", "Elegoo Saturn 3 Ultra", "Elegoo Saturn 4 Ultra",
+  "Elegoo Jupiter", "Elegoo Jupiter SE",
+  "Creality Halot One", "Creality Halot Mage", "Creality Halot Mage Pro",
+  "Phrozen Sonic Mini 8K", "Phrozen Sonic Mighty 8K",
+  "Bambu Lab",
 ];
 
 export const CAMPOS_CONFIGURACAO_GALERIA = [

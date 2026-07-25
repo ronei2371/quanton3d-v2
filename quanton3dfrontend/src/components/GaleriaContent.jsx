@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../api";
-import { criarConfiguracaoVazia, CAMPOS_CONFIGURACAO_GALERIA } from "../utils";
+import { CAMPOS_CONFIGURACAO_GALERIA, RESINAS_QUANTON, IMPRESSORAS_COMUNS, criarConfiguracaoVazia } from "../utils";
 
 
 function GaleriaContent({ cliente, initialAba = "enviar", ocultarAbas = false }) {
