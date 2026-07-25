@@ -4,8 +4,11 @@ import OpenAI from 'openai';
 const router = express.Router();
 
 function client() {
-  if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY nao configurada');
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  if (!process.env.DEEPSEEK_API_KEY) throw new Error('DEEPSEEK_API_KEY nao configurada');
+  return new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: 'https://api.deepseek.com'
+  });
 }
 
 const SYSTEM_PROMPT = `Voce e o ELIO, assistente tecnico da Quanton3D — fabricante brasileira de resinas UV SLA/DLP, fundada em 2020 em Belo Horizonte MG.
@@ -33,7 +36,7 @@ BURACOS OU POROS NA PECA:
 - FEP rasgado ou furado
 - Exposicao insuficiente (aumente 10-15%)
 - Arquivo STL corrompido
-- NAO e resina mal agitada
+- NAO e resina mal agitada (isso causa camadas irregulares, nao buracos)
 
 PECA NAO ADERE A PLATAFORMA:
 - Nivelamento incorreto (refaca com papel sulfite)
@@ -60,6 +63,10 @@ PECA FRAGIL:
 - Pos-cura insuficiente (cure mais tempo)
 - Resina errada (use IRON para pecas funcionais)
 
+IMPRESSAO INCOMPLETA:
+- FEP com buraco ou desgaste (inspecione contra a luz)
+- Falha de adesao durante impressao (aumente suportes)
+
 PARAMETROS TIPICOS:
 - LCD Mono (Mars, Photon Mono): exposicao 1.5-2.5s, base 35-45s
 - 4K/6K (Saturn, M3): exposicao 2-3s, base 40-50s
@@ -79,35 +86,30 @@ CONTATO:
 
 router.post('/', async (req, res) => {
   try {
-    const { message = '', image = null, historico = [] } = req.body || {};
+    const { message = '', historico = [] } = req.body || {};
     const text = String(message || '').trim();
 
-    if (!text && !image) {
+    if (!text) {
       return res.status(400).json({ success: false, error: 'Mensagem obrigatoria' });
     }
-
-    const content = [{ type: 'text', text: text || 'Analise a imagem de impressao 3D.' }];
-    if (image) content.push({ type: 'image_url', image_url: { url: image } });
 
     const mensagensHistorico = (historico || [])
       .filter(m => m.role === 'user' || m.role === 'assistant')
       .slice(-6);
 
     const completion = await client().chat.completions.create({
-      model: image
-        ? (process.env.OPENAI_VISION_MODEL || 'gpt-4o')
-        : (process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini'),
+      model: 'deepseek-chat',
       temperature: 0.1,
       max_tokens: 400,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         ...mensagensHistorico,
-        { role: 'user', content }
+        { role: 'user', content: text }
       ]
     });
 
     const reply = completion.choices?.[0]?.message?.content || 'Nao consegui responder agora. Tente novamente.';
-    res.json({ success: true, reply, source: 'openai' });
+    res.json({ success: true, reply, source: 'deepseek' });
 
   } catch (e) {
     console.error('[CHAT ERROR]', e.message);
