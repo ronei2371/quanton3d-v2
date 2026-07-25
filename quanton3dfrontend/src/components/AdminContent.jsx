@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../api";
 import { formatarDataHora, CAMPOS_CONFIGURACAO_GALERIA } from "../utils";
+import LimpezaContent from "./LimpezaContent";
 
 function AdminContent({ tokenAtendente }) {
   const [credenciais, setCredenciais] = useState({ user: "", password: "" });
