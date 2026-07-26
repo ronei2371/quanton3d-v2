@@ -10,10 +10,11 @@ function BotContent({ cliente }) {
   const [mensagens, setMensagens] = useState([]);
   const [pensando, setPensando] = useState(false);
   const [impressorasBot, setImpressorasBot] = useState([]);
-  const [feedbackAberto, setFeedbackAberto] = useState(null); // índice da mensagem com form de feedback aberto
+  const [feedbackAberto, setFeedbackAberto] = useState(null);
   const [fotoFeedback, setFotoFeedback] = useState(null);
   const [enviandoFeedback, setEnviandoFeedback] = useState(false);
   const [paramsFeedback, setParamsFeedback] = useState({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" });
+  const [carregandoHistorico, setCarregandoHistorico] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -24,27 +25,43 @@ function BotContent({ cliente }) {
     setMensagens([]);
     setEtapa("contexto");
     setCtx({ resina: "", impressora: "", altura: "0.05" });
+    setCarregandoHistorico(true);
+
     api.get(`/chat/historico/${encodeURIComponent(clienteId)}`)
       .then(res => {
         if (!ativo) return;
         const conversas = Array.isArray(res.data?.conversas) ? res.data.conversas : [];
-        if (!conversas.length) return;
+
+        if (!conversas.length) {
+          /* Sem historico — fica na tela de contexto normalmente */
+          setCarregandoHistorico(false);
+          return;
+        }
 
         const restauradas = conversas.flatMap(conversa => [
           { text: conversa.pergunta, isBot: false },
           { text: conversa.resposta, isBot: true, conversaId: conversa._id },
         ]).filter(mensagem => mensagem.text);
-        setMensagens(restauradas);
-        setEtapa("chat");
 
         const ultima = conversas[conversas.length - 1];
+        const resinaRestaurada = ultima.resinaDetectada || "";
+        const impressoraRestaurada = ultima.impressoraDetectada || "";
+
+        /* Mensagem de boas-vindas de retorno no topo */
+        const boasVoltas = `Bem-vindo de volta, ${cliente?.nome || ""}! 👋 Aqui está seu histórico de conversas com o ELIO.${resinaRestaurada ? ` Resina detectada: **${resinaRestaurada}**.` : ""} Pode continuar de onde parou ou fazer uma nova pergunta!`;
+
+        setMensagens([{ text: boasVoltas, isBot: true }, ...restauradas]);
         setCtx(atual => ({
           ...atual,
-          resina: atual.resina || ultima.resinaDetectada || "",
-          impressora: atual.impressora || ultima.impressoraDetectada || "",
+          resina: atual.resina || resinaRestaurada,
+          impressora: atual.impressora || impressoraRestaurada,
         }));
+        setEtapa("chat");
+        setCarregandoHistorico(false);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (ativo) setCarregandoHistorico(false);
+      });
 
     return () => { ativo = false; };
   }, [cliente?._id, cliente?.id]);
@@ -160,6 +177,15 @@ Como posso te ajudar hoje?`;
       setEnviandoFeedback(false);
     }
   }
+
+  /* Enquanto busca historico, mostra loading neutro */
+  if (carregandoHistorico) return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, gap: "12px", color: "#8ba3be", fontSize: "0.88rem" }}>
+      <div style={{ width: "32px", height: "32px", border: "3px solid rgba(79,209,255,0.2)", borderTop: "3px solid #4fd1ff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <span>Carregando seu histórico...</span>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
   if (etapa === "contexto") return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, height: "100%", overflowY: "auto", padding: "8px 4px" }}>
