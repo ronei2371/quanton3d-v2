@@ -112,7 +112,7 @@ function formatarMarkdown(texto) {
 
 function App() {
   // Controle de seções em acordeão (clica no título pra abrir/fechar os itens)
-  const [secoesAbertas, setSecoesAbertas] = useState({});
+const [secoesAbertas, setSecoesAbertas] = useState({ atendimento: false, guias: false, colaboracao: false, catalogo: false, comunidade: false, ferramentas: false, consulta: false, parametros: false });
   function alternarSecao(nome) { setSecoesAbertas(s => ({ ...s, [nome]: !s[nome] })); }
 
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
