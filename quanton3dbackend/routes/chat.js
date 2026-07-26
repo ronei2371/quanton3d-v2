@@ -1,5 +1,6 @@
 import express from 'express';
 import OpenAI from 'openai';
+import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Parametro from '../models/Parametro.js';
 import Conversa from '../models/Conversa.js';
@@ -308,9 +309,15 @@ router.post('/', async (req, res) => {
 
 router.get('/historico/:clienteId', async (req, res) => {
     try {
-        const conversas = await Conversa.find({
-            clienteId: req.params.clienteId
-        })
+        const { clienteId } = req.params;
+
+        /* Aceita tanto ObjectId quanto string pura no campo clienteId */
+        const isObjectId = mongoose.Types.ObjectId.isValid(clienteId) && clienteId.length === 24;
+        const query = isObjectId
+            ? { $or: [{ clienteId: clienteId }, { clienteId: new mongoose.Types.ObjectId(clienteId) }] }
+            : { clienteId: clienteId };
+
+        const conversas = await Conversa.find(query)
         .sort({ createdAt: 1 })
         .limit(20)
         .lean();
