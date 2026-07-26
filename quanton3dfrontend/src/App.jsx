@@ -661,7 +661,7 @@ function App() {
           </div>
    <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.parametros ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
         </button>
-
+)}
     {secoesAbertas.parametros && (
         <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "8px", marginTop: "12px", marginBottom: "8px" }}>
           {carregando && <span className="loading-pill">Carregando...</span>}
