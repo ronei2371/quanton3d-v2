@@ -71,12 +71,21 @@ function BotContent({ cliente }) {
     const ctxTexto = resina !== "não informada" || impressora !== "não informada"
       ? `Estou usando a resina **${resina}**, impressora **${impressora}**, altura de camada **${altura}mm**.`
       : "";
-    const boasVindas = `Olá ${cliente?.nome || ""}! 👋 Sou o **ELIO**, assistente técnico da Quanton3D.${ctxTexto ? `
+
+    if (mensagens.length > 0) {
+      /* Historico ja restaurado — apenas adiciona mensagem de retorno sem apagar */
+      const retorno = `Bem-vindo de volta, ${cliente?.nome || ""}! 👋${ctxTexto ? ` Contexto atualizado: ${ctxTexto}` : ""} Continue de onde parou ou me faça uma nova pergunta.`;
+      setMensagens(prev => [...prev, { text: retorno, isBot: true }]);
+    } else {
+      /* Sem historico — cria boas-vindas normal */
+      const boasVindas = `Olá ${cliente?.nome || ""}! 👋 Sou o **ELIO**, assistente técnico da Quanton3D.${ctxTexto ? `
 
 Contexto registrado: ${ctxTexto}` : ""}
 
 Como posso te ajudar hoje?`;
-    setMensagens([{ text: boasVindas, isBot: true }]);
+      setMensagens([{ text: boasVindas, isBot: true }]);
+    }
+
     setEtapa("chat");
   }
 
