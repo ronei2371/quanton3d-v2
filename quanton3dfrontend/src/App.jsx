@@ -653,13 +653,13 @@ function App() {
 
 
       <section id="parametros" className="panel" style={{ padding: "16px 16px", ...(secoesAbertas.parametros ? { width: "100%", display: "block" } : {}) }}>
-        <button type="button" onClick={() => alternarSecao("consulta")}
+        <button type="button" onClick={() =>alternarSecao("parametros")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ fontSize: "0.75rem", fontWeight: 900, letterSpacing: "0.1em", color: "#4fd1ff", textTransform: "uppercase" }}>⚡ Parâmetros de Impressão</span>
             <span style={{ color: "#eaf7ff", fontWeight: 800, fontSize: "0.9rem" }}>Parâmetros de impressão</span>
           </div>
-          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.consulta ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+          <span style={{ color: "#4fd1ff", fontSize: "1rem", transform: secoesAbertas.parametros ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
         </button>
 
         {secoesAbertas.consulta && (
