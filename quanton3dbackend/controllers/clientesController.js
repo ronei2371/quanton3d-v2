@@ -39,7 +39,33 @@ export async function criarCliente(req, res) {
     return res.status(400).json({ success: false, error: 'E-mail inválido.' });
   }
 
-  const cliente = await Cliente.create({ nome: nome.trim(), telefone, email, origem, observacao });
+  /* Upsert por email — se ja existe, retorna o cliente com o _id original */
+  /* Assim o historico de conversas nao se perde quando o cliente limpa o cache */
+  const emailNormalizado = email ? String(email).trim().toLowerCase() : null;
+
+  if (emailNormalizado) {
+    try {
+      const existente = await Cliente.findOne({ email: { $regex: `^${emailNormalizado}$`, $options: 'i' } });
+      if (existente) {
+        existente.nome = nome.trim();
+        existente.telefone = telefone;
+        if (origem) existente.origem = origem;
+        await existente.save();
+        return res.status(200).json({ success: true, data: existente });
+      }
+    } catch (err) {
+      console.error('[UPSERT CLIENTE]', err.message);
+    }
+  }
+
+  /* Email nao encontrado ou nao informado — cria novo cliente normalmente */
+  const cliente = await Cliente.create({
+    nome: nome.trim(),
+    telefone,
+    email: emailNormalizado || email,
+    origem,
+    observacao
+  });
   res.status(201).json({ success: true, data: cliente });
 }
 
@@ -63,7 +89,6 @@ export async function listarClientes(req, res) {
   res.json({ success: true, data: clientes, total });
 }
 
-// Excluir cliente — usado na limpeza de dados de teste
 export async function excluirCliente(req, res) {
   try {
     const { id } = req.params;
@@ -76,7 +101,6 @@ export async function excluirCliente(req, res) {
   }
 }
 
-// Excluir múltiplos clientes de uma vez — limpeza em lote
 export async function excluirClientesEmLote(req, res) {
   try {
     const { ids } = req.body || {};
