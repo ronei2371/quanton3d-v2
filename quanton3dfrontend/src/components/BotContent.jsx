@@ -23,9 +23,9 @@ function BotContent({ cliente }) {
 
     let ativo = true;
     setMensagens([]);
-    setEtapa("contexto");
     setCtx({ resina: "", impressora: "", altura: "0.05" });
     setCarregandoHistorico(true);
+    /* NAO reseta etapa aqui — so muda depois da busca terminar */
 
     api.get(`/chat/historico/${encodeURIComponent(clienteId)}`)
       .then(res => {
@@ -33,7 +33,8 @@ function BotContent({ cliente }) {
         const conversas = Array.isArray(res.data?.conversas) ? res.data.conversas : [];
 
         if (!conversas.length) {
-          /* Sem historico — fica na tela de contexto normalmente */
+          /* Sem historico — mostra tela de contexto */
+          setEtapa("contexto");
           setCarregandoHistorico(false);
           return;
         }
@@ -47,7 +48,6 @@ function BotContent({ cliente }) {
         const resinaRestaurada = ultima.resinaDetectada || "";
         const impressoraRestaurada = ultima.impressoraDetectada || "";
 
-        /* Mensagem de boas-vindas de retorno no topo */
         const boasVoltas = `Bem-vindo de volta, ${cliente?.nome || ""}! 👋 Aqui está seu histórico de conversas com o ELIO.${resinaRestaurada ? ` Resina detectada: **${resinaRestaurada}**.` : ""} Pode continuar de onde parou ou fazer uma nova pergunta!`;
 
         setMensagens([{ text: boasVoltas, isBot: true }, ...restauradas]);
@@ -60,7 +60,11 @@ function BotContent({ cliente }) {
         setCarregandoHistorico(false);
       })
       .catch(() => {
-        if (ativo) setCarregandoHistorico(false);
+        /* Erro na busca — cai na tela de contexto */
+        if (ativo) {
+          setEtapa("contexto");
+          setCarregandoHistorico(false);
+        }
       });
 
     return () => { ativo = false; };
