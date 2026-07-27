@@ -4036,4 +4036,14 @@ function PainelAtendente({ atendente, onClose }) {
   );
 }
 
+function ParamItem({ label, value }) {
+  if (!value) return null;
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderRadius: "8px", background: "rgba(79,209,255,0.05)", border: "1px solid rgba(79,209,255,0.1)", marginBottom: "6px" }}>
+      <span style={{ fontSize: "0.8rem", color: "#9fb4c7", fontWeight: 600 }}>{label}</span>
+      <strong style={{ fontSize: "0.85rem", color: "#eaf7ff" }}>{value}</strong>
+    </div>
+  );
+}
+
 export default App;
