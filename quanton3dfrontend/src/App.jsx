@@ -1049,7 +1049,7 @@ function SiteModal({ type, cliente, onClose, abrirGuia, abrirParceiroModal, setA
         {type === "calc_custos" && <CalculadoraCustos cliente={cliente} />}
         {type === "calc_tempo" && <CalculadoraTempo />}
         {type === "calc_compensacao" && <CalculadoraCompensacao />}
-        {type === "bot" && <BotContent cliente={cliente} style={{ flex: 1, minHeight: 0 }} />}
+        {type === "bot" && <BotContent key={cliente?._id || "bot"} cliente={cliente} style={{ flex: 1, minHeight: 0 }} />}
         {type === "chamado" && <ChamadoTecnicoContent cliente={cliente} />}
         {type === "parceirosPublico" && <ParceirosPublicoContent abrirParceiroModal={abrirParceiroModal} />}
         {type === "fispqs" && (
