@@ -13,26 +13,41 @@ function authAdmin(req, res, next) {
     jwt.verify(token, process.env.ADMIN_JWT_SECRET);
     return next();
   } catch {
-    return res.status(401).json({ success: false, error: 'Token inválido' });
+    return res.status(401).json({ success: false, error: 'Token invalido' });
   }
 }
 
 router.get('/', listarParametros);
-router.post('/', authAdmin, criarParametro); // protegido — só admin pode cadastrar parâmetro
+router.post('/', authAdmin, criarParametro);
 router.get('/resinas', listarResinas);
 router.get('/impressoras', listarImpressoras);
 router.get('/perfil', buscarPerfil);
 
-// Excluir parâmetro — autenticado
+/* Editar parametro */
+router.patch('/:id', authAdmin, async (req, res) => {
+  try {
+    const parametro = await Parametro.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: false }
+    );
+    if (!parametro) return res.status(404).json({ success: false, error: 'Nao encontrado' });
+    res.json({ success: true, parametro });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+/* Excluir parametro */
 router.delete('/:id', authAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const deleted = await Parametro.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ success: false, error: 'Parâmetro não encontrado' });
-    res.json({ success: true, message: 'Parâmetro excluído com sucesso' });
+    if (!deleted) return res.status(404).json({ success: false, error: 'Parametro nao encontrado' });
+    res.json({ success: true, message: 'Parametro excluido com sucesso' });
   } catch (err) {
     console.error('[DELETE PARAMETRO]', err);
-    res.status(500).json({ success: false, error: 'Erro ao excluir parâmetro' });
+    res.status(500).json({ success: false, error: 'Erro ao excluir parametro' });
   }
 });
 
