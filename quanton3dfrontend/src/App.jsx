@@ -1781,6 +1781,9 @@ function AdminContent({ tokenAtendente }) {
   const [parametrosAdm, setParametrosAdm] = useState([]);
   const [buscaParam, setBuscaParam] = useState("");
   const [sugestoesElio, setSugestoesElio] = useState([]);
+  const [editandoParam, setEditandoParam] = useState(null);
+  const [salvandoEdicaoParam, setSalvandoEdicaoParam] = useState(false);
+  const [msgEdicaoParam, setMsgEdicaoParam] = useState("");
 
   async function entrar(e) {
     e.preventDefault(); setErro("");
@@ -1867,6 +1870,26 @@ function AdminContent({ tokenAtendente }) {
       await api.delete("/parametros/" + id, { headers: { Authorization: "Bearer " + token } });
       setParametrosAdm(prev => prev.filter(p => p._id !== id));
     } catch (err) { setMsgParam("❌ Erro ao excluir."); }
+  }
+
+  async function salvarEdicaoParametro() {
+    if (!editandoParam) return;
+    if (!editandoParam.resina?.trim() || !editandoParam.impressora?.trim()) {
+      setMsgEdicaoParam("Resina e impressora sao obrigatorias.");
+      return;
+    }
+    try {
+      setSalvandoEdicaoParam(true);
+      setMsgEdicaoParam("");
+      await api.patch("/parametros/" + editandoParam._id, editandoParam, { headers: { Authorization: "Bearer " + token } });
+      setMsgEdicaoParam("ok");
+      setParametrosAdm(prev => prev.map(p => p._id === editandoParam._id ? { ...p, ...editandoParam } : p));
+      setTimeout(() => { setEditandoParam(null); setMsgEdicaoParam(""); }, 800);
+    } catch (err) {
+      setMsgEdicaoParam("erro: " + (err?.response?.data?.error || err.message));
+    } finally {
+      setSalvandoEdicaoParam(false);
+    }
   }
 
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
@@ -2767,7 +2790,69 @@ function AdminContent({ tokenAtendente }) {
 
       {aba === "parametros_adm" && (
         <div>
-          {/* Formulário de cadastro */}
+
+          {/* Modal de edicao de parametro */}
+          {editandoParam && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
+              <div style={{ background: "#0a1628", border: "1px solid rgba(79,209,255,0.3)", borderRadius: "16px", padding: "24px", width: "100%", maxWidth: "520px", maxHeight: "90vh", overflowY: "auto" }}>
+                <p style={{ margin: "0 0 16px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.9rem" }}>✏️ EDITAR PARÂMETRO</p>
+                {msgEdicaoParam && (
+                  <div style={{ padding: "8px 12px", borderRadius: "8px", marginBottom: "12px",
+                    background: msgEdicaoParam === "ok" ? "rgba(73,230,139,0.1)" : "rgba(255,107,107,0.1)",
+                    border: "1px solid " + (msgEdicaoParam === "ok" ? "rgba(73,230,139,0.3)" : "rgba(255,107,107,0.3)"),
+                    color: msgEdicaoParam === "ok" ? "#49e68b" : "#ff8fab", fontSize: "0.85rem" }}>
+                    {msgEdicaoParam === "ok" ? "✅ Salvo com sucesso!" : "❌ " + msgEdicaoParam}
+                  </div>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
+                  {[
+                    { key: "resina", label: "Resina *" },
+                    { key: "impressora", label: "Impressora *" },
+                    { key: "alturaCamada", label: "Altura de camada" },
+                    { key: "exposicaoNormal", label: "Exposicao normal (s)" },
+                    { key: "exposicaoBase", label: "Exposicao base (s)" },
+                    { key: "camadasBase", label: "Camadas base" },
+                    { key: "velocidadeElevacao", label: "Vel. elevacao (mm/min)" },
+                    { key: "velocidadeRetracao", label: "Vel. retracao (mm/min)" },
+                    { key: "distanciaElevacao", label: "Dist. elevacao (mm)" },
+                    { key: "lightOffDelay", label: "Light-off delay (s)" },
+                    { key: "potenciaUV", label: "Potencia UV (%)" },
+                    { key: "retardoUV", label: "Retardo UV (s)" },
+                  ].map(({ key, label }) => (
+                    <label key={key} style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>
+                      {label}
+                      <input
+                        value={editandoParam[key] || ""}
+                        onChange={e => setEditandoParam(p => ({ ...p, [key]: e.target.value }))}
+                        style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.85rem" }}
+                      />
+                    </label>
+                  ))}
+                </div>
+                <label style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700, marginBottom: "14px" }}>
+                  Observacoes
+                  <textarea
+                    value={editandoParam.observacoes || ""}
+                    onChange={e => setEditandoParam(p => ({ ...p, observacoes: e.target.value }))}
+                    rows={3}
+                    style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.85rem", fontFamily: "inherit", resize: "vertical" }}
+                  />
+                </label>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button type="button" onClick={() => { setEditandoParam(null); setMsgEdicaoParam(""); }}
+                    style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(113,159,219,0.06)", color: "#9fb4c7", fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                    Cancelar
+                  </button>
+                  <button type="button" onClick={salvarEdicaoParametro} disabled={salvandoEdicaoParam}
+                    style={{ flex: 2, padding: "10px", borderRadius: "10px", border: 0, background: "linear-gradient(135deg,#2563eb,#7c3aed)", color: "#fff", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                    {salvandoEdicaoParam ? "Salvando..." : "Salvar alteracoes"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Formulario de cadastro */}
           <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "18px", marginBottom: "20px" }}>
             <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#4fd1ff", fontSize: "0.88rem" }}>➕ CADASTRAR NOVO PARÂMETRO</p>
             {msgParam && <div style={{ padding: "8px 12px", borderRadius: "8px", marginBottom: "12px", background: msgParam.startsWith("✅") ? "rgba(73,230,139,0.1)" : "rgba(255,107,107,0.1)", border: msgParam.startsWith("✅") ? "1px solid rgba(73,230,139,0.3)" : "1px solid rgba(255,107,107,0.3)", color: msgParam.startsWith("✅") ? "#49e68b" : "#ff8fab", fontSize: "0.85rem" }}>{msgParam}</div>}
@@ -2862,10 +2947,16 @@ function AdminContent({ tokenAtendente }) {
                       ))}
                     </div>
                   </div>
-                  <button type="button" onClick={() => deletarParametro(p._id)}
-                    style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700, flexShrink: 0 }}>
-                    Excluir
-                  </button>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", flexShrink: 0 }}>
+                    <button type="button" onClick={() => { setEditandoParam({ ...p }); setMsgEdicaoParam(""); }}
+                      style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.3)", background: "rgba(79,209,255,0.08)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700 }}>
+                      ✏️ Editar
+                    </button>
+                    <button type="button" onClick={() => deletarParametro(p._id)}
+                      style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700 }}>
+                      Excluir
+                    </button>
+                  </div>
                 </div>
               ))
             }
