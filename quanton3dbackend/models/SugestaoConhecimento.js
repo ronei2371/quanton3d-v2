@@ -6,7 +6,7 @@ const SugestaoConhecimentoSchema = new mongoose.Schema(
     nomeAtendente: { type: String, default: "", trim: true },
     categoria: {
       type: String,
-      enum: ["resina", "impressora", "problema", "dica", "outro"],
+      enum: ["resina", "impressora", "problema", "dica", "negocio", "outro"],
       default: "outro",
     },
     titulo: { type: String, required: true, trim: true },
