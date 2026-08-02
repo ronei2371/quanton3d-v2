@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Parametro from '../models/Parametro.js';
 import Conversa from '../models/Conversa.js';
+import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
 import KNOWLEDGE_BASE from '../services/knowledge.js';
 
 const router = express.Router();
@@ -84,23 +85,26 @@ function extrairContextoHistorico(historico = []) {
 
 async function buscarConhecimentoAprovado(textoAtual, resinaDetectada) {
     try {
-        const query = { aprovado: true };
-        if (resinaDetectada) {
-            query.resinaDetectada = { $regex: resinaDetectada, $options: 'i' };
-        }
-        const aprovadas = await Conversa.find(query)
-            .sort({ updatedAt: -1 })
-            .limit(3)
+        // Busca na coleção SugestaoConhecimento (ADM adiciona conhecimento aqui)
+        const sugestoes = await SugestaoConhecimento.find({ status: 'aprovado' })
+            .sort({ createdAt: -1 })
+            .limit(50)
             .lean();
 
-        if (!aprovadas.length) return null;
+        if (!sugestoes.length) return null;
 
-        const linhas = aprovadas.map(c => {
-            const resp = c.respostaMelhorada || c.resposta;
-            return `P: ${c.pergunta}\nR (validada pela equipe Quanton3D): ${resp}`;
-        });
+        // Filtra as mais relevantes por palavras da pergunta
+        const palavras = textoAtual.toLowerCase().split(/\s+/).filter(p => p.length > 3);
+        const relevantes = sugestoes.filter(s => {
+            const texto = `${s.titulo} ${s.conteudo}`.toLowerCase();
+            return palavras.some(p => texto.includes(p));
+        }).slice(0, 5);
 
-        return `CASOS JA VALIDADOS PELA EQUIPE (use como referencia de qualidade e precisao):\n${linhas.join('\n\n')}`;
+        const lista = relevantes.length > 0 ? relevantes : sugestoes.slice(0, 3);
+        if (!lista.length) return null;
+
+        const linhas = lista.map(s => `[${s.categoria.toUpperCase()}] ${s.titulo}: ${s.conteudo}`);
+        return `CONHECIMENTO APROVADO PELA EQUIPE QUANTON3D (USE COM PRIORIDADE MAXIMA):\n${linhas.join('\n\n')}`;
     } catch (err) {
         console.error('[CONHECIMENTO APROVADO ERROR]', err.message);
         return null;
@@ -275,7 +279,7 @@ router.post('/', async (req, res) => {
 
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash';
         const completion = await client().chat.completions.create(
-            { model, temperature: contextRAG ? 0.05 : 0.15, max_tokens: 600, messages },
+            { model, temperature: contextRAG ? 0.05 : 0.15, max_tokens: 800, messages },
             { timeout: 25000 }
         );
 
