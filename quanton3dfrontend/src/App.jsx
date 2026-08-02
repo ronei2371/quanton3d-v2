@@ -3692,134 +3692,7 @@ function AdminContent({ tokenAtendente }) {
         </div>
       )}
 
-      {aba === "sugestoes_elio" && (() => {
-        const [novaForm, setNovaForm] = useState(false);
-        const [novaCateg, setNovaCateg] = useState("outro");
-        const [novaTitulo, setNovaTitulo] = useState("");
-        const [novaConteudo, setNovaConteudo] = useState("");
-        const [salvando, setSalvando] = useState(false);
-
-        async function salvarNova() {
-          if (!novaTitulo.trim() || !novaConteudo.trim()) { alert("Titulo e conteudo sao obrigatorios."); return; }
-          try {
-            setSalvando(true);
-            await api.post("/sugestoes-conhecimento", { categoria: novaCateg, titulo: novaTitulo, conteudo: novaConteudo, codigoAtendente: "ADMIN", nomeAtendente: "Administrador" }, { headers: { Authorization: "Bearer " + token } });
-            const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
-            setSugestoesElio(r.data?.sugestoes || []);
-            setNovaForm(false); setNovaTitulo(""); setNovaConteudo(""); setNovaCateg("outro");
-          } catch(e) { alert("Erro ao salvar sugestao."); }
-          finally { setSalvando(false); }
-        }
-
-        return (
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-              <p style={{ fontWeight: 900, color: "#4fd1ff", fontSize: "0.9rem", margin: 0 }}>💡 Sugestões de Conhecimento para o ELIO ({sugestoesElio.length})</p>
-              <button type="button" onClick={() => setNovaForm(f => !f)}
-                style={{ padding: "7px 16px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.35)", background: "rgba(79,209,255,0.1)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
-                {novaForm ? "✕ Cancelar" : "+ Nova sugestão"}
-              </button>
-            </div>
-
-            {novaForm && (
-              <div style={{ background: "rgba(79,209,255,0.05)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
-                <p style={{ fontWeight: 800, color: "#4fd1ff", margin: "0 0 12px", fontSize: "0.88rem" }}>➕ Adicionar conhecimento ao ELIO</p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
-                  <div>
-                    <label style={{ fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "4px" }}>CATEGORIA</label>
-                    <select value={novaCateg} onChange={e => setNovaCateg(e.target.value)}
-                      style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.8)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem" }}>
-                      <option value="resina">🧪 Resina</option>
-                      <option value="impressora">🖨️ Impressora</option>
-                      <option value="problema">⚠️ Problema</option>
-                      <option value="dica">💡 Dica</option>
-                      <option value="negocio">💰 Negocio</option>
-                      <option value="outro">📝 Outro</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "4px" }}>TITULO</label>
-                    <input value={novaTitulo} onChange={e => setNovaTitulo(e.target.value)} placeholder="Ex: Como ganhar dinheiro com resina"
-                      style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.8)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem", boxSizing: "border-box" }} />
-                  </div>
-                </div>
-                <div style={{ marginBottom: "10px" }}>
-                  <label style={{ fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "4px" }}>CONTEUDO DO CONHECIMENTO</label>
-                  <textarea value={novaConteudo} onChange={e => setNovaConteudo(e.target.value)} rows={6}
-                    placeholder="Digite o conhecimento que o ELIO deve aprender..."
-                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.8)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem", resize: "vertical", boxSizing: "border-box" }} />
-                </div>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <button type="button" onClick={salvarNova} disabled={salvando}
-                    style={{ padding: "9px 20px", borderRadius: "8px", border: "none", background: "linear-gradient(135deg,#1565c0,#7c3aed)", color: "#fff", cursor: "pointer", fontWeight: 900, fontFamily: "inherit", fontSize: "0.88rem" }}>
-                    {salvando ? "Salvando..." : "💾 Salvar e Aprovar"}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {sugestoesElio.length === 0 && !novaForm && <div className="gallery-empty">Nenhuma sugestão encontrada. Clique em "+ Nova sugestão" para adicionar.</div>}
-            {sugestoesElio.map(s => {
-              const cores = { pendente: "#ffd166", aprovado: "#49e68b", rejeitado: "#ff8fab" };
-              const catIcons = { resina: "🧪", impressora: "🖨️", problema: "⚠️", dica: "💡", negocio: "💰", outro: "📝" };
-              return (
-                <div key={s._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
-                    <div>
-                      <strong style={{ color: "#eaf3ff", fontSize: "0.92rem" }}>{s.titulo}</strong>
-                      <div style={{ fontSize: "0.72rem", color: "#9fb4c7", marginTop: "2px" }}>
-                        {catIcons[s.categoria] || "📝"} {s.categoria} · 👨‍💼 {s.codigoAtendente} ({s.nomeAtendente}) · {new Date(s.createdAt).toLocaleDateString("pt-BR")}
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.72rem", padding: "3px 10px", borderRadius: "999px", background: `${cores[s.status]}20`, color: cores[s.status], fontWeight: 800 }}>
-                        {s.status === "pendente" ? "⏳ Pendente" : s.status === "aprovado" ? "✅ Aprovado" : "❌ Rejeitado"}
-                      </span>
-                      <button type="button" onClick={async () => {
-                        if (!window.confirm(`Excluir "${s.titulo}"?`)) return;
-                        try {
-                          await api.delete("/sugestoes-conhecimento/" + s._id, { headers: { Authorization: "Bearer " + token } });
-                          setSugestoesElio(prev => prev.filter(x => x._id !== s._id));
-                        } catch(e) { alert("Erro ao excluir."); }
-                      }}
-                        style={{ padding: "3px 10px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.72rem", fontWeight: 700, fontFamily: "inherit" }}>
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                  <p style={{ fontSize: "0.82rem", color: "#b8cfe8", margin: "0 0 10px", lineHeight: 1.6, background: "rgba(0,0,0,0.15)", padding: "10px 12px", borderRadius: "8px" }}>{s.conteudo}</p>
-                  {s.status === "pendente" && (
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button type="button" onClick={async () => {
-                        try {
-                          await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "aprovado" }, { headers: { Authorization: "Bearer " + token } });
-                          const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
-                          setSugestoesElio(r.data?.sugestoes || []);
-                        } catch(e) { alert("Erro"); }
-                      }}
-                        style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.1)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
-                        ✅ Aprovar
-                      </button>
-                      <button type="button" onClick={async () => {
-                        const obs = prompt("Motivo da rejeição (opcional):");
-                        try {
-                          await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "rejeitado", observacaoAdmin: obs || "" }, { headers: { Authorization: "Bearer " + token } });
-                          const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
-                          setSugestoesElio(r.data?.sugestoes || []);
-                        } catch(e) { alert("Erro"); }
-                      }}
-                        style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
-                        ❌ Rejeitar
-                      </button>
-                    </div>
-                  )}
-                  {s.observacaoAdmin && <p style={{ fontSize: "0.75rem", color: "#ffd166", margin: "8px 0 0", fontStyle: "italic" }}>Obs: {s.observacaoAdmin}</p>}
-                </div>
-              );
-            })}
-          </div>
-        );
-      })()}
+      {aba === "sugestoes_elio" && <SugestoesElioContent token={token} sugestoesElio={sugestoesElio} setSugestoesElio={setSugestoesElio} />}
 
       {aba === "limpeza" && <LimpezaContent token={token} />}
 
@@ -4209,6 +4082,132 @@ function ParamItem({ label, value }) {
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderRadius: "8px", background: "rgba(79,209,255,0.05)", border: "1px solid rgba(79,209,255,0.1)", marginBottom: "6px" }}>
       <span style={{ fontSize: "0.8rem", color: "#9fb4c7", fontWeight: 600 }}>{label}</span>
       <strong style={{ fontSize: "0.85rem", color: "#eaf7ff" }}>{value}</strong>
+    </div>
+  );
+}
+
+function SugestoesElioContent({ token, sugestoesElio, setSugestoesElio }) {
+  const [novaForm, setNovaForm] = useState(false);
+  const [novaCateg, setNovaCateg] = useState("outro");
+  const [novaTitulo, setNovaTitulo] = useState("");
+  const [novaConteudo, setNovaConteudo] = useState("");
+  const [salvando, setSalvando] = useState(false);
+
+  async function salvarNova() {
+    if (!novaTitulo.trim() || !novaConteudo.trim()) { alert("Titulo e conteudo sao obrigatorios."); return; }
+    try {
+      setSalvando(true);
+      await api.post("/sugestoes-conhecimento", { categoria: novaCateg, titulo: novaTitulo, conteudo: novaConteudo, codigoAtendente: "ADMIN", nomeAtendente: "Administrador" }, { headers: { Authorization: "Bearer " + token } });
+      const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+      setSugestoesElio(r.data?.sugestoes || []);
+      setNovaForm(false); setNovaTitulo(""); setNovaConteudo(""); setNovaCateg("outro");
+    } catch(e) { alert("Erro ao salvar sugestao."); }
+    finally { setSalvando(false); }
+  }
+
+  const cores = { pendente: "#ffd166", aprovado: "#49e68b", rejeitado: "#ff8fab" };
+  const catIcons = { resina: "🧪", impressora: "🖨️", problema: "⚠️", dica: "💡", negocio: "💰", outro: "📝" };
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+        <p style={{ fontWeight: 900, color: "#4fd1ff", fontSize: "0.9rem", margin: 0 }}>💡 Sugestões de Conhecimento para o ELIO ({sugestoesElio.length})</p>
+        <button type="button" onClick={() => setNovaForm(f => !f)}
+          style={{ padding: "7px 16px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.35)", background: "rgba(79,209,255,0.1)", color: "#4fd1ff", cursor: "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
+          {novaForm ? "✕ Cancelar" : "+ Nova sugestão"}
+        </button>
+      </div>
+
+      {novaForm && (
+        <div style={{ background: "rgba(79,209,255,0.05)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
+          <p style={{ fontWeight: 800, color: "#4fd1ff", margin: "0 0 12px", fontSize: "0.88rem" }}>➕ Adicionar conhecimento ao ELIO</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+            <div>
+              <label style={{ fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "4px" }}>CATEGORIA</label>
+              <select value={novaCateg} onChange={e => setNovaCateg(e.target.value)}
+                style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.8)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem" }}>
+                <option value="resina">🧪 Resina</option>
+                <option value="impressora">🖨️ Impressora</option>
+                <option value="problema">⚠️ Problema</option>
+                <option value="dica">💡 Dica</option>
+                <option value="negocio">💰 Negocio</option>
+                <option value="outro">📝 Outro</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "4px" }}>TITULO</label>
+              <input value={novaTitulo} onChange={e => setNovaTitulo(e.target.value)} placeholder="Ex: Como ganhar dinheiro com resina"
+                style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.8)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem", boxSizing: "border-box" }} />
+            </div>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <label style={{ fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "4px" }}>CONTEUDO DO CONHECIMENTO</label>
+            <textarea value={novaConteudo} onChange={e => setNovaConteudo(e.target.value)} rows={6}
+              placeholder="Digite o conhecimento que o ELIO deve aprender..."
+              style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.8)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.85rem", resize: "vertical", boxSizing: "border-box" }} />
+          </div>
+          <button type="button" onClick={salvarNova} disabled={salvando}
+            style={{ padding: "9px 20px", borderRadius: "8px", border: "none", background: "linear-gradient(135deg,#1565c0,#7c3aed)", color: "#fff", cursor: "pointer", fontWeight: 900, fontFamily: "inherit", fontSize: "0.88rem" }}>
+            {salvando ? "Salvando..." : "💾 Salvar e Aprovar"}
+          </button>
+        </div>
+      )}
+
+      {sugestoesElio.length === 0 && !novaForm && <div className="gallery-empty">Nenhuma sugestão encontrada. Clique em "+ Nova sugestão" para adicionar.</div>}
+      {sugestoesElio.map(s => (
+        <div key={s._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
+            <div>
+              <strong style={{ color: "#eaf3ff", fontSize: "0.92rem" }}>{s.titulo}</strong>
+              <div style={{ fontSize: "0.72rem", color: "#9fb4c7", marginTop: "2px" }}>
+                {catIcons[s.categoria] || "📝"} {s.categoria} · 👨‍💼 {s.codigoAtendente} ({s.nomeAtendente}) · {new Date(s.createdAt).toLocaleDateString("pt-BR")}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+              <span style={{ fontSize: "0.72rem", padding: "3px 10px", borderRadius: "999px", background: `${cores[s.status]}20`, color: cores[s.status], fontWeight: 800 }}>
+                {s.status === "pendente" ? "⏳ Pendente" : s.status === "aprovado" ? "✅ Aprovado" : "❌ Rejeitado"}
+              </span>
+              <button type="button" onClick={async () => {
+                if (!window.confirm(`Excluir "${s.titulo}"?`)) return;
+                try {
+                  await api.delete("/sugestoes-conhecimento/" + s._id, { headers: { Authorization: "Bearer " + token } });
+                  setSugestoesElio(prev => prev.filter(x => x._id !== s._id));
+                } catch(e) { alert("Erro ao excluir."); }
+              }}
+                style={{ padding: "3px 10px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#ff8fab", cursor: "pointer", fontSize: "0.72rem", fontWeight: 700, fontFamily: "inherit" }}>
+                🗑️
+              </button>
+            </div>
+          </div>
+          <p style={{ fontSize: "0.82rem", color: "#b8cfe8", margin: "0 0 10px", lineHeight: 1.6, background: "rgba(0,0,0,0.15)", padding: "10px 12px", borderRadius: "8px" }}>{s.conteudo}</p>
+          {s.status === "pendente" && (
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button type="button" onClick={async () => {
+                try {
+                  await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "aprovado" }, { headers: { Authorization: "Bearer " + token } });
+                  const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+                  setSugestoesElio(r.data?.sugestoes || []);
+                } catch(e) { alert("Erro"); }
+              }}
+                style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.1)", color: "#49e68b", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                ✅ Aprovar
+              </button>
+              <button type="button" onClick={async () => {
+                const obs = prompt("Motivo da rejeição (opcional):");
+                try {
+                  await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "rejeitado", observacaoAdmin: obs || "" }, { headers: { Authorization: "Bearer " + token } });
+                  const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+                  setSugestoesElio(r.data?.sugestoes || []);
+                } catch(e) { alert("Erro"); }
+              }}
+                style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#ff8fab", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                ❌ Rejeitar
+              </button>
+            </div>
+          )}
+          {s.observacaoAdmin && <p style={{ fontSize: "0.75rem", color: "#ffd166", margin: "8px 0 0", fontStyle: "italic" }}>Obs: {s.observacaoAdmin}</p>}
+        </div>
+      ))}
     </div>
   );
 }
