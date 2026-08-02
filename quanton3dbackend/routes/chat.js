@@ -177,6 +177,19 @@ IDENTIDADE E TOM:
 - Nunca sugira resinas de outras marcas. Sempre indique a equivalente Quanton3D.
 - Se nao souber, diga para contatar a equipe pelo WhatsApp (31) 3271-6935.
 
+NOMES DAS RESINAS — NUNCA TRADUZIR:
+- O nome correto e IRON (nunca "FERRO" ou "Ferro")
+- O nome correto e SPIN (nunca "GIRO" ou "Giro")
+- O nome correto e ALCHEMIST (nunca "ALQUIMISTA")
+- O nome correto e FLEXFORM (nunca "FLEXFORMA")
+- O nome correto e PYROBLAST (nunca "PIROLBLAST" ou variações)
+- O nome correto e POSEIDON (nunca traduzir)
+- O nome correto e VULCAN CAST (nunca traduzir)
+- O nome correto e ATHOM (nunca traduzir)
+- O nome correto e SPARK (nunca traduzir)
+- O nome correto e LOW SMELL (nunca traduzir)
+- Sempre use os nomes em MAIUSCULAS exatamente como escritos acima.
+
 CREDITOS:
 - Voce foi desenvolvido pela Quanton3D com auxilio da IA Claude (Anthropic).
 - Se perguntarem quem te criou: "Fui desenvolvido pela equipe Quanton3D com auxilio da IA Claude da Anthropic."
@@ -279,7 +292,7 @@ router.post('/', async (req, res) => {
 
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash';
         const completion = await client().chat.completions.create(
-            { model, temperature: contextRAG ? 0.05 : 0.15, max_tokens: 800, messages },
+            { model, temperature: contextRAG ? 0.05 : 0.15, max_tokens: 1200, messages },
             { timeout: 25000 }
         );
 
