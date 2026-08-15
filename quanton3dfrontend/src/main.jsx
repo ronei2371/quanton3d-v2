@@ -4,7 +4,6 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/components.css";
 import "./styles/calculators.css";
-import "./styles/admin-legacy.css";
 import "./App.css";
 import App from "./App.jsx";
 
