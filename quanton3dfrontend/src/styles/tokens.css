@@ -1,0 +1,64 @@
+/* ================================================================
+   QUANTON3D — DESIGN TOKENS (flat / SaaS dashboard style)
+   ================================================================ */
+
+:root {
+  /* ── Cores primárias (brandbook) ── */
+  --q-safira: #000a78;
+  --q-celeste: #2f7bff;
+  --q-marine: #00c2e0;
+  --q-ametista: #9650f5;
+
+  /* ── Cores secundárias (brandbook) ── */
+  --q-verde: #17c982;
+  --q-ciano: #00c2e0;
+  --q-laranja: #dc913c;
+  --q-vermelho: #e0464b;
+  --q-magenta: #d750f0;
+
+  /* ── Papel semântico ── */
+  --primary: var(--q-celeste);
+  --primary-strong: #5d99ff;
+  --accent: var(--q-ametista);
+  --success: var(--q-verde);
+  --warning: var(--q-laranja);
+  --danger: var(--q-vermelho);
+  --info: var(--q-marine);
+
+  /* ── Fundo — chapado, quase sem glow ── */
+  --bg-void: #05070d;
+  --bg-base: #070a13;
+  --bg-raised: #0c111e;
+  --bg-raised-strong: #101625;
+
+  /* ── Texto ── */
+  --text-primary: #f2f4f8;
+  --text-secondary: #9aa5b5;
+  --text-muted: #6b7688;
+  --text-on-accent: #ffffff;
+
+  /* ── Bordas — fio fino, sem brilho ── */
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-accent: rgba(150, 80, 245, 0.28);
+
+  /* ── Tipografia ── */
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --text-description-size: clamp(1rem, 1.08vw, 1.28rem);
+
+  /* ── Raio — retangular, discreto ── */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* ── Sombra — quase inexistente ── */
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-glow-cyan: none;
+  --shadow-glow-violet: none;
+
+  /* ── Layout ── */
+  --shell-width: 100%;
+  --nav-height: 64px;
+}

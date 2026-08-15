@@ -1,4 +1,15 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.jsx";
+import "./styles/tokens.css";
+import "./styles/base.css";
+import "./styles/components.css";
+import "./styles/calculators.css";
+import "./styles/admin-legacy.css";
 import "./App.css";
-createRoot(document.getElementById("root")).render(<App />);
+import App from "./App.jsx";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
