@@ -1,0 +1,277 @@
+name: Temporary Quanton3D v3 visual transfer
+
+on:
+  push:
+    branches:
+      - feature/v3-visual-preserva-rag
+    paths:
+      - .github/workflows/q3d-v3-visual-transfer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  transfer-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout da branch de integração
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Baixar projeto visual enviado pelo Ronei
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet gdown
+          rm -rf /tmp/quanton3d-v3
+          mkdir -p /tmp/quanton3d-v3
+          gdown --folder "https://drive.google.com/drive/folders/1TK9u0Mru0Al-8EovDlG2eJBT289fwzXk?usp=sharing" --remaining-ok -O /tmp/quanton3d-v3
+
+          SRC=""
+          while IFS= read -r candidate; do
+            if [[ -d "$candidate/src" && -d "$candidate/public" && -f "$candidate/package.json" ]]; then
+              SRC="$candidate"
+              break
+            fi
+          done < <(find /tmp/quanton3d-v3 -type f -name package.json -printf '%h\n')
+
+          if [[ -z "$SRC" ]]; then
+            echo "Não encontrei a raiz do frontend visual dentro da pasta do Drive."
+            exit 1
+          fi
+          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          echo "Projeto visual localizado em: $SRC"
+
+      - name: Transferir somente a camada visual para o frontend original
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="quanton3dfrontend"
+
+          # Shell visual novo.
+          cp "$SRC/src/App.jsx" "$TARGET/src/App.jsx"
+          cp "$SRC/src/App.css" "$TARGET/src/App.css"
+          cp "$SRC/src/main.jsx" "$TARGET/src/main.jsx"
+
+          rm -rf "$TARGET/src/styles" "$TARGET/src/data"
+          mkdir -p "$TARGET/src/styles" "$TARGET/src/data"
+          cp -R "$SRC/src/styles/." "$TARGET/src/styles/"
+          cp -R "$SRC/src/data/." "$TARGET/src/data/"
+
+          # Componentes exclusivamente de apresentação/navegação.
+          for dir in layout sections guides modals calculators; do
+            rm -rf "$TARGET/src/components/$dir"
+            mkdir -p "$TARGET/src/components/$dir"
+            cp -R "$SRC/src/components/$dir/." "$TARGET/src/components/$dir/"
+          done
+
+          # O CSS legado mantém o painel administrativo original legível,
+          # mas o código do Admin/Atendente original NÃO é substituído.
+          if [[ -f "$SRC/src/components/admin/admin-legacy.css" ]]; then
+            cp "$SRC/src/components/admin/admin-legacy.css" "$TARGET/src/styles/admin-legacy.css"
+          fi
+
+          # Assets estritamente visuais do novo projeto.
+          mkdir -p "$TARGET/public/images" "$TARGET/public/motions"
+          rsync -a "$SRC/public/images/" "$TARGET/public/images/"
+          rsync -a "$SRC/public/motions/" "$TARGET/public/motions/"
+
+          # Guias já existentes no site original não são sobrescritos.
+          # Apenas arquivos novos necessários à navegação visual são adicionados.
+          mkdir -p "$TARGET/public/guias"
+          rsync -a --ignore-existing "$SRC/public/guias/" "$TARGET/public/guias/"
+
+      - name: Religar o visual novo à lógica original do site
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="quanton3dfrontend"
+
+          # API original: este adaptador impede que a camada visual troque
+          # o cliente HTTP, o backend, o RAG ou a IA do site em produção.
+          mkdir -p "$TARGET/src/lib"
+          cat > "$TARGET/src/lib/api.js" <<'EOF'
+          export { default } from "../api";
+          EOF
+          rm -f "$TARGET/src/lib/parametrosFallback.js"
+
+          # O modal novo usa o BotContent ORIGINAL, onde estão histórico,
+          # feedback e comunicação com /api/chat (RAG + IA ativos).
+          cat > "$TARGET/src/components/modals/BotModal.jsx" <<'EOF'
+          import { Bot, X } from "lucide-react";
+          import BotContent from "../BotContent";
+
+          function BotModal({ cliente, onClose }) {
+            return (
+              <div className="q-modal-backdrop">
+                <section className="q-modal" style={{ width: "98vw", maxWidth: "760px", height: "88vh", maxHeight: "88vh", padding: "18px 20px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                  <div className="q-modal-head">
+                    <h2 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1rem" }}>
+                      <Bot size={18} color="var(--primary)" /> IAQ3D — Assistente Técnico Quanton3D
+                    </h2>
+                    <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
+                  </div>
+                  <div style={{ flex: 1, minHeight: 0 }}><BotContent cliente={cliente} /></div>
+                </section>
+              </div>
+            );
+          }
+          export default BotModal;
+          EOF
+          rm -f "$TARGET/src/components/modals/BotChat.jsx"
+
+          # Administração e painel de atendentes continuam sendo exatamente
+          # os componentes originais do repositório correto.
+          cat > "$TARGET/src/components/modals/AdminModal.jsx" <<'EOF'
+          import { X } from "lucide-react";
+          import AdminContent from "../AdminContent";
+          import PainelAtendente from "../PainelAtendente";
+
+          function AdminModal({ atendenteLogado, onClose }) {
+            const acessoCompleto = atendenteLogado?.permissoes?.acessoAdmCompleto;
+            const tokenAtendente = acessoCompleto ? localStorage.getItem("quanton3d_atendente_token") : null;
+            return (
+              <div className="q-modal-backdrop">
+                <section className="q-modal q-modal--wide" style={{ display: "flex", flexDirection: "column" }}>
+                  <div className="q-modal-head">
+                    <h2 style={{ fontSize: "1.05rem" }}>{atendenteLogado && !acessoCompleto ? "Painel do Atendente" : "Painel Administrativo"}</h2>
+                    <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
+                  </div>
+                  <div style={{ flex: 1, overflowY: "auto" }}>
+                    {atendenteLogado && !acessoCompleto ? <PainelAtendente atendente={atendenteLogado} onClose={onClose} /> : <AdminContent tokenAtendente={tokenAtendente} />}
+                  </div>
+                </section>
+              </div>
+            );
+          }
+          export default AdminModal;
+          EOF
+
+          # Os formulários originais continuam responsáveis por gravar no backend.
+          cat > "$TARGET/src/components/modals/ContactMessageModal.jsx" <<'EOF'
+          export { default } from "../ContactMessageModal";
+          EOF
+          cat > "$TARGET/src/components/modals/PartnerRequestModal.jsx" <<'EOF'
+          export { default } from "../PartnerRequestModal";
+          EOF
+
+          # As calculadoras mantêm exatamente a lógica original; apenas entram
+          # dentro da nova apresentação da página de Calculadoras.
+          for name in CalculadoraCompensacao CalculadoraCustos CalculadoraExposicao CalculadoraTempo CalculadoraTolerancia CalculadoraVolume; do
+            printf 'export { default } from "../%s";\n' "$name" > "$TARGET/src/components/calculators/$name.jsx"
+          done
+
+      - name: Preservar cadastro, rotas públicas e registro de visitas do site original
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path("quanton3dfrontend/src/App.jsx")
+          s = p.read_text(encoding="utf-8")
+
+          s = s.replace('import { useState } from "react";', 'import { useEffect, useState } from "react";')
+          s = s.replace(
+              '  const [paginaAtiva, setPaginaAtiva] = useState("inicio");',
+              '  const rotaInicial = window.location.pathname === "/galeria" ? "comunidade" : "inicio";\n  const [paginaAtiva, setPaginaAtiva] = useState(rotaInicial);'
+          )
+          s = s.replace(
+              'const [mostrarBoasVindas, setMostrarBoasVindas] = useState(false);',
+              'const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!privacidadeAceitaInicial);'
+          )
+          s = s.replace(
+              'const [mostrarCadastro, setMostrarCadastro] = useState(false);',
+              'const [mostrarCadastro, setMostrarCadastro] = useState(privacidadeAceitaInicial && !clienteSalvoInicial);'
+          )
+
+          marker = '  const [loginAtLoading, setLoginAtLoading] = useState(false);\n'
+          preserve = '''\n  // Preserva o registro de visitas do site original.\n  useEffect(() => {\n    try {\n      let sessionId = sessionStorage.getItem("quanton3d_session_id");\n      if (!sessionId) {\n        sessionId = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);\n        sessionStorage.setItem("quanton3d_session_id", sessionId);\n      }\n      api.post("/visitas", { sessionId, pagina: window.location.pathname, origem: document.referrer || "" }).catch(() => {});\n    } catch (_) {}\n  }, []);\n\n  // Preserva as rotas públicas /elio e /galeria do site original.\n  useEffect(() => {\n    if (window.location.pathname === "/elio") setMostrarBot(true);\n    const onPopState = () => {\n      const path = window.location.pathname;\n      if (path === "/elio") { setMostrarBot(true); return; }\n      setMostrarBot(false);\n      setPaginaAtiva(path === "/galeria" ? "comunidade" : "inicio");\n    };\n    window.addEventListener("popstate", onPopState);\n    return () => window.removeEventListener("popstate", onPopState);\n  }, []);\n'''
+          if 'quanton3d_session_id' not in s:
+              s = s.replace(marker, marker + preserve)
+
+          old_nav = '''  function navegar(pagina) {\n    setPaginaAtiva(pagina);\n    setCalcInicial(null);\n    setActiveGuide(null);\n    window.scrollTo({ top: 0, behavior: "smooth" });\n  }\n'''
+          new_nav = '''  function navegar(pagina) {\n    setPaginaAtiva(pagina);\n    setCalcInicial(null);\n    setActiveGuide(null);\n    if (window.location.pathname !== "/") window.history.pushState({}, "", "/");\n    window.scrollTo({ top: 0, behavior: "smooth" });\n  }\n\n  function abrirBot() {\n    setMostrarBot(true);\n    if (window.location.pathname !== "/elio") window.history.pushState({}, "", "/elio");\n  }\n\n  function fecharBot() {\n    setMostrarBot(false);\n    if (window.location.pathname === "/elio") window.history.pushState({}, "", "/");\n  }\n'''
+          if old_nav in s:
+              s = s.replace(old_nav, new_nav)
+
+          s = s.replace(
+              '<ComunidadeSection cliente={cliente} onAbrirParceiroModal={() => setMostrarParceiroModal(true)} />',
+              '<ComunidadeSection cliente={cliente} onAbrirParceiroModal={() => setMostrarParceiroModal(true)} abaInicial={window.location.pathname === "/galeria" ? "galeria" : "parceiros"} />'
+          )
+          s = s.replace(
+              '<BotModal cliente={cliente} onClose={() => setMostrarBot(false)} />',
+              '<BotModal cliente={cliente} onClose={fecharBot} />'
+          )
+          s = s.replace('onClick={() => setMostrarBot(true)}', 'onClick={abrirBot}')
+
+          p.write_text(s, encoding="utf-8")
+          PY
+
+          # Carrega o shim visual do Admin original sem alterar seu código.
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("quanton3dfrontend/src/main.jsx")
+          s = p.read_text(encoding="utf-8")
+          line = 'import "./styles/admin-legacy.css";\n'
+          if line not in s:
+              anchor = 'import "./styles/calculators.css";\n'
+              s = s.replace(anchor, anchor + line)
+          p.write_text(s, encoding="utf-8")
+          PY
+
+      - name: Adicionar somente dependências necessárias ao visual novo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("quanton3dfrontend/package.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          deps = data.setdefault("dependencies", {})
+          deps["lottie-web"] = "^5.13.0"
+          deps["lucide-react"] = "^1.25.0"
+          p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Garantir que backend, RAG e IA permaneceram intocados
+        shell: bash
+        run: |
+          set -euo pipefail
+          protected=(
+            quanton3dbackend
+            render.yaml
+            quanton3dfrontend/src/api.js
+            quanton3dfrontend/src/components/BotContent.jsx
+            quanton3dfrontend/src/components/AdminContent.jsx
+            quanton3dfrontend/src/components/PainelAtendente.jsx
+            quanton3dfrontend/src/components/ContactMessageModal.jsx
+            quanton3dfrontend/src/components/PartnerRequestModal.jsx
+            quanton3dfrontend/src/utils.js
+          )
+          if ! git diff --quiet HEAD -- "${protected[@]}"; then
+            echo "ERRO: algum arquivo protegido de lógica/backend foi alterado. Abortando."
+            git diff -- "${protected[@]}"
+            exit 1
+          fi
+          echo "OK: backend, RAG, IA e componentes funcionais originais não foram alterados."
+
+      - name: Instalar dependências e validar build do frontend integrado
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix quanton3dfrontend
+          npm run build --prefix quanton3dfrontend
+
+      - name: Salvar integração somente na branch e remover workflow temporário
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/q3d-v3-visual-transfer.yml
+          git config user.name "Quanton3D Visual Transfer"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: transfer v3 visual preserving original RAG and AI [skip ci]"
+          git push
