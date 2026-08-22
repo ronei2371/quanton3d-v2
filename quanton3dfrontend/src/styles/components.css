@@ -1,8 +1,8 @@
 /* ================================================================
-   QUANTON3D — COMPONENTES (flat / SaaS dashboard style)
+   QUANTON3D - COMPONENTES (flat / SaaS dashboard style)
    ================================================================ */
 
-/* ── Botões — retangulares, chapados, sem glow ── */
+/* -- Bot-es - retangulares, chapados, sem glow -- */
 .q-btn {
   display: inline-flex;
   align-items: center;
@@ -56,7 +56,7 @@
 .q-btn--sm { padding: 6px 12px; font-size: 0.76rem; }
 .q-btn--block { width: 100%; }
 
-/* ── Cards — painel chapado, borda fio fino ── */
+/* -- Cards - painel chapado, borda fio fino -- */
 .q-card {
   background: var(--bg-raised);
   border: 1px solid var(--border-soft);
@@ -73,7 +73,7 @@
   background: var(--bg-raised-strong);
 }
 
-/* ── Badges / selos — retangulares pequenos ── */
+/* -- Badges / selos - retangulares pequenos -- */
 .q-badge {
   display: inline-flex;
   align-items: center;
@@ -92,7 +92,7 @@
 .q-badge--warning { border-color: rgba(220, 145, 60, 0.35); background: rgba(220, 145, 60, 0.1); color: #ffbf7a; }
 .q-badge--accent { border-color: var(--border-accent); background: rgba(150, 80, 245, 0.08); color: #c9a6ff; }
 
-/* ── Ícone em selo quadrado — como na referência ── */
+/* -- -cone em selo quadrado - como na refer-ncia -- */
 .q-icon-badge {
   display: inline-flex;
   align-items: center;
@@ -114,7 +114,7 @@
   color: #d4e4ff;
 }
 
-/* ── Inputs ── */
+/* -- Inputs -- */
 .q-field { display: flex; flex-direction: column; gap: 6px; }
 .q-field > span, .q-field label { font-size: 0.76rem; font-weight: 600; color: var(--text-secondary); }
 .q-field-full { grid-column: 1 / -1; }
@@ -141,7 +141,7 @@
   gap: 14px;
 }
 
-/* ── Seção / painel ── */
+/* -- Se--o / painel -- */
 .q-panel {
   padding: 26px clamp(18px, 4vw, 34px);
   margin-bottom: 16px;
@@ -179,14 +179,14 @@
   text-wrap: pretty;
 }
 
-/* ── Grid de cards genérico ── */
+/* -- Grid de cards gen-rico -- */
 .q-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 12px;
 }
 
-/* ── Modal ── */
+/* -- Modal -- */
 .q-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -249,7 +249,7 @@
   padding: 0;
 }
 
-/* ── Estado vazio / alertas ── */
+/* -- Estado vazio / alertas -- */
 .q-empty {
   text-align: center;
   padding: 40px 20px;
