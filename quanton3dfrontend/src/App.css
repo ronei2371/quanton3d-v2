@@ -1,4 +1,4 @@
-   QUANTON3D v2 — SHELL, NAVEGAÇÃO E EXPERIÊNCIA INICIAL
+QUANTON3D v2 - SHELL, NAVEGA--O E EXPERI-NCIA INICIAL
 
 .app-shell {
   min-height: 100vh;
@@ -6,7 +6,7 @@
   flex-direction: column;
 }
 
-/* Navegação */
+/* Navegacao */
 .qnav-header {
   position: sticky;
   top: 0;
@@ -161,7 +161,7 @@
 }
 .home-experience { display: flex; flex-direction: column; gap: clamp(56px, 6vw, 92px); }
 
-/* ── Fundo fluido animado da home ──
+/* -- Fundo fluido animado da home --
    Blobs em gradiente radial com deriva lenta + ciclo suave de matiz,
    sempre sobre o tom mais escuro da paleta (--bg-void). */
 .home-fluid-bg {
@@ -203,7 +203,7 @@
   animation-name: fluid-drift-d; animation-duration: 66s;
 }
 
-/* Transição lenta entre as cores da paleta (azul ↔ ciano ↔ violeta) */
+/* Transicao lenta entre as cores da paleta (azul <-> ciano <-> violeta) */
 .home-fluid-blob--celeste { animation-name: fluid-drift-b, fluid-hue; animation-duration: 48s, 90s; }
 .home-fluid-blob--ametista { animation-name: fluid-drift-c, fluid-hue; animation-duration: 60s, 110s; }
 .home-fluid-blob--marine { animation-name: fluid-drift-d, fluid-hue; animation-duration: 66s, 100s; }
@@ -244,7 +244,7 @@
   mix-blend-mode: overlay;
 }
 
-/* Micropartículas fixas na viewport: movimento autônomo, lento e discreto. */
+/* Microparticulas fixas na viewport: movimento autonomo, lento e discreto. */
 .home-fluid-bg::before,
 .home-fluid-bg::after {
   content: "";
@@ -390,15 +390,15 @@
 .home-hero-visual img,
 .home-hero-visual video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: right center; }
 
-/* Enquadramento do vídeo deslocado pra revelar a figura à esquerda (que ficava
-   sob o gradiente escuro) e cortar a marca d'água do canto inferior direito
-   da fonte para fora da área visível. Valores estimados — ajustar conforme
-   visualização real: primeiro número move o corte horizontal (menor = mostra
-   mais a peça à esquerda / esconde mais a direita da fonte), segundo número
-   é o corte vertical (menor = corta mais a base da fonte). */
+/* Enquadramento do video deslocado pra revelar a figura a esquerda (que ficava
+   sob o gradiente escuro) e cortar a marca d'agua do canto inferior direito
+   da fonte para fora da area visivel. Valores estimados - ajustar conforme
+   visualizacao real: primeiro numero move o corte horizontal (menor = mostra
+   mais a peca a esquerda / esconde mais a direita da fonte), segundo numero
+   e o corte vertical (menor = corta mais a base da fonte). */
 .home-hero-visual video.home-hero-video { object-position: 8% center; }
 
-/* A imagem estática só aparece se o vídeo não puder tocar (reduced-motion ou falha de carregamento) */
+/* A imagem estatica so aparece se o video nao puder tocar (reduced-motion ou falha de carregamento) */
 .home-hero-video-fallback { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .home-hero-video { display: none; }
@@ -529,22 +529,22 @@
 .home-product-attributes { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 26px; }
 .home-product-attributes span { padding: 7px 11px; border: 1px solid var(--border-soft); border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.025); color: var(--text-secondary); font-size: 0.68rem; font-weight: 700; }
 
-/* Seções da home */
+/* Secoes da home */
 .home-section-heading { max-width: none; }
 .home-section-heading h2 { margin-top: 10px; font-size: clamp(2rem, 4vw, 3.45rem); line-height: 1.06; letter-spacing: -0.05em; }
 .home-section-heading > p { margin: 18px 0 0; max-width: 1100px; font-size: var(--text-description-size); text-wrap: pretty; }
 .home-section-heading--split { display: grid; grid-template-columns: 1.05fr 0.75fr; gap: 64px; align-items: end; max-width: none; }
 .home-section-heading--split > p { margin: 0 0 4px; }
 
-/* Rodapé */
+/* Rodape */
 .site-footer { border-top: 1px solid var(--border-soft); padding: 30px 16px 44px; display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
 .footer-social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .footer-social-links a { padding: 6px 12px; border: 1px solid var(--border-soft); border-radius: var(--r-sm); color: var(--text-secondary); font-size: 0.72rem; font-weight: 600; }
 .footer-social-links a:hover { border-color: var(--border-strong); color: var(--text-primary); }
 
-/* Guia técnico em tela cheia
+/* Guia tecnico em tela cheia
    O menu oficial do site continua fixo no topo; o guia ocupa todo o resto da
-   viewport e rola internamente, mantendo o próprio menu one-page acessível. */
+   viewport e rola internamente, mantendo o proprio menu one-page acessivel. */
 .app-shell.is-guide {
   height: 100vh;
   height: 100dvh;
@@ -611,7 +611,7 @@
   .guide-viewer-open { display: none; }
 }
 
-/* Botão flutuante — ELIO */
+/* Botao flutuante - ELIO */
 .elio-fab {
   position: fixed;
   right: 26px;
@@ -728,7 +728,7 @@
   .home-path-option { padding-inline: 11px; font-size: 0.9rem; }
 }
 
-/* Mantém a composição aprovada em uma escala visual equivalente a 150% no desktop. */
+/* Mantem a composicao aprovada em uma escala visual equivalente a 150% no desktop. */
 @media (min-width: 1280px) {
   .qnav-inner { min-height: clamp(76px, 5.84vw, 112px); }
   .qnav-brand { gap: clamp(11px, 0.84vw, 16px); }
