@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bottom Curling | Quanton3D</title>
+<link rel="stylesheet" href="base-guia.css">
+<style>
+  /* ===== Cenas de animação específicas deste guia ===== */
+
+  /* cena — o ciclo do curling: borda levanta, contato encolhe, peel amplia */
+  .curl-scene {
+    position: relative;
+    width: 216px;
+    height: 132px;
+    transform: scale(1.16);
+  }
+
+  .curl-plate {
+    position: absolute;
+    top: 24px;
+    left: 12px;
+    width: 192px;
+    height: 15px;
+    border: 1px solid #97a4b8;
+    border-radius: 4px;
+    background: linear-gradient(#aab5c6, #6b788e);
+  }
+
+  .curl-seg {
+    position: absolute;
+    top: 39px;
+    height: 13px;
+    background: var(--paper);
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+  }
+
+  .curl-seg.c-mid { left: 78px; width: 60px; }
+
+  .curl-seg.c-left {
+    left: 40px;
+    width: 38px;
+    border-radius: 3px 0 0 3px;
+    transform-origin: right center;
+    animation: curl-left 5.4s ease-in-out infinite;
+  }
+
+  .curl-seg.c-right {
+    right: 40px;
+    width: 38px;
+    border-radius: 0 3px 3px 0;
+    transform-origin: left center;
+    animation: curl-right 5.4s ease-in-out infinite;
+  }
+
+  /* setas de peel: a força de separação puxando para baixo */
+  .curl-peel {
+    position: absolute;
+    top: 62px;
+    width: 2px;
+    height: 16px;
+    background: var(--red);
+    opacity: 0;
+    animation: peel-pull 5.4s ease-in-out infinite;
+  }
+
+  .curl-peel::after {
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    content: "";
+    border: 2px solid var(--red);
+    border-width: 0 0 2px 2px;
+    transform: translateX(-50%) rotate(-45deg);
+  }
+
+  .curl-peel.pl { left: 46px; }
+  .curl-peel.pr { right: 46px; }
+
+  /* barra que mostra a área de contato encolhendo */
+  .curl-contact {
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+    height: 5px;
+    border-radius: 3px;
+    animation: contact-shrink 5.4s ease-in-out infinite;
+  }
+
+  .curl-label {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    color: var(--muted);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-align: center;
+    text-transform: uppercase;
+    animation: contact-label 5.4s ease-in-out infinite;
+  }
+
+  @keyframes curl-left {
+    0%, 16% { transform: rotate(0deg); }
+    58%, 88% { transform: rotate(15deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @keyframes curl-right {
+    0%, 16% { transform: rotate(0deg); }
+    58%, 88% { transform: rotate(-15deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @keyframes peel-pull {
+    0%, 30% { opacity: 0; transform: translateY(-4px); }
+    46%, 84% { opacity: 1; transform: translateY(3px); }
+    92%, 100% { opacity: 0; transform: translateY(-4px); }
+  }
+
+  @keyframes contact-shrink {
+    0%, 16% { width: 136px; background: var(--green); box-shadow: 0 0 10px rgba(53, 211, 148, 0.5); }
+    58%, 88% { width: 60px; background: var(--red); box-shadow: 0 0 10px rgba(255, 122, 127, 0.5); }
+    100% { width: 136px; background: var(--green); box-shadow: 0 0 10px rgba(53, 211, 148, 0.5); }
+  }
+
+  @keyframes contact-label {
+    0%, 16% { color: var(--green); }
+    58%, 88% { color: var(--red); }
+    100% { color: var(--green); }
+  }
+
+  /* cena — contato uniforme x comprometido */
+  .contact-scene {
+    position: relative;
+    width: 200px;
+    height: 118px;
+    transform: scale(1.16);
+  }
+
+  .contact-plate {
+    position: absolute;
+    top: 26px;
+    left: 16px;
+    width: 168px;
+    height: 15px;
+    border: 1px solid #97a4b8;
+    border-radius: 4px;
+    background: linear-gradient(#aab5c6, #6b788e);
+  }
+
+  .contact-base {
+    position: absolute;
+    top: 41px;
+    left: 30px;
+    width: 140px;
+    height: 13px;
+    border-radius: 0 0 3px 3px;
+    background: var(--paper);
+  }
+
+  .contact-dot {
+    position: absolute;
+    top: 60px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+  }
+
+  .contact-dot.d1 { left: 36px; }
+  .contact-dot.d2 { left: 50%; margin-left: -4px; }
+  .contact-dot.d3 { right: 36px; }
+
+  .is-ok .contact-dot {
+    background: var(--green);
+    box-shadow: 0 0 10px rgba(53, 211, 148, 0.6);
+    animation: dot-even 3.4s ease-in-out infinite;
+  }
+
+  .is-ok .contact-dot.d2 { animation-delay: 0.25s; }
+  .is-ok .contact-dot.d3 { animation-delay: 0.5s; }
+
+  /* contato comprometido: base afinando nas pontas e pontos irregulares */
+  .is-bad .contact-base {
+    clip-path: polygon(0 55%, 12% 0, 88% 0, 100% 45%, 100% 100%, 0 100%);
+    animation: base-thin 4.2s ease-in-out infinite;
+  }
+
+  .is-bad .contact-dot.d1 { background: var(--red); box-shadow: 0 0 10px rgba(255, 122, 127, 0.55); animation: dot-weak 4.2s ease-in-out infinite; }
+  .is-bad .contact-dot.d2 { background: var(--green); box-shadow: 0 0 10px rgba(53, 211, 148, 0.5); }
+  .is-bad .contact-dot.d3 { background: var(--yellow); box-shadow: 0 0 10px rgba(230, 161, 75, 0.55); animation: dot-weak 4.2s ease-in-out infinite; animation-delay: 0.9s; }
+
+  @keyframes dot-even {
+    0%, 100% { transform: scale(0.85); opacity: 0.6; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+
+  @keyframes dot-weak {
+    0%, 100% { transform: scale(0.7); opacity: 0.35; }
+    50% { transform: scale(1); opacity: 0.9; }
+  }
+
+  @keyframes base-thin {
+    0%, 100% { clip-path: polygon(0 55%, 12% 0, 88% 0, 100% 45%, 100% 100%, 0 100%); }
+    50% { clip-path: polygon(0 72%, 14% 0, 86% 0, 100% 62%, 100% 100%, 0 100%); }
+  }
+
+  /* ===== Linha do tempo da evolução da falha ===== */
+  .evo-track {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .evo-node {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+  }
+
+  .evo-node img {
+    display: block;
+    width: 100%;
+    height: 92px;
+    object-fit: cover;
+  }
+
+  .evo-body { padding: 11px 12px 13px; }
+
+  .evo-no {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    margin-bottom: 7px;
+    color: #fff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    border-radius: 6px;
+    background: var(--cyan-strong);
+    place-items: center;
+  }
+
+  .evo-node.is-fail .evo-no { background: var(--red); }
+  .evo-body b { display: block; margin-bottom: 4px; color: var(--title); font-size: 0.84rem; }
+  .evo-body span { color: var(--text); font-size: 0.79rem; }
+
+  /* ===== Cards de causa com foto ===== */
+  .cause-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+    gap: 13px;
+  }
+
+  .cause {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--card);
+  }
+
+  .cause img {
+    display: block;
+    width: 100%;
+    height: 118px;
+    object-fit: cover;
+  }
+
+  .cause-body { padding: 15px 16px 17px; }
+
+  .cause-tag {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 3px 9px;
+    color: var(--cyan);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border: 1px solid rgba(125, 176, 255, 0.28);
+    border-radius: 999px;
+    background: rgba(47, 123, 255, 0.09);
+  }
+
+  .cause-tag.t-mat { color: var(--purple); border-color: rgba(184, 156, 255, 0.3); background: rgba(184, 156, 255, 0.09); }
+  .cause-body h3 { margin-bottom: 6px; color: var(--title); font-size: 1rem; font-weight: 700; letter-spacing: -0.015em; }
+  .cause-body p { margin: 0; font-size: 0.86rem; }
+
+  /* ===== Comparação com foto ===== */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 13px;
+  }
+
+  .compare-card {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--card);
+  }
+
+  .compare-card.ok { border-color: rgba(53, 211, 148, 0.28); }
+  .compare-card.bad { border-color: rgba(255, 122, 127, 0.26); }
+
+  .compare-card img {
+    display: block;
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  .compare-body { padding: 15px 17px 17px; }
+  .compare-body h3 { margin-bottom: 6px; font-size: 1rem; font-weight: 700; letter-spacing: -0.015em; }
+  .compare-card.ok h3 { color: var(--green); }
+  .compare-card.bad h3 { color: var(--red); }
+  .compare-body p { margin: 0; font-size: 0.86rem; }
+
+  /* ===== Sintomas com ícone ===== */
+  .sym-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 10px;
+    color: var(--cyan);
+    font-size: 1.05rem;
+    border: 1px solid rgba(125, 176, 255, 0.26);
+    border-radius: 9px;
+    background: rgba(47, 123, 255, 0.1);
+    place-items: center;
+  }
+
+  /* ===== Foto de evidência ===== */
+  .evidence {
+    margin: 0 0 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card);
+  }
+
+  .evidence img {
+    display: block;
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+  }
+
+  .evidence figcaption {
+    padding: 12px 16px 14px;
+    color: var(--muted);
+    font-size: 0.84rem;
+  }
+
+  /* ===== Nota de marca ===== */
+  .brand-note {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 18px;
+    align-items: center;
+    margin-top: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card);
+  }
+
+  .brand-note img {
+    display: block;
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .brand-note h3 { margin-bottom: 5px; color: var(--title); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.015em; }
+  .brand-note p { margin: 0; font-size: 0.87rem; }
+
+  @media (max-width: 560px) {
+    .brand-note { grid-template-columns: 1fr; }
+    .brand-note img { width: 108px; }
+  }
+
+  /* ===== Protocolo numerado ===== */
+  .proto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    counter-reset: proto;
+  }
+
+  .proto {
+    position: relative;
+    padding: 17px 17px 18px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.018);
+    counter-increment: proto;
+  }
+
+  .proto::before {
+    display: grid;
+    width: 27px;
+    height: 27px;
+    margin-bottom: 10px;
+    color: #fff;
+    content: counter(proto);
+    font-size: 0.82rem;
+    font-weight: 800;
+    border-radius: 8px;
+    background: var(--cyan-strong);
+    place-items: center;
+  }
+
+  .proto img {
+    display: block;
+    width: 100%;
+    height: 96px;
+    margin-bottom: 12px;
+    border-radius: 9px;
+    object-fit: cover;
+  }
+
+  .proto h3 { margin-bottom: 6px; color: var(--title); font-size: 0.96rem; font-weight: 700; letter-spacing: -0.01em; }
+  .proto p { margin: 0; font-size: 0.85rem; }
+  .proto a { color: var(--cyan); font-weight: 700; text-decoration: none; }
+  .proto a:hover { text-decoration: underline; }
+
+  /* ===== Direção dos ajustes ===== */
+  .dir-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+    gap: 13px;
+  }
+
+  .dir-when {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--cyan);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  /* ===== Widgets interativos ===== */
+  .range-row { display: grid; gap: 5px; margin-bottom: 15px; }
+
+  .range-row label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--title);
+    font-size: 0.87rem;
+    font-weight: 700;
+  }
+
+  .range-row output {
+    color: var(--cyan);
+    font-size: 0.92rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .range-row small { color: var(--muted); font-size: 0.76rem; }
+
+  input[type="range"] {
+    width: 100%;
+    height: 5px;
+    margin: 3px 0;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    background: linear-gradient(90deg, rgba(53, 211, 148, 0.5), rgba(230, 161, 75, 0.5), rgba(255, 122, 127, 0.5));
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 3px solid #0a0e18;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border: 3px solid #0a0e18;
+    border-radius: 50%;
+    background: var(--cyan);
+    cursor: pointer;
+  }
+
+  .risk-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+  }
+
+  .risk-score { color: var(--title); font-size: 1.7rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+  .risk-score small { color: var(--muted); font-size: 0.9rem; font-weight: 700; }
+
+  .risk-bar {
+    height: 8px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .risk-bar span {
+    display: block;
+    width: 4%;
+    height: 100%;
+    border-radius: 5px;
+    background: var(--green);
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+
+  .check-list { display: grid; gap: 9px; margin-bottom: 15px; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.018);
+    cursor: pointer;
+  }
+
+  .check-item:hover { border-color: rgba(125, 176, 255, 0.32); }
+
+  .check-item input {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    margin: 2px 0 0;
+    accent-color: var(--cyan-strong);
+    cursor: pointer;
+  }
+
+  .check-item b { display: block; color: var(--title); font-size: 0.88rem; }
+  .check-item span { color: var(--text); font-size: 0.81rem; }
+
+  .q-action {
+    padding: 11px 18px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.86rem;
+    font-weight: 700;
+    border: 0;
+    border-radius: 9px;
+    background: var(--cyan-strong);
+    cursor: pointer;
+  }
+
+  .q-action:hover { background: #4a8dff; }
+
+  .diag-item {
+    margin-top: 9px;
+    padding: 13px 15px;
+    border-left: 3px solid var(--cyan-strong);
+    border-radius: 0 10px 10px 0;
+    background: rgba(47, 123, 255, 0.07);
+    font-size: 0.86rem;
+  }
+
+  .diag-item b { display: block; margin-bottom: 3px; color: var(--title); }
+
+  @media (max-width: 760px) {
+    .evo-track { grid-template-columns: 1fr; }
+    .evo-node img { height: 140px; }
+  }
+</style>
+  <link rel="stylesheet" href="/guias/guia-padrao.css">
+  <script src="/guias/guia-padrao.js" defer></script>
+</head>
+<body>
+  <nav class="guidenav" aria-label="Seções deste guia">
+    <div class="guidenav-track">
+      <a href="#oquee">O que é</a>
+      <a href="#evolucao">Como evolui</a>
+      <a href="#causas">Causas</a>
+      <a href="#plataforma">Plataforma</a>
+      <a href="#sintomas">Sintomas</a>
+      <a href="#protocolo">Protocolo</a>
+      <a href="#ajustes">Direção dos ajustes</a>
+      <a href="#estimador">Estimador de risco</a>
+      <a href="#diagnostico">Diagnóstico</a>
+      <a href="#checklist">Checklist</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Guia técnico Quanton3D</div>
+      <h1>Bottom curling: identificar e corrigir a perda de aderência</h1>
+      <p>Reconheça a borda levantando, entenda por que o contato diminui a cada ciclo e corrija a causa sem mascarar o problema com superexposição.</p>
+      <div class="hero-meta" aria-label="O que este guia cobre">
+        <span>Leitura visual da falha</span>
+        <span>Causas mecânicas e térmicas</span>
+        <span>Protocolo de correção</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary" aria-labelledby="resumo">
+        <div class="summary-card">
+          <h2 id="resumo">O processo em uma frase</h2>
+          <p>A borda da base levanta, a área de contato encolhe, a força de separação passa a atuar sobre menos superfície e a falha avança sozinha a cada camada.</p>
+        </div>
+        <aside class="attention">
+          <h2>Antes de mexer em parâmetros</h2>
+          <p>Exposição não conserta placa suja, desnivelada ou empenada. Resolva a plataforma primeiro — só depois ajuste a fundação e o movimento.</p>
+        </aside>
+      </section>
+
+      <section class="topic" aria-labelledby="oquee">
+        <div class="topic-head">
+          <div class="topic-num">1</div>
+          <div>
+            <h2 id="oquee">O que é bottom curling</h2>
+            <p>É o levantamento ou empenamento da borda da base durante a impressão. O efeito reduz o contato com a plataforma e pode evoluir para descolamento parcial ou completo.</p>
+          </div>
+        </div>
+
+        <figure class="evidence">
+          <img src="images/curling-hero.jpg" alt="Impressão em resina com a base curvada nas bordas e perda progressiva de contato">
+          <figcaption>Base curvada nas bordas com perda progressiva de contato — o defeito que este guia trata.</figcaption>
+        </figure>
+
+        <div class="split-2">
+          <div class="panel">
+            <p>Em uma falha leve, a impressora continua trabalhando sobre uma base já deformada. O modelo pode terminar, mas fica inclinado, dimensionalmente incorreto ou com camadas comprimidas de maneira desigual.</p>
+            <p>O defeito nasce da combinação entre <b>tensão térmica</b>, <b>aderência insuficiente</b>, <b>estado da plataforma</b> e <b>forças mecânicas de separação</b>.</p>
+            <div class="callout"><b>Diagnóstico importante:</b> bottom curling não é apenas “a peça não grudou”. A borda pode aderir no início, curvar aos poucos e perder contato a cada ciclo de separação.</div>
+          </div>
+
+          <div class="anim-card">
+            <div class="animation" role="img" aria-label="Animação da borda da base levantando enquanto a área de contato com a plataforma encolhe">
+              <div class="curl-scene" aria-hidden="true">
+                <div class="curl-plate"></div>
+                <div class="curl-seg c-left"></div>
+                <div class="curl-seg c-mid"></div>
+                <div class="curl-seg c-right"></div>
+                <span class="curl-peel pl"></span>
+                <span class="curl-peel pr"></span>
+                <span class="curl-contact"></span>
+                <span class="curl-label">Área de contato</span>
+              </div>
+            </div>
+            <div class="anim-card-copy">
+              <h3>O ciclo que se retroalimenta</h3>
+              <p>Quanto mais a borda curva, menor a área que ainda segura a peça — e maior a força que essa área precisa suportar no próximo peel.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="brand-note">
+          <img src="images/curling-iron.jpg" alt="Frasco da resina Quanton3D Iron">
+          <div>
+            <span class="dir-when">Referência visual Quanton3D</span>
+            <h3>Iron</h3>
+            <p>A correção do bottom curling depende do conjunto impressora, geometria, parâmetros, ambiente e resina. <b>Não existe resina que elimine a falha sozinha</b> em um processo mal ajustado — o frasco aparece aqui apenas como identidade visual da marca.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="evolucao">
+        <div class="topic-head">
+          <div class="topic-num">2</div>
+          <div>
+            <h2 id="evolucao">Como a falha evolui</h2>
+            <p>O descolamento costuma ser progressivo. Entender a sequência ajuda a encontrar a causa antes de simplesmente aumentar a exposição.</p>
+          </div>
+        </div>
+
+        <div class="evo-track">
+          <article class="evo-node">
+            <img src="images/curling-evo1-base.jpg" alt="Primeira camada plana e aderida à plataforma">
+            <div class="evo-body">
+              <div class="evo-no">1</div>
+              <b>Base formada</b>
+              <span>As primeiras camadas aderem, mas já podem conter gradiente térmico ou contato desigual.</span>
+            </div>
+          </article>
+          <article class="evo-node">
+            <img src="images/curling-evo2-borda.jpg" alt="Base começando a curvar por contração e tensão acumulada">
+            <div class="evo-body">
+              <div class="evo-no">2</div>
+              <b>Borda curva</b>
+              <span>Contração, temperatura desigual ou baixa aderência afastam uma extremidade da plataforma.</span>
+            </div>
+          </article>
+          <article class="evo-node">
+            <img src="images/curling-evo3-peel.jpg" alt="Força de separação atuando sobre uma base já deformada">
+            <div class="evo-body">
+              <div class="evo-no">3</div>
+              <b>Peel amplia a falha</b>
+              <span>A força de separação atua sobre uma área menor e facilita o avanço do descolamento.</span>
+            </div>
+          </article>
+          <article class="evo-node">
+            <img src="images/curling-evo4-anormal.jpg" alt="Bordas levantadas com contato reduzido">
+            <div class="evo-body">
+              <div class="evo-no">4</div>
+              <b>Base anormal</b>
+              <span>A impressão pode continuar torta, criando diferença de altura, compressão e perda dimensional.</span>
+            </div>
+          </article>
+          <article class="evo-node is-fail">
+            <img src="images/curling-evo5-descolou.jpg" alt="Peça deformada após perda severa de aderência">
+            <div class="evo-body">
+              <div class="evo-no">5</div>
+              <b>Descolamento</b>
+              <span>A ligação restante é vencida. A peça cai no tanque ou fica presa ao filme.</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="causas">
+        <div class="topic-head">
+          <div class="topic-num">3</div>
+          <div>
+            <h2 id="causas">Principais causas</h2>
+            <p>A falha normalmente nasce da combinação entre tensão acumulada, contato insuficiente e carga mecânica durante a separação.</p>
+          </div>
+        </div>
+
+        <div class="cause-grid">
+          <article class="cause">
+            <img src="images/curling-causa-contracao.jpg" alt="Base de resina encurvada por contração">
+            <div class="cause-body">
+              <span class="cause-tag">Causa 1</span>
+              <h3>Tensão térmica</h3>
+              <p>A fotopolimerização libera calor. Se a temperatura ficar desigual, regiões da peça tentam expandir ou contrair de maneiras diferentes e a borda pode empenar.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <img src="images/curling-causa-contaminacao.jpg" alt="Superfície da plataforma com resíduos e contaminação">
+            <div class="cause-body">
+              <span class="cause-tag">Causa 2</span>
+              <h3>Contaminação da plataforma</h3>
+              <p>Óleo, gordura, digitais, resíduo curado ou partículas reduzem a área real de contato e deixam a base irregular.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <div class="cause-body">
+              <span class="cause-tag">Causa 3</span>
+              <h3>Plataforma desnivelada</h3>
+              <p>O gap inicial fica diferente entre os lados. A base ou o raft nasce inclinado e uma região recebe menos compressão e adesão.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <img src="images/curling-causa-peel.jpg" alt="Plataforma elevando e aplicando força de separação sobre a peça">
+            <div class="cause-body">
+              <span class="cause-tag">Causa 4</span>
+              <h3>Movimento agressivo</h3>
+              <p>Elevação muito rápida aumenta a carga dinâmica de separação. Material ainda pouco consolidado ou contato fraco pode se desprender parcialmente.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <div class="cause-body">
+              <span class="cause-tag">Causa 5</span>
+              <h3>Plataforma riscada ou danificada</h3>
+              <p>Desgaste severo, empenamento ou danos podem tornar o contato imprevisível. Riscos leves não devem ser confundidos com deformação da placa.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <div class="cause-body">
+              <span class="cause-tag">Complementar</span>
+              <h3>Primeiras camadas pouco robustas</h3>
+              <p>Exposição, número de camadas de base e transição precisam formar uma fundação coerente. Ajuste após confirmar limpeza e nivelamento.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <div class="cause-body">
+              <span class="cause-tag">Complementar</span>
+              <h3>Área de base e geometria</h3>
+              <p>Bases longas, maciças ou com variação térmica elevada acumulam mais tensão. Rafts muito extensos também podem amplificar a força de separação.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <div class="cause-body">
+              <span class="cause-tag t-mat">Material</span>
+              <h3>Contração da resina</h3>
+              <p>Maior contração tende a elevar a mudança dimensional e a tensão interna. Compare o comportamento por aplicação e confirme em ensaio controlado.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="plataforma">
+        <div class="topic-head">
+          <div class="topic-num">4</div>
+          <div>
+            <h2 id="plataforma">Plataforma: contato correto × contato comprometido</h2>
+            <p>Antes de mexer em exposição, confirme o básico. Parâmetro não conserta placa suja, desnivelada ou mecanicamente deformada.</p>
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <article class="compare-card ok">
+            <img src="images/curling-contato-ok.jpg" alt="Base plana com contato uniforme em toda a plataforma">
+            <div class="compare-body">
+              <h3>Contato uniforme</h3>
+              <p>Plataforma limpa, paralela e estável. A base recebe compressão semelhante e resiste melhor aos ciclos de peel.</p>
+            </div>
+          </article>
+          <article class="compare-card bad">
+            <img src="images/curling-contato-ruim.jpg" alt="Base com bordas levantadas e contato reduzido">
+            <div class="compare-body">
+              <h3>Contato desigual</h3>
+              <p>O lado mais distante pode formar uma base fina, incompleta ou inclinada. Em peças grandes, o erro se torna muito evidente.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="anim-grid anim-grid--2" style="margin-top:13px">
+          <article class="anim-card">
+            <div class="animation is-ok" role="img" aria-label="Animação de base com pressão semelhante nos três pontos medidos">
+              <div class="contact-scene" aria-hidden="true">
+                <div class="contact-plate"></div>
+                <div class="contact-base"></div>
+                <span class="contact-dot d1"></span>
+                <span class="contact-dot d2"></span>
+                <span class="contact-dot d3"></span>
+              </div>
+              <span class="caption">Compressão semelhante em toda a área</span>
+            </div>
+            <div class="anim-card-copy">
+              <h3>Como o contato bom se comporta</h3>
+              <p>Os três pontos respondem juntos e com a mesma intensidade. A base inteira apoia.</p>
+            </div>
+          </article>
+          <article class="anim-card">
+            <div class="animation is-bad" role="img" aria-label="Animação de base afinando nas extremidades com pontos de contato fracos">
+              <div class="contact-scene" aria-hidden="true">
+                <div class="contact-plate"></div>
+                <div class="contact-base"></div>
+                <span class="contact-dot d1"></span>
+                <span class="contact-dot d2"></span>
+                <span class="contact-dot d3"></span>
+              </div>
+              <span class="caption">Extremidades com menos apoio</span>
+            </div>
+            <div class="anim-card-copy">
+              <h3>Como o contato ruim se comporta</h3>
+              <p>O centro segura, as pontas afinam. São elas que vão levantar primeiro no próximo ciclo.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="callout"><b>Leitura rápida:</b> a base correta mantém toda a superfície apoiada. No curling, os cantos se afastam primeiro e a área útil de aderência diminui.</div>
+        <div class="callout warn"><b>Sobre lixar a plataforma:</b> faça apenas quando o fabricante permitir e quando houver evidência de desgaste superficial. Lixar uma placa empenada ou um problema de nivelamento só cria mais um defeito para corrigir.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="sintomas">
+        <div class="topic-head">
+          <div class="topic-num">5</div>
+          <div>
+            <h2 id="sintomas">Leitura dos sintomas</h2>
+            <p>O formato da base e o momento em que a falha aparece ajudam a priorizar as verificações.</p>
+          </div>
+        </div>
+
+        <div class="symptom-grid">
+          <article class="symptom">
+            <div class="sym-icon" aria-hidden="true">↗</div>
+            <h3>Uma borda levantada e o restante aderido</h3>
+            <p>Priorize nivelamento, contaminação localizada, dano na placa e gradiente térmico na geometria.</p>
+          </article>
+          <article class="symptom">
+            <div class="sym-icon" aria-hidden="true">／</div>
+            <h3>Raft inteiro inclinado</h3>
+            <p>Forte indício de plataforma fora de paralelismo ou Z inicial desigual.</p>
+          </article>
+          <article class="symptom">
+            <div class="sym-icon" aria-hidden="true">⚡</div>
+            <h3>Descola quando a área cresce</h3>
+            <p>Revise lift speed, área transversal, sucção, rigidez da base e resistência das camadas de transição.</p>
+          </article>
+          <article class="symptom">
+            <div class="sym-icon" aria-hidden="true">🧼</div>
+            <h3>Falha muda de posição entre impressões</h3>
+            <p>Procure gordura, digitais, partículas, resíduo curado ou procedimento de limpeza inconsistente.</p>
+          </article>
+          <article class="symptom">
+            <div class="sym-icon" aria-hidden="true">▱</div>
+            <h3>Base completa, mas cantos curvados</h3>
+            <p>Considere tensão térmica, contração, base extensa, transição brusca de espessura e resfriamento desigual.</p>
+          </article>
+          <article class="symptom is-danger">
+            <div class="sym-icon" aria-hidden="true" style="color:var(--red); border-color:rgba(255,122,127,0.28); background:rgba(255,122,127,0.1)">⬆</div>
+            <h3>Peça inteira no FEP</h3>
+            <p>O problema já ultrapassou curling leve. Verifique fundação, gap inicial, superfície, parâmetros de base e mecânica de peel.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="protocolo">
+        <div class="topic-head">
+          <div class="topic-num">6</div>
+          <div>
+            <h2 id="protocolo">Protocolo de correção na ordem certa</h2>
+            <p>Mude uma família de variáveis por vez. Ajustar tudo simultaneamente impede descobrir o que realmente resolveu.</p>
+          </div>
+        </div>
+
+        <div class="proto-grid">
+          <article class="proto">
+            <img src="images/curling-passo-limpar.jpg" alt="Limpeza e inspeção da plataforma de impressão">
+            <h3>Limpar e inspecionar</h3>
+            <p>Remova resíduo, gordura e digitais. Confirme que não há peça curada sobre o filme ou tela.</p>
+          </article>
+          <article class="proto">
+            <h3>Nivelar e conferir Z</h3>
+            <p>Garanta paralelismo e resistência uniforme no teste de folha ou procedimento específico da máquina. <a href="guia-nivelamento.html">Ver o guia de nivelamento →</a></p>
+          </article>
+          <article class="proto">
+            <img src="images/curling-passo-fundacao.jpg" alt="Exposição UV formando as camadas inferiores">
+            <h3>Validar a fundação</h3>
+            <p>Revise exposição, número de camadas inferiores e transição sem transformar a peça em um bloco supercurado.</p>
+          </article>
+          <article class="proto">
+            <img src="images/curling-passo-lift.jpg" alt="Movimento de elevação mais controlado na plataforma">
+            <h3>Reduzir agressividade</h3>
+            <p>Diminua lift speed ou use estágios mais suaves. Ajuste rest time quando aplicável e teste novamente.</p>
+          </article>
+          <article class="proto">
+            <h3>Rever geometria e ambiente</h3>
+            <p>Reduza base maciça, distribua área, estabilize temperatura e evite correntes de ar diretamente sobre a resina.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="ajustes">
+        <div class="topic-head">
+          <div class="topic-num">7</div>
+          <div>
+            <h2 id="ajustes">Direção dos ajustes</h2>
+            <p>Estes são caminhos de diagnóstico, não receitas universais. Registre cada alteração e valide com uma impressão curta.</p>
+          </div>
+        </div>
+
+        <div class="dir-grid">
+          <div class="panel">
+            <span class="dir-when">Se a base está fraca</span>
+            <h3>Camadas inferiores</h3>
+            <ul class="panel-list">
+              <li>Confirme primeiro limpeza e nivelamento.</li>
+              <li>Aumente a robustez em pequenos passos.</li>
+              <li>Observe pé de elefante, fragilidade e dificuldade de remoção.</li>
+              <li>Use transição coerente para não criar degrau abrupto.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">Se a peça solta durante o peel</span>
+            <h3>Movimento</h3>
+            <ul class="panel-list">
+              <li>Reduza lift speed inferior.</li>
+              <li>Considere movimento em dois estágios.</li>
+              <li>Aumente lift distance apenas quando necessário para separação completa.</li>
+              <li>Evite velocidades altas copiadas de outra máquina.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">Se os cantos curvam</span>
+            <h3>Térmico e geometria</h3>
+            <ul class="panel-list">
+              <li>Mantenha resina e ambiente estáveis.</li>
+              <li>Evite resfriamento externo agressivo e localizado.</li>
+              <li>Reduza grandes massas e transições bruscas.</li>
+              <li>Compare materiais com menor contração para a aplicação.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">Se a falha é localizada</span>
+            <h3>Plataforma</h3>
+            <ul class="panel-list">
+              <li>Limpe com método repetível.</li>
+              <li>Inspecione empenamento e dano real.</li>
+              <li>Refaça o nivelamento.</li>
+              <li>Troque ou recupere a placa somente conforme orientação do fabricante.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">Se a base é muito grande</span>
+            <h3>Área e orientação</h3>
+            <ul class="panel-list">
+              <li>Divida a seção transversal quando possível.</li>
+              <li>Evite raft maior que o necessário.</li>
+              <li>Incline peças para reduzir crescimento súbito de área.</li>
+              <li>Distribua múltiplas peças na plataforma com equilíbrio.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">Se continua falhando</span>
+            <h3>Controle do teste</h3>
+            <ul class="panel-list">
+              <li>Use o mesmo lote de resina e temperatura.</li>
+              <li>Registre parâmetros e posição na plataforma.</li>
+              <li>Teste a tela e o filme.</li>
+              <li>Compare com um gabarito simples antes da peça final.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="estimador">
+        <div class="topic-head">
+          <div class="topic-num">8</div>
+          <div>
+            <h2 id="estimador">Estimador de risco</h2>
+            <p>Movimente os controles conforme a condição observada. O resultado organiza prioridades; não calcula probabilidade real de falha.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <div class="range-row">
+              <label for="adh">Condição de aderência <output id="adhVal">70</output></label>
+              <input type="range" id="adh" min="0" max="100" value="70">
+              <small>0 = muito ruim &nbsp;·&nbsp; 100 = limpa, nivelada e estável</small>
+            </div>
+            <div class="range-row">
+              <label for="lift">Agressividade do lift <output id="liftVal">45</output></label>
+              <input type="range" id="lift" min="0" max="100" value="45">
+              <small>0 = suave &nbsp;·&nbsp; 100 = muito rápido / agressivo</small>
+            </div>
+            <div class="range-row">
+              <label for="thermal">Gradiente térmico e contração <output id="thermalVal">40</output></label>
+              <input type="range" id="thermal" min="0" max="100" value="40">
+              <small>0 = baixo &nbsp;·&nbsp; 100 = alto</small>
+            </div>
+            <div class="range-row" style="margin-bottom:0">
+              <label for="area">Área e massa da base <output id="areaVal">50</output></label>
+              <input type="range" id="area" min="0" max="100" value="50">
+              <small>0 = pequena e gradual &nbsp;·&nbsp; 100 = extensa e maciça</small>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="risk-head">
+              <span class="dir-when" style="margin:0">Índice didático</span>
+              <span class="risk-score"><span id="riskScore">41</span><small>/100</small></span>
+            </div>
+            <div class="risk-bar"><span id="riskBar"></span></div>
+            <h3 id="riskTitle">Risco moderado</h3>
+            <p id="riskText" style="font-size:0.88rem">Comece confirmando limpeza e nivelamento; depois reduza a agressividade do lift e observe a geometria da base.</p>
+            <div class="callout"><b>Regra de ouro:</b> quanto pior a aderência, menor a margem para suportar tensão térmica e força de separação.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="diagnostico">
+        <div class="topic-head">
+          <div class="topic-num">9</div>
+          <div>
+            <h2 id="diagnostico">Diagnóstico por sintomas</h2>
+            <p>Marque o que aparece na impressão para receber uma ordem de verificação.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <div class="check-list">
+              <label class="check-item"><input type="checkbox" id="c1"><span><b>O raft está inclinado</b>Um lado parece mais fino ou mais comprimido.</span></label>
+              <label class="check-item"><input type="checkbox" id="c2"><span><b>Somente uma borda levanta</b>A falha sempre aparece na mesma região.</span></label>
+              <label class="check-item"><input type="checkbox" id="c3"><span><b>A peça descola quando a área aumenta</b>As primeiras camadas ficam, depois a falha avança.</span></label>
+              <label class="check-item"><input type="checkbox" id="c4"><span><b>A falha muda de lugar entre impressões</b>Não existe padrão fixo na plataforma.</span></label>
+              <label class="check-item"><input type="checkbox" id="c5"><span><b>Os cantos curvam, mas o centro continua aderido</b>Base extensa, maciça ou com resfriamento desigual.</span></label>
+            </div>
+            <button type="button" class="q-action" id="analyze">Analisar sintomas</button>
+          </div>
+
+          <div class="panel">
+            <h3>Prioridades de inspeção</h3>
+            <div id="diagnosis">
+              <div class="diag-item">Marque os sintomas ao lado e clique em <b style="display:inline">Analisar sintomas</b>.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="checklist">
+        <div class="topic-head">
+          <div class="topic-num">10</div>
+          <div>
+            <h2 id="checklist">Checklist antes de repetir a impressão</h2>
+            <p>Não desperdice outra cuba de resina repetindo exatamente o mesmo cenário.</p>
+          </div>
+        </div>
+
+        <div class="final-check">
+          <h2>Confirme antes de reimprimir</h2>
+          <ul class="check-grid">
+            <li>Plataforma sem gordura, digitais, resíduos ou partículas</li>
+            <li>Nivelamento e Z inicial conferidos pelo procedimento da máquina</li>
+            <li>Filme e tela sem resíduos curados ou dano aparente</li>
+            <li>Camadas inferiores e transição registradas, sem alterações aleatórias</li>
+            <li>Lift speed inferior reduzido se a falha surgiu durante a separação</li>
+            <li>Rest time ajustado somente quando fizer sentido para a máquina</li>
+            <li>Base e raft não maiores nem mais maciços que o necessário</li>
+            <li>Temperatura da resina e do ambiente estável durante o teste</li>
+            <li>Somente uma família de variáveis alterada por rodada</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="conclusao">
+        <div class="topic-head">
+          <div class="topic-num" aria-hidden="true">✓</div>
+          <div>
+            <h2 id="conclusao">Conclusão</h2>
+            <p>O que fica do diagnóstico, em ordem de importância.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <ul class="panel-list">
+              <li>Bottom curling é o levantamento progressivo da borda da base, não apenas uma ausência instantânea de adesão.</li>
+              <li>Tensão térmica pode iniciar o empenamento; contato insuficiente permite que a força de separação amplie a falha.</li>
+              <li>Plataforma suja, desnivelada ou danificada precisa ser resolvida antes de qualquer ajuste fino de exposição.</li>
+              <li>Lift speed alto aumenta a carga dinâmica e pode acelerar o descolamento.</li>
+              <li>Resfriamento externo agressivo pode reduzir a temperatura da resina e introduzir contaminantes; use com cautela.</li>
+              <li>Menor contração pode ajudar, mas a seleção da resina não substitui uma máquina bem nivelada e um processo controlado.</li>
+            </ul>
+            <div class="callout danger"><b>Sinceridade técnica:</b> aumentar brutalmente a exposição de base pode segurar uma impressão isolada, mas não resolve plataforma suja, desnivelamento, separação agressiva ou tensão acumulada.</div>
+          </div>
+
+          <div class="panel">
+            <h3>Diretriz técnica Quanton3D</h3>
+            <p>O diagnóstico deve seguir evidências: posição da falha, formato da base, momento do descolamento e repetibilidade do defeito.</p>
+            <p>Não copie parâmetros de outra máquina como receita. Registre impressora, resina, lote, temperatura, geometria e apenas uma alteração por rodada.</p>
+            <div class="callout"><b>Critério de validação:</b> a correção só está confirmada quando a base permanece plana, uniforme e repetível em mais de uma impressão.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <strong>Quanton3D · Resinas UV de alta performance</strong>
+      <p>Dúvidas? WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a> · <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p>
+      <p style="margin-top:12px; font-size:0.79rem; opacity:0.75">Conteúdo técnico autoral para treinamento, diagnóstico e melhoria de processos em impressão 3D SLA, DLP e LCD.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Menu one-page: destaca a seção visível
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.guidenav-track a'));
+      if (!links.length || !('IntersectionObserver' in window)) return;
+      var byId = {}, targets = [];
+      links.forEach(function (link) {
+        var el = document.getElementById(link.getAttribute('href').slice(1));
+        if (!el) return;
+        byId[el.id] = link;
+        targets.push(el);
+      });
+      var visible = {};
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+        var current = null;
+        for (var i = 0; i < targets.length; i++) if (visible[targets[i].id]) { current = targets[i].id; break; }
+        links.forEach(function (l) { l.classList.remove('is-current'); });
+        if (current && byId[current]) byId[current].classList.add('is-current');
+      }, { rootMargin: '-70px 0px -55% 0px', threshold: 0 });
+      targets.forEach(function (el) { obs.observe(el); });
+    })();
+
+    // Estimador didático de risco
+    (function () {
+      var ids = ['adh', 'lift', 'thermal', 'area'];
+      var el = function (id) { return document.getElementById(id); };
+      if (!el('adh')) return;
+
+      function update() {
+        ids.forEach(function (id) { el(id + 'Val').textContent = el(id).value; });
+        var adhesion = +el('adh').value, lift = +el('lift').value,
+            thermal = +el('thermal').value, area = +el('area').value;
+        var score = Math.round((100 - adhesion) * 0.42 + lift * 0.24 + thermal * 0.2 + area * 0.14);
+
+        el('riskScore').textContent = score;
+        var bar = el('riskBar');
+        bar.style.width = Math.max(4, score) + '%';
+
+        var title, text, cor;
+        if (score < 25) {
+          title = 'Risco baixo';
+          text = 'Condição favorável. Ainda assim, valide a primeira camada e observe as bordas da base.';
+          cor = 'var(--green)';
+        } else if (score < 50) {
+          title = 'Risco moderado';
+          text = 'Comece confirmando limpeza e nivelamento; depois reduza a agressividade do lift e observe a geometria da base.';
+          cor = 'var(--yellow)';
+        } else if (score < 75) {
+          title = 'Risco alto';
+          text = 'Há pouca margem de segurança. Corrija aderência e movimento antes de aumentar a exposição.';
+          cor = '#ff9d5c';
+        } else {
+          title = 'Risco muito alto';
+          text = 'A falha é provável neste cenário didático. Interrompa a tentativa e revise plataforma, gap inicial, peel e geometria.';
+          cor = 'var(--red)';
+        }
+        bar.style.background = cor;
+        el('riskTitle').textContent = title;
+        el('riskTitle').style.color = cor;
+        el('riskText').textContent = text;
+      }
+
+      ids.forEach(function (id) { el(id).addEventListener('input', update); });
+      update();
+    })();
+
+    // Diagnóstico por sintomas
+    (function () {
+      var btn = document.getElementById('analyze');
+      if (!btn) return;
+      var mapa = {
+        c1: ['Nivelamento e Z inicial', 'Raft inclinado aponta primeiro para paralelismo da plataforma e compressão inicial desigual.'],
+        c2: ['Contato localizado e tensão', 'Limpe e inspecione a região, verifique dano da placa e compare a orientação térmica da peça.'],
+        c3: ['Peel e crescimento de área', 'Reduza lift speed inferior, revise seção transversal e confirme robustez das camadas de base e transição.'],
+        c4: ['Contaminação ou variável instável', 'Padronize a limpeza, filtre a resina e verifique partículas, filme e temperatura.'],
+        c5: ['Tensão térmica e geometria', 'Revise base extensa, massa, contração, transições de espessura e estabilidade térmica.']
+      };
+      btn.addEventListener('click', function () {
+        var out = [];
+        Object.keys(mapa).forEach(function (id) {
+          if (document.getElementById(id).checked) out.push(mapa[id]);
+        });
+        if (!out.length) out.push(['Dados insuficientes', 'Comece pela plataforma: limpeza, nivelamento, Z inicial e inspeção do filme. Depois avalie movimento e parâmetros.']);
+        document.getElementById('diagnosis').innerHTML = out.map(function (x) {
+          return '<div class="diag-item"><b>' + x[0] + '</b>' + x[1] + '</div>';
+        }).join('');
+      });
+    })();
+  </script>
+</body>
+</html>

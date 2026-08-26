@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Guia técnico Quanton3D Academy sobre os fatores que afetam a velocidade de impressão em resina SLA, DLP e LCD.">
+<meta name="theme-color" content="#05090e">
+<title>Quanton3D Academy | Fatores que afetam a velocidade de impressão em resina</title>
+<style>
+:root{
+  --bg:#05090e;--panel:#0b121b;--panel2:#101b28;--line:#233447;--text:#f4f8fc;--muted:#a7b6c7;
+  --blue:#1a73e8;--cyan:#30d9ff;--amber:#ffc247;--red:#ff5f78;--green:#43d17b;--violet:#9f74ff;
+  --radius:22px;--shadow:0 20px 70px rgba(0,0,0,.35)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:radial-gradient(circle at 10% 0%,rgba(26,115,232,.16),transparent 34%),
+             radial-gradient(circle at 95% 10%,rgba(48,217,255,.08),transparent 24%),
+             var(--bg);
+  color:var(--text);font:16px/1.65 Inter,Segoe UI,Arial,sans-serif
+}
+a{color:inherit}
+button,input,select{font:inherit}
+.wrap{width:min(1180px,calc(100% - 34px));margin:auto}
+.nav{position:sticky;top:0;z-index:50;background:rgba(5,9,14,.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
+.navin{min-height:70px;display:flex;gap:22px;align-items:center;justify-content:space-between}
+.brand{font-weight:900;letter-spacing:.7px;display:flex;align-items:center;gap:10px}
+.atom{width:31px;height:31px;border:2px solid var(--cyan);border-radius:50%;display:grid;place-items:center;box-shadow:0 0 22px rgba(48,217,255,.35)}
+.atom:after{content:'•';color:var(--cyan);font-size:24px;line-height:1}
+.brand b{color:var(--cyan)}
+.links{display:flex;gap:18px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.links a{text-decoration:none;color:#c5d1dc}.links a:hover{color:#fff}
+.btn{border:1px solid #315474;background:#0b1621;color:#fff;padding:10px 15px;border-radius:12px;font-weight:800;cursor:pointer}
+.btn:hover{border-color:var(--cyan)}
+.hero{padding:62px 0 38px}
+.heroGrid{display:grid;grid-template-columns:1.02fr .98fr;gap:42px;align-items:center}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;color:var(--cyan);font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em}
+.eyebrow:before{content:'';width:42px;height:2px;background:var(--cyan)}
+h1{font-size:clamp(39px,5vw,68px);line-height:1.03;margin:16px 0 20px;letter-spacing:-.045em}
+h2{font-size:clamp(27px,3vw,42px);line-height:1.1;margin:0 0 10px;letter-spacing:-.025em}
+h3{line-height:1.2}
+.grad{background:linear-gradient(90deg,#fff 8%,#6edfff 55%,#4e8cff);-webkit-background-clip:text;color:transparent}
+.lead{font-size:19px;color:#c9d4df;max-width:720px}
+.badges{display:flex;flex-wrap:wrap;gap:9px;margin-top:25px}
+.badge{background:#0b1520;border:1px solid #23384b;padding:9px 12px;border-radius:999px;font-size:13px;font-weight:800;color:#d7e7f5}
+.badge strong{color:var(--cyan)}
+.heroVisual{position:relative;min-height:540px;border-radius:30px;border:1px solid #25394d;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(26,115,232,.22),transparent 34%),linear-gradient(145deg,#07111c,#02070c 72%);box-shadow:var(--shadow)}
+.heroVisual svg{width:100%;height:100%;display:block}
+.heroNote{position:absolute;left:22px;right:22px;bottom:20px;padding:13px 16px;border-radius:15px;background:rgba(5,10,16,.87);border:1px solid rgba(48,217,255,.32);font-size:13px;color:#dcecff;backdrop-filter:blur(8px)}
+section{padding:42px 0}
+.sectionHead{display:flex;gap:18px;align-items:flex-start;margin-bottom:24px}
+.num{flex:none;width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),#14385d);font-weight:900;font-size:19px;box-shadow:0 10px 30px rgba(26,115,232,.22)}
+.sectionHead p{margin:0;color:var(--muted);max-width:920px}
+.panel{background:linear-gradient(145deg,rgba(16,27,40,.96),rgba(8,14,22,.96));border:1px solid #203142;border-radius:var(--radius);box-shadow:var(--shadow)}
+.callout{border-left:4px solid var(--cyan);background:rgba(26,115,232,.12);padding:17px 19px;border-radius:0 14px 14px 0;color:#d9edff;margin:20px 0}
+.warning{border-color:var(--amber);background:rgba(255,194,71,.1)}
+.danger{border-color:var(--red);background:rgba(255,95,120,.09)}
+.goodbox{border-color:var(--green);background:rgba(67,209,123,.09)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{padding:24px}.card p{color:var(--muted)}
+.tag{display:inline-flex;padding:6px 9px;border-radius:999px;background:#0b1b28;border:1px solid #26435b;color:var(--cyan);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.formula{font-family:Consolas,Monaco,monospace;background:#071018;border:1px solid #24384b;border-radius:18px;padding:20px;font-size:17px;color:#dff5ff;overflow:auto}
+.cycle{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}
+.cycleVisual,.cycleText{padding:25px}
+.cycleVisual svg{width:100%;height:auto;display:block}
+.parts{display:grid;gap:12px}
+.part{padding:16px;border:1px solid #25384a;border-radius:15px;background:#09111a}
+.part b{display:block;color:var(--cyan);margin-bottom:5px}
+.part span{font-size:13px;color:var(--muted)}
+.factors{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.factor{padding:22px}
+.factor svg{width:100%;height:150px;display:block}
+.factor p{color:var(--muted);font-size:14px}
+.bars{display:grid;gap:12px}
+.bar{display:grid;grid-template-columns:180px 1fr 80px;gap:12px;align-items:center}
+.track{height:14px;background:#071018;border:1px solid #263b4f;border-radius:999px;overflow:hidden}
+.track i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--amber),var(--red))}
+.bar small{color:var(--muted)}
+.tableWrap{overflow:auto;border-radius:18px;border:1px solid #203142}
+table{width:100%;border-collapse:collapse;min-width:820px;background:#08111a}
+th,td{padding:15px 16px;border-bottom:1px solid #1d2d3d;text-align:left;vertical-align:top}
+th{background:#101c29;color:#dff4ff}
+td{color:#c4d1dc}
+tr:last-child td{border-bottom:0}
+.calculator{display:grid;grid-template-columns:.95fr 1.05fr;gap:20px}
+.formPanel,.resultPanel{padding:26px}
+.field{margin-bottom:15px}
+.field label{display:block;font-weight:800;margin-bottom:7px}
+.field small{display:block;color:var(--muted);margin-top:5px}
+.field input,.field select{width:100%;border:1px solid #2a4055;background:#071018;color:#fff;border-radius:12px;padding:12px 13px}
+.inputGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.resultPanel{background:linear-gradient(145deg,#0c1824,#071018)}
+.resultBig{font-size:42px;font-weight:900;color:#fff;margin:6px 0}
+.resultSub{color:var(--muted)}
+.diagItem{padding:15px;border-radius:14px;background:#0a111a;border:1px solid #263a4d;margin-top:11px}
+.diagItem b{color:var(--cyan)}
+.errors{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.error{padding:21px;display:grid;grid-template-columns:54px 1fr;gap:14px}
+.errorIcon{width:54px;height:54px;border-radius:15px;background:rgba(255,95,120,.11);display:grid;place-items:center;color:var(--red);font-size:25px}
+.error h3{margin:2px 0 6px}.error p{color:var(--muted);font-size:14px;margin:0}
+.checklist{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.checkItem{padding:18px;display:flex;gap:12px}
+.tick{color:var(--green);font-size:22px;font-weight:900}
+.checkItem p{margin:0;color:var(--muted)}
+.finalGrid{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}
+.conclusion,.directive{padding:28px}
+.conclusion li{margin-bottom:10px;color:#c9d5df}
+footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d2a37}
+@media(max-width:1000px){
+  .heroGrid,.grid2,.cycle,.calculator,.finalGrid{grid-template-columns:1fr}
+  .grid3,.factors,.checklist{grid-template-columns:repeat(2,1fr)}
+  .links{display:none}
+}
+@media(max-width:700px){
+  .wrap{width:min(100% - 22px,1180px)}
+  .hero{padding-top:35px}.heroVisual{min-height:430px}
+  .grid3,.factors,.errors,.checklist{grid-template-columns:1fr}
+  .inputGrid{grid-template-columns:1fr}
+  .bar{grid-template-columns:1fr}
+  h1{font-size:42px}
+  .navin{min-height:62px}
+}
+@media(max-width:460px){
+  .heroVisual{min-height:380px}.btn{padding:9px 10px;font-size:12px}.brand{font-size:13px}
+}
+@media print{
+  .nav,.btn{display:none!important}
+  body{background:#fff;color:#111}
+  .panel,.card,.factor,.error,.diagItem,.checkItem,.part{box-shadow:none;background:#fff;color:#111;border-color:#bbb}
+  .lead,.sectionHead p,.card p,.factor p,.error p,.checkItem p,.part span,.field small{color:#333}
+  section{break-inside:avoid}.hero{padding-top:20px}
+}
+</style>
+  <link rel="stylesheet" href="/guias/guia-padrao.css">
+  <script src="/guias/guia-padrao.js" defer></script>
+</head>
+<body>
+<nav class="nav">
+  <div class="wrap navin">
+    <div class="brand"><span class="atom"></span>QUANTON <b>3D</b> ACADEMY</div>
+    <div class="links">
+      <a href="#ciclo">Ciclo</a>
+      <a href="#fatores">Fatores</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#erros">Erros</a>
+      <a href="#checklist">Checklist</a>
+    </div>
+    <button class="btn" id="printBtn" type="button">Imprimir / salvar PDF</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap heroGrid">
+    <div>
+      <span class="eyebrow">Guia técnico completo</span>
+      <h1>Fatores que afetam a <span class="grad">velocidade de impressão</span> em resina</h1>
+      <p class="lead">Em SLA, DLP e LCD, velocidade não é apenas aumentar o número de milímetros por minuto. O tempo final nasce da soma entre quantidade de camadas, exposição, movimento do eixo Z, separação da película, espera, material e geometria.</p>
+      <div class="badges">
+        <span class="badge"><strong>✓</strong> Ciclo por camada</span>
+        <span class="badge"><strong>✓</strong> Exposição × movimento Z</span>
+        <span class="badge"><strong>✓</strong> Material e geometria</span>
+        <span class="badge"><strong>✓</strong> Calculadora interativa</span>
+      </div>
+    </div>
+    <div class="heroVisual" role="img" aria-label="Impressora de resina com linha do tempo de camadas, exposição UV e movimento de elevação">
+      <svg viewBox="0 0 700 560" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10263a"/><stop offset="1" stop-color="#02070c"/></linearGradient>
+          <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c5d4e2"/><stop offset=".5" stop-color="#6f8496"/><stop offset="1" stop-color="#283642"/></linearGradient>
+          <linearGradient id="resin" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#30d9ff" stop-opacity=".35"/><stop offset="1" stop-color="#1a73e8" stop-opacity=".12"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="700" height="560" fill="url(#bg)"/>
+        <circle cx="355" cy="245" r="215" fill="#0a2035" opacity=".6"/>
+        <rect x="90" y="410" width="520" height="42" rx="10" fill="url(#plate)" stroke="#7f93a6"/>
+        <rect x="120" y="275" width="460" height="120" rx="20" fill="url(#resin)" stroke="#2b6a93"/>
+        <rect x="145" y="392" width="410" height="22" rx="9" fill="#d9efff" opacity=".75"/>
+        <rect x="210" y="110" width="280" height="28" rx="8" fill="url(#plate)" stroke="#a9bdcf"/>
+        <path d="M350 140V255" stroke="#dcecff" stroke-width="10"/>
+        <path d="M285 255H415L395 325H305Z" fill="#91a7ba" stroke="#e9f4ff" stroke-width="4"/>
+        <path d="M350 255V330" stroke="#91a7ba" stroke-width="9"/>
+        <path d="M260 335Q350 300 440 335V370Q350 400 260 370Z" fill="#8aa0b3" stroke="#dcecff" stroke-width="4"/>
+        <path d="M135 415h430" stroke="#30d9ff" stroke-width="4" opacity=".7" filter="url(#glow)"/>
+        <g transform="translate(85 58)">
+          <text x="0" y="0" fill="#dcecff" font-family="Arial" font-size="17" font-weight="700">TEMPO POR CAMADA</text>
+          <g transform="translate(0 22)">
+            <rect x="0" y="0" width="95" height="18" rx="9" fill="#9f74ff"/><rect x="105" y="0" width="150" height="18" rx="9" fill="#ffc247"/><rect x="265" y="0" width="120" height="18" rx="9" fill="#30d9ff"/><rect x="395" y="0" width="80" height="18" rx="9" fill="#43d17b"/>
+            <text x="0" y="42" fill="#a7b6c7" font-family="Arial" font-size="13">exposição</text><text x="105" y="42" fill="#a7b6c7" font-family="Arial" font-size="13">elevação/retorno</text><text x="265" y="42" fill="#a7b6c7" font-family="Arial" font-size="13">espera</text><text x="395" y="42" fill="#a7b6c7" font-family="Arial" font-size="13">overhead</text>
+          </g>
+        </g>
+        <g fill="#fff" font-family="Arial" font-weight="700">
+          <text x="508" y="198" font-size="16">mais camadas</text>
+          <text x="508" y="220" font-size="16">= mais tempo</text>
+        </g>
+        <g stroke="#30d9ff" stroke-width="3" opacity=".75"><path d="M490 230H610"/><path d="M490 250H610"/><path d="M490 270H610"/><path d="M490 290H610"/><path d="M490 310H610"/></g>
+        <path d="M612 195V322" stroke="#ff5f78" stroke-width="5" marker-end="url(#arrow)"/>
+        <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ff5f78"/></marker></defs>
+      </svg>
+      <div class="heroNote"><b>Princípio central:</b> imprimir rápido não é reduzir um único número. É equilibrar ciclo por camada, separação segura e cura suficiente para não perder precisão nem aumentar falhas.</div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="ciclo">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">1</div><div><h2>Velocidade real é ciclo por camada</h2><p>Em resina, o tempo total é a repetição de um ciclo: expor, separar a camada da película, subir, retornar, esperar estabilizar e repetir.</p></div></div>
+    <div class="cycle">
+      <article class="panel cycleVisual">
+        <svg viewBox="0 0 760 430">
+          <rect x="35" y="55" width="690" height="310" rx="24" fill="#071018" stroke="#284156"/>
+          <text x="70" y="100" fill="#dcecff" font-family="Arial" font-size="22" font-weight="700">Ciclo normal de uma camada</text>
+          <g transform="translate(70 145)">
+            <rect x="0" y="0" width="120" height="58" rx="16" fill="#2b1749" stroke="#9f74ff"/>
+            <rect x="138" y="0" width="142" height="58" rx="16" fill="#3b2c10" stroke="#ffc247"/>
+            <rect x="298" y="0" width="142" height="58" rx="16" fill="#103147" stroke="#30d9ff"/>
+            <rect x="458" y="0" width="120" height="58" rx="16" fill="#10321d" stroke="#43d17b"/>
+            <text x="60" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Exposição</text>
+            <text x="209" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Elevação</text>
+            <text x="369" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Retorno</text>
+            <text x="518" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Espera</text>
+          </g>
+          <path d="M92 252H645" stroke="#30d9ff" stroke-width="5" opacity=".65"/>
+          <g fill="#30d9ff"><circle cx="92" cy="252" r="9"/><circle cx="230" cy="252" r="9"/><circle cx="390" cy="252" r="9"/><circle cx="550" cy="252" r="9"/><circle cx="645" cy="252" r="9"/></g>
+          <text x="80" y="306" fill="#a7b6c7" font-family="Arial" font-size="16">Cada camada adiciona segundos. Em centenas ou milhares de camadas, pequenas diferenças viram horas.</text>
+        </svg>
+      </article>
+      <aside class="panel cycleText">
+        <div class="parts">
+          <div class="part"><b>Tempo de exposição</b><span>Energia UV necessária para formar uma camada com resistência suficiente.</span></div>
+          <div class="part"><b>Tempo mecânico</b><span>Elevação, retorno, aceleração, desaceleração e distância percorrida pelo eixo Z.</span></div>
+          <div class="part"><b>Tempo de separação</b><span>Esforço para destacar a camada da película ou da interface de cura.</span></div>
+          <div class="part"><b>Tempo de espera</b><span>Intervalo para a resina fluir, bolhas dissiparem e a superfície estabilizar.</span></div>
+        </div>
+        <div class="callout"><b>Resumo:</b> o melhor ganho de velocidade quase sempre vem de reduzir etapas sem segurança, e sim de otimizar exposição, altura de camada, orientação e movimento com validação.</div>
+      </aside>
+    </div>
+    <div class="formula">Tempo aproximado = camadas de base × ciclo de base + camadas normais × ciclo normal</div>
+  </div>
+</section>
+
+<section id="fatores">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">2</div><div><h2>Os principais fatores que controlam o tempo</h2><p>Não existe um único botão mágico. Cada ganho de velocidade pode cobrar preço em adesão, precisão, acabamento ou taxa de falha.</p></div></div>
+    <div class="factors">
+      <article class="panel factor">
+        <svg viewBox="0 0 260 150"><path d="M48 110Q88 42 130 110T212 110" fill="none" stroke="#9f74ff" stroke-width="14"/><path d="M40 124H220" stroke="#30d9ff" stroke-width="4"/></svg>
+        <span class="tag">Tecnologia</span><h3>SLA, DLP e LCD</h3><p>Sistemas por área curam uma camada inteira de uma vez; sistemas por varredura dependem do caminho da luz. Mesmo assim, velocidade final também depende de mecânica, potência, firmware e material.</p>
+      </article>
+      <article class="panel factor">
+        <svg viewBox="0 0 260 150"><rect x="45" y="98" width="170" height="20" rx="8" fill="#dcecff"/><path d="M130 38V98" stroke="#30d9ff" stroke-width="10"/><path d="M105 65L130 38L155 65" fill="none" stroke="#43d17b" stroke-width="8"/></svg>
+        <span class="tag">Eixo Z</span><h3>Lift, retract e espera</h3><p>Distância de elevação, velocidade, aceleração, retorno e espera podem representar grande parte do tempo, principalmente em camadas muito rápidas.</p>
+      </article>
+      <article class="panel factor">
+        <svg viewBox="0 0 260 150"><circle cx="130" cy="75" r="33" fill="#9f74ff" opacity=".35"/><g stroke="#9f74ff" stroke-width="5"><path d="M130 16V36M130 114V134M71 75H91M169 75H189"/></g><rect x="80" y="94" width="100" height="12" rx="6" fill="#dcecff"/></svg>
+        <span class="tag">Luz</span><h3>Potência e exposição</h3><p>Mais potência pode reduzir exposição, mas excesso de energia aumenta sangramento de luz, perda de detalhe, cura além do necessário e tensão interna.</p>
+      </article>
+      <article class="panel factor">
+        <svg viewBox="0 0 260 150"><g stroke="#30d9ff" stroke-width="4"><path d="M55 35H205M55 60H205M55 85H205M55 110H205"/></g><path d="M210 35V110" stroke="#ff5f78" stroke-width="5"/><path d="M55 126H205" stroke="#dcecff" stroke-width="12"/></svg>
+        <span class="tag">Camada</span><h3>Altura de camada</h3><p>Camadas mais finas aumentam a quantidade total de ciclos. Melhoram acabamento em Z, mas elevam tempo, arquivo e exigência de estabilidade.</p>
+      </article>
+      <article class="panel factor">
+        <svg viewBox="0 0 260 150"><path d="M80 120Q130 20 180 120" fill="none" stroke="#ffc247" stroke-width="12"/><path d="M50 120H210" stroke="#dcecff" stroke-width="8"/></svg>
+        <span class="tag">Material</span><h3>Resina e temperatura</h3><p>Viscosidade, fotoiniciadores, pigmentação, carga mineral e temperatura alteram cura, fluxo, separação e tempo de espera necessário.</p>
+      </article>
+      <article class="panel factor">
+        <svg viewBox="0 0 260 150"><path d="M75 110L190 55" stroke="#8fa5b8" stroke-width="24"/><path d="M65 125H205" stroke="#30d9ff" stroke-width="4"/><path d="M76 36H186V55H76Z" fill="#ff5f78" opacity=".65"/></svg>
+        <span class="tag">Modelo</span><h3>Orientação e área</h3><p>Altura total, área por camada, peça oca, suportes e orientação podem ser tão importantes quanto exposição. Menos altura nem sempre significa menos risco.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">3</div><div><h2>Onde normalmente o tempo é gasto</h2><p>Quando a exposição cai, a mecânica passa a dominar. Por isso, acelerar apenas a cura pode não reduzir tanto o tempo final.</p></div></div>
+    <div class="grid2">
+      <article class="panel card">
+        <h3>Exemplo de distribuição do tempo</h3>
+        <div class="bars">
+          <div class="bar"><b>Exposição normal</b><div class="track"><i style="width:34%"></i></div><small>médio</small></div>
+          <div class="bar"><b>Elevação/retorno</b><div class="track"><i style="width:72%"></i></div><small>alto</small></div>
+          <div class="bar"><b>Espera e estabilização</b><div class="track"><i style="width:45%"></i></div><small>médio</small></div>
+          <div class="bar"><b>Camadas de base</b><div class="track"><i style="width:22%"></i></div><small>baixo</small></div>
+        </div>
+        <div class="callout warning"><b>Leitura correta:</b> esta escala é didática. Em uma impressora rápida, o gargalo pode ser a exposição; em outra, pode ser lift, peel, espera, drenagem de resina ou geometria.</div>
+      </article>
+      <article class="panel card">
+        <h3>A lógica do compromisso</h3>
+        <p><b>Mais rápido</b> pode significar menor tempo de exposição, lift mais agressivo, camada mais alta ou menor espera. Cada alteração precisa ser testada separadamente.</p>
+        <p><b>Mais seguro</b> pode significar mais espera, lift conservador, camada mais fina e orientação que reduza área por camada. O objetivo é encontrar o menor tempo que ainda mantém adesão, precisão e repetibilidade.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">4</div><div><h2>Decisões que aceleram e o preço de cada uma</h2><p>O ganho ideal é aquele que reduz tempo sem derrubar a confiabilidade do processo.</p></div></div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>Ajuste</th><th>Ganho esperado</th><th>Risco técnico</th><th>Como validar</th></tr></thead>
+        <tbody>
+          <tr><td>Aumentar altura de camada</td><td>Reduz o número total de camadas.</td><td>Perda de detalhe em Z, degraus visíveis e menor fidelidade vertical.</td><td>Comparar acabamento, encaixe e dimensão em corpo de prova.</td></tr>
+          <tr><td>Reduzir exposição normal</td><td>Diminui segundos em cada camada.</td><td>Subcura, falha em suportes, baixa resistência verde e delaminação.</td><td>Usar teste de exposição e medir encaixe/XYZ.</td></tr>
+          <tr><td>Aumentar lift speed</td><td>Reduz tempo mecânico de separação.</td><td>Mais carga nos suportes, deslocamento, ruptura ou desprendimento.</td><td>Testar com peça de área crítica e observar marcas de peel.</td></tr>
+          <tr><td>Reduzir lift distance</td><td>Menor percurso por camada.</td><td>Resina pode não refluir bem, especialmente em peças largas ou viscosas.</td><td>Verificar falhas de preenchimento, sucção e linhas.</td></tr>
+          <tr><td>Reduzir espera</td><td>Menos tempo morto por camada.</td><td>Bolhas, superfície instável, variação de espessura e falta de reposição.</td><td>Testar peças largas e resinas de maior viscosidade.</td></tr>
+          <tr><td>Reorientar o modelo</td><td>Pode reduzir altura ou área crítica por camada.</td><td>Mais suportes, marcas em outra face ou aumento de peel se mal orientado.</td><td>Simular tempo e revisar preview de camadas.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="calculadora">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">5</div><div><h2>Calculadora aproximada de tempo</h2><p>Use para entender a influência relativa de camada, exposição e movimento. O tempo real da impressora pode variar por firmware, aceleração, anti-aliasing, compressão do arquivo e rotina interna.</p></div></div>
+    <div class="calculator">
+      <article class="panel formPanel">
+        <div class="inputGrid">
+          <div class="field"><label for="height">Altura da peça (mm)</label><input id="height" type="number" value="80" min="1" step="1"></div>
+          <div class="field"><label for="layer">Altura de camada (µm)</label><input id="layer" type="number" value="50" min="10" step="5"></div>
+          <div class="field"><label for="normalExp">Exposição normal (s)</label><input id="normalExp" type="number" value="2.5" min=".1" step=".1"></div>
+          <div class="field"><label for="bottomExp">Exposição base (s)</label><input id="bottomExp" type="number" value="28" min="1" step="1"></div>
+          <div class="field"><label for="bottomLayers">Camadas de base</label><input id="bottomLayers" type="number" value="5" min="0" step="1"></div>
+          <div class="field"><label for="liftDistance">Distância de elevação (mm)</label><input id="liftDistance" type="number" value="6" min="0" step=".5"></div>
+          <div class="field"><label for="liftSpeed">Velocidade de elevação (mm/min)</label><input id="liftSpeed" type="number" value="80" min="1" step="5"></div>
+          <div class="field"><label for="retractSpeed">Velocidade de retorno (mm/min)</label><input id="retractSpeed" type="number" value="150" min="1" step="5"></div>
+          <div class="field"><label for="wait">Espera total por camada (s)</label><input id="wait" type="number" value="1.2" min="0" step=".1"></div>
+          <div class="field"><label for="overhead">Margem/overhead (%)</label><input id="overhead" type="number" value="7" min="0" step="1"></div>
+        </div>
+        <button class="btn" id="calcBtn" type="button">Calcular tempo aproximado</button>
+      </article>
+      <aside class="panel resultPanel">
+        <h3>Resultado estimado</h3>
+        <div class="resultBig" id="timeResult">--</div>
+        <div class="resultSub" id="timeSub">Preencha os dados e clique em calcular.</div>
+        <div id="timeDetails"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="erros">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">6</div><div><h2>Erros comuns ao tentar imprimir mais rápido</h2><p>Nem todo ganho no fatiador vira ganho real. Às vezes a peça falha, precisa ser refeita e o tempo total dobra.</p></div></div>
+    <div class="errors">
+      <article class="panel error"><div class="errorIcon">×</div><div><h3>Reduzir exposição sem teste</h3><p>Pode derrubar suportes, reduzir resistência verde e causar delaminação.</p></div></article>
+      <article class="panel error"><div class="errorIcon">↟</div><div><h3>Aumentar lift em peça larga</h3><p>Elevação agressiva aumenta esforço nos contatos e pode deformar a peça.</p></div></article>
+      <article class="panel error"><div class="errorIcon">≈</div><div><h3>Ignorar viscosidade</h3><p>Resina fria ou viscosa pode precisar de mais espera para refluir corretamente.</p></div></article>
+      <article class="panel error"><div class="errorIcon">▱</div><div><h3>Confundir altura menor com melhor orientação</h3><p>Às vezes reduzir altura aumenta área por camada e piora o peel.</p></div></article>
+      <article class="panel error"><div class="errorIcon">☀</div><div><h3>Compensar tudo com potência</h3><p>Mais luz pode curar rápido, mas também pode engrossar detalhes e alterar encaixes.</p></div></article>
+      <article class="panel error"><div class="errorIcon">⌛</div><div><h3>Comparar apenas o tempo do fatiador</h3><p>Tempo real inclui aceleração, desaceleração, rotina da máquina e pós-processamento.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section id="checklist">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">7</div><div><h2>Checklist antes de acelerar um perfil</h2><p>O ajuste deve ser progressivo e rastreável.</p></div></div>
+    <div class="checklist">
+      <div class="panel checkItem"><span class="tick">✓</span><p>O perfil atual imprime com repetibilidade.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>A resina está em temperatura adequada e constante.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>A película está limpa, íntegra e bem tensionada.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>A exposição normal foi validada em corpo de prova.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>A orientação reduz área crítica por camada.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Os suportes resistem ao peel da peça real.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>A distância de lift permite reposição de resina.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>O tempo de espera não gera bolhas ou linhas.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Foi alterada uma variável por vez.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="finalGrid">
+      <article class="panel conclusion">
+        <h2>Conclusão</h2>
+        <ol>
+          <li>O tempo final é resultado da soma de camadas, exposição, movimento e espera.</li>
+          <li>Camada mais alta reduz ciclos, mas pode comprometer acabamento e precisão em Z.</li>
+          <li>Mais potência luminosa só ajuda quando a resina e a geometria aceitam menor exposição.</li>
+          <li>Lift, retract, peel e espera podem dominar o tempo em impressoras rápidas.</li>
+          <li>Material, pigmentação, viscosidade e temperatura mudam cura e fluxo.</li>
+          <li>Orientação do modelo pode reduzir ou aumentar o tempo, dependendo da altura e da área por camada.</li>
+        </ol>
+        <div class="callout warning"><b>Sincericídio técnico:</b> o perfil mais rápido não é o que tem o menor tempo no fatiador; é o que entrega a peça certa na primeira tentativa, com acabamento e dimensão dentro do esperado.</div>
+      </article>
+      <aside class="panel directive">
+        <h2>Diretriz técnica Quanton3D</h2>
+        <p style="color:var(--muted)">Aceleração segura exige método: medir, alterar uma variável, testar, registrar e comparar. Sem registro, o ajuste vira tentativa e erro.</p>
+        <div class="callout goodbox"><b>Regra de ouro:</b> comece otimizando orientação, altura de camada e movimento Z. Depois ajuste exposição com corpo de prova e só então refine espera, lift e retorno.</div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><b>Quanton3D Academy.</b> Guia técnico autoral para treinamento e suporte em impressão 3D SLA, DLP e LCD.</div></footer>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+$('printBtn').addEventListener('click',()=>window.print());
+
+function fmtTime(seconds){
+  const h=Math.floor(seconds/3600);
+  const m=Math.round((seconds-h*3600)/60);
+  if(h<=0) return `${m} min`;
+  return `${h} h ${String(m).padStart(2,'0')} min`;
+}
+
+function calculate(){
+  const height=parseFloat($('height').value)||0;
+  const layerMicron=parseFloat($('layer').value)||50;
+  const normalExp=parseFloat($('normalExp').value)||0;
+  const bottomExp=parseFloat($('bottomExp').value)||0;
+  const bottomLayers=Math.max(0,Math.floor(parseFloat($('bottomLayers').value)||0));
+  const liftDistance=parseFloat($('liftDistance').value)||0;
+  const liftSpeed=parseFloat($('liftSpeed').value)||1;
+  const retractSpeed=parseFloat($('retractSpeed').value)||1;
+  const wait=parseFloat($('wait').value)||0;
+  const overhead=parseFloat($('overhead').value)||0;
+
+  const layerMm=layerMicron/1000;
+  const totalLayers=Math.max(1,Math.ceil(height/layerMm));
+  const normalLayers=Math.max(0,totalLayers-bottomLayers);
+  const liftSec=liftDistance/liftSpeed*60;
+  const retractSec=liftDistance/retractSpeed*60;
+  const mechanical=liftSec+retractSec+wait;
+  const normalCycle=normalExp+mechanical;
+  const bottomCycle=bottomExp+mechanical;
+  const raw=normalLayers*normalCycle+Math.min(bottomLayers,totalLayers)*bottomCycle;
+  const total=raw*(1+overhead/100);
+
+  $('timeResult').textContent=fmtTime(total);
+  $('timeSub').textContent=`${totalLayers.toLocaleString('pt-BR')} camadas estimadas • ciclo normal de ${normalCycle.toFixed(1)} s`;
+
+  let advice=[];
+  if(layerMicron<=35) advice.push(['Camada fina','Boa para detalhe, mas aumenta muito a quantidade de ciclos.']);
+  if(mechanical>normalExp*2) advice.push(['Gargalo mecânico','Lift, retorno e espera estão dominando o tempo. Otimize movimento com cuidado.']);
+  if(normalExp<1.5) advice.push(['Exposição baixa','Confirme resistência verde, suportes e encaixe antes de usar em produção.']);
+  if(liftDistance<4) advice.push(['Lift curto','Verifique reposição de resina, peças largas e risco de sucção.']);
+  if(overhead<3) advice.push(['Margem baixa','O tempo real da máquina pode ser maior por aceleração, arquivo e rotina interna.']);
+  advice.push(['Próximo teste','Altere apenas uma variável por vez e registre resultado, falha, temperatura e lote.']);
+
+  $('timeDetails').innerHTML=`
+    <div class="diagItem"><b>Camadas normais</b><br>${normalLayers.toLocaleString('pt-BR')} camadas normais e ${Math.min(bottomLayers,totalLayers)} camadas de base.</div>
+    <div class="diagItem"><b>Movimento por camada</b><br>Elevação: ${liftSec.toFixed(1)} s • Retorno: ${retractSec.toFixed(1)} s • Espera: ${wait.toFixed(1)} s.</div>
+    ${advice.map(([t,d])=>`<div class="diagItem"><b>${t}</b><br>${d}</div>`).join('')}
+  `;
+}
+$('calcBtn').addEventListener('click',calculate);
+calculate();
+</script>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Economia Inteligente de Resina | Quanton3D</title>
+<link rel="stylesheet" href="base-guia.css">
+<style>
+  /* cena — corte maciço x oco */
+  .hollow-scene { position: relative; width: 190px; height: 130px; transform: scale(1.12); }
+  .hollow-cube { position: absolute; top: 20px; left: 45px; width: 100px; height: 90px; border: 2px solid #97a4b8; border-radius: 8px; background: rgba(184, 156, 255, 0.28); overflow: hidden; }
+  .hollow-core { position: absolute; inset: 14px; border-radius: 4px; background: var(--card-2); opacity: 0; transition: opacity 0.4s ease; }
+  .hollow-scene.is-oca .hollow-core { opacity: 1; }
+  .hollow-scene.is-oca .hollow-cube { background: rgba(184, 156, 255, 0.16); }
+  .hollow-drain { position: absolute; bottom: 0; left: 50%; width: 6px; height: 12px; background: var(--card-2); opacity: 0; transform: translateX(-50%); transition: opacity 0.4s ease; }
+  .hollow-scene.is-oca .hollow-drain { opacity: 1; }
+  .hollow-label { position: absolute; bottom: -6px; left: 0; width: 100%; color: var(--muted); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-align: center; text-transform: uppercase; }
+
+  /* cena — escala cúbica */
+  .scale-scene { position: relative; width: 190px; height: 130px; display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+  .scale-box { border: 2px solid var(--cyan-strong); border-radius: 6px; background: rgba(47, 123, 255, 0.14); animation: scale-pulse 4.5s ease-in-out infinite; }
+  .scale-box.s1 { width: 76px; height: 76px; }
+  .scale-box.s2 { width: 48px; height: 48px; animation-delay: 0.15s; }
+  .scale-box.s3 { width: 30px; height: 30px; animation-delay: 0.3s; }
+  .scale-tag { position: absolute; top: -2px; left: 50%; transform: translateX(-50%); color: var(--cyan); font-size: 0.64rem; font-weight: 800; }
+  @keyframes scale-pulse { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; box-shadow: 0 0 14px rgba(47,123,255,0.35); } }
+
+  .fail-toolbar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 11px; }
+  .fail-step { padding: 14px 15px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,0.018); text-align: center; }
+  .fail-step .ico { font-size: 1.3rem; margin-bottom: 7px; }
+  .fail-step b { display: block; margin-bottom: 4px; color: var(--title); font-size: 0.86rem; }
+  .fail-step span { color: var(--muted); font-size: 0.79rem; }
+
+  /* checklist com barra de progresso */
+  .prog-bar { height: 8px; margin-bottom: 6px; overflow: hidden; border-radius: 5px; background: rgba(255,255,255,0.06); }
+  .prog-bar span { display: block; height: 100%; width: 0%; border-radius: 5px; background: var(--green); transition: width 0.25s ease; }
+  .prog-label { margin-bottom: 14px; color: var(--muted); font-size: 0.82rem; }
+
+  .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; }
+  .result-card { padding: 13px 15px; border: 1px solid var(--border); border-radius: 11px; background: rgba(255,255,255,0.02); }
+  .result-card span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 0.76rem; }
+  .result-card b { color: var(--title); font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .result-card.money b { color: var(--green); }
+  .mini-table { width: 100%; margin-top: 8px; font-size: 0.83rem; border-collapse: collapse; }
+  .mini-table td { padding: 6px 0; border-top: 1px solid var(--border); }
+  .mini-table td:last-child { text-align: right; font-weight: 700; color: var(--title); }
+</style>
+  <link rel="stylesheet" href="/guias/guia-padrao.css">
+  <script src="/guias/guia-padrao.js" defer></script>
+</head>
+<body>
+  <nav class="guidenav" aria-label="Seções deste guia">
+    <div class="guidenav-track">
+      <a href="#onde-vai">Onde a resina vai</a>
+      <a href="#oco">Modelo oco</a>
+      <a href="#escala">Reduza a escala</a>
+      <a href="#estrutura">Otimize a estrutura</a>
+      <a href="#suportes">Suportes e raft</a>
+      <a href="#falha">Maior desperdício</a>
+      <a href="#estimativa">Como o fatiador estima</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#checklist">Checklist</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Guia técnico Quanton3D</div>
+      <h1>Como economizar resina em impressão 3D SLA/DLP/LCD</h1>
+      <p>Reduza consumo sem transformar economia em fragilidade, falha ou retrabalho. Retire material onde ele não agrega função e mantenha material onde a peça realmente precisa.</p>
+      <div class="hero-meta" aria-label="O que este guia cobre">
+        <span>Hollowing com segurança</span>
+        <span>Escala e estrutura</span>
+        <span>Suportes e raft</span>
+        <span>Calculadora de economia</span>
+      </div>
+    </header>
+
+    <main>
+      <figure class="evidence">
+        <img src="images/economia-hero.jpg" alt="Impressora 3D de resina produzindo uma peça técnica com estrutura vazada e consumo otimizado">
+        <figcaption>Estrutura vazada com consumo otimizado — o equilíbrio que este guia busca entre economia e confiabilidade.</figcaption>
+      </figure>
+
+      <section class="summary" aria-labelledby="resumo">
+        <div class="summary-card">
+          <h2 id="resumo">O processo em uma frase</h2>
+          <p>Evite falha, retire volume interno desnecessário, ajuste escala quando permitido, otimize a estrutura e só então reduza suportes e raft — nessa ordem.</p>
+        </div>
+        <aside class="attention">
+          <h2>Sinceridade técnica</h2>
+          <p>Economizar resina não é "afinar tudo". Parede fraca, suporte insuficiente ou dreno mal planejado gera falha — e falha é a forma mais cara de economizar.</p>
+        </aside>
+      </section>
+
+      <section class="topic" aria-labelledby="onde-vai">
+        <div class="topic-head">
+          <div class="topic-num">1</div>
+          <div>
+            <h2 id="onde-vai">Onde a resina realmente vai embora?</h2>
+            <p>O consumo não está apenas dentro do modelo. Suportes, raft, falhas e decisões de escala também entram na conta.</p>
+          </div>
+        </div>
+        <div class="issue-grid">
+          <div class="issue"><b>Volume do modelo</b><span>Peças grandes e maciças carregam muito material que, em várias aplicações, não acrescenta função.</span></div>
+          <div class="issue"><b>Suportes e raft</b><span>Necessários para estabilidade, mas excesso de estrutura vira resina descartada e mais acabamento.</span></div>
+          <div class="issue"><b>Impressões falhadas</b><span>Uma peça grande perdida pode consumir mais resina que várias otimizações pequenas somadas.</span></div>
+          <div class="issue"><b>Escala do modelo</b><span>Uma pequena redução nas três dimensões diminui bastante o volume, porque o consumo acompanha o volume tridimensional.</span></div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="oco">
+        <div class="topic-head">
+          <div class="topic-num">2</div>
+          <div>
+            <h2 id="oco">1. Torne o modelo oco com responsabilidade</h2>
+            <p>Esvaziar o interior pode reduzir muito o consumo, desde que parede, respiro, drenagem, lavagem e pós-cura tenham sido planejados em conjunto.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="anim-card">
+            <div class="animation" role="img" aria-label="Animação de um cubo alternando entre maciço e oco, com furo de drenagem aparecendo">
+              <div class="hollow-scene is-oca" aria-hidden="true">
+                <div class="hollow-cube"><div class="hollow-core"></div></div>
+                <div class="hollow-drain"></div>
+                <span class="hollow-label">Parede + respiro + dreno</span>
+              </div>
+            </div>
+            <div class="anim-card-copy">
+              <h3>Peça oca planejada</h3>
+              <p>Reduz volume interno, porém exige espessura coerente, aberturas reais e acesso para limpeza e cura.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <img src="images/economia-maciso-vs-oco.jpg" alt="Comparação semi-realista entre peça maciça e peça oca com parede uniforme" style="display:block; width:100%; height:130px; margin-bottom:12px; border-radius:9px; object-fit:cover">
+            <p><b>Peça maciça</b> tem mais massa e simplifica o preparo, mas pode usar material que não participa da função da peça.</p>
+            <div class="callout warn"><b>Observe:</b> economizar não é apenas retirar o miolo. Uma cavidade fechada ou impossível de lavar pode custar mais do que o material poupado.</div>
+          </div>
+        </div>
+
+        <div class="issue-grid" style="margin-top:13px">
+          <div class="issue"><b>Não afine no escuro</b><span>Quanto menor a parede, maior a economia — e também maior o risco de deformação, quebra e falha em detalhes.</span></div>
+          <div class="issue"><b>Evite câmara hermética</b><span>Uma peça oca fechada pode formar sucção durante a impressão. Drenos e respiros ajudam a equilibrar pressão. <a href="guia-cavidades-succao.html">Ver guia →</a></span></div>
+          <div class="issue"><b>Planeje a lavagem interna</b><span>O solvente e a resina precisam entrar e sair. Um único furo mal posicionado pode não resolver.</span></div>
+          <div class="issue"><b>Revise o preview</b><span>Confirme que não ficou cavidade fechada e que os furos aparecem desde as camadas corretas.</span></div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="escala">
+        <div class="topic-head">
+          <div class="topic-num">3</div>
+          <div>
+            <h2 id="escala">2. Reduza a escala quando a função permitir</h2>
+            <p>Ao reduzir comprimento, largura e altura ao mesmo tempo, o volume cai de forma cúbica — não linear.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="anim-card">
+            <img src="images/economia-escalas.jpg" alt="A mesma peça apresentada em três escalas, mostrando a redução rápida do volume" style="display:block; width:100%; height:130px; object-fit:cover">
+            <div class="animation" role="img" aria-label="Animação de três cubos em escalas diferentes, mostrando a redução rápida do volume" style="min-height:170px">
+              <div class="scale-scene" aria-hidden="true">
+                <div class="scale-box s1"></div>
+                <div class="scale-box s2"></div>
+                <div class="scale-box s3"></div>
+              </div>
+            </div>
+            <div class="anim-card-copy">
+              <h3>Uma pequena redução linear muda muito o volume</h3>
+              <p>A mesma peça em três escalas — repare como o volume encolhe mais rápido que o tamanho aparente.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Exemplo prático</h3>
+            <p>Reduzir um modelo para 80% em X, Y e Z <b>não</b> reduz o volume para 80%. O volume teórico passa para aproximadamente <b style="color:var(--green)">51,2%</b> do original (0,8³).</p>
+            <p>Excelente para miniaturas, protótipos visuais e estudos de forma. <b>Não</b> aplique escala indiscriminadamente em encaixes, dispositivos, modelos odontológicos ou qualquer peça com dimensão funcional.</p>
+            <div class="callout warn"><b>Regra honesta:</b> a escala economiza muito, mas pode alterar furos, tolerâncias, espessuras mínimas e legibilidade de detalhes.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="estrutura">
+        <div class="topic-head">
+          <div class="topic-num">4</div>
+          <div>
+            <h2 id="estrutura">3. Otimize a estrutura do modelo</h2>
+            <p>Use parede, nervura, raio e reforço localizado onde a carga realmente passa. A meta é eficiência estrutural, não uma peça fina em todo lugar.</p>
+          </div>
+        </div>
+        <div class="issue-grid">
+          <div class="issue"><b>Evite cantos muito agudos</b><span>Cantos vivos concentram tensão. Raios e transições suaves distribuem melhor o esforço.</span></div>
+          <div class="issue"><b>Use ribs e gussets</b><span>Costelas e reforços triangulares podem aumentar rigidez usando menos material que uma parede grossa inteira.</span></div>
+          <div class="issue"><b>Cuidado abaixo de 0,5 mm</b><span>Furos muito pequenos são difíceis de reproduzir e podem fechar pela cura.</span></div>
+          <div class="issue"><b>A peça imprime invertida</b><span>Durante a impressão, o modelo fica suspenso e sofre gravidade, separação e vibração. Estrutura insuficiente é fatal.</span></div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="suportes">
+        <div class="topic-head">
+          <div class="topic-num">5</div>
+          <div>
+            <h2 id="suportes">4. Remova suportes e rafts desnecessários</h2>
+            <p>A orientação controla área transversal, altura, marcas, raft e quantidade de suporte. A melhor economia vem de uma configuração estável com o mínimo necessário.</p>
+          </div>
+        </div>
+        <div class="compare-grid">
+          <article class="compare-card bad">
+            <img src="images/economia-suportes-excesso.jpg" alt="Estrutura com suportes em excesso">
+            <div class="compare-body">
+              <h3>Excesso de estruturas</h3>
+              <p>Mais resina temporária, maior raft, mais marcas e mais tempo de remoção.</p>
+            </div>
+          </article>
+          <article class="compare-card ok">
+            <div class="compare-body">
+              <h3>Estratégia otimizada</h3>
+              <p>Contatos concentrados nos pontos críticos, estabilidade preservada e menos material descartado.</p>
+            </div>
+          </article>
+        </div>
+        <div class="callout" style="margin-top:13px"><b>Sequência certa:</b> primeiro garanta ilhas, cargas e estabilidade. Depois elimine redundâncias. Suporte de menos não economiza: apenas agenda uma falha.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="falha">
+        <div class="topic-head">
+          <div class="topic-num">6</div>
+          <div>
+            <h2 id="falha">5. Ataque o maior desperdício: a impressão falhada</h2>
+            <p>Em peças grandes, uma falha pode consumir centenas de mililitros e várias horas de máquina.</p>
+          </div>
+        </div>
+        <div class="fail-toolbar">
+          <div class="fail-step"><div class="ico">🔍</div><b>Inspecione</b><span>Malha, cavidades, ilhas, suportes e espessuras.</span></div>
+          <div class="fail-step"><div class="ico">📐</div><b>Oriente</b><span>Reduza área transversal sem comprometer estabilidade.</span></div>
+          <div class="fail-step"><div class="ico">🧪</div><b>Valide parâmetros</b><span>Use perfil calibrado para resina, camada e impressora.</span></div>
+          <div class="fail-step"><div class="ico">▶️</div><b>Revise o preview</b><span>Procure ilhas, cavidades fechadas e saltos estranhos.</span></div>
+          <div class="fail-step"><div class="ico">📝</div><b>Registre</b><span>Salve orientação, perfil e resultado para repetir acertos.</span></div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="estimativa">
+        <div class="topic-head">
+          <div class="topic-num">7</div>
+          <div>
+            <h2 id="estimativa">Como o fatiador estima o consumo</h2>
+            <p>Depois do fatiamento, o programa soma a área exposta em cada camada e converte esse conjunto em volume aproximado.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <p><b>Use a estimativa como ferramenta de comparação:</b> o valor é especialmente útil para comparar duas versões do mesmo projeto — maciço × oco, escala original × reduzida, orientação A × orientação B.</p>
+          <div class="callout warn">A estimativa não inclui automaticamente toda perda operacional do mundo real, como resina deixada no tanque, resíduos em suportes, lavagem, respingos ou falhas.</div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="calculadora">
+        <div class="topic-head">
+          <div class="topic-num">8</div>
+          <div>
+            <h2 id="calculadora">Calculadora de economia de resina</h2>
+            <p>Estimativa educacional para comparar uma versão original com uma versão otimizada.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <div class="range-row">
+              <label for="solidMl">Consumo original informado pelo fatiador <output id="solidMlOut">220</output> mL</label>
+              <input type="range" id="solidMl" min="10" max="1000" step="5" value="220">
+              <small>Inclua modelo, suportes e raft da versão original.</small>
+            </div>
+            <div class="range-row">
+              <label for="priceL">Preço da resina por litro <output id="priceLOut">R$ 150</output></label>
+              <input type="range" id="priceL" min="50" max="500" step="5" value="150">
+              <small>Use o preço real da resina analisada.</small>
+            </div>
+            <div class="range-row">
+              <label for="scalePct">Escala linear da nova versão <output id="scalePctOut">100</output>%</label>
+              <input type="range" id="scalePct" min="40" max="100" step="1" value="100">
+              <small>100% mantém o tamanho. O volume varia aproximadamente com escala³.</small>
+            </div>
+            <div class="range-row">
+              <label for="hollowSave">Redução adicional pelo hollowing <output id="hollowSaveOut">30</output>%</label>
+              <input type="range" id="hollowSave" min="0" max="90" step="1" value="30">
+              <small>Use um valor comparado no fatiador, não chute para orçamento final.</small>
+            </div>
+            <div class="range-row">
+              <label for="supportSave">Redução de suportes e raft <output id="supportSaveOut">15</output>%</label>
+              <input type="range" id="supportSave" min="0" max="80" step="1" value="15">
+              <small>Aplicada após escala e hollowing.</small>
+            </div>
+            <div class="range-row" style="margin-bottom:0">
+              <label for="failurePct">Perda média por falhas/retrabalho <output id="failurePctOut">8</output>%</label>
+              <input type="range" id="failurePct" min="0" max="50" step="1" value="8">
+              <small>Mostra o impacto de reduzir falhas no consumo real.</small>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Resultado</h3>
+            <div class="result-grid">
+              <div class="result-card"><span>Consumo original com perdas</span><b id="origResult">—</b></div>
+              <div class="result-card"><span>Consumo otimizado com perdas</span><b id="newResult">—</b></div>
+              <div class="result-card"><span>Economia de resina</span><b id="saveMl">—</b></div>
+              <div class="result-card money"><span>Economia estimada</span><b id="saveMoney">—</b></div>
+            </div>
+            <table class="mini-table">
+              <tr><td>Fator de escala volumétrica</td><td id="scaleFactor">—</td></tr>
+              <tr><td>Redução total calculada</td><td id="totalReduction">—</td></tr>
+              <tr><td>Custo original aproximado</td><td id="origCost">—</td></tr>
+              <tr><td>Custo otimizado aproximado</td><td id="newCost">—</td></tr>
+            </table>
+            <div class="callout" style="margin-top:12px"><b>Importante:</b> o cálculo é comparativo. Para custo comercial, confirme o volume no fatiador e use sua taxa real de perdas.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="checklist">
+        <div class="topic-head">
+          <div class="topic-num">9</div>
+          <div>
+            <h2 id="checklist">Checklist antes de chamar uma peça de "econômica"</h2>
+            <p>Economia verdadeira reduz material sem reduzir confiabilidade.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="prog-bar"><span id="progFill"></span></div>
+          <div class="prog-label" id="progLabel">0 de 8 itens concluídos</div>
+          <div class="check-list" id="checks">
+            <label class="check-item"><input type="checkbox"><span>A peça pode ser oca sem perder função ou resistência?</span></label>
+            <label class="check-item"><input type="checkbox"><span>A parede foi escolhida com base em teste e aplicação?</span></label>
+            <label class="check-item"><input type="checkbox"><span>Existem dreno e respiro bem posicionados?</span></label>
+            <label class="check-item"><input type="checkbox"><span>A escala mantém tolerâncias e detalhes necessários?</span></label>
+            <label class="check-item"><input type="checkbox"><span>Suportes redundantes foram removidos sem criar ilhas?</span></label>
+            <label class="check-item"><input type="checkbox"><span>O preview foi revisado camada por camada nas regiões críticas?</span></label>
+            <label class="check-item"><input type="checkbox"><span>O perfil de impressão está validado para essa resina e camada?</span></label>
+            <label class="check-item"><input type="checkbox"><span>O consumo foi comparado no fatiador antes e depois?</span></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="conclusao">
+        <div class="topic-head">
+          <div class="topic-num" aria-hidden="true">✓</div>
+          <div>
+            <h2 id="conclusao">Conclusão técnica</h2>
+            <p>A sequência mais eficiente é: evitar falha, retirar volume interno desnecessário, ajustar escala quando permitido, otimizar estrutura e só então reduzir suportes e raft.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <p>Um modelo corretamente oco e bem orientado pode economizar muito. Um modelo apenas "afinado" pode consumir menos no arquivo e mais no chão da oficina.</p>
+            <div class="callout danger"><b>Regra Quanton3D:</b> a melhor economia é aquela que continua imprimindo certo, lavando direito, curando por completo e cumprindo a função da peça.</div>
+          </div>
+          <div class="brand-note">
+            <img src="images/economia-pyroblast.jpg" alt="Resina Quanton3D PyroBlast">
+            <div>
+              <span class="dir-when">Diretriz técnica Quanton3D</span>
+              <h3>Economia é função, não só peso</h3>
+              <p>Compare versões no fatiador, faça testes menores, registre o resultado real e nunca aceite uma economia que comprometa a peça.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <strong>Quanton3D · Resinas UV de alta performance</strong>
+      <p>Dúvidas? WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a> · <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p>
+      <p style="margin-top:12px; font-size:0.79rem; opacity:0.75">Conteúdo técnico autoral para treinamento, diagnóstico e melhoria de processos em impressão 3D SLA, DLP e LCD.</p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.guidenav-track a'));
+      if (!links.length || !('IntersectionObserver' in window)) return;
+      var byId = {}, targets = [];
+      links.forEach(function (link) {
+        var el = document.getElementById(link.getAttribute('href').slice(1));
+        if (!el) return;
+        byId[el.id] = link;
+        targets.push(el);
+      });
+      var visible = {};
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+        var current = null;
+        for (var i = 0; i < targets.length; i++) if (visible[targets[i].id]) { current = targets[i].id; break; }
+        links.forEach(function (l) { l.classList.remove('is-current'); });
+        if (current && byId[current]) byId[current].classList.add('is-current');
+      }, { rootMargin: '-70px 0px -55% 0px', threshold: 0 });
+      targets.forEach(function (el) { obs.observe(el); });
+    })();
+
+    // Calculadora — mesma fórmula do material original
+    (function () {
+      var el = function (id) { return document.getElementById(id); };
+      if (!el('solidMl')) return;
+      var brNum = function (n, d) { return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: d || 1, maximumFractionDigits: d || 1 }); };
+      var brl = function (n) { return Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
+      var ids = ['solidMl', 'priceL', 'scalePct', 'hollowSave', 'supportSave', 'failurePct'];
+
+      function calc() {
+        ids.forEach(function (id) { el(id + 'Out').textContent = id === 'priceL' ? 'R$ ' + el(id).value : el(id).value; });
+
+        var base = Math.max(0, Number(el('solidMl').value));
+        var price = Math.max(0, Number(el('priceL').value)) / 1000;
+        var scale = Math.max(0.01, Number(el('scalePct').value) / 100);
+        var hollow = Math.min(0.95, Math.max(0, Number(el('hollowSave').value) / 100));
+        var support = Math.min(0.9, Math.max(0, Number(el('supportSave').value) / 100));
+        var failure = Math.max(0, Number(el('failurePct').value) / 100);
+
+        var scaleVol = Math.pow(scale, 3);
+        var originalReal = base * (1 + failure);
+        var optimizedBase = base * scaleVol * (1 - hollow) * (1 - support);
+        var optimizedReal = optimizedBase * (1 + failure * 0.35);
+        var saved = Math.max(0, originalReal - optimizedReal);
+        var reduction = originalReal > 0 ? saved / originalReal : 0;
+
+        el('origResult').textContent = brNum(originalReal) + ' mL';
+        el('newResult').textContent = brNum(optimizedReal) + ' mL';
+        el('saveMl').textContent = brNum(saved) + ' mL';
+        el('saveMoney').textContent = brl(saved * price);
+        el('scaleFactor').textContent = brNum(scaleVol * 100, 1) + '%';
+        el('totalReduction').textContent = brNum(reduction * 100, 1) + '%';
+        el('origCost').textContent = brl(originalReal * price);
+        el('newCost').textContent = brl(optimizedReal * price);
+      }
+
+      ids.forEach(function (id) { el(id).addEventListener('input', calc); });
+      calc();
+    })();
+
+    // Checklist com barra de progresso
+    (function () {
+      var checks = Array.prototype.slice.call(document.querySelectorAll('#checks input'));
+      if (!checks.length) return;
+      function update() {
+        var done = checks.filter(function (c) { return c.checked; }).length;
+        document.getElementById('progFill').style.width = (done / checks.length * 100) + '%';
+        document.getElementById('progLabel').textContent = done + ' de ' + checks.length + ' itens concluídos';
+      }
+      checks.forEach(function (c) { c.addEventListener('change', update); });
+      update();
+    })();
+  </script>
+</body>
+</html>

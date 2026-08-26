@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cavidades Fechadas e Efeito de Sucção | Quanton3D</title>
+<link rel="stylesheet" href="base-guia.css">
+<style>
+  .drainage-illustration {
+    width: 100%; height: 120px; margin-bottom: 12px; border-radius: 9px;
+    background-image: url("images/sucao-drenagem-guia.png"); background-size: 300% 200%;
+    background-repeat: no-repeat; background-color: #07101d;
+  }
+  .drainage-illustration--seal { background-position: 0 0; }
+  .drainage-illustration--discreet { background-position: 50% 0; }
+  .drainage-illustration--drain { background-position: 100% 0; }
+  .drainage-illustration--blocked { background-position: 50% 100%; }
+  .drainage-illustration--small { background-position: 100% 100%; }
+  /* ===== Cenas de animação específicas deste guia ===== */
+
+  /* cena — plataforma subindo, modelo com cavidade, tanque de resina */
+  .lift-scene {
+    position: relative;
+    width: 200px;
+    height: 158px;
+    transform: scale(1.1);
+  }
+
+  .lift-plate {
+    position: absolute;
+    top: 8px;
+    left: 26px;
+    width: 148px;
+    height: 13px;
+    border: 1px solid #97a4b8;
+    border-radius: 4px;
+    background: linear-gradient(#aab5c6, #6b788e);
+    animation: lift-up 5s ease-in-out infinite;
+  }
+
+  .lift-model {
+    position: absolute;
+    top: 21px;
+    left: 62px;
+    width: 76px;
+    height: 40px;
+    border: 2px solid #97a4b8;
+    border-top: 0;
+    border-radius: 0 0 8px 8px;
+    background: rgba(125, 176, 255, 0.08);
+    animation: lift-up 5s ease-in-out infinite;
+  }
+
+  .lift-cavity {
+    position: absolute;
+    inset: 4px 6px 0;
+    border-radius: 0 0 6px 6px;
+    background: var(--card-2);
+  }
+
+  .lift-vat {
+    position: absolute;
+    bottom: 18px;
+    left: 30px;
+    width: 140px;
+    height: 46px;
+    border: 1px solid rgba(125, 176, 255, 0.35);
+    border-radius: 6px;
+    background: rgba(47, 123, 255, 0.08);
+  }
+
+  .lift-fep {
+    position: absolute;
+    bottom: 60px;
+    left: 30px;
+    width: 140px;
+    height: 4px;
+    background: var(--cyan-strong);
+    box-shadow: 0 0 12px rgba(47, 123, 255, 0.5);
+  }
+
+  .lift-arrows {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    display: flex;
+    gap: 22px;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: arrows-show 5s ease-in-out infinite;
+  }
+
+  .lift-arrows span {
+    width: 2px;
+    height: 14px;
+    background: var(--red);
+  }
+
+  .lift-arrows span::after {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    content: "";
+    border: 2px solid var(--red);
+    border-width: 2px 0 0 2px;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .lift-label {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    color: var(--muted);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: center;
+    text-transform: uppercase;
+    animation: lift-label 5s ease-in-out infinite;
+  }
+
+  @keyframes lift-up {
+    0%, 10% { transform: translateY(0); }
+    55%, 100% { transform: translateY(-26px); }
+  }
+
+  @keyframes arrows-show {
+    0%, 32% { opacity: 0; }
+    55%, 90% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes lift-label {
+    0%, 10% { color: var(--muted); content: "Câmara cheia"; }
+    55%, 100% { color: var(--red); }
+  }
+
+  /* cena — comparador selada x ventilada, alternado por botão (sem JS de SVG) */
+  .vent-compare {
+    display: grid;
+    gap: 10px;
+  }
+
+  .vent-toggle {
+    display: flex;
+    gap: 7px;
+    justify-content: center;
+  }
+
+  .vent-toggle button {
+    padding: 7px 14px;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+  }
+
+  .vent-toggle button.is-active {
+    color: var(--cyan);
+    border-color: rgba(125, 176, 255, 0.4);
+    background: rgba(47, 123, 255, 0.12);
+  }
+
+  .vent-scene {
+    position: relative;
+    width: 190px;
+    height: 118px;
+    margin: 0 auto;
+  }
+
+  .vent-model {
+    position: absolute;
+    top: 10px;
+    left: 55px;
+    width: 80px;
+    height: 46px;
+    border: 2px solid #97a4b8;
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    background: rgba(125, 176, 255, 0.07);
+  }
+
+  .vent-fill {
+    position: absolute;
+    inset: 3px 5px 0;
+    border-radius: 0 0 8px 8px;
+    background: var(--red);
+    opacity: 0.32;
+    transition: opacity 0.35s ease, background 0.35s ease;
+  }
+
+  .vent-fep {
+    position: absolute;
+    top: 56px;
+    left: 20px;
+    width: 150px;
+    height: 4px;
+    background: var(--cyan-strong);
+    box-shadow: 0 0 12px rgba(47, 123, 255, 0.5);
+  }
+
+  .vent-hole {
+    position: absolute;
+    top: 24px;
+    right: 46px;
+    width: 5px;
+    height: 20px;
+    border-radius: 2px;
+    background: var(--card-2);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .vent-flow {
+    position: absolute;
+    top: 6px;
+    right: 43px;
+    width: 2px;
+    height: 12px;
+    background: var(--green);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .vent-flow::after {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    content: "";
+    border: 2px solid var(--green);
+    border-width: 0 2px 2px 0;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .vent-state {
+    color: var(--red);
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+
+  .vent-caption {
+    max-width: 300px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-align: center;
+  }
+
+  .vent-scene.is-vented .vent-fill { opacity: 0.06; background: var(--green); }
+  .vent-scene.is-vented .vent-hole { opacity: 1; }
+  .vent-scene.is-vented .vent-flow { opacity: 1; animation: flow-in 1.6s ease-in-out infinite; }
+
+  @keyframes flow-in {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+
+  /* cena — resina retida acima do nível do tanque */
+  .trap-scene {
+    position: relative;
+    width: 176px;
+    height: 130px;
+    transform: scale(1.12);
+  }
+
+  .trap-plate {
+    position: absolute;
+    top: 4px;
+    left: 20px;
+    width: 136px;
+    height: 12px;
+    border: 1px solid #97a4b8;
+    border-radius: 4px;
+    background: linear-gradient(#aab5c6, #6b788e);
+  }
+
+  .trap-model {
+    position: absolute;
+    top: 16px;
+    left: 50px;
+    width: 76px;
+    height: 44px;
+    border: 2px solid #97a4b8;
+    border-top: 0;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+  }
+
+  .trap-resin {
+    position: absolute;
+    right: 2px;
+    bottom: 0;
+    left: 2px;
+    height: 30px;
+    background: rgba(184, 156, 255, 0.55);
+    animation: trap-hold 4.4s ease-in-out infinite;
+  }
+
+  .trap-line {
+    position: absolute;
+    top: 62px;
+    right: 8px;
+    left: 8px;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--cyan) 0 5px, transparent 5px 10px);
+    opacity: 0.6;
+  }
+
+  .trap-tank {
+    position: absolute;
+    right: 14px;
+    bottom: 8px;
+    left: 14px;
+    height: 40px;
+    border: 1px solid rgba(125, 176, 255, 0.35);
+    border-radius: 6px;
+    background: rgba(47, 123, 255, 0.08);
+  }
+
+  .trap-label {
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    color: var(--purple);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  @keyframes trap-hold {
+    0%, 100% { height: 30px; opacity: 0.85; }
+    50% { height: 27px; opacity: 0.6; }
+  }
+
+  @media (max-width: 560px) {
+    .lift-scene, .vent-scene, .trap-scene { transform: scale(0.92); }
+  }
+
+  .g-select {
+    width: 100%;
+    padding: 9px 12px;
+    color: var(--title);
+    font-family: inherit;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #0d1420;
+  }
+</style>
+  <link rel="stylesheet" href="/guias/guia-padrao.css">
+  <script src="/guias/guia-padrao.js" defer></script>
+</head>
+<body>
+  <nav class="guidenav" aria-label="Seções deste guia">
+    <div class="guidenav-track">
+      <a href="#regra">A regra principal</a>
+      <a href="#ventosa">Vira uma ventosa</a>
+      <a href="#nasce">Como a sucção nasce</a>
+      <a href="#comparacao">Selada × ventilada</a>
+      <a href="#superficie">Na superfície</a>
+      <a href="#resina-presa">Resina presa</a>
+      <a href="#respiro">Criar respiro</a>
+      <a href="#fluxo">Fluxo no fatiador</a>
+      <a href="#estimador">Estimador de risco</a>
+      <a href="#diagnostico">Diagnóstico</a>
+      <a href="#checklist">Checklist</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Guia técnico Quanton3D</div>
+      <h1>Cavidades fechadas e efeito de sucção na impressão 3D de resina</h1>
+      <p>Reconheça geometrias que funcionam como ventosas, entenda por que a pressão interna muda durante a elevação e projete respiros e drenos que protegem superfícies, suportes e aderência.</p>
+      <div class="hero-meta" aria-label="O que este guia cobre">
+        <span>Efeito de sucção explicado</span>
+        <span>Furo de ventilação × cavidade fechada</span>
+        <span>Diagnóstico interativo</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary" aria-labelledby="resumo">
+        <div class="summary-card">
+          <h2 id="resumo">O processo em uma frase</h2>
+          <p>Toda cavidade fechada contra a película precisa de uma rota de entrada de ar e outra de saída de resina — sem isso, a diferença de pressão na elevação vira carga extra sobre o modelo.</p>
+        </div>
+        <aside class="attention">
+          <h2>Regra de ouro Quanton3D</h2>
+          <p>Toda cavidade precisa respirar e drenar desde o momento em que começa a existir durante a impressão.</p>
+        </aside>
+      </section>
+
+      <section class="topic" aria-labelledby="regra">
+        <div class="topic-head">
+          <div class="topic-num">1</div>
+          <div>
+            <h2 id="regra">A regra principal: toda cavidade precisa respirar</h2>
+            <p>Cavidades e câmaras aparecem com frequência em modelos ocos, concavidades, domos, recipientes e geometrias que fecham uma área contra a película.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <p>Quando o modelo e a FEP formam uma <b>câmara fechada</b>, a resina ou o ar não conseguem circular livremente entre o interior e o exterior. Na elevação, a mudança de volume cria uma diferença de pressão e adiciona esforço ao modelo, aos suportes e à própria película.</p>
+          <div class="callout"><b>Correção principal:</b> faça um ou mais furos em áreas discretas para destruir a condição hermética e permitir que resina ou ar entrem e saiam da cavidade.</div>
+          <p style="margin-top:14px">O objetivo do furo não é apenas escoar resina depois da impressão. Durante a própria impressão, ele funciona como <b>ventilação e equalização de pressão</b>.</p>
+          <div class="callout warn"><b>Atenção:</b> aumentar suportes, exposição de base ou força de contato pode esconder parte do problema, mas não elimina a causa se a cavidade continuar selada.</div>
+        </div>
+
+        <div class="brand-note">
+          <img src="../images/resinas/iron.webp" alt="Mockup da resina Quanton3D Iron">
+          <div>
+            <span class="dir-when">Aplicação técnica Quanton3D</span>
+            <h3>Iron: resistência para geometrias exigentes</h3>
+            <p>A escolha da resina influencia rigidez, absorção de esforço e tolerância a falhas. Mesmo assim, <b>nenhuma formulação substitui ventilação e drenagem bem projetadas</b>.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="ventosa">
+        <div class="topic-head">
+          <div class="topic-num">2</div>
+          <div>
+            <h2 id="ventosa">Quando a geometria vira uma ventosa</h2>
+            <p>É uma região cujo volume interno fica isolado no momento em que a camada toca a película, ou quando a cavidade sobe sem permitir entrada de ar.</p>
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <article class="compare-card ok">
+            <img src="images/sucao-cav-aberta.jpg" alt="Cavidade aberta ou conectada ao exterior">
+            <div class="compare-body">
+              <h3>Cavidade aberta</h3>
+              <p>Aberturas conectadas ao volume interno permitem equalização de pressão e também ajudam na lavagem e secagem.</p>
+            </div>
+          </article>
+          <article class="compare-card bad">
+            <div class="compare-body">
+              <h3>Cavidade selada</h3>
+              <p>A geometria só deixa de funcionar como ventosa quando existe uma passagem contínua para entrada de ar ou resina.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="nasce">
+        <div class="topic-head">
+          <div class="topic-num">3</div>
+          <div>
+            <h2 id="nasce">Como a sucção nasce durante a elevação</h2>
+            <p>Este é o caso clássico do chamado efeito de sucção em impressão bottom-up.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="anim-card">
+            <div class="animation" role="img" aria-label="Animação da plataforma elevando o modelo com cavidade fechada, gerando diferença de pressão">
+              <div class="lift-scene" aria-hidden="true">
+                <div class="lift-vat"></div>
+                <div class="lift-fep"></div>
+                <div class="lift-model"><div class="lift-cavity"></div></div>
+                <div class="lift-plate"></div>
+                <span class="lift-arrows"><span></span><span></span></span>
+                <span class="lift-label">Câmara cheia</span>
+              </div>
+            </div>
+            <div class="anim-card-copy">
+              <h3>O momento da separação</h3>
+              <p>Enquanto a resina líquida (pouco compressível) não consegue preencher o volume tão rápido quanto o ar faria, a força de separação aumenta.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <ul class="panel-list">
+              <li><b>1. Câmara cheia</b> — antes do descolamento, a cavidade está preenchida principalmente por resina e a diferença inicial pode ser pequena.</li>
+              <li><b>2. Início da elevação</b> — a plataforma puxa o modelo para cima enquanto a película começa a se desprender.</li>
+              <li><b>3. Baixa pressão</b> — como a resina líquida é pouco compressível, o novo volume não é preenchido com a mesma facilidade que seria com ar.</li>
+              <li><b>4. Força adicional</b> — a diferença de pressão atua sobre a área da câmara e aumenta o esforço de separação.</li>
+              <li><b>5. Defeito ou falha</b> — podem surgir depressões, pequenos furos, deformação, ruptura de suportes ou perda de aderência.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:13px">
+          <h3>Relação física conceitual</h3>
+          <div class="callout" style="text-align:center; font-size:1.1rem; font-weight:800; color:var(--title)">F ≈ ΔP × A</div>
+          <p style="margin-top:10px; font-size:0.85rem; color:var(--muted)">A força associada à diferença de pressão cresce quando aumenta a diferença de pressão (ΔP) ou a área projetada da câmara (A). Esta relação é conceitual e não substitui medição de força na impressora.</p>
+          <p>Uma concavidade larga pode gerar muito mais esforço que uma cavidade estreita, mesmo que ambas tenham a mesma profundidade.</p>
+        </div>
+
+        <div class="issue-grid" style="margin-top:13px">
+          <div class="issue"><b>◯ Seção da câmara</b><span>Quanto maior a área fechada contra a película, maior tende a ser a força associada.</span></div>
+          <div class="issue"><b>↟ Velocidade de elevação</b><span>Uma separação mais rápida dá menos tempo para o fluido se redistribuir.</span></div>
+          <div class="issue"><b>≋ Viscosidade</b><span>Resina mais viscosa oferece maior resistência ao escoamento para dentro da cavidade.</span></div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="comparacao">
+        <div class="topic-head">
+          <div class="topic-num">4</div>
+          <div>
+            <h2 id="comparacao">Comparação prática: cavidade selada × ventilada</h2>
+            <p>Alterne o botão para observar como a presença do furo muda o caminho de fluxo.</p>
+          </div>
+        </div>
+
+        <div class="anim-card">
+          <div class="animation" role="img" aria-label="Comparador interativo entre câmara fechada e câmara com furo de ventilação">
+            <div class="vent-compare" aria-hidden="false">
+              <div class="vent-toggle" role="tablist" aria-label="Alternar condição da cavidade">
+                <button type="button" class="is-active" data-mode="closed">Câmara fechada</button>
+                <button type="button" data-mode="vented">Com furo de ventilação</button>
+              </div>
+              <div class="vent-scene" id="ventScene">
+                <div class="vent-model">
+                  <div class="vent-fill"></div>
+                  <div class="vent-hole"></div>
+                  <div class="vent-flow"></div>
+                </div>
+                <div class="vent-fep"></div>
+              </div>
+              <div class="vent-state" id="ventState">CÂMARA FECHADA</div>
+            </div>
+          </div>
+          <div class="anim-card-copy">
+            <p class="vent-caption" id="ventCaption" style="max-width:none; text-align:left">Sem furo: a diferença de pressão aumenta no início do descolamento e adiciona carga ao modelo.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="superficie">
+        <div class="topic-head">
+          <div class="topic-num">5</div>
+          <div>
+            <h2 id="superficie">Como a pressão desigual aparece na superfície</h2>
+            <p>Em corpos ocos de parede fina, pequenas diferenças de pressão já podem deformar a superfície ou deixar pontos rebaixados.</p>
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <article class="compare-card bad">
+            <img src="images/sucao-sem-furo.jpg" alt="Peça oca sem respiro, com risco de deformação e retenção de resina">
+            <div class="compare-body">
+              <h3>Sem furo</h3>
+              <p>A pressão desigual pode deixar pequenas cavidades, pontos afundados e uma superfície mais irregular.</p>
+            </div>
+          </article>
+          <article class="compare-card ok">
+            <img src="images/sucao-com-furo.jpg" alt="Peça oca com abertura funcional para ventilação e drenagem">
+            <div class="compare-body">
+              <h3>Com furo</h3>
+              <p>Com a pressão equalizada, a superfície tende a manter melhor sua geometria e apresentar menos defeitos.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="callout warn" style="margin-top:13px"><b>Importante:</b> a comparação visual ilustra o mecanismo, mas não define um resultado universal. O resultado exato varia com resina, geometria, orientação, impressora, velocidade, espessura e parâmetros.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="resina-presa">
+        <div class="topic-head">
+          <div class="topic-num">6</div>
+          <div>
+            <h2 id="resina-presa">Quando a peça carrega resina para fora do tanque</h2>
+            <p>Mesmo depois de sair do banho, uma cavidade sem entrada de ar pode continuar carregando resina líquida.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="anim-card">
+            <div class="animation" role="img" aria-label="Animação de resina retida dentro de uma cavidade acima do nível do tanque, sustentada pela diferença de pressão">
+              <div class="trap-scene" aria-hidden="true">
+                <div class="trap-plate"></div>
+                <div class="trap-model">
+                  <div class="trap-resin"></div>
+                </div>
+                <div class="trap-line"></div>
+                <div class="trap-tank"></div>
+                <span class="trap-label">Resina presa pela pressão</span>
+              </div>
+            </div>
+            <div class="anim-card-copy">
+              <h3>O que acontece nesse estágio</h3>
+              <p>À medida que a peça sobe, parte da câmara fica acima do nível do tanque. Sem ar no interior, a pressão externa ajuda a sustentar a coluna de resina dentro da cavidade.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <ul class="panel-list">
+              <li><b>Câmara pequena e parede robusta:</b> o efeito pode ser pouco perceptível.</li>
+              <li><b>Câmara grande:</b> o peso da resina retida se opõe à força de tração da plataforma.</li>
+              <li><b>Suportes frágeis:</b> podem romper devido ao esforço adicional.</li>
+              <li><b>Aderência insuficiente:</b> o modelo pode se desprender da plataforma.</li>
+            </ul>
+            <div class="callout danger"><b>Correção obrigatória em câmaras grandes:</b> permita entrada de ar para reduzir a diferença de pressão e deixe uma rota real de drenagem.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="respiro">
+        <div class="topic-head">
+          <div class="topic-num">7</div>
+          <div>
+            <h2 id="respiro">Como criar respiro e drenagem que realmente funcionam</h2>
+            <p>Não existe um diâmetro universal. O projeto deve considerar geometria, escala, viscosidade, orientação e possibilidade de limpeza.</p>
+          </div>
+        </div>
+
+        <div class="dir-grid">
+          <div class="panel">
+            <div class="drainage-illustration drainage-illustration--seal" role="img" aria-label="Abertura interrompendo cedo a cavidade fechada"></div>
+            <h3>Rompa o selo cedo</h3>
+            <p>Posicione o furo para que a cavidade deixe de ficar hermética nas primeiras camadas em que começa a fechar contra a FEP.</p>
+          </div>
+          <div class="panel">
+            <div class="drainage-illustration drainage-illustration--discreet" role="img" aria-label="Abertura posicionada em uma área discreta da peça"></div>
+            <h3>Use área discreta</h3>
+            <p>Coloque o furo em região pouco visível, mas não sacrifique a função hidráulica apenas para escondê-lo.</p>
+          </div>
+          <div class="panel">
+            <div class="drainage-illustration drainage-illustration--drain" role="img" aria-label="Peça inclinada com abertura no ponto baixo para drenagem"></div>
+            <h3>Favoreça a drenagem</h3>
+            <p>Em relação à orientação de impressão, um furo baixo ajuda o escoamento de resina durante a elevação e a lavagem posterior.</p>
+          </div>
+          <div class="panel">
+            <img src="images/sucao-duas-rotas.png" alt="Dreno inferior e respiro superior conectados à mesma cavidade" style="display:block; width:100%; height:120px; margin-bottom:12px; border-radius:9px; object-fit:cover; object-position:center 42%">
+            <h3>Considere duas rotas</h3>
+            <p>Em cavidades grandes, uma abertura pode drenar e outra admitir ar, evitando que o fluxo fique limitado por um único orifício.</p>
+          </div>
+          <div class="panel">
+            <div class="drainage-illustration drainage-illustration--blocked" role="img" aria-label="Suportes bloqueando uma abertura de drenagem"></div>
+            <h3>Evite bloqueios</h3>
+            <p>Confira se suporte, raft, infill ou outra parede não fecha o furo e recria a condição hermética.</p>
+          </div>
+          <div class="panel">
+            <div class="drainage-illustration drainage-illustration--small" role="img" aria-label="Comparação entre furo pequeno demais e abertura funcional"></div>
+            <h3>Não use furo simbólico</h3>
+            <p>Se a abertura não permitir fluxo suficiente para a viscosidade e a velocidade usadas, a pressão ainda pode permanecer elevada.</p>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:13px"><b>Confirme a comunicação:</b> o furo precisa alcançar a cavidade principal; uma abertura que termina em outra parede não equaliza a câmara desejada.</div>
+        <div class="callout warn"><b>Boas práticas complementares:</b> posicionar a drenagem no ponto funcionalmente mais baixo, criar uma segunda rota de ar e conferir bloqueios aumenta a confiabilidade. Tudo deve ser validado no modelo real.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="fluxo">
+        <div class="topic-head">
+          <div class="topic-num">8</div>
+          <div>
+            <h2 id="fluxo">Fluxo de verificação no fatiador</h2>
+            <p>Independentemente do programa utilizado, o fluxo deve garantir que nenhuma cavidade permaneça fechada durante a sequência de camadas.</p>
+          </div>
+        </div>
+
+        <div class="proto-grid">
+          <article class="proto">
+            <h3>Oriente o modelo</h3>
+            <p>Defina a posição antes de decidir a localização dos furos.</p>
+          </article>
+          <article class="proto">
+            <h3>Crie a cavidade interna</h3>
+            <p>Defina espessura, precisão e estrutura interna de forma consciente.</p>
+          </article>
+          <article class="proto">
+            <h3>Adicione furos</h3>
+            <p>Perfure a parede até conectar cada abertura ao volume interno.</p>
+          </article>
+          <article class="proto">
+            <h3>Procure cavidades fechadas</h3>
+            <p>Use as ferramentas de análise do seu fatiador e confirme manualmente no preview.</p>
+          </article>
+          <article class="proto">
+            <h3>Revise o preview</h3>
+            <p>Confirme a abertura no momento correto e ausência de novas câmaras.</p>
+          </article>
+          <article class="proto">
+            <h3>Finalize suportes</h3>
+            <p>Garanta que os suportes não obstruam a entrada e a drenagem.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="estimador">
+        <div class="topic-head">
+          <div class="topic-num">9</div>
+          <div>
+            <h2 id="estimador">Estimador educacional de risco de sucção</h2>
+            <p>O resultado é relativo e serve para priorizar correções. Não calcula a força real da impressora.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <div class="range-row">
+              <label for="diameter">Diâmetro equivalente da câmara <output id="diameterVal">50</output> mm</label>
+              <input type="range" id="diameter" min="5" max="120" value="50">
+              <small>Use uma medida aproximada da maior seção fechada.</small>
+            </div>
+            <label style="display:block; margin-bottom:5px; color:var(--title); font-size:0.87rem; font-weight:700">Velocidade de elevação</label>
+            <select id="lift" class="g-select" style="width:100%; margin-bottom:14px">
+              <option value="0.7">Baixa</option>
+              <option value="1" selected>Média</option>
+              <option value="1.4">Alta</option>
+            </select>
+            <label style="display:block; margin-bottom:5px; color:var(--title); font-size:0.87rem; font-weight:700">Viscosidade relativa</label>
+            <select id="viscosity" class="g-select" style="width:100%; margin-bottom:14px">
+              <option value="0.7">Baixa</option>
+              <option value="1" selected>Média</option>
+              <option value="1.4">Alta</option>
+            </select>
+            <label style="display:block; margin-bottom:5px; color:var(--title); font-size:0.87rem; font-weight:700">Ventilação</label>
+            <select id="vent" class="g-select" style="width:100%; margin-bottom:14px">
+              <option value="0.3" selected>Furo adequado e desobstruído</option>
+              <option value="0.7">Furo pequeno ou fluxo limitado</option>
+              <option value="1.2">Sem furo</option>
+            </select>
+            <label style="display:block; margin-bottom:5px; color:var(--title); font-size:0.87rem; font-weight:700">Situação da câmara</label>
+            <select id="position" class="g-select" style="width:100%">
+              <option value="1" selected>Entre modelo e FEP</option>
+              <option value="1.3">Também sobe acima do nível da resina</option>
+            </select>
+          </div>
+
+          <div class="panel">
+            <h3>Leitura do cenário</h3>
+            <div style="display:flex; justify-content:space-between; margin-bottom:9px; font-size:0.85rem; color:var(--muted)">
+              <span>Área equivalente</span><b style="color:var(--title)" id="areaOut">1.963 mm²</b>
+            </div>
+            <div class="risk-head">
+              <span class="dir-when" style="margin:0">Nível de risco</span>
+              <span class="risk-score" id="riskOut">Baixo</span>
+            </div>
+            <div class="risk-bar"><span id="riskFill"></span></div>
+            <div class="callout" id="riskAdvice">A abertura adequada reduz fortemente a diferença de pressão. Confirme apenas se ela aparece cedo e não está bloqueada.</div>
+            <p style="margin-top:10px; font-size:0.82rem; color:var(--muted)">O índice combina área, elevação, viscosidade, ventilação e posição. Ele não usa pressão medida nem substitui teste real.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="diagnostico">
+        <div class="topic-head">
+          <div class="topic-num">10</div>
+          <div>
+            <h2 id="diagnostico">Diagnóstico pelos sintomas</h2>
+            <p>Marque o que está acontecendo e veja as hipóteses mais prováveis.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <div class="check-list">
+              <label class="check-item"><input type="checkbox" id="s1"><span><b>Pequenos furos, pits ou depressões na superfície</b>Principalmente em paredes finas e concavidades.</span></label>
+              <label class="check-item"><input type="checkbox" id="s2"><span><b>Suportes rompem em modelos ocos ou côncavos</b>Peças sólidas semelhantes imprimem normalmente.</span></label>
+              <label class="check-item"><input type="checkbox" id="s3"><span><b>A peça se desprende da plataforma</b>A falha piora conforme a cavidade aumenta.</span></label>
+              <label class="check-item"><input type="checkbox" id="s4"><span><b>Resina permanece presa quando a peça sai do tanque</b>Ela só escorre quando a peça inclina ou recebe ar.</span></label>
+              <label class="check-item"><input type="checkbox" id="s5"><span><b>Existe apenas um furo muito pequeno</b>Ou ele está próximo de suporte, raft ou infill.</span></label>
+              <label class="check-item"><input type="checkbox" id="s6"><span><b>A falha cresce com velocidade e temperatura baixa</b>Maior velocidade e maior viscosidade pioram o comportamento.</span></label>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Hipóteses e ações</h3>
+            <div id="diagnosis">
+              <div class="diag-item"><b>Comece pela geometria:</b> verifique se o modelo forma uma câmara fechada contra a FEP ou acima do nível de resina.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="checklist">
+        <div class="topic-head">
+          <div class="topic-num">11</div>
+          <div>
+            <h2 id="checklist">Checklist antes de fatiar</h2>
+            <p>Uma revisão de dois minutos evita horas de impressão perdida.</p>
+          </div>
+        </div>
+
+        <div class="final-check">
+          <h2>Confirme antes de fatiar</h2>
+          <ul class="check-grid">
+            <li>A orientação não cria uma grande ventosa contra a FEP</li>
+            <li>Todas as cavidades fechadas foram identificadas</li>
+            <li>O furo alcança realmente a cavidade principal</li>
+            <li>A abertura aparece antes ou logo que a câmara começa a fechar</li>
+            <li>Existe caminho para entrada de ar e saída de resina</li>
+            <li>Suportes, raft e infill não obstruem os furos</li>
+            <li>O preview foi revisado camada por camada na região crítica</li>
+            <li>Velocidade de elevação e viscosidade foram consideradas</li>
+            <li>O pós-processo consegue lavar, drenar, secar e curar o interior</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="conclusao">
+        <div class="topic-head">
+          <div class="topic-num" aria-hidden="true">✓</div>
+          <div>
+            <h2 id="conclusao">Conclusão</h2>
+            <p>O que fica do diagnóstico, em ordem de importância.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <ul class="panel-list">
+              <li>Uma cavidade selada altera o equilíbrio de pressão durante a elevação e aumenta a carga sobre a impressão.</li>
+              <li>O esforço tende a aumentar com área da câmara, velocidade de elevação e viscosidade.</li>
+              <li>Quando a cavidade sobe acima do nível do tanque, resina retida adiciona peso e carga aos suportes.</li>
+              <li>Respiros e drenos conectados ao volume interno restauram o fluxo e reduzem deformações, retenção de resina e falhas mecânicas.</li>
+              <li>A correção deve começar no projeto e na orientação, não apenas nos parâmetros ou nos suportes.</li>
+            </ul>
+            <div class="callout danger"><b>Regra de ouro Quanton3D:</b> toda cavidade precisa respirar e drenar desde o momento em que começa a existir durante a impressão.</div>
+          </div>
+
+          <div class="panel">
+            <h3>Diretriz técnica Quanton3D</h3>
+            <p><b>Geometria primeiro:</b> antes de aumentar suporte ou exposição, confirme se a própria forma cria uma câmara selada contra a película.</p>
+            <p><b>Fluxo contínuo:</b> toda cavidade precisa de uma rota funcional para entrada de ar e outra para saída de resina, especialmente em volumes grandes.</p>
+            <p><b>Validação por camada:</b> revise o preview desde o nascimento da cavidade até a saída completa do tanque. Um furo tardio não corrige as camadas anteriores.</p>
+            <div class="callout"><b>Processo completo:</b> ventilação, drenagem, lavagem, secagem e cura interna fazem parte do mesmo projeto — não devem ser tratados como etapas isoladas.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <strong>Quanton3D · Resinas UV de alta performance</strong>
+      <p>Dúvidas? WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a> · <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p>
+      <p style="margin-top:12px; font-size:0.79rem; opacity:0.75">Conteúdo técnico autoral para treinamento, diagnóstico e melhoria de processos em impressão 3D SLA, DLP e LCD. Sempre valide geometria, resina, máquina e parâmetros no cenário real.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Menu one-page: destaca a seção visível
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.guidenav-track a'));
+      if (!links.length || !('IntersectionObserver' in window)) return;
+      var byId = {}, targets = [];
+      links.forEach(function (link) {
+        var el = document.getElementById(link.getAttribute('href').slice(1));
+        if (!el) return;
+        byId[el.id] = link;
+        targets.push(el);
+      });
+      var visible = {};
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+        var current = null;
+        for (var i = 0; i < targets.length; i++) if (visible[targets[i].id]) { current = targets[i].id; break; }
+        links.forEach(function (l) { l.classList.remove('is-current'); });
+        if (current && byId[current]) byId[current].classList.add('is-current');
+      }, { rootMargin: '-70px 0px -55% 0px', threshold: 0 });
+      targets.forEach(function (el) { obs.observe(el); });
+    })();
+
+    // Comparador selada x ventilada
+    (function () {
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('.vent-toggle button'));
+      var scene = document.getElementById('ventScene');
+      var state = document.getElementById('ventState');
+      var caption = document.getElementById('ventCaption');
+      if (!scene) return;
+      var texts = {
+        closed: { state: 'CÂMARA FECHADA', caption: 'Sem furo: a diferença de pressão aumenta no início do descolamento e adiciona carga ao modelo.' },
+        vented: { state: 'CÂMARA VENTILADA', caption: 'Com furo: resina ou ar podem ocupar o volume criado durante a elevação, reduzindo a diferença de pressão.' }
+      };
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var mode = btn.dataset.mode;
+          buttons.forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+          scene.classList.toggle('is-vented', mode === 'vented');
+          state.textContent = texts[mode].state;
+          state.style.color = mode === 'vented' ? 'var(--green)' : 'var(--red)';
+          caption.textContent = texts[mode].caption;
+        });
+      });
+    })();
+
+    // Estimador de risco de sucção
+    (function () {
+      var el = function (id) { return document.getElementById(id); };
+      if (!el('diameter')) return;
+      var fmt = function (n) { return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(n); };
+
+      function update() {
+        el('diameterVal').textContent = el('diameter').value;
+        var d = Math.max(1, Number(el('diameter').value) || 1);
+        var area = Math.PI * d * d / 4;
+        var raw = Math.sqrt(area) * Number(el('lift').value) * Number(el('viscosity').value) * Number(el('vent').value) * Number(el('position').value);
+        var score = Math.min(100, Math.max(3, raw / 2.3));
+
+        el('areaOut').textContent = fmt(area) + ' mm²';
+        el('riskFill').style.width = score + '%';
+
+        var label, advice, cor;
+        if (score < 28) {
+          label = 'Baixo'; cor = 'var(--green)';
+          advice = 'A abertura adequada reduz fortemente a diferença de pressão. Confirme apenas se ela aparece cedo e não está bloqueada.';
+        } else if (score < 58) {
+          label = 'Moderado'; cor = 'var(--yellow)';
+          advice = 'Existe combinação de área, fluxo ou velocidade que merece revisão. Aumente a eficiência da ventilação e valide no preview.';
+        } else {
+          label = 'Alto'; cor = 'var(--red)';
+          advice = 'A câmara pode impor carga elevada ao modelo. Reoriente, aumente a ventilação, reduza a seção fechada e considere elevação mais conservadora.';
+        }
+        el('riskOut').textContent = label;
+        el('riskOut').style.color = cor;
+        el('riskFill').style.background = cor;
+        el('riskAdvice').textContent = advice;
+      }
+
+      ['diameter', 'lift', 'viscosity', 'vent', 'position'].forEach(function (id) {
+        el(id).addEventListener('input', update);
+        el(id).addEventListener('change', update);
+      });
+      update();
+    })();
+
+    // Diagnóstico por sintomas
+    (function () {
+      var ids = ['s1', 's2', 's3', 's4', 's5', 's6'];
+      var box = document.getElementById('diagnosis');
+      if (!box) return;
+      function update() {
+        var on = function (id) { return document.getElementById(id).checked; };
+        var items = [];
+        if (on('s1')) items.push(['Superfície afetada', 'Verifique câmara fechada, parede fina e pressão desigual. Faça um furo funcional e repita o teste controlado.']);
+        if (on('s2') || on('s3')) items.push(['Carga de separação', 'A sucção pode estar sobrecarregando suportes e aderência. Corrija a cavidade antes de apenas engrossar os suportes.']);
+        if (on('s4')) items.push(['Câmara acima do nível', 'Adicione entrada de ar e rota de drenagem para que a coluna de resina não permaneça suspensa.']);
+        if (on('s5')) items.push(['Ventilação insuficiente', 'Confirme diâmetro, comunicação com a cavidade e ausência de bloqueio por suporte, raft ou infill.']);
+        if (on('s6')) items.push(['Fluxo limitado', 'Maior velocidade e maior viscosidade pioram a reposição de resina. Reduza a agressividade e melhore a abertura.']);
+        if (!items.length) items.push(['Comece pela geometria', 'Verifique se o modelo forma uma câmara fechada contra a FEP ou acima do nível de resina.']);
+        box.innerHTML = items.map(function (x) {
+          return '<div class="diag-item"><b>' + x[0] + ':</b> ' + x[1] + '</div>';
+        }).join('');
+      }
+      ids.forEach(function (id) { document.getElementById(id).addEventListener('change', update); });
+    })();
+  </script>
+</body>
+</html>

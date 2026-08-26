@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contato de Suporte e Acabamento | Quanton3D</title>
+<link rel="stylesheet" href="base-guia.css">
+<style>
+  /* cena — contato esférico x direto: transição da força */
+  .force-scene { position: relative; width: 176px; height: 110px; transform: scale(1.15); }
+  .force-plate { position: absolute; bottom: 8px; left: 20px; width: 136px; height: 34px; border: 2px solid #97a4b8; border-radius: 8px; background: rgba(184, 156, 255, 0.14); }
+  .force-tip { position: absolute; bottom: 40px; left: 50%; width: 4px; height: 26px; background: var(--metal-light); transform: translateX(-50%); }
+  .force-contact { position: absolute; bottom: 38px; left: 50%; width: 30px; height: 14px; border-radius: 50% 50% 40% 40%; background: rgba(53, 211, 148, 0.5); transform: translateX(-50%); transition: all 0.4s ease; }
+  .force-scene.is-direct .force-contact { width: 12px; height: 8px; border-radius: 3px; background: rgba(255, 122, 127, 0.6); }
+  .force-wave { position: absolute; bottom: 38px; left: 50%; width: 30px; height: 14px; border: 2px solid rgba(53, 211, 148, 0.5); border-radius: 50%; transform: translateX(-50%) scale(1); opacity: 0; animation: force-pulse 3s ease-in-out infinite; }
+  .force-scene.is-direct .force-wave { border-color: rgba(255, 122, 127, 0.6); width: 12px; }
+  @keyframes force-pulse { 0% { opacity: 0.7; transform: translateX(-50%) scale(1); } 100% { opacity: 0; transform: translateX(-50%) scale(2.4); } }
+  .force-label { position: absolute; top: -2px; left: 0; width: 100%; color: var(--muted); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-align: center; text-transform: uppercase; }
+
+  /* mesa comparativa */
+  .cmp-table { width: 100%; margin-top: 4px; font-size: 0.83rem; border-collapse: collapse; }
+  .cmp-table th, .cmp-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .cmp-table th { color: var(--cyan); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .cmp-table td:last-child { color: var(--muted); font-size: 0.79rem; }
+  .cmp-table tr:last-child td { border-bottom: 0; }
+
+  /* assistente de decisão */
+  .assist-slider { margin-bottom: 15px; }
+  .assist-slider label { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--title); font-size: 0.87rem; font-weight: 700; }
+  .assist-slider output { color: var(--cyan); font-weight: 800; }
+  .assist-result { padding: 15px 17px; border-left: 3px solid var(--cyan-strong); border-radius: 0 11px 11px 0; background: rgba(47, 123, 255, 0.07); }
+  .assist-result h3 { margin-bottom: 6px; color: var(--title); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.015em; }
+  .assist-result p { margin: 0; font-size: 0.87rem; }
+  .assist-score { margin-top: 10px; color: var(--muted); font-size: 0.78rem; }
+</style>
+  <link rel="stylesheet" href="/guias/guia-padrao.css">
+  <script src="/guias/guia-padrao.js" defer></script>
+</head>
+<body>
+  <nav class="guidenav" aria-label="Seções deste guia">
+    <div class="guidenav-track">
+      <a href="#contato">O que é o contato</a>
+      <a href="#forca">Concentração de força</a>
+      <a href="#relevo">Relevo × cavidade</a>
+      <a href="#protocolo">Protocolo comparativo</a>
+      <a href="#tendencias">Tendências</a>
+      <a href="#remocao">Remoção e acabamento</a>
+      <a href="#parametros">Parâmetros em conjunto</a>
+      <a href="#assistente">Assistente de decisão</a>
+      <a href="#diretriz">Diretriz técnica</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Guia técnico Quanton3D</div>
+      <h1>Contato de suporte e qualidade da superfície</h1>
+      <p>A ponta do suporte ocupa poucos décimos de milímetro, mas concentra força, sustenta a peça e define parte do retrabalho. O melhor contato é o menor que mantém estabilidade sem arrancar material da superfície.</p>
+      <div class="hero-meta" aria-label="O que este guia cobre">
+        <span>Leitura mecânica do contato</span>
+        <span>Relevo × cavidade</span>
+        <span>Protocolo comparativo</span>
+        <span>Assistente de decisão</span>
+      </div>
+    </header>
+
+    <main>
+      <figure class="evidence">
+        <img src="images/contato-hero.jpg" alt="Busto impresso em resina apoiado por suportes distribuídos">
+        <figcaption>Suportes distribuídos — o ponto de contato de cada um decide parte do acabamento final.</figcaption>
+      </figure>
+
+      <section class="summary" aria-labelledby="resumo">
+        <div class="summary-card">
+          <h2 id="resumo">O processo em uma frase</h2>
+          <p>Use a menor área de contato que ainda mantenha a peça estável em toda a impressão — nem tão fraca que rompa no peel, nem tão agressiva que vire um castigo no pós-processo.</p>
+        </div>
+        <aside class="attention">
+          <h2>Atenção</h2>
+          <p>"Contato direto" não significa ausência de contato. Significa apenas que a ponta toca a peça sem uma transição esférica adicional.</p>
+        </aside>
+      </section>
+
+      <section class="topic" aria-labelledby="contato">
+        <div class="topic-head">
+          <div class="topic-num">1</div>
+          <div>
+            <h2 id="contato">O que realmente é o contato do suporte?</h2>
+            <p>É a pequena região onde a ponta do suporte se une ao modelo. Durante a impressão ela precisa transmitir carga; depois, precisa romper de forma controlada.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <p>O contato não deve ser analisado apenas como um "ponto". Ele possui <b>forma, diâmetro, profundidade, direção e área efetiva</b>. Esses elementos determinam como a força chega à superfície e como a ligação se rompe.</p>
+          <div class="callout"><b>Regra prática:</b> use a menor área de contato que ainda mantenha a peça estável em toda a impressão.</div>
+          <p style="margin-top:12px">Um contato fraco demais pode se romper durante o peel. Um contato agressivo demais imprime bem, mas transforma o pós-processo num castigo e pode danificar detalhes que não voltam com lixa.</p>
+        </div>
+        <img src="images/contato-modelo-suportes.jpg" alt="Modelo técnico impresso com vários suportes tocando regiões estratégicas" style="display:block; width:100%; max-height:280px; margin-top:14px; border-radius:14px; object-fit:cover">
+      </section>
+
+      <section class="topic" aria-labelledby="forca">
+        <div class="topic-head">
+          <div class="topic-num">2</div>
+          <div>
+            <h2 id="forca">Como o formato muda a concentração de força</h2>
+            <p>A mesma carga pode ser distribuída por uma transição arredondada ou concentrada numa ponta mais direta.</p>
+          </div>
+        </div>
+
+        <div class="anim-grid anim-grid--2">
+          <article class="anim-card">
+            <img src="images/contato-esferico.jpg" alt="Contato esférico distribuindo força numa área arredondada" style="display:block; width:100%; height:120px; object-fit:cover">
+            <div class="animation" role="img" aria-label="Animação de força se distribuindo por uma área arredondada de contato esférico" style="min-height:150px">
+              <div class="force-scene" aria-hidden="true">
+                <div class="force-plate"></div>
+                <div class="force-tip"></div>
+                <span class="force-wave"></span>
+                <div class="force-contact"></div>
+                <span class="force-label">Transição suave</span>
+              </div>
+            </div>
+            <div class="anim-card-copy">
+              <h3>Contato esférico — transição mais suave</h3>
+              <p>A pequena esfera cria uma região elevada e uma transição arredondada. A ruptura tende a ser mais previsível, facilitando a remoção.</p>
+              <p style="margin-top:8px; font-size:0.8rem; color:var(--muted)"><b>Vantagem:</b> remoção controlada · <b>Marca típica:</b> pequeno relevo · <b>Uso forte:</b> áreas visíveis e detalhes</p>
+            </div>
+          </article>
+          <article class="anim-card">
+            <img src="images/contato-direto.jpg" alt="Contato direto concentrando força numa região pequena" style="display:block; width:100%; height:120px; object-fit:cover">
+            <div class="animation" role="img" aria-label="Animação de força concentrada numa pequena região de contato direto" style="min-height:150px">
+              <div class="force-scene is-direct" aria-hidden="true">
+                <div class="force-plate"></div>
+                <div class="force-tip"></div>
+                <span class="force-wave"></span>
+                <div class="force-contact"></div>
+                <span class="force-label">União rígida</span>
+              </div>
+            </div>
+            <div class="anim-card-copy">
+              <h3>Contato direto — união mais rígida</h3>
+              <p>A ponta cura diretamente contra o modelo. A ligação pode ficar mais firme, porém a força de remoção se concentra numa área pequena.</p>
+              <p style="margin-top:8px; font-size:0.8rem; color:var(--muted)"><b>Vantagem:</b> estabilidade elevada · <b>Marca típica:</b> cavidade ou lasca · <b>Uso forte:</b> regiões ocultas e cargas altas</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="relevo">
+        <div class="topic-head">
+          <div class="topic-num">3</div>
+          <div>
+            <h2 id="relevo">Relevo e cavidade não são o mesmo defeito</h2>
+            <p>Uma saliência pode ser rebaixada. Uma cavidade representa material perdido e exige nivelar uma área maior ou preencher a falha.</p>
+          </div>
+        </div>
+        <div class="compare-grid">
+          <article class="compare-card ok">
+            <img src="images/contato-relevo.jpg" alt="Pequeno relevo arredondado deixado por contato de suporte">
+            <div class="compare-body">
+              <h3>Relevo elevado — mais visível antes do acabamento</h3>
+              <p>O resíduo fica acima da superfície. Pode parecer maior logo após a remoção, mas a lixa consegue alcançá-lo gradualmente sem aprofundar a região vizinha.</p>
+            </div>
+          </article>
+          <article class="compare-card bad">
+            <img src="images/contato-cavidade.jpg" alt="Pequena cavidade irregular deixada pela remoção do suporte">
+            <div class="compare-body">
+              <h3>Perda de material — menor saliência, correção mais difícil</h3>
+              <p>A ruptura remove parte do modelo. Para esconder a marca, pode ser necessário lixar uma área extensa, preencher, aplicar primer ou aceitar alteração dimensional local.</p>
+            </div>
+          </article>
+        </div>
+        <div class="callout warn" style="margin-top:13px"><b>Sinceridade técnica:</b> a menor marca logo após cortar o suporte não é necessariamente o melhor acabamento final. Avalie a peça depois da remoção, da limpeza da marca e da inspeção sob luz lateral.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="protocolo">
+        <div class="topic-head">
+          <div class="topic-num">4</div>
+          <div>
+            <h2 id="protocolo">Protocolo Quanton3D para comparar contatos</h2>
+            <p>Mude apenas uma variável por vez. Sem controle experimental, o resultado vira opinião.</p>
+          </div>
+        </div>
+        <div class="proto-grid">
+          <article class="proto"><h3>Mesma geometria</h3><p>Use o mesmo corpo de prova, orientação e região de suporte.</p></article>
+          <article class="proto"><h3>Mesmo processo</h3><p>Mantenha resina, temperatura, exposição, lavagem e pós-cura.</p></article>
+          <article class="proto"><h3>Troque só o contato</h3><p>Compare forma, diâmetro ou profundidade em testes separados.</p></article>
+          <article class="proto"><h3>Meça três momentos</h3><p>Registre estabilidade, força de remoção e aspecto final.</p></article>
+          <article class="proto"><h3>Repita</h3><p>Faça mais de uma impressão para separar tendência de acaso.</p></article>
+        </div>
+        <div class="callout" style="margin-top:13px"><b>Registre:</b> taxa de sucesso, contatos rompidos, tempo de remoção, diâmetro e profundidade da marca, tempo de lixamento e perda dimensional.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="tendencias">
+        <div class="topic-head">
+          <div class="topic-num">5</div>
+          <div>
+            <h2 id="tendencias">Tendências de comportamento</h2>
+            <p>São tendências mecânicas para orientar testes, não receitas universais.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <table class="cmp-table">
+            <tr><th>Critério</th><th>Esférico</th><th>Direto</th><th>Leitura prática</th></tr>
+            <tr><td>Facilidade de remoção</td><td><b style="color:var(--green)">Geralmente maior</b></td><td>Geralmente menor</td><td>A transição arredondada favorece ruptura mais controlada.</td></tr>
+            <tr><td>Estabilidade estrutural</td><td>Moderada a alta</td><td><b style="color:var(--green)">Alta</b></td><td>A união direta pode exigir mais força para romper.</td></tr>
+            <tr><td>Marca imediata</td><td>Relevo mais perceptível</td><td>Saliência menor, porém risco de cavidade</td><td>A inspeção imediata não conta toda a história.</td></tr>
+            <tr><td>Acabamento abrasivo</td><td><b style="color:var(--green)">Frequentemente mais simples</b></td><td>Pode exigir correção localizada ou preenchimento</td><td>É mais fácil reduzir material elevado que recuperar material perdido.</td></tr>
+            <tr><td>Detalhes frágeis</td><td><b style="color:var(--green)">Mais tolerante</b></td><td>Maior risco de lascamento</td><td>Tenacidade da resina e técnica de corte mudam o resultado.</td></tr>
+            <tr><td>Região oculta de alta carga</td><td>Funciona com dimensionamento correto</td><td><b style="color:var(--green)">Pode ser vantajoso</b></td><td>Use a força extra onde a marca não compromete a peça.</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="remocao">
+        <div class="topic-head">
+          <div class="topic-num">6</div>
+          <div>
+            <h2 id="remocao">Remoção e acabamento sem destruir a peça</h2>
+            <p>O momento e a ferramenta de remoção influenciam tanto quanto o formato do contato.</p>
+          </div>
+        </div>
+        <div class="split-2">
+          <div class="panel">
+            <h3>Sequência recomendada</h3>
+            <ul class="panel-list">
+              <li><b>Inspecione:</b> identifique áreas frágeis e visíveis.</li>
+              <li><b>Corte próximo, sem arrancar:</b> deixe pequeno sobremetal quando necessário.</li>
+              <li><b>Remova antes da pós-cura total:</b> a peça costuma estar menos rígida e menos propensa a lascar.</li>
+              <li><b>Use abrasivo progressivo:</b> rebaixe o relevo sem criar uma depressão.</li>
+              <li><b>Confira com luz lateral:</b> reflexos revelam ondulação melhor que visão frontal.</li>
+            </ul>
+          </div>
+          <div class="anim-card">
+            <img src="images/contato-antes-depois.jpg" alt="Comparação de superfície com relevo antes e depois do acabamento" style="display:block; width:100%; height:100%; object-fit:cover">
+          </div>
+        </div>
+        <div class="callout warn" style="margin-top:13px"><b>Não existe formato campeão em tudo:</b> resina, geometria, exposição, orientação e método de remoção mudam o modo de fratura.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="parametros">
+        <div class="topic-head">
+          <div class="topic-num">7</div>
+          <div>
+            <h2 id="parametros">Parâmetros que trabalham em conjunto</h2>
+            <p>O formato sozinho não corrige um suporte subdimensionado nem salva uma orientação ruim.</p>
+          </div>
+        </div>
+        <div class="issue-grid">
+          <div class="issue"><b>⭕ Diâmetro</b><span>Mais diâmetro aumenta a capacidade de carga, mas amplia a marca potencial.</span></div>
+          <div class="issue"><b>↧ Profundidade</b><span>Pouca profundidade solta; profundidade excessiva agride o modelo.</span></div>
+          <div class="issue"><b>🕸️ Quantidade</b><span>Vários contatos moderados podem dividir a carga melhor que poucos contatos brutais.</span></div>
+          <div class="issue"><b>🧪 Tenacidade</b><span>Resina rígida e frágil lasca com mais facilidade; resina tenaz tolera melhor a remoção.</span></div>
+          <div class="issue"><b>☀️ Exposição</b><span>Energia excessiva engrossa a ligação e pode aumentar a força necessária para cortar.</span></div>
+          <div class="issue"><b>📐 Orientação</b><span>Distribua contatos fora das áreas nobres e reduza grandes seções paralelas à película.</span></div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="assistente">
+        <div class="topic-head">
+          <div class="topic-num">8</div>
+          <div>
+            <h2 id="assistente">Assistente de decisão</h2>
+            <p>Transforme as prioridades da peça numa estratégia inicial de teste.</p>
+          </div>
+        </div>
+        <div class="split-2">
+          <div class="panel">
+            <div class="assist-slider">
+              <label for="strength">Necessidade de estabilidade <output id="strengthVal">3</output>/5</label>
+              <input type="range" id="strength" min="0" max="5" value="3">
+            </div>
+            <div class="assist-slider">
+              <label for="fragility">Fragilidade do detalhe <output id="fragilityVal">3</output>/5</label>
+              <input type="range" id="fragility" min="0" max="5" value="3">
+            </div>
+            <div class="check-list">
+              <label class="check-item"><input type="checkbox" id="visible"><span><b>Contato em área visível</b></span></label>
+              <label class="check-item"><input type="checkbox" id="easy"><span><b>Remoção rápida é prioridade</b></span></label>
+              <label class="check-item"><input type="checkbox" id="heavy"><span><b>Peça pesada ou grande seção</b></span></label>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="assist-result" id="recommend">
+              <h3>Resultado inicial: CONTATO ESFÉRICO</h3>
+              <p>Priorize remoção controlada e preservação superficial. Confirme estabilidade ajustando diâmetro, profundidade e distribuição.</p>
+              <div class="assist-score" id="assistScore">Pontuação didática — esférico 6 × direto 6.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="diretriz">
+        <div class="topic-head">
+          <div class="topic-num" aria-hidden="true">✓</div>
+          <div>
+            <h2 id="diretriz">Diretriz técnica Quanton3D</h2>
+            <p>Acabamento profissional começa ainda no fatiamento.</p>
+          </div>
+        </div>
+        <div class="split-2">
+          <div class="panel">
+            <h3>Princípios que ficam</h3>
+            <ul class="panel-list">
+              <li>O contato deve sustentar a impressão e romper sem arrancar material desnecessário.</li>
+              <li>Relevo elevado costuma ser mais simples de corrigir que uma cavidade.</li>
+              <li>Contato direto pode oferecer força extra, mas pede região adequada e remoção cuidadosa.</li>
+              <li>Diâmetro, profundidade, quantidade, orientação e material devem ser avaliados juntos.</li>
+              <li>A decisão correta considera o acabamento final, não apenas a peça recém-retirada.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Como padronizar na produção</h3>
+            <ul class="panel-list">
+              <li>Crie um corpo de prova por família de resina.</li>
+              <li>Registre formato, diâmetro e profundidade aprovados.</li>
+              <li>Separe perfis para áreas visíveis e áreas ocultas.</li>
+              <li>Defina ferramenta e momento de remoção.</li>
+              <li>Fotografe antes e depois do acabamento.</li>
+              <li>Revalide quando mudar resina, impressora ou altura de camada.</li>
+            </ul>
+            <div class="callout"><b>Objetivo:</b> repetir o melhor resultado com o menor retrabalho possível.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <strong>Quanton3D · Resinas UV de alta performance</strong>
+      <p>Dúvidas? WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a> · <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p>
+      <p style="margin-top:12px; font-size:0.79rem; opacity:0.75">Guia técnico sobre contatos de suporte, estabilidade e acabamento superficial em impressão 3D por resina. Veja também o <a href="guia-posicionamento-suportes.html">guia de Suportes e Posicionamento →</a></p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.guidenav-track a'));
+      if (!links.length || !('IntersectionObserver' in window)) return;
+      var byId = {}, targets = [];
+      links.forEach(function (link) {
+        var el = document.getElementById(link.getAttribute('href').slice(1));
+        if (!el) return;
+        byId[el.id] = link;
+        targets.push(el);
+      });
+      var visible = {};
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+        var current = null;
+        for (var i = 0; i < targets.length; i++) if (visible[targets[i].id]) { current = targets[i].id; break; }
+        links.forEach(function (l) { l.classList.remove('is-current'); });
+        if (current && byId[current]) byId[current].classList.add('is-current');
+      }, { rootMargin: '-70px 0px -55% 0px', threshold: 0 });
+      targets.forEach(function (el) { obs.observe(el); });
+    })();
+
+    // Assistente de decisão — mesma lógica de pontuação do material original
+    (function () {
+      var el = function (id) { return document.getElementById(id); };
+      if (!el('strength')) return;
+
+      function analyze() {
+        el('strengthVal').textContent = el('strength').value;
+        el('fragilityVal').textContent = el('fragility').value;
+
+        var strength = Number(el('strength').value);
+        var fragility = Number(el('fragility').value);
+        var visible = el('visible').checked;
+        var easy = el('easy').checked;
+        var heavy = el('heavy').checked;
+
+        var soft = fragility * 2 + (visible ? 4 : 0) + (easy ? 3 : 0);
+        var direct = strength * 2 + (heavy ? 4 : 0);
+
+        var title, body;
+        if (Math.abs(soft - direct) <= 2) {
+          title = 'ESTRATÉGIA MISTA';
+          body = 'Use contato esférico nas superfícies visíveis ou delicadas e contato direto apenas nos pontos ocultos de maior carga. Dimensione cada região separadamente.';
+        } else if (soft > direct) {
+          title = 'CONTATO ESFÉRICO';
+          body = 'Preservação superficial e remoção controlada pesam mais. Garanta a estabilidade distribuindo contatos moderados e reforçando apenas as regiões críticas.';
+        } else {
+          title = 'CONTATO DIRETO';
+          body = 'A necessidade de estabilidade domina. Posicione os contatos em regiões ocultas, mantenha sobremetal quando possível e faça a remoção com corte controlado.';
+        }
+
+        document.getElementById('recommend').innerHTML =
+          '<h3>Resultado inicial: ' + title + '</h3><p>' + body + '</p>' +
+          '<div class="assist-score">Pontuação didática — esférico ' + soft + ' × direto ' + direct + '. Confirme sempre por impressão.</div>';
+      }
+
+      ['strength', 'fragility'].forEach(function (id) { el(id).addEventListener('input', analyze); });
+      ['visible', 'easy', 'heavy'].forEach(function (id) { el(id).addEventListener('change', analyze); });
+      analyze();
+    })();
+  </script>
+</body>
+</html>

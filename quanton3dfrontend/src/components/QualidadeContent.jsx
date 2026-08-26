@@ -1,5 +1,3 @@
-import React from "react";
-
 function QualidadeContent({ abrirGuia }) {
   return (
     <div className="modal-rich-content">

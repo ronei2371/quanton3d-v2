@@ -4,7 +4,7 @@
 
 const CACHE_VERSION = 'quanton3d-v1';
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 

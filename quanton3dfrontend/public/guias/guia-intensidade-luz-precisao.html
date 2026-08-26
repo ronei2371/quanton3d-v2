@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Guia técnico Quanton3D Academy sobre o efeito da intensidade da fonte de luz na precisão de impressão 3D em resina MSLA, LCD e DLP.">
+<meta name="theme-color" content="#05090e">
+<title>Quanton3D Academy | Intensidade de luz e precisão de impressão</title>
+<style>
+:root{
+  --bg:#05090e;--panel:#0b121b;--panel2:#101b28;--line:#233447;--text:#f4f8fc;--muted:#a7b6c7;
+  --blue:#1a73e8;--cyan:#30d9ff;--amber:#ffc247;--red:#ff5f78;--green:#43d17b;--violet:#9f74ff;
+  --radius:22px;--shadow:0 20px 70px rgba(0,0,0,.35)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:radial-gradient(circle at 10% 0%,rgba(26,115,232,.16),transparent 34%),
+             radial-gradient(circle at 95% 10%,rgba(48,217,255,.08),transparent 24%),
+             var(--bg);
+  color:var(--text);
+  font:16px/1.65 Inter,Segoe UI,Arial,sans-serif
+}
+a{color:inherit}
+button,input,select{font:inherit}
+.wrap{width:min(1180px,calc(100% - 34px));margin:auto}
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(5,9,14,.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.08)
+}
+.navin{min-height:70px;display:flex;gap:22px;align-items:center;justify-content:space-between}
+.brand{font-weight:900;letter-spacing:.7px;display:flex;align-items:center;gap:10px}
+.atom{width:31px;height:31px;border:2px solid var(--cyan);border-radius:50%;display:grid;place-items:center;box-shadow:0 0 22px rgba(48,217,255,.35)}
+.atom:after{content:'•';color:var(--cyan);font-size:24px;line-height:1}
+.brand b{color:var(--cyan)}
+.links{display:flex;gap:18px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.links a{text-decoration:none;color:#c5d1dc}.links a:hover{color:#fff}
+.btn{border:1px solid #315474;background:#0b1621;color:#fff;padding:10px 15px;border-radius:12px;font-weight:800;cursor:pointer}
+.btn:hover{border-color:var(--cyan)}
+.hero{padding:62px 0 38px}
+.heroGrid{display:grid;grid-template-columns:1.02fr .98fr;gap:42px;align-items:center}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;color:var(--cyan);font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em}
+.eyebrow:before{content:'';width:42px;height:2px;background:var(--cyan)}
+h1{font-size:clamp(39px,5vw,68px);line-height:1.03;margin:16px 0 20px;letter-spacing:-.045em}
+h2{font-size:clamp(27px,3vw,42px);line-height:1.1;margin:0 0 10px;letter-spacing:-.025em}
+h3{line-height:1.2}
+.grad{background:linear-gradient(90deg,#fff 8%,#6edfff 55%,#4e8cff);-webkit-background-clip:text;color:transparent}
+.lead{font-size:19px;color:#c9d4df;max-width:720px}
+.badges{display:flex;flex-wrap:wrap;gap:9px;margin-top:25px}
+.badge{background:#0b1520;border:1px solid #23384b;padding:9px 12px;border-radius:999px;font-size:13px;font-weight:800;color:#d7e7f5}
+.badge strong{color:var(--cyan)}
+.heroVisual{
+  position:relative;min-height:540px;border-radius:30px;border:1px solid #25394d;overflow:hidden;
+  background:radial-gradient(circle at 50% 35%,rgba(26,115,232,.22),transparent 34%),
+  linear-gradient(145deg,#07111c,#02070c 72%);
+  box-shadow:var(--shadow)
+}
+.heroVisual svg{width:100%;height:100%;display:block}
+.heroNote{
+  position:absolute;left:22px;right:22px;bottom:20px;padding:13px 16px;border-radius:15px;
+  background:rgba(5,10,16,.87);border:1px solid rgba(48,217,255,.32);
+  font-size:13px;color:#dcecff;backdrop-filter:blur(8px)
+}
+section{padding:42px 0}
+.sectionHead{display:flex;gap:18px;align-items:flex-start;margin-bottom:24px}
+.num{
+  flex:none;width:48px;height:48px;border-radius:15px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--blue),#14385d);font-weight:900;font-size:19px;
+  box-shadow:0 10px 30px rgba(26,115,232,.22)
+}
+.sectionHead p{margin:0;color:var(--muted);max-width:920px}
+.panel{
+  background:linear-gradient(145deg,rgba(16,27,40,.96),rgba(8,14,22,.96));
+  border:1px solid #203142;border-radius:var(--radius);box-shadow:var(--shadow)
+}
+.callout{border-left:4px solid var(--cyan);background:rgba(26,115,232,.12);padding:17px 19px;border-radius:0 14px 14px 0;color:#d9edff;margin:20px 0}
+.warning{border-color:var(--amber);background:rgba(255,194,71,.1)}
+.danger{border-color:var(--red);background:rgba(255,95,120,.09)}
+.goodbox{border-color:var(--green);background:rgba(67,209,123,.09)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{padding:24px}.card p{color:var(--muted)}
+.tag{display:inline-flex;padding:6px 9px;border-radius:999px;background:#0b1b28;border:1px solid #26435b;color:var(--cyan);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.bigGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:20px}
+.visual,.sideText{padding:25px}
+.visual svg{width:100%;height:auto;display:block}
+.parts{display:grid;gap:12px}
+.part{padding:16px;border:1px solid #25384a;border-radius:15px;background:#09111a}
+.part b{display:block;color:var(--cyan);margin-bottom:5px}
+.part span{font-size:13px;color:var(--muted)}
+.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.compareCard{padding:23px}
+.compareCard svg{width:100%;height:170px;display:block}
+.compareCard p{color:var(--muted);font-size:14px}
+.pixelDemo{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pixelCard{padding:22px}
+.pixelCard svg{width:100%;height:170px;display:block}
+.pixelCard p{color:var(--muted);font-size:14px}
+.workflow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.flowStep{padding:18px 13px;position:relative}
+.flowStep:not(:last-child):after{content:'→';position:absolute;right:-18px;top:42%;color:var(--cyan);font-size:24px;font-weight:900;z-index:2}
+.stepNo{width:35px;height:35px;border-radius:50%;background:var(--blue);display:grid;place-items:center;font-weight:900;margin-bottom:10px}
+.flowStep h3{font-size:15px;margin:8px 0 7px}.flowStep p{font-size:12px;color:var(--muted);margin:0}
+.tableWrap{overflow:auto;border-radius:18px;border:1px solid #203142}
+table{width:100%;border-collapse:collapse;min-width:820px;background:#08111a}
+th,td{padding:15px 16px;border-bottom:1px solid #1d2d3d;text-align:left;vertical-align:top}
+th{background:#101c29;color:#dff4ff}
+td{color:#c4d1dc}
+tr:last-child td{border-bottom:0}
+.calculator{display:grid;grid-template-columns:.92fr 1.08fr;gap:20px}
+.formPanel,.resultPanel{padding:26px}
+.field{margin-bottom:15px}
+.field label{display:block;font-weight:800;margin-bottom:7px}
+.field small{display:block;color:var(--muted);margin-top:5px}
+.field input,.field select{width:100%;border:1px solid #2a4055;background:#071018;color:#fff;border-radius:12px;padding:12px 13px}
+.inputGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.resultPanel{background:linear-gradient(145deg,#0c1824,#071018)}
+.resultBig{font-size:42px;font-weight:900;color:#fff;margin:6px 0}
+.resultSub{color:var(--muted)}
+.diagItem{padding:15px;border-radius:14px;background:#0a111a;border:1px solid #263a4d;margin-top:11px}
+.diagItem b{color:var(--cyan)}
+.errors{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.error{padding:21px;display:grid;grid-template-columns:54px 1fr;gap:14px}
+.errorIcon{width:54px;height:54px;border-radius:15px;background:rgba(255,95,120,.11);display:grid;place-items:center;color:var(--red);font-size:25px}
+.error h3{margin:2px 0 6px}.error p{color:var(--muted);font-size:14px;margin:0}
+.checklist{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.checkItem{padding:18px;display:flex;gap:12px}
+.tick{color:var(--green);font-size:22px;font-weight:900}
+.checkItem p{margin:0;color:var(--muted)}
+.finalGrid{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}
+.conclusion,.directive{padding:28px}
+.conclusion li{margin-bottom:10px;color:#c9d5df}
+footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d2a37}
+@media(max-width:1000px){
+  .heroGrid,.grid2,.bigGrid,.calculator,.finalGrid{grid-template-columns:1fr}
+  .grid3,.compare,.pixelDemo,.checklist{grid-template-columns:repeat(2,1fr)}
+  .workflow{grid-template-columns:repeat(3,1fr)}
+  .workflow .flowStep:after{display:none}
+  .links{display:none}
+}
+@media(max-width:700px){
+  .wrap{width:min(100% - 22px,1180px)}
+  .hero{padding-top:35px}.heroVisual{min-height:430px}
+  .grid3,.compare,.pixelDemo,.errors,.checklist{grid-template-columns:1fr}
+  .workflow{grid-template-columns:1fr 1fr}
+  .inputGrid{grid-template-columns:1fr}
+  .navin{min-height:62px}
+  h1{font-size:42px}
+}
+@media(max-width:460px){
+  .workflow{grid-template-columns:1fr}
+  .heroVisual{min-height:380px}
+  .btn{padding:9px 10px;font-size:12px}
+  .brand{font-size:13px}
+}
+@media print{
+  .nav,.btn{display:none!important}
+  body{background:#fff;color:#111}
+  .panel,.card,.compareCard,.pixelCard,.flowStep,.error,.diagItem,.checkItem,.part{box-shadow:none;background:#fff;color:#111;border-color:#bbb}
+  .lead,.sectionHead p,.card p,.compareCard p,.pixelCard p,.flowStep p,.error p,.checkItem p,.part span,.field small{color:#333}
+  section{break-inside:avoid}.hero{padding-top:20px}
+}
+</style>
+  <link rel="stylesheet" href="/guias/guia-padrao.css">
+  <script src="/guias/guia-padrao.js" defer></script>
+</head>
+<body>
+<nav class="nav">
+  <div class="wrap navin">
+    <div class="brand"><span class="atom"></span>QUANTON <b>3D</b> ACADEMY</div>
+    <div class="links">
+      <a href="#voxel">Voxel</a>
+      <a href="#luz">Luz</a>
+      <a href="#antialias">Antialiasing</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#checklist">Checklist</a>
+    </div>
+    <button class="btn" id="printBtn" type="button">Imprimir / salvar PDF</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap heroGrid">
+    <div>
+      <span class="eyebrow">Guia técnico completo</span>
+      <h1>Intensidade de luz e <span class="grad">precisão de impressão</span></h1>
+      <p class="lead">Entenda como pixel, altura de camada, exposição, escala de cinza, espalhamento de luz e antialiasing influenciam dimensão, detalhe, borda e encaixe em impressoras de resina MSLA, LCD e DLP.</p>
+      <div class="badges">
+        <span class="badge"><strong>✓</strong> Voxel e pixel XY</span>
+        <span class="badge"><strong>✓</strong> Cura por intensidade</span>
+        <span class="badge"><strong>✓</strong> Escala de cinza</span>
+        <span class="badge"><strong>✓</strong> Assistente de ajuste</span>
+      </div>
+    </div>
+    <div class="heroVisual" role="img" aria-label="Grade de pixels, fonte de luz e voxel curado com borda controlada por intensidade">
+      <svg viewBox="0 0 700 560" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="hbg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10263a"/><stop offset="1" stop-color="#02070c"/></linearGradient>
+          <linearGradient id="voxel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcecff"/><stop offset=".6" stop-color="#6f8aa2"/><stop offset="1" stop-color="#2d4054"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="700" height="560" fill="url(#hbg)"/>
+        <circle cx="350" cy="245" r="220" fill="#0a2035" opacity=".6"/>
+        <rect x="90" y="395" width="520" height="44" rx="12" fill="#0f1b27" stroke="#455e74"/>
+        <rect x="116" y="345" width="468" height="45" rx="12" fill="#071018" stroke="#31506a"/>
+        <g transform="translate(140 120)">
+          <rect x="0" y="0" width="250" height="250" rx="16" fill="#071018" stroke="#34526b"/>
+          <g stroke="#1c3347" stroke-width="2">
+            <path d="M50 0V250M100 0V250M150 0V250M200 0V250"/>
+            <path d="M0 50H250M0 100H250M0 150H250M0 200H250"/>
+          </g>
+          <rect x="50" y="50" width="50" height="50" fill="#fff"/>
+          <rect x="100" y="50" width="50" height="50" fill="#d7d7d7"/>
+          <rect x="150" y="50" width="50" height="50" fill="#777"/>
+          <rect x="50" y="100" width="50" height="50" fill="#fff"/>
+          <rect x="100" y="100" width="50" height="50" fill="#fff"/>
+          <rect x="150" y="100" width="50" height="50" fill="#b2b2b2"/>
+          <rect x="50" y="150" width="50" height="50" fill="#303030"/>
+          <rect x="100" y="150" width="50" height="50" fill="#fff"/>
+          <rect x="150" y="150" width="50" height="50" fill="#fff"/>
+          <text x="125" y="282" fill="#a7b6c7" font-family="Arial" font-size="14" text-anchor="middle">pixels brancos, cinza e pretos</text>
+        </g>
+        <g transform="translate(435 115)">
+          <path d="M0 250L80 0L160 250Z" fill="#30d9ff" opacity=".12" stroke="#30d9ff" stroke-width="3"/>
+          <circle cx="80" cy="32" r="24" fill="#9f74ff" opacity=".65" filter="url(#glow)"/>
+          <g transform="translate(32 218)">
+            <rect x="0" y="0" width="96" height="58" rx="12" fill="url(#voxel)" stroke="#e8f4ff" stroke-width="3"/>
+            <path d="M10 18Q48 2 86 18" stroke="#fff" stroke-width="4" fill="none" opacity=".55"/>
+          </g>
+          <text x="80" y="306" fill="#a7b6c7" font-family="Arial" font-size="14" text-anchor="middle">energia vira volume curado</text>
+        </g>
+        <g transform="translate(120 470)">
+          <rect x="0" y="0" width="460" height="18" rx="9" fill="#071018" stroke="#28445d"/>
+          <rect x="0" y="0" width="145" height="18" rx="9" fill="#ff5f78"/>
+          <rect x="145" y="0" width="140" height="18" fill="#ffc247"/>
+          <rect x="285" y="0" width="175" height="18" rx="9" fill="#43d17b"/>
+          <text x="0" y="42" fill="#ffb3bf" font-family="Arial" font-size="13">subcura</text>
+          <text x="190" y="42" fill="#ffdf8a" font-family="Arial" font-size="13">janela útil</text>
+          <text x="355" y="42" fill="#a8f7c7" font-family="Arial" font-size="13">sobrecurva</text>
+        </g>
+      </svg>
+      <div class="heroNote"><b>Princípio central:</b> precisão não depende só do tamanho do pixel. A quantidade de energia que chega à resina define quanto cada pixel realmente cresce.</div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="voxel">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">1</div><div><h2>Pixel, camada e voxel</h2><p>O voxel é a menor unidade prática de volume formada pela combinação entre a resolução XY da tela/projetor e a altura de camada usada no fatiamento.</p></div></div>
+    <div class="bigGrid">
+      <article class="panel visual">
+        <svg viewBox="0 0 720 430">
+          <rect x="38" y="35" width="645" height="338" rx="24" fill="#071018" stroke="#284156"/>
+          <g transform="translate(130 95)">
+            <rect x="0" y="0" width="220" height="220" rx="12" fill="#09131e" stroke="#32506a"/>
+            <g stroke="#244057" stroke-width="2">
+              <path d="M55 0V220M110 0V220M165 0V220"/>
+              <path d="M0 55H220M0 110H220M0 165H220"/>
+            </g>
+            <rect x="55" y="55" width="55" height="55" fill="#30d9ff" opacity=".75"/>
+            <text x="110" y="255" fill="#dcecff" font-family="Arial" font-size="17" text-anchor="middle">pixel XY</text>
+          </g>
+          <g transform="translate(415 112)">
+            <path d="M0 55L85 20L170 55L85 90Z" fill="#b7c9d7" stroke="#e8f4ff" stroke-width="3"/>
+            <path d="M0 55V155L85 198V90Z" fill="#6f8aa2" stroke="#d7e8f4" stroke-width="3"/>
+            <path d="M170 55V155L85 198V90Z" fill="#3c5368" stroke="#bcd4e8" stroke-width="3"/>
+            <text x="85" y="236" fill="#dcecff" font-family="Arial" font-size="17" text-anchor="middle">voxel curado</text>
+          </g>
+          <path d="M360 190H410" stroke="#30d9ff" stroke-width="5" marker-end="url(#arr)"/>
+          <defs><marker id="arr" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#30d9ff"/></marker></defs>
+          <text x="360" y="335" fill="#a7b6c7" font-family="Arial" font-size="17" text-anchor="middle">tamanho XY + altura Z + energia UV = volume real de cura</text>
+        </svg>
+      </article>
+      <aside class="panel sideText">
+        <div class="parts">
+          <div class="part"><b>Tamanho do pixel XY</b><span>Define a grade mínima de projeção no plano horizontal. Uma peça não é desenhada em uma linha contínua perfeita, e sim em pixels.</span></div>
+          <div class="part"><b>Altura de camada Z</b><span>Define a espessura de cada fatia. Camadas mais finas aumentam a resolução vertical, mas não alteram a grade XY.</span></div>
+          <div class="part"><b>Energia real recebida</b><span>Exposição, potência, transmissividade da tela, filme, resina e temperatura determinam quanto o voxel cresce de verdade.</span></div>
+          <div class="part"><b>Precisão prática</b><span>Não é só “pixel menor”. É controle de energia, compensação, antialiasing, calibração e repetibilidade.</span></div>
+        </div>
+      </aside>
+    </div>
+    <div class="callout"><b>Resumo:</b> uma impressora com pixel pequeno pode perder precisão se a exposição estiver exagerada. Uma impressora com pixel maior pode entregar bons encaixes quando o perfil de cura está bem calibrado.</div>
+  </div>
+</section>
+
+<section id="luz">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">2</div><div><h2>Intensidade de luz muda o volume curado</h2><p>Um pixel não gera sempre o mesmo volume. A resina tem uma janela de reação: abaixo dela não cura o suficiente; dentro dela forma a camada desejada; acima dela cresce além da borda planejada.</p></div></div>
+    <div class="compare">
+      <article class="panel compareCard">
+        <span class="tag">Pouca energia</span>
+        <h3>Subcura</h3>
+        <svg viewBox="0 0 260 170"><rect x="50" y="110" width="160" height="22" rx="9" fill="#657b8e"/><path d="M95 110Q130 92 165 110" fill="none" stroke="#ff5f78" stroke-width="14" stroke-linecap="round"/><path d="M130 25V90" stroke="#9f74ff" stroke-width="8" opacity=".35"/></svg>
+        <p>Detalhes fracos, suportes frágeis, falha de adesão entre camadas e bordas incompletas.</p>
+      </article>
+      <article class="panel compareCard">
+        <span class="tag">Janela útil</span>
+        <h3>Cura controlada</h3>
+        <svg viewBox="0 0 260 170"><rect x="50" y="110" width="160" height="22" rx="9" fill="#657b8e"/><rect x="90" y="72" width="80" height="42" rx="12" fill="#dcecff" stroke="#43d17b" stroke-width="4"/><path d="M130 25V70" stroke="#43d17b" stroke-width="8" opacity=".75"/></svg>
+        <p>Dimensão previsível, boa resistência verde, bordas mais estáveis e repetibilidade.</p>
+      </article>
+      <article class="panel compareCard">
+        <span class="tag">Energia excessiva</span>
+        <h3>Sobrecurva</h3>
+        <svg viewBox="0 0 260 170"><rect x="50" y="110" width="160" height="22" rx="9" fill="#657b8e"/><path d="M72 92Q130 50 188 92Q205 108 188 124H72Q55 108 72 92Z" fill="#dcecff" stroke="#ffc247" stroke-width="4"/><path d="M130 25V70" stroke="#ffc247" stroke-width="10" opacity=".9"/></svg>
+        <p>Engrossamento, fechamento de folgas, perda de detalhe, borda inchada e encaixes apertados.</p>
+      </article>
+    </div>
+    <div class="callout warning"><b>Importante:</b> intensidade e tempo de exposição se somam como energia entregue, mas não são intercambiáveis de forma perfeita. A resposta muda com resina, pigmentação, espessura da camada, temperatura e óptica da máquina.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">3</div><div><h2>Escala de cinza e “meio voxel”</h2><p>O pixel branco tende a receber energia máxima, o preto tende a bloquear a cura e os tons de cinza entregam energia parcial. Isso permite suavizar bordas e controlar transições, mas não cria detalhe infinito.</p></div></div>
+    <div class="pixelDemo">
+      <article class="panel pixelCard">
+        <span class="tag">Preto</span>
+        <svg viewBox="0 0 220 170"><rect x="70" y="32" width="80" height="80" rx="8" fill="#05070a" stroke="#5d7084"/><rect x="60" y="124" width="100" height="16" rx="8" fill="#607789"/></svg>
+        <p>Energia abaixo do limiar. A resina não deveria formar volume útil naquele ponto.</p>
+      </article>
+      <article class="panel pixelCard">
+        <span class="tag">Cinza baixo</span>
+        <svg viewBox="0 0 220 170"><rect x="70" y="32" width="80" height="80" rx="8" fill="#5c5c5c"/><rect x="60" y="124" width="100" height="16" rx="8" fill="#607789"/><path d="M90 124Q110 110 130 124" fill="none" stroke="#ffc247" stroke-width="10"/></svg>
+        <p>Pode iniciar uma cura parcial ou uma borda fraca, dependendo do limiar da resina.</p>
+      </article>
+      <article class="panel pixelCard">
+        <span class="tag">Cinza alto</span>
+        <svg viewBox="0 0 220 170"><rect x="70" y="32" width="80" height="80" rx="8" fill="#b5b5b5"/><rect x="60" y="124" width="100" height="16" rx="8" fill="#607789"/><path d="M78 112Q110 86 142 112Q152 124 142 136H78Q68 124 78 112Z" fill="#bcd1e0" stroke="#30d9ff" stroke-width="3"/></svg>
+        <p>Forma volume mais próximo do voxel inteiro e ajuda a suavizar uma borda.</p>
+      </article>
+      <article class="panel pixelCard">
+        <span class="tag">Branco</span>
+        <svg viewBox="0 0 220 170"><rect x="70" y="32" width="80" height="80" rx="8" fill="#fff"/><rect x="60" y="124" width="100" height="16" rx="8" fill="#607789"/><rect x="80" y="86" width="60" height="44" rx="10" fill="#dcecff" stroke="#43d17b" stroke-width="4"/></svg>
+        <p>Energia cheia dentro do perfil. Tende a formar o voxel planejado.</p>
+      </article>
+    </div>
+    <div class="callout"><b>Leitura prática:</b> escala de cinza é útil para bordas, serrilhado e compensação fina, mas precisa de calibração. Muito cinza pode arredondar demais; pouco cinza pode manter serrilhado e falhas em borda.</div>
+  </div>
+</section>
+
+<section id="antialias">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">4</div><div><h2>Antialiasing, nível de cinza e desfoque de imagem</h2><p>Esses recursos tentam controlar como a borda do pixel se transforma em borda curada na peça. O objetivo é reduzir degraus sem perder dimensão.</p></div></div>
+    <div class="bigGrid">
+      <article class="panel visual">
+        <svg viewBox="0 0 720 430">
+          <rect x="34" y="36" width="652" height="334" rx="24" fill="#071018" stroke="#284156"/>
+          <g transform="translate(90 95)">
+            <text x="100" y="-20" fill="#dcecff" font-family="Arial" font-size="17" font-weight="700" text-anchor="middle">borda crua</text>
+            <g stroke="#1b344a" stroke-width="2">
+              <rect x="0" y="0" width="200" height="200" fill="#09131e"/>
+              <path d="M40 0V200M80 0V200M120 0V200M160 0V200M0 40H200M0 80H200M0 120H200M0 160H200"/>
+            </g>
+            <path d="M40 160H80V120H120V80H160V40H200V200H40Z" fill="#fff"/>
+          </g>
+          <g transform="translate(430 95)">
+            <text x="100" y="-20" fill="#dcecff" font-family="Arial" font-size="17" font-weight="700" text-anchor="middle">borda suavizada</text>
+            <g stroke="#1b344a" stroke-width="2">
+              <rect x="0" y="0" width="200" height="200" fill="#09131e"/>
+              <path d="M40 0V200M80 0V200M120 0V200M160 0V200M0 40H200M0 80H200M0 120H200M0 160H200"/>
+            </g>
+            <path d="M40 160H80V120H120V80H160V40H200V200H40Z" fill="#fff"/>
+            <rect x="40" y="120" width="40" height="40" fill="#b5b5b5"/>
+            <rect x="80" y="80" width="40" height="40" fill="#b5b5b5"/>
+            <rect x="120" y="40" width="40" height="40" fill="#b5b5b5"/>
+            <rect x="160" y="0" width="40" height="40" fill="#777"/>
+          </g>
+          <path d="M332 190H390" stroke="#30d9ff" stroke-width="5" marker-end="url(#arr2)"/>
+          <defs><marker id="arr2" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#30d9ff"/></marker></defs>
+          <text x="360" y="335" fill="#a7b6c7" font-family="Arial" font-size="17" text-anchor="middle">suavizar não é borrar tudo; é controlar a energia da borda</text>
+        </svg>
+      </article>
+      <aside class="panel sideText">
+        <div class="parts">
+          <div class="part"><b>Antialiasing</b><span>Suaviza a transição de bordas por variação de intensidade em pixels próximos à linha do modelo.</span></div>
+          <div class="part"><b>Nível de cinza</b><span>Controla quanta energia parcial será entregue em pixels de borda.</span></div>
+          <div class="part"><b>Desfoque de imagem</b><span>Espalha a transição entre pixels. Pode reduzir degraus, mas também pode engrossar ou amolecer detalhes.</span></div>
+          <div class="part"><b>Compensação dimensional</b><span>Corrige crescimento ou perda de dimensão causado por energia, óptica e comportamento da resina.</span></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">5</div><div><h2>O que ajustar quando a dimensão não fecha</h2><p>A resposta correta depende do tipo de erro observado. Não ajuste antialiasing, exposição e escala ao mesmo tempo.</p></div></div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>Sintoma</th><th>Causa provável</th><th>Ajuste inicial</th><th>Risco de exagerar</th></tr></thead>
+        <tbody>
+          <tr><td>Furos fechando ou encaixe apertado</td><td>Sobrecurva, sangramento de luz ou compensação insuficiente.</td><td>Reduzir exposição normal em pequenos passos ou aplicar compensação XY negativa.</td><td>Subcura, suportes fracos e perda de resistência verde.</td></tr>
+          <tr><td>Pino ou parede saindo fino</td><td>Energia insuficiente, borda cinza fraca ou compensação excessiva.</td><td>Aumentar exposição com cautela ou reduzir compensação negativa.</td><td>Engrossamento e perda de detalhe em regiões próximas.</td></tr>
+          <tr><td>Borda serrilhada visível</td><td>Grade de pixels aparente ou suavização insuficiente.</td><td>Ajustar antialiasing ou nível de cinza em teste controlado.</td><td>Borda arredondada e detalhes moles.</td></tr>
+          <tr><td>Letras e texturas borradas</td><td>Desfoque alto, exposição alta ou espalhamento óptico.</td><td>Reduzir desfoque/energia e validar foco, tela e filme.</td><td>Retorno do serrilhado ou falha de detalhes finos.</td></tr>
+          <tr><td>Dimensão diferente em X e Y</td><td>Calibração mecânica, pixel aspect, escala, tensão do filme ou orientação.</td><td>Medir e corrigir separadamente X/Y antes de mexer no cinza.</td><td>Compensar o problema errado.</td></tr>
+          <tr><td>Peça boa em um modelo e ruim em outro</td><td>Geometria, área por camada, orientação e suporte mudaram.</td><td>Rever orientação e área crítica antes de alterar perfil global.</td><td>Descalibrar um perfil que já estava correto.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warning"><b>Procedimento seguro:</b> faça teste de exposição, depois teste dimensional, depois antialiasing. Alterar três variáveis ao mesmo tempo impede saber o que realmente melhorou.</div>
+  </div>
+</section>
+
+<section id="calculadora">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">6</div><div><h2>Assistente de voxel e ajuste de luz</h2><p>Use para estimar a unidade mínima prática e receber uma orientação inicial conforme o sintoma dimensional.</p></div></div>
+    <div class="calculator">
+      <article class="panel formPanel">
+        <div class="inputGrid">
+          <div class="field"><label for="pixel">Tamanho do pixel XY (µm)</label><input id="pixel" type="number" value="50" min="10" step="1"></div>
+          <div class="field"><label for="layer">Altura de camada (µm)</label><input id="layer" type="number" value="50" min="10" step="5"></div>
+          <div class="field"><label for="exposure">Exposição normal (s)</label><input id="exposure" type="number" value="2.5" min=".1" step=".1"></div>
+          <div class="field"><label for="power">Intensidade relativa (%)</label><input id="power" type="number" value="100" min="10" step="5"></div>
+          <div class="field"><label for="gray">Uso de cinza na borda</label><select id="gray"><option value="low">Baixo</option><option value="mid" selected>Moderado</option><option value="high">Alto</option></select></div>
+          <div class="field"><label for="symptom">Sintoma principal</label><select id="symptom"><option value="tight">Furos fecham / encaixe apertado</option><option value="loose">Parede ou pino fino</option><option value="stair">Serrilhado de pixel</option><option value="blur">Detalhe borrado</option><option value="ok" selected>Sem sintoma, quero validar</option></select></div>
+        </div>
+        <button class="btn" id="calcBtn" type="button">Gerar orientação</button>
+      </article>
+      <aside class="panel resultPanel">
+        <h3>Resultado técnico</h3>
+        <div class="resultBig" id="voxelResult">--</div>
+        <div class="resultSub" id="voxelSub">Preencha os dados e gere a orientação.</div>
+        <div id="diag"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">7</div><div><h2>Fluxo de validação recomendado</h2><p>Precisão vem de processo controlado. O ajuste fino de luz só funciona depois que exposição base, adesão e mecânica estão estáveis.</p></div></div>
+    <div class="workflow">
+      <article class="panel flowStep"><div class="stepNo">1</div><h3>Temperatura</h3><p>Estabilize resina, ambiente e máquina.</p></article>
+      <article class="panel flowStep"><div class="stepNo">2</div><h3>Exposição</h3><p>Valide cura normal com corpo de prova.</p></article>
+      <article class="panel flowStep"><div class="stepNo">3</div><h3>Dimensão</h3><p>Meça X, Y, furos e pinos separadamente.</p></article>
+      <article class="panel flowStep"><div class="stepNo">4</div><h3>Borda</h3><p>Ajuste cinza e suavização apenas depois.</p></article>
+      <article class="panel flowStep"><div class="stepNo">5</div><h3>Registro</h3><p>Salve lote, perfil, máquina e resultado.</p></article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">8</div><div><h2>Erros comuns ao mexer em intensidade e antialiasing</h2><p>O ajuste fino é poderoso, mas pode piorar a peça quando usado para esconder problema de exposição ou mecânica.</p></div></div>
+    <div class="errors">
+      <article class="panel error"><div class="errorIcon">×</div><div><h3>Usar cinza para corrigir subcura</h3><p>Se a exposição básica está fraca, a borda suavizada também ficará fraca.</p></div></article>
+      <article class="panel error"><div class="errorIcon">☀</div><div><h3>Aumentar potência sem medir</h3><p>Mais luz pode fechar furos, engrossar paredes e alterar encaixes.</p></div></article>
+      <article class="panel error"><div class="errorIcon">≋</div><div><h3>Desfoque alto demais</h3><p>Reduz degraus, mas pode apagar letras, textura e arestas pequenas.</p></div></article>
+      <article class="panel error"><div class="errorIcon">◫</div><div><h3>Ignorar pixel e camada</h3><p>Antialiasing não elimina a grade física; ele apenas controla a transição de energia.</p></div></article>
+      <article class="panel error"><div class="errorIcon">↔</div><div><h3>Compensar X/Y sem separar eixos</h3><p>Erro em apenas um eixo não deve ser corrigido como se fosse crescimento uniforme.</p></div></article>
+      <article class="panel error"><div class="errorIcon">⌁</div><div><h3>Testar em peça complexa</h3><p>Primeiro calibre em corpo de prova simples; depois confirme no modelo real.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section id="checklist">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">9</div><div><h2>Checklist antes de liberar o perfil</h2><p>Use este controle para evitar que um ajuste bonito em uma peça gere problema em outra.</p></div></div>
+    <div class="checklist">
+      <div class="panel checkItem"><span class="tick">✓</span><p>Pixel XY e altura de camada foram considerados separadamente.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Exposição normal foi validada antes do antialiasing.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Furos, pinos e paredes foram medidos com instrumento adequado.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>X e Y foram avaliados de forma independente.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Nível de cinza foi testado em pelo menos dois valores.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Desfoque não apagou letras, textura ou arestas.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Compensação dimensional foi registrada no perfil.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>O mesmo ajuste foi confirmado em peça real.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Lote, temperatura, resina e máquina foram anotados.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="finalGrid">
+      <article class="panel conclusion">
+        <h2>Conclusão</h2>
+        <ol>
+          <li>A precisão não depende apenas do pixel; depende do voxel real curado.</li>
+          <li>Intensidade de luz e tempo de exposição definem quanto a resina cresce em torno do pixel.</li>
+          <li>Escala de cinza pode suavizar bordas e controlar transições, mas exige calibração.</li>
+          <li>Antialiasing melhora aparência de borda quando a exposição já está correta.</li>
+          <li>Desfoque de imagem pode ajudar no serrilhado, mas em excesso apaga detalhes.</li>
+          <li>Compensação XY deve ser medida e aplicada com critério, não por palpite.</li>
+        </ol>
+        <div class="callout warning"><b>Sincericídio técnico:</b> pixel pequeno não salva perfil mal calibrado. Se a energia está errada, a peça pode sair bonita no preview e fora de medida na bancada.</div>
+      </article>
+      <aside class="panel directive">
+        <h2>Diretriz técnica Quanton3D</h2>
+        <p style="color:var(--muted)">Ajuste fino de luz deve ser tratado como calibração dimensional, não como efeito visual. Primeiro cure corretamente, depois suavize bordas, depois compense dimensão.</p>
+        <div class="callout goodbox"><b>Regra de ouro:</b> exposição define a base; escala de cinza refina a borda; compensação corrige medida. Misturar tudo ao mesmo tempo esconde a causa real.</div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><b>Quanton3D Academy.</b> Guia técnico autoral para treinamento e suporte em impressão 3D MSLA, LCD e DLP.</div></footer>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+$('printBtn').addEventListener('click',()=>window.print());
+
+function round(n,d=2){return Number(n).toFixed(d).replace('.',',');}
+
+function analyze(){
+  const pixel=parseFloat($('pixel').value)||50;
+  const layer=parseFloat($('layer').value)||50;
+  const exposure=parseFloat($('exposure').value)||0;
+  const power=parseFloat($('power').value)||100;
+  const gray=$('gray').value;
+  const symptom=$('symptom').value;
+
+  const voxelVolume=(pixel*pixel*layer)/1000000000;
+  const relativeEnergy=exposure*(power/100);
+  $('voxelResult').textContent=`${round(pixel,0)} × ${round(pixel,0)} × ${round(layer,0)} µm`;
+  $('voxelSub').textContent=`Voxel teórico: ${round(voxelVolume,4)} mm³ • energia relativa: ${round(relativeEnergy,2)} s equivalentes`;
+
+  const notes=[];
+  notes.push(['Unidade mínima teórica',`A grade XY é de aproximadamente ${round(pixel,0)} µm e a fatia Z é de ${round(layer,0)} µm. A cura real pode crescer além disso conforme energia e resina.`]);
+
+  if(pixel>=75) notes.push(['Pixel maior','Dê mais atenção a antialiasing, orientação e compensação XY para reduzir serrilhado visível.']);
+  if(pixel<=35) notes.push(['Pixel pequeno','Boa base para detalhes finos, mas exposição excessiva ainda pode fechar folgas.']);
+  if(layer<=30) notes.push(['Camada fina','Melhora resolução vertical, porém aumenta tempo e sensibilidade a perfil de exposição.']);
+  if(layer>=80) notes.push(['Camada alta','Aumenta produtividade, mas pode exigir mais energia e deixar degraus em Z.']);
+
+  if(relativeEnergy<1.5) notes.push(['Energia baixa','Confirme se suportes, paredes e detalhes pequenos não ficam fracos.']);
+  if(relativeEnergy>4.5) notes.push(['Energia alta','Observe crescimento lateral, fechamento de furos e perda de encaixe.']);
+
+  if(gray==='low') notes.push(['Cinza baixo','Mantém borda mais firme, mas pode deixar serrilhado de pixel mais visível.']);
+  if(gray==='mid') notes.push(['Cinza moderado','Bom ponto de partida para suavizar bordas sem borrar detalhes demais.']);
+  if(gray==='high') notes.push(['Cinza alto','Pode suavizar bastante, mas verifique arredondamento e perda de microdetalhe.']);
+
+  if(symptom==='tight') notes.push(['Ação sugerida','Reduza exposição em pequenos passos ou teste compensação XY negativa. Meça furos e encaixes antes e depois.']);
+  if(symptom==='loose') notes.push(['Ação sugerida','Aumente exposição com cautela ou reduza compensação negativa. Verifique se a borda cinza não está fraca demais.']);
+  if(symptom==='stair') notes.push(['Ação sugerida','Teste antialiasing ou cinza moderado em corpo de prova com borda inclinada.']);
+  if(symptom==='blur') notes.push(['Ação sugerida','Reduza desfoque, cinza excessivo ou energia alta. Confirme foco óptico e limpeza da tela/filme.']);
+  if(symptom==='ok') notes.push(['Validação sugerida','Imprima corpo de prova com furo, pino, parede fina, texto pequeno e borda inclinada. Registre medidas X/Y.']);
+
+  notes.push(['Procedimento','Altere uma variável por vez: exposição, depois compensação, depois cinza/desfoque.']);
+  $('diag').innerHTML=notes.map(([t,d])=>`<div class="diagItem"><b>${t}</b><br>${d}</div>`).join('');
+}
+
+$('calcBtn').addEventListener('click',analyze);
+analyze();
+</script>
+</body>
+</html>

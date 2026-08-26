@@ -1,0 +1,157 @@
+/* Padrão visual compartilhado pelos guias técnicos. */
+h1 {
+  font-family: Inter, "Segoe UI", Arial, sans-serif !important;
+  font-size: clamp(40px, 5vw, 68px) !important;
+  font-weight: 800 !important;
+  line-height: 1.03 !important;
+  letter-spacing: -0.045em !important;
+  /* Preserva as margens laterais próprias de cada guia (inclusive centralizações). */
+  margin-top: 16px !important;
+  margin-bottom: 20px !important;
+}
+
+/* Mantém o degradê do guia de referência em todos os trechos de destaque. */
+h1 .grad {
+  background: linear-gradient(90deg, #fff 8%, #6edfff 55%, #4e8cff) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* Guias legados sem trecho destacado recebem o mesmo degradê no título inteiro. */
+h1:not(:has(.grad)) {
+  background: linear-gradient(90deg, #fff 8%, #6edfff 55%, #4e8cff) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* Remove a assinatura visual Academy da barra interna dos guias. */
+nav .brand,
+.nav .brand {
+  display: none !important;
+}
+
+nav .navin,
+.nav .navin {
+  justify-content: flex-end !important;
+}
+
+@media (max-width: 720px) {
+  h1 {
+    font-size: clamp(34px, 10vw, 48px) !important;
+    letter-spacing: -0.04em !important;
+  }
+}
+
+/* Submenu compartilhado dos guias técnicos. */
+.nav,
+.guidenav,
+.guide-utility-bar {
+  font-family: Inter, "Segoe UI", Arial, sans-serif !important;
+  background: #05090e !important;
+  border-top: 1px solid #1b2d40 !important;
+  border-bottom: 1px solid #1b2d40 !important;
+}
+
+.nav .navin,
+.guidenav {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px max(18px, calc((100% - 1180px) / 2));
+}
+
+.nav .navin {
+  justify-content: space-between !important;
+}
+
+.nav .links,
+.guidenav-track {
+  display: flex !important;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px !important;
+}
+
+.nav .links a,
+.guidenav-track a {
+  color: #c5d1dc !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.2;
+  letter-spacing: 0.07em !important;
+  text-decoration: none !important;
+  text-transform: uppercase;
+}
+
+.nav .links a:hover,
+.guidenav-track a:hover,
+.toc a:hover {
+  color: #fff !important;
+}
+
+/* Indica, durante a leitura, a seção atualmente exibida no guia. */
+.nav .links a.is-active,
+.guidenav-track a.is-active,
+.toc a.is-active {
+  color: #4e9dff !important;
+  text-shadow: 0 0 14px rgba(78, 157, 255, 0.35);
+}
+
+.guide-print-button,
+.nav .btn {
+  flex: 0 0 auto;
+  padding: 10px 15px !important;
+  color: #fff !important;
+  font: 800 12px/1.2 Inter, "Segoe UI", Arial, sans-serif !important;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid #315474 !important;
+  border-radius: 12px !important;
+  background: #0b1621 !important;
+}
+
+.guide-print-button:hover,
+.nav .btn:hover {
+  border-color: #4e8cff !important;
+  background: #102033 !important;
+}
+
+.guide-utility-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px max(18px, calc((100% - 1180px) / 2));
+}
+
+@media (max-width: 720px) {
+  .nav .navin,
+  .guidenav {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .nav .links,
+  .guidenav-track {
+    justify-content: flex-start;
+    gap: 10px 14px !important;
+  }
+
+  .guide-print-button,
+  .nav .btn {
+    align-self: flex-start;
+  }
+}
+
+@media print {
+  .nav,
+  .guidenav,
+  .guide-utility-bar {
+    display: none !important;
+  }
+}
