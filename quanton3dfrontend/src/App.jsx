@@ -223,8 +223,6 @@ function App() {
         onAbrirCadastro={abrirCadastro}
         atendenteLogado={atendenteLogado}
         onAbrirAdm={() => setMostrarAdm(true)}
-        onAbrirLoginAtendente={() => setShowLoginAtendente(true)}
-        onLogoutAtendente={logoutAtendente}
       />
 
       <main className="app-main q-shell">
