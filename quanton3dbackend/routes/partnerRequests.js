@@ -53,6 +53,7 @@ router.post("/", (req, res) => {
         estado: limparTexto(req.body.estado),
         portfolio: limparTexto(req.body.portfolio),
         origem: limparTexto(req.body.origem) || "site",
+        autorizaContatoPublico: String(req.body.autorizaContatoPublico || "").toLowerCase() === "true",
         status: "pendente",
         // Fotos em Base64 — persistem no MongoDB, sem depender de disco
         fotos: (req.files || []).map((file) => ({
@@ -104,12 +105,19 @@ router.get("/public/aprovados", async (req, res) => {
   try {
     const limite = Math.min(300, Math.max(1, Number.parseInt(req.query.limit, 10) || 100));
     const parceiros = await PartnerRequest.find({ status: "aprovado" })
-      .select("nome titulo descricao categoria cidade estado instagram site portfolio fotos updatedAt")
+      .select("nome telefone titulo descricao categoria cidade estado instagram site portfolio fotos autorizaContatoPublico updatedAt")
       .sort({ updatedAt: -1 })
       .limit(limite)
       .lean();
 
-    return res.json({ success: true, total: parceiros.length, partners: parceiros });
+    // Telefone só segue para o navegador quando o próprio cliente autorizou.
+    const divulgacoes = parceiros.map(({ telefone, autorizaContatoPublico, ...parceiro }) => ({
+      ...parceiro,
+      telefone: autorizaContatoPublico ? telefone : "",
+      autorizaContatoPublico: Boolean(autorizaContatoPublico),
+    }));
+
+    return res.json({ success: true, total: divulgacoes.length, partners: divulgacoes });
   } catch (error) {
     console.error("Erro ao listar parceiros aprovados:", error);
     return res.status(500).json({ success: false, message: "Erro interno ao listar parceiros aprovados." });
