@@ -84,7 +84,6 @@ function HomeSection({ onNavegar }) {
           <video
             className="home-hero-video"
             src="/images/videos/video_banner_home.mp4"
-            poster="/images/videos/foto_hero_site.png"
             autoPlay
             muted
             loop
@@ -93,7 +92,6 @@ function HomeSection({ onNavegar }) {
             onCanPlay={(event) => { event.currentTarget.play().catch(() => {}); }}
             aria-hidden="true"
           />
-          <img className="home-hero-video-fallback" src="/images/videos/foto_hero_site.png" alt="Pessoa interagindo com uma impressora 3D em um estúdio de luz azul e roxa" />
         </div>
       </section>
 
