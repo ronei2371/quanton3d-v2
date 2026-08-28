@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, Camera, MapPin, AtSign, Globe, Briefcase } from "lucide-react";
+import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X } from "lucide-react";
 import api from "../../lib/api";
 
 const RESINAS_QUANTON = [
@@ -122,6 +122,7 @@ function GaleriaTab({ cliente }) {
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
   const [erroEnvio, setErroEnvio] = useState("");
+  const [itemSelecionado, setItemSelecionado] = useState(null);
 
   useEffect(() => {
     if (aba !== "ver") return undefined;
@@ -237,7 +238,7 @@ function GaleriaTab({ cliente }) {
           <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
             {itens.map((item) => (
               <article key={item._id || item.imagem} className="q-card" style={{ overflow: "hidden" }}>
-                {item.imagem && <img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} style={{ width: "100%", maxHeight: "260px", objectFit: "contain", background: "rgba(0,0,0,0.3)", display: "block" }} />}
+                {item.imagem && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} style={{ width: "100%", height: "260px", objectFit: "contain", display: "block" }} /></button>}
                 <div style={{ padding: "14px" }}>
                   <h3 style={{ margin: "0 0 4px", fontSize: "0.95rem" }}>{item.resina || "Resina não informada"}</h3>
                   <p style={{ margin: "0 0 8px", fontSize: "0.8rem" }}>{item.impressora || "Impressora não informada"}</p>
@@ -252,6 +253,14 @@ function GaleriaTab({ cliente }) {
               </article>
             ))}
           </div>
+          {itemSelecionado && (
+            <div role="dialog" aria-modal="true" aria-label="Foto ampliada da peça" onClick={() => setItemSelecionado(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", background: "rgba(0, 0, 0, 0.86)", cursor: "zoom-out" }}>
+              <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", maxWidth: "96vw", maxHeight: "92dvh", padding: "12px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", boxShadow: "0 24px 70px rgba(0,0,0,0.6)", cursor: "default" }}>
+                <button type="button" onClick={() => setItemSelecionado(null)} aria-label="Fechar foto ampliada" className="q-btn q-btn--ghost q-btn--sm" style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1, background: "rgba(5,7,13,0.82)" }}><X size={18} /> Fechar</button>
+                <img src={itemSelecionado.imagem} alt={`Peça impressa com ${itemSelecionado.resina || "resina"}`} style={{ display: "block", maxWidth: "calc(96vw - 48px)", maxHeight: "calc(92dvh - 48px)", objectFit: "contain", borderRadius: "var(--r-sm)" }} />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
