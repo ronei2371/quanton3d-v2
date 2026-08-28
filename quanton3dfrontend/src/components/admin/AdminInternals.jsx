@@ -56,6 +56,8 @@ export function AdminContent({ tokenAtendente }) {
   const [msgParam, setMsgParam] = useState("");
   const [parametrosAdm, setParametrosAdm] = useState([]);
   const [buscaParam, setBuscaParam] = useState("");
+  const [editandoParam, setEditandoParam] = useState(null); // id do parametro em edicao
+  const [paramEdit, setParamEdit] = useState({}); // dados sendo editados
   const [sugestoesElio, setSugestoesElio] = useState([]);
 
   async function entrar(e) {
@@ -143,6 +145,35 @@ export function AdminContent({ tokenAtendente }) {
       await api.delete("/parametros/" + id, { headers: { Authorization: "Bearer " + token } });
       setParametrosAdm(prev => prev.filter(p => p._id !== id));
     } catch (err) { setMsgParam("❌ Erro ao excluir."); }
+  }
+
+  function iniciarEdicaoParam(p) {
+    setEditandoParam(p._id);
+    setParamEdit({
+      resina: p.resina || "", impressora: p.impressora || "",
+      alturaCamada: p.alturaCamada || "", exposicaoNormal: p.exposicaoNormal || "",
+      exposicaoBase: p.exposicaoBase || "", camadasBase: p.camadasBase || "",
+      liftSpeed: p.liftSpeed || "", retractSpeed: p.retractSpeed || "",
+      codigoChitubox: p.codigoChitubox || "", confianca: p.confianca || "oficial",
+    });
+  }
+
+  function cancelarEdicaoParam() {
+    setEditandoParam(null);
+    setParamEdit({});
+  }
+
+  async function salvarEdicaoParam(id) {
+    if (!paramEdit.resina?.trim() || !paramEdit.impressora?.trim()) { setMsgParam("Resina e impressora são obrigatórias."); return; }
+    try {
+      setSalvandoParam(true); setMsgParam("");
+      await api.patch("/parametros/" + id, paramEdit, { headers: { Authorization: "Bearer " + token } });
+      setMsgParam("✅ Parâmetro atualizado com sucesso!");
+      setEditandoParam(null);
+      setParamEdit({});
+      await carregarDados();
+    } catch (err) { setMsgParam("❌ Erro ao atualizar: " + (err?.response?.data?.error || err.message)); }
+    finally { setSalvandoParam(false); }
   }
 
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
@@ -1113,36 +1144,77 @@ export function AdminContent({ tokenAtendente }) {
             {parametrosAdm
               .filter(p => !buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase()))
               .map((p) => (
-                <div key={p._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "10px", padding: "10px 12px" }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px", flexWrap: "wrap" }}>
-                      <strong style={{ color: "#0092ff", fontSize: "0.88rem" }}>{p.resina}</strong>
-                      <span style={{ color: "#9fb4c7", fontSize: "0.82rem" }}>+</span>
-                      <span style={{ color: "#eaf3ff", fontSize: "0.85rem" }}>{p.impressora}</span>
-                      <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800,
-                        background: p.confianca === "estimado" ? "rgba(255,209,102,0.12)" : "rgba(73,230,139,0.12)",
-                        color: p.confianca === "estimado" ? "#dc913c" : "#0aff87",
-                        border: "1px solid " + (p.confianca === "estimado" ? "rgba(255,209,102,0.3)" : "rgba(73,230,139,0.3)") }}>
-                        {p.confianca === "estimado" ? "⚠️ Estimativa" : "✅ Testado"}
-                      </span>
+                <div key={p._id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "10px", padding: "10px 12px" }}>
+                  {editandoParam === p._id ? (
+                    <div style={{ display: "grid", gap: "8px" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                        <input value={paramEdit.resina} onChange={e => setParamEdit(a => ({ ...a, resina: e.target.value }))} placeholder="Resina" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                        <input value={paramEdit.impressora} onChange={e => setParamEdit(a => ({ ...a, impressora: e.target.value }))} placeholder="Impressora" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+                        <input value={paramEdit.alturaCamada} onChange={e => setParamEdit(a => ({ ...a, alturaCamada: e.target.value }))} placeholder="Altura camada" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                        <input value={paramEdit.exposicaoNormal} onChange={e => setParamEdit(a => ({ ...a, exposicaoNormal: e.target.value }))} placeholder="Exp. normal" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                        <input value={paramEdit.exposicaoBase} onChange={e => setParamEdit(a => ({ ...a, exposicaoBase: e.target.value }))} placeholder="Exp. base" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+                        <input value={paramEdit.camadasBase} onChange={e => setParamEdit(a => ({ ...a, camadasBase: e.target.value }))} placeholder="Camadas base" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                        <input value={paramEdit.liftSpeed} onChange={e => setParamEdit(a => ({ ...a, liftSpeed: e.target.value }))} placeholder="Lift speed" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                        <input value={paramEdit.retractSpeed} onChange={e => setParamEdit(a => ({ ...a, retractSpeed: e.target.value }))} placeholder="Retract speed" style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                      </div>
+                      <select value={paramEdit.confianca} onChange={e => setParamEdit(a => ({ ...a, confianca: e.target.value }))} style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }}>
+                        <option value="oficial">✅ Testado</option>
+                        <option value="estimado">⚠️ Estimativa</option>
+                      </select>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button type="button" onClick={() => salvarEdicaoParam(p._id)} disabled={salvandoParam}
+                          style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "none", background: "linear-gradient(135deg, #1565c0, #0092ff)", color: "#fff", cursor: "pointer", fontSize: "0.82rem", fontWeight: 700 }}>
+                          {salvandoParam ? "Salvando..." : "💾 Salvar alterações"}
+                        </button>
+                        <button type="button" onClick={cancelarEdicaoParam}
+                          style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid rgba(159,180,199,0.3)", background: "rgba(159,180,199,0.08)", color: "#9fb4c7", cursor: "pointer", fontSize: "0.82rem", fontWeight: 700 }}>
+                          Cancelar
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-                      {[
-                        p.alturaCamada && `📏 ${p.alturaCamada}`,
-                        p.exposicaoNormal && `⚡ ${p.exposicaoNormal}s`,
-                        p.exposicaoBase && `🔆 ${p.exposicaoBase}s base`,
-                        p.camadasBase && `📚 ${p.camadasBase} camadas`,
-                        p.liftSpeed && `⬆️ ${p.liftSpeed}mm/min`,
-                        p.retractSpeed && `⬇️ ${p.retractSpeed}mm/min`,
-                      ].filter(Boolean).map((info, i) => (
-                        <span key={i} style={{ fontSize: "0.72rem", padding: "2px 7px", borderRadius: "6px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.2)", color: "#a8c4e8" }}>{info}</span>
-                      ))}
+                  ) : (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px", flexWrap: "wrap" }}>
+                          <strong style={{ color: "#0092ff", fontSize: "0.88rem" }}>{p.resina}</strong>
+                          <span style={{ color: "#9fb4c7", fontSize: "0.82rem" }}>+</span>
+                          <span style={{ color: "#eaf3ff", fontSize: "0.85rem" }}>{p.impressora}</span>
+                          <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800,
+                            background: p.confianca === "estimado" ? "rgba(255,209,102,0.12)" : "rgba(73,230,139,0.12)",
+                            color: p.confianca === "estimado" ? "#dc913c" : "#0aff87",
+                            border: "1px solid " + (p.confianca === "estimado" ? "rgba(255,209,102,0.3)" : "rgba(73,230,139,0.3)") }}>
+                            {p.confianca === "estimado" ? "⚠️ Estimativa" : "✅ Testado"}
+                          </span>
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                          {[
+                            p.alturaCamada && `📏 ${p.alturaCamada}`,
+                            p.exposicaoNormal && `⚡ ${p.exposicaoNormal}s`,
+                            p.exposicaoBase && `🔆 ${p.exposicaoBase}s base`,
+                            p.camadasBase && `📚 ${p.camadasBase} camadas`,
+                            p.liftSpeed && `⬆️ ${p.liftSpeed}mm/min`,
+                            p.retractSpeed && `⬇️ ${p.retractSpeed}mm/min`,
+                          ].filter(Boolean).map((info, i) => (
+                            <span key={i} style={{ fontSize: "0.72rem", padding: "2px 7px", borderRadius: "6px", background: "rgba(26,115,232,0.12)", border: "1px solid rgba(26,115,232,0.2)", color: "#a8c4e8" }}>{info}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                        <button type="button" onClick={() => iniciarEdicaoParam(p)}
+                          style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid rgba(26,115,232,0.3)", background: "rgba(26,115,232,0.08)", color: "#0092ff", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700 }}>
+                          ✏️ Editar
+                        </button>
+                        <button type="button" onClick={() => deletarParametro(p._id)}
+                          style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#d73c3c", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700 }}>
+                          Excluir
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <button type="button" onClick={() => deletarParametro(p._id)}
-                    style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#d73c3c", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700, flexShrink: 0 }}>
-                    Excluir
-                  </button>
+                  )}
                 </div>
               ))
             }
