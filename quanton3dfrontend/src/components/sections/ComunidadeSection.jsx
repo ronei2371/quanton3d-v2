@@ -235,10 +235,10 @@ function GaleriaTab({ cliente }) {
           {carregandoItens && <div className="q-empty">Carregando fotos aprovadas...</div>}
           {erroItens && <div className="q-alert q-alert--error">{erroItens}</div>}
           {!carregandoItens && !erroItens && itens.length === 0 && <div className="q-empty">Ainda não há fotos aprovadas.</div>}
-          <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+          <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 600px), 1fr))" }}>
             {itens.map((item) => (
               <article key={item._id || item.imagem} className="q-card" style={{ overflow: "hidden" }}>
-                {item.imagem && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} style={{ width: "100%", height: "260px", objectFit: "contain", display: "block" }} /></button>}
+                {item.imagem && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} style={{ width: "100%", height: "380px", objectFit: "contain", display: "block" }} /></button>}
                 <div style={{ padding: "14px" }}>
                   <h3 style={{ margin: "0 0 4px", fontSize: "0.95rem" }}>{item.resina || "Resina não informada"}</h3>
                   <p style={{ margin: "0 0 8px", fontSize: "0.8rem" }}>{item.impressora || "Impressora não informada"}</p>
