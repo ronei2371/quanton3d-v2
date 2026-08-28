@@ -92,7 +92,7 @@ export function PrivacidadeModal({ aceitarPrivacidade }) {
   );
 }
 
-export function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCliente, salvarCliente, onFechar }) {
+export function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, alterarCliente, salvarCliente, onFechar, onAcessoEquipe }) {
   return (
     <div className="q-modal-backdrop" onClick={(event) => event.target === event.currentTarget && onFechar()}>
       <form className="q-modal q-modal--narrow" onSubmit={salvarCliente} style={{ position: "relative" }}>
@@ -128,6 +128,9 @@ export function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, al
         </div>
         <button className="q-btn q-btn--primary q-btn--block" type="submit" disabled={salvandoCliente}>
           {salvandoCliente ? "Salvando..." : "Entrar no Suporte Técnico"}
+        </button>
+        <button type="button" className="q-btn q-btn--ghost q-btn--block" style={{ marginTop: "10px" }} onClick={onAcessoEquipe}>
+          <Lock size={14} /> Sou administrador ou atendente
         </button>
       </form>
     </div>
