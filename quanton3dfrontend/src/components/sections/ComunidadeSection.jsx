@@ -168,8 +168,8 @@ function GaleriaTab({ cliente }) {
   return (
     <div>
       <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)" }}>
-        <button type="button" onClick={() => setAba("enviar")} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 6px", background: "none", border: "none", borderBottom: aba === "enviar" ? "2px solid var(--primary)" : "2px solid transparent", color: aba === "enviar" ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.85rem" }}><Camera size={14} /> Enviar configuração</button>
-        <button type="button" onClick={() => setAba("ver")} style={{ padding: "10px 6px", background: "none", border: "none", borderBottom: aba === "ver" ? "2px solid var(--primary)" : "2px solid transparent", color: aba === "ver" ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.85rem" }}>Ver fotos de clientes</button>
+        <button type="button" onClick={() => setAba("enviar")} style={{ display: "flex", alignItems: "center", gap: "7px", padding: "12px 8px", background: "none", border: "none", borderBottom: aba === "enviar" ? "2px solid var(--primary)" : "2px solid transparent", color: aba === "enviar" ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}><Camera size={16} /> Enviar configuração</button>
+        <button type="button" onClick={() => setAba("ver")} style={{ padding: "12px 8px", background: "none", border: "none", borderBottom: aba === "ver" ? "2px solid var(--primary)" : "2px solid transparent", color: aba === "ver" ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}>Ver fotos de clientes</button>
       </div>
 
       {aba === "enviar" ? (
@@ -276,8 +276,8 @@ function ComunidadeSection({ cliente, onAbrirParceiroModal }) {
           const Icon = a.icon;
           return (
             <button key={a.id} type="button" onClick={() => setAba(a.id)}
-              style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 6px", background: "none", border: "none", borderBottom: aba === a.id ? "2px solid var(--primary)" : "2px solid transparent", color: aba === a.id ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.85rem" }}>
-              <Icon size={14} /> {a.label}
+              style={{ display: "flex", alignItems: "center", gap: "7px", padding: "12px 8px", background: "none", border: "none", borderBottom: aba === a.id ? "2px solid var(--primary)" : "2px solid transparent", color: aba === a.id ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}>
+              <Icon size={16} /> {a.label}
             </button>
           );
         })}
