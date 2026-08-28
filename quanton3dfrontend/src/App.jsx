@@ -194,13 +194,6 @@ function App() {
         onLogoutAtendente={logoutAtendente}
       />
 
-      {cliente && (
-        <div className="client-chip">
-          <strong>Cliente ativo:</strong> {cliente.nome} • {cliente.telefone}
-          <button type="button" className="q-btn q-btn--sm q-btn--ghost" onClick={abrirCadastro}>Atualizar dados</button>
-        </div>
-      )}
-
       <main className="app-main q-shell">
         {activeGuide
           ? <GuideViewer guide={activeGuide} onVoltar={() => setActiveGuide(null)} />
