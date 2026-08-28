@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X } from "lucide-react";
+import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle } from "lucide-react";
 import api from "../../lib/api";
 
 const RESINAS_QUANTON = [
@@ -67,33 +67,35 @@ function ParceirosLista({ onAbrirParceiroModal }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px", flexWrap: "wrap", gap: "10px" }}>
-        <p style={{ margin: 0, fontSize: "0.85rem" }}>Conheça parceiros, cursos e serviços recomendados pela comunidade Quanton3D.</p>
-        <button type="button" className="q-btn q-btn--primary" onClick={onAbrirParceiroModal}><Users size={15} /> Quero ser parceiro</button>
+        <p style={{ margin: 0, fontSize: "0.85rem" }}>Conheça profissionais e serviços da comunidade Quanton3D.</p>
+        <button type="button" className="q-btn q-btn--primary" onClick={onAbrirParceiroModal}><Users size={15} /> Divulgar meu trabalho</button>
       </div>
 
       {carregando && <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Carregando parceiros...</p>}
       {erro && <div className="q-alert q-alert--error">{erro}</div>}
 
       {!carregando && !erro && parceiros.length === 0 && (
-        <div className="q-empty"><h3>Ainda não temos parceiros publicados</h3><p>Seja o primeiro! Clique em "Quero ser parceiro" para enviar sua solicitação.</p></div>
+        <div className="q-empty"><h3>Ainda não há trabalhos divulgados</h3><p>Seja o primeiro. Publique seu trabalho e receba contatos de interessados.</p></div>
       )}
 
       {!carregando && parceiros.length > 0 && (
-        <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+        <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 420px), 1fr))" }}>
           {parceiros.map((p) => (
             <div key={p._id} className="q-card" style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
               {p.fotos?.[0]?.url && (
-                <div style={{ width: "100%", minHeight: "200px", maxHeight: "300px", borderRadius: "var(--r-sm)", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                  <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", height: "100%", maxHeight: "300px", objectFit: "contain" }} />
+                <div style={{ width: "100%", height: "320px", borderRadius: "var(--r-sm)", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                  <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", width: "100%", height: "100%", objectFit: "contain" }} />
                 </div>
               )}
               <div>
-                <span className="q-badge">{p.categoria || "Parceiro"}</span>
-                <h3 style={{ margin: "8px 0 6px", fontSize: "0.98rem" }}>{p.titulo}</h3>
-                <p style={{ margin: 0, fontSize: "0.82rem" }}>{p.descricao}</p>
+                <span className="q-badge">{p.categoria || "Profissional"}</span>
+                <h3 style={{ margin: "8px 0 5px", fontSize: "1.12rem" }}>{p.titulo}</h3>
+                <p style={{ margin: "0 0 8px", color: "var(--primary)", fontSize: "0.86rem", fontWeight: 800 }}>{p.nome}</p>
+                <p style={{ margin: 0, fontSize: "0.88rem", lineHeight: 1.55 }}>{p.descricao}</p>
               </div>
               {(p.cidade || p.estado) && <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.76rem", color: "var(--text-muted)" }}><MapPin size={12} /> {p.cidade}{p.cidade && p.estado ? " - " : ""}{p.estado}</span>}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "auto", paddingTop: "8px", borderTop: "1px solid var(--border-soft)" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "auto", paddingTop: "12px", borderTop: "1px solid var(--border-soft)" }}>
+                {p.telefone && <a className="q-btn q-btn--primary q-btn--sm" href={`https://wa.me/${String(p.telefone).replace(/\\D/g, "")}`} target="_blank" rel="noreferrer"><MessageCircle size={14} /> Solicitar orçamento</a>}
                 {p.instagram && (pareceLink(p.instagram)
                   ? <a href={p.instagram.startsWith("http") ? p.instagram : `https://instagram.com/${p.instagram.replace("@", "")}`} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.78rem", color: "var(--primary)", fontWeight: 700 }}><AtSign size={13} /> Instagram</a>
                   : <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.78rem", color: "var(--text-muted)" }}><AtSign size={13} /> {p.instagram}</span>)}
@@ -268,7 +270,7 @@ function GaleriaTab({ cliente }) {
 }
 
 const ABAS = [
-  { id: "parceiros", label: "Parceiros e Cursos", icon: Users },
+  { id: "parceiros", label: "Divulgue seu Trabalho", icon: Users },
   { id: "galeria", label: "Fotos e Peças", icon: Camera },
 ];
 
@@ -278,7 +280,7 @@ function ComunidadeSection({ cliente, onAbrirParceiroModal }) {
     <section className="q-card q-panel">
       <span className="q-eyebrow">Rede Quanton3D</span>
       <h2 className="q-section-title">Comunidade</h2>
-      <p className="q-section-desc">Parceiros, cursos recomendados e as peças que a comunidade está criando.</p>
+      <p className="q-section-desc">Profissionais, serviços e as peças que a comunidade está criando.</p>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)" }}>
         {ABAS.map((a) => {
