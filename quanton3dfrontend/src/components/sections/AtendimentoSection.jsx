@@ -300,8 +300,8 @@ function AtendimentoSection({ cliente, onAbrirContato }) {
           return (
             <button key={a.id} type="button"
               onClick={() => setAba(a.id)}
-              style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 6px", background: "none", border: "none", borderBottom: aba === a.id ? "2px solid var(--primary)" : "2px solid transparent", color: aba === a.id ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.85rem" }}>
-              <Icon size={14} /> {a.label}
+              style={{ display: "flex", alignItems: "center", gap: "7px", padding: "12px 8px", background: "none", border: "none", borderBottom: aba === a.id ? "2px solid var(--primary)" : "2px solid transparent", color: aba === a.id ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}>
+              <Icon size={16} /> {a.label}
             </button>
           );
         })}
