@@ -546,16 +546,23 @@
    O menu oficial do site continua fixo no topo; o guia ocupa todo o resto da
    viewport e rola internamente, mantendo o próprio menu one-page acessível. */
 .app-shell.is-guide {
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
+/* O cabeçalho e o aviso de cliente ocupam altura própria. Sem travar o shell
+   em 100vh, o iframe preserva uma área útil completa em vez de ser espremido. */
 .app-shell.is-guide .app-main {
   display: flex;
   width: 100%;
-  min-height: 0;
+  min-height: calc(100vh - 150px);
+  min-height: calc(100dvh - 150px);
   padding: 0;
+}
+
+.app-shell.is-guide .guide-viewer-frame {
+  min-height: calc(100vh - 195px);
+  min-height: calc(100dvh - 195px);
 }
 
 .app-shell.is-guide .site-footer { display: none; }
