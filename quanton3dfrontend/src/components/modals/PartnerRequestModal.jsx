@@ -35,6 +35,7 @@ const estadoInicial = {
   estado: "",
   portfolio: "",
   origem: "site",
+  autorizaContatoPublico: false,
 };
 
 function PartnerRequestModal({ aberto, aoFechar, cliente }) {
@@ -96,6 +97,10 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
       setErro("Preencha todos os campos obrigatórios (*)");
       return;
     }
+    if (!form.autorizaContatoPublico) {
+      setErro("Para divulgar o serviço, confirme a autorização de contato público.");
+      return;
+    }
 
     try {
       setEnviando(true);
@@ -154,11 +159,11 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
             <div className="partner-icon"><Handshake size={24} /></div>
 
             <div className="partner-header-text">
-              <span className="partner-badge">Parcerias Quanton3D</span>
-              <h2>Quero ser parceiro</h2>
+              <span className="partner-badge">Vitrine Quanton3D</span>
+              <h2>Divulgue seu trabalho</h2>
               <p>
-                Envie sua proposta para divulgar curso, serviço, projeto ou
-                trabalho na área de parceiros da Quanton3D.
+                Mostre seu serviço para a comunidade e receba contatos de pessoas
+                interessadas em contratar seu trabalho.
               </p>
             </div>
           </div>
@@ -183,7 +188,7 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
             </label>
 
             <label>
-              <span>Tipo *</span>
+              <span>Tipo de serviço *</span>
               <select value={form.tipo} onChange={(e) => alterar("tipo", e.target.value)}>
                 {TIPOS.map((item) => (
                   <option key={item} value={item}>{item}</option>
@@ -192,8 +197,8 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
             </label>
 
             <label>
-              <span>Título *</span>
-              <input value={form.titulo} onChange={(e) => alterar("titulo", e.target.value)} placeholder="Ex.: Curso de pintura realista" />
+              <span>Título do seu trabalho *</span>
+              <input value={form.titulo} onChange={(e) => alterar("titulo", e.target.value)} placeholder="Ex.: Miniaturas personalizadas em resina" />
             </label>
 
             <label>
@@ -236,9 +241,9 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
             </label>
 
             <label className="partner-grid-full">
-              <span>Fotos dos trabalhos para avaliação</span>
+              <span>Fotos do seu trabalho</span>
               <input type="file" accept="image/*" multiple onChange={selecionarFotos} />
-              <small>Você pode enviar até 6 imagens.</small>
+              <small>Envie até 6 fotos. A primeira será a imagem principal do seu cartão.</small>
             </label>
           </div>
 
@@ -253,13 +258,18 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
             </div>
           )}
 
+          <label className="partner-public-contact">
+            <input type="checkbox" checked={form.autorizaContatoPublico} onChange={(e) => alterar("autorizaContatoPublico", e.target.checked)} />
+            <span>Autorizo a Quanton3D a exibir meu WhatsApp nesta vitrine para que interessados possam solicitar orçamento.</span>
+          </label>
+
           <div className="partner-actions">
             <button type="button" className="partner-secondary" onClick={aoFechar}>
               Cancelar
             </button>
 
             <button type="submit" className="partner-primary" disabled={enviando}>
-              {enviando ? "Enviando..." : "Enviar proposta"}
+              {enviando ? "Enviando..." : "Enviar para aprovação"}
             </button>
           </div>
         </form>
