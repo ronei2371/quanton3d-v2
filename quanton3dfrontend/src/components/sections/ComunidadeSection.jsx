@@ -79,23 +79,24 @@ function ParceirosLista({ onAbrirParceiroModal }) {
       )}
 
       {!carregando && parceiros.length > 0 && (
-        <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 420px), 1fr))" }}>
+        <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 540px), 1fr))", maxWidth: "1280px" }}>
           {parceiros.map((p) => (
-            <div key={p._id} className="q-card" style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div key={p._id} className="q-card" style={{ padding: "0", display: "flex", flexDirection: "column", gap: "0", overflow: "hidden", border: "1px solid var(--border-strong)", boxShadow: "0 18px 42px rgba(0,0,0,0.2)" }}>
               {p.fotos?.[0]?.url && (
-                <div style={{ width: "100%", height: "320px", borderRadius: "var(--r-sm)", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                <div style={{ width: "100%", height: "480px", borderRadius: 0, background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                   <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </div>
               )}
-              <div>
+              <div style={{ padding: "22px 24px 10px" }}>
                 <span className="q-badge">{p.categoria || "Profissional"}</span>
                 <h3 style={{ margin: "8px 0 5px", fontSize: "1.12rem" }}>{p.titulo}</h3>
                 <p style={{ margin: "0 0 8px", color: "var(--primary)", fontSize: "0.86rem", fontWeight: 800 }}>{p.nome}</p>
                 <p style={{ margin: 0, fontSize: "0.88rem", lineHeight: 1.55 }}>{p.descricao}</p>
               </div>
-              {(p.cidade || p.estado) && <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.76rem", color: "var(--text-muted)" }}><MapPin size={12} /> {p.cidade}{p.cidade && p.estado ? " - " : ""}{p.estado}</span>}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "auto", paddingTop: "12px", borderTop: "1px solid var(--border-soft)" }}>
-                {p.telefone && <a className="q-btn q-btn--primary q-btn--sm" href={`https://wa.me/${String(p.telefone).replace(/\D/g, "")}`} target="_blank" rel="noreferrer"><MessageCircle size={14} /> Solicitar orçamento</a>}
+              {(p.cidade || p.estado) && <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "0 24px", fontSize: "0.8rem", color: "var(--text-muted)" }}><MapPin size={12} /> {p.cidade}{p.cidade && p.estado ? " - " : ""}{p.estado}</span>}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "16px", padding: "16px 24px 22px", borderTop: "1px solid var(--border-soft)", background: "rgba(47,123,255,0.04)" }}>
+                {p.telefone && <span style={{ width: "100%", color: "var(--text-secondary)", fontSize: "0.82rem", fontWeight: 700 }}>Gostou deste trabalho? Fale diretamente com o profissional.</span>}
+                {p.telefone && <a className="q-btn q-btn--primary" style={{ width: "100%", justifyContent: "center" }} href={`https://wa.me/${String(p.telefone).replace(/\D/g, "")}`} target="_blank" rel="noreferrer"><MessageCircle size={14} /> Solicitar orçamento</a>}
                 {p.instagram && (pareceLink(p.instagram)
                   ? <a href={p.instagram.startsWith("http") ? p.instagram : `https://instagram.com/${p.instagram.replace("@", "")}`} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.78rem", color: "var(--primary)", fontWeight: 700 }}><AtSign size={13} /> Instagram</a>
                   : <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.78rem", color: "var(--text-muted)" }}><AtSign size={13} /> {p.instagram}</span>)}
