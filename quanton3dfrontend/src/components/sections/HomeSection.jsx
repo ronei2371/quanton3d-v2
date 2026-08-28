@@ -90,6 +90,7 @@ function HomeSection({ onNavegar }) {
             loop
             playsInline
             preload="auto"
+            onCanPlay={(event) => { event.currentTarget.play().catch(() => {}); }}
             aria-hidden="true"
           />
           <img className="home-hero-video-fallback" src="/images/videos/foto_hero_site.png" alt="Pessoa interagindo com uma impressora 3D em um estúdio de luz azul e roxa" />
