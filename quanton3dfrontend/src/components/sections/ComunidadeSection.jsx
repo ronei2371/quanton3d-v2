@@ -84,7 +84,7 @@ function ParceirosLista({ onAbrirParceiroModal }) {
             <div key={p._id} className="q-card" style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
               {p.fotos?.[0]?.url && (
                 <div style={{ width: "100%", height: "320px", borderRadius: "var(--r-sm)", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                  <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", width: "100%", height: "100%", objectFit: "contain" }} />
+                  <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </div>
               )}
               <div>
@@ -95,7 +95,7 @@ function ParceirosLista({ onAbrirParceiroModal }) {
               </div>
               {(p.cidade || p.estado) && <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.76rem", color: "var(--text-muted)" }}><MapPin size={12} /> {p.cidade}{p.cidade && p.estado ? " - " : ""}{p.estado}</span>}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "auto", paddingTop: "12px", borderTop: "1px solid var(--border-soft)" }}>
-                {p.telefone && <a className="q-btn q-btn--primary q-btn--sm" href={`https://wa.me/${String(p.telefone).replace(/\\D/g, "")}`} target="_blank" rel="noreferrer"><MessageCircle size={14} /> Solicitar orçamento</a>}
+                {p.telefone && <a className="q-btn q-btn--primary q-btn--sm" href={`https://wa.me/${String(p.telefone).replace(/\D/g, "")}`} target="_blank" rel="noreferrer"><MessageCircle size={14} /> Solicitar orçamento</a>}
                 {p.instagram && (pareceLink(p.instagram)
                   ? <a href={p.instagram.startsWith("http") ? p.instagram : `https://instagram.com/${p.instagram.replace("@", "")}`} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.78rem", color: "var(--primary)", fontWeight: 700 }}><AtSign size={13} /> Instagram</a>
                   : <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.78rem", color: "var(--text-muted)" }}><AtSign size={13} /> {p.instagram}</span>)}
