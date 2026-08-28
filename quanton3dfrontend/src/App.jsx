@@ -65,6 +65,7 @@ function App() {
         if (admin.data?.success && admin.data?.token) {
           const equipeAdmin = { codigo: "ADMIN", nome: "Administrador", email: loginAtForm.email.trim(), permissoes: { acessoAdmCompleto: true } };
           localStorage.setItem("quanton3d_admin_token", admin.data.token);
+          localStorage.removeItem("quanton3d_atendente_token");
           localStorage.setItem("quanton3d_atendente", JSON.stringify(equipeAdmin));
           setAtendenteLogado(equipeAdmin);
           setShowLoginAtendente(false);
@@ -80,6 +81,7 @@ function App() {
       const r = await api.post("/atendentes/login", { email: loginAtForm.email.trim(), senha: loginAtForm.senha });
       if (r.data?.success) {
         setAtendenteLogado(r.data.atendente);
+        localStorage.removeItem("quanton3d_admin_token");
         localStorage.setItem("quanton3d_atendente", JSON.stringify(r.data.atendente));
         localStorage.setItem("quanton3d_atendente_token", r.data.token);
         setShowLoginAtendente(false);
