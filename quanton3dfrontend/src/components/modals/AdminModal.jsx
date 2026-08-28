@@ -1,7 +1,7 @@
-import { X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import { AdminContent, PainelAtendente } from "../admin/AdminInternals";
 
-function AdminModal({ atendenteLogado, onClose }) {
+function AdminModal({ atendenteLogado, onClose, onLogout }) {
   const acessoCompleto = atendenteLogado?.permissoes?.acessoAdmCompleto;
   const tokenAtendente = acessoCompleto ? localStorage.getItem("quanton3d_atendente_token") : null;
 
@@ -10,7 +10,10 @@ function AdminModal({ atendenteLogado, onClose }) {
       <section className="q-modal q-modal--wide" style={{ display: "flex", flexDirection: "column" }}>
         <div className="q-modal-head">
           <h2 style={{ fontSize: "1.05rem" }}>{atendenteLogado && !acessoCompleto ? "Painel do Atendente" : "Painel Administrativo"}</h2>
-          <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {atendenteLogado && <button type="button" className="q-btn q-btn--ghost q-btn--sm" onClick={onLogout}><LogOut size={13} /> Sair da equipe</button>}
+            <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
+          </div>
         </div>
         <div style={{ flex: 1, overflowY: "auto" }}>
           {atendenteLogado && !acessoCompleto ? (
