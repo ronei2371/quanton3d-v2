@@ -398,10 +398,6 @@
    é o corte vertical (menor = corta mais a base da fonte). */
 .home-hero-visual video.home-hero-video { object-position: 8% center; }
 
-/* O vídeo faz parte da apresentação principal e permanece visível mesmo quando
-   o sistema solicita redução de outras animações. */
-.home-hero-video-fallback { display: none; }
-
 .home-pathfinder-intro { margin-bottom: 34px; }
 .home-pathfinder { position: relative; display: grid; grid-template-columns: minmax(220px, 0.8fr) minmax(250px, 0.98fr) minmax(300px, 1.2fr); gap: 20px; min-height: 340px; overflow: hidden; padding: 28px; background: linear-gradient(145deg, rgba(16, 22, 37, 0.97), rgba(9, 13, 24, 0.98)); }
 .home-pathfinder::after { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: linear-gradient(90deg, var(--q-celeste), var(--q-ametista), transparent 82%); }
