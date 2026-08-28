@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Menu, X, Unlock, ClipboardList, UserCog, User } from "lucide-react";
+import { ChevronDown, Menu, X, User } from "lucide-react";
 import { NAV_ITEMS } from "../../data/navigation";
 import AnimatedAtomLogo from "./AnimatedAtomLogo";
 
@@ -26,8 +26,6 @@ function NavBar({
   onAbrirCadastro,
   atendenteLogado,
   onAbrirAdm,
-  onAbrirLoginAtendente,
-  onLogoutAtendente,
 }) {
   const [menuAberto, setMenuAberto] = useState(false);
   const [maisAberto, setMaisAberto] = useState(false);
@@ -95,29 +93,7 @@ function NavBar({
                   {secondaryItems.map((item) => (
                     <NavItem key={item.id} item={item} active={paginaAtiva === item.id} onClick={() => navegar(item.id)} />
                   ))}
-                  <span className="qnav-menu-divider" />
-                  <span className="qnav-menu-label">Área da equipe</span>
-                  {!atendenteLogado && (
-                    <>
-                      <button type="button" className="qnav-menu-action" onClick={() => { onAbrirAdm(); setMaisAberto(false); }}>
-                        <Unlock size={15} /> Administração
-                      </button>
-                      <button type="button" className="qnav-menu-action" onClick={() => { onAbrirLoginAtendente(); setMaisAberto(false); }}>
-                        <UserCog size={15} /> Login de atendente
-                      </button>
-                    </>
-                  )}
-                  {atendenteLogado && (
-                    <>
-                      <button type="button" className="qnav-menu-action" onClick={() => { onAbrirAdm(); setMaisAberto(false); }}>
-                        {atendenteLogado?.permissoes?.acessoAdmCompleto ? <Unlock size={15} /> : <ClipboardList size={15} />}
-                        {atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administração" : "Painel"}
-                      </button>
-                      <button type="button" className="qnav-menu-action" onClick={() => { onLogoutAtendente(); setMaisAberto(false); }}>
-                        <UserCog size={15} /> Sair de {atendenteLogado.codigo}
-                      </button>
-                    </>
-                  )}
+
                 </div>
               )}
             </div>
@@ -128,32 +104,11 @@ function NavBar({
             {secondaryItems.map((item) => (
               <NavItem key={item.id} item={item} active={paginaAtiva === item.id} onClick={() => navegar(item.id)} />
             ))}
-            <span className="qnav-menu-divider" />
-            <span className="qnav-menu-label">Área da equipe</span>
-            {!atendenteLogado ? (
-              <>
-                <button type="button" className="qnav-menu-action" onClick={() => { onAbrirAdm(); setMenuAberto(false); }}>
-                  <Unlock size={15} /> Administração
-                </button>
-                <button type="button" className="qnav-menu-action" onClick={() => { onAbrirLoginAtendente(); setMenuAberto(false); }}>
-                  <UserCog size={15} /> Login de atendente
-                </button>
-              </>
-            ) : (
-              <>
-                <button type="button" className="qnav-menu-action" onClick={() => { onAbrirAdm(); setMenuAberto(false); }}>
-                  {atendenteLogado?.permissoes?.acessoAdmCompleto ? <Unlock size={15} /> : <ClipboardList size={15} />}
-                  {atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administração" : "Painel"}
-                </button>
-                <button type="button" className="qnav-menu-action" onClick={() => { onLogoutAtendente(); setMenuAberto(false); }}>
-                  <UserCog size={15} /> Sair de {atendenteLogado.codigo}
-                </button>
-              </>
-            )}
+
           </div>
 
-          <button type="button" className="q-btn q-btn--sm q-btn--primary qnav-client-button" onClick={onAbrirCadastro}>
-            <User size={14} /> {cliente ? cliente.nome.split(" ")[0] : "Área do cliente"}
+          <button type="button" className="q-btn q-btn--sm q-btn--primary qnav-client-button" onClick={atendenteLogado ? onAbrirAdm : onAbrirCadastro}>
+            <User size={14} /> {atendenteLogado ? (atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administração" : atendenteLogado.codigo) : (cliente ? cliente.nome.split(" ")[0] : "Área do cliente")}
           </button>
         </nav>
       </div>
