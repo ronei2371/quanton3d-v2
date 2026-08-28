@@ -23,6 +23,7 @@ export function BoasVindasModal({ onEntrar }) {
   }
   return (
     <div className={"welcome-screen" + (saindo ? " leaving" : "")}>
+      <video className="welcome-video" src="/images/videos/video_banner_home.mp4" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
       <div style={{ width: "76px", height: "76px", borderRadius: "var(--r-lg)", background: "var(--bg-raised)", border: "1px solid var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
         <Atom size={32} color="var(--primary)" />
       </div>
