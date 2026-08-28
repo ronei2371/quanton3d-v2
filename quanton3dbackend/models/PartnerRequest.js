@@ -95,6 +95,10 @@ const PartnerRequestSchema = new mongoose.Schema(
       trim: true,
       default: "site",
     },
+    autorizaContatoPublico: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: ["pendente", "aprovado", "rejeitado"],
