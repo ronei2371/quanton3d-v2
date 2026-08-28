@@ -52,27 +52,60 @@ function App() {
   const [loginAtErro, setLoginAtErro] = useState("");
   const [loginAtLoading, setLoginAtLoading] = useState(false);
 
-  async function loginAtendente() {
-    if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha email e senha."); return; }
+  async function loginEquipe() {
+    if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha o usuário/e-mail e a senha."); return; }
     try {
       setLoginAtLoading(true);
-      const r = await api.post("/atendentes/login", loginAtForm);
+      setLoginAtErro("");
+
+      // Primeiro valida a credencial administrativa. Se não for admin,
+      // tenta a conta de atendente sem revelar qual tipo de conta existe.
+      try {
+        const admin = await api.post("/admin/login", { user: loginAtForm.email.trim(), password: loginAtForm.senha });
+        if (admin.data?.success && admin.data?.token) {
+          const equipeAdmin = { codigo: "ADMIN", nome: "Administrador", email: loginAtForm.email.trim(), permissoes: { acessoAdmCompleto: true } };
+          localStorage.setItem("quanton3d_admin_token", admin.data.token);
+          localStorage.setItem("quanton3d_atendente", JSON.stringify(equipeAdmin));
+          setAtendenteLogado(equipeAdmin);
+          setShowLoginAtendente(false);
+          setMostrarCadastro(false);
+          setLoginAtForm({ email: "", senha: "" });
+          setMostrarAdm(true);
+          return;
+        }
+      } catch {
+        // Continua para a autenticação de atendente.
+      }
+
+      const r = await api.post("/atendentes/login", { email: loginAtForm.email.trim(), senha: loginAtForm.senha });
       if (r.data?.success) {
         setAtendenteLogado(r.data.atendente);
         localStorage.setItem("quanton3d_atendente", JSON.stringify(r.data.atendente));
         localStorage.setItem("quanton3d_atendente_token", r.data.token);
         setShowLoginAtendente(false);
+        setMostrarCadastro(false);
         setLoginAtErro("");
         setLoginAtForm({ email: "", senha: "" });
+        setMostrarAdm(true);
       }
-    } catch (err) {
-      setLoginAtErro(err?.response?.data?.error || "Erro ao fazer login.");
+    } catch {
+      setLoginAtErro("Credenciais da equipe inválidas.");
     } finally { setLoginAtLoading(false); }
   }
+
   function logoutAtendente() {
     setAtendenteLogado(null);
+    setMostrarAdm(false);
     localStorage.removeItem("quanton3d_atendente");
     localStorage.removeItem("quanton3d_atendente_token");
+    localStorage.removeItem("quanton3d_admin_token");
+  }
+
+  function abrirAcessoEquipe() {
+    setLoginAtForm({ email: formCliente.email || "", senha: "" });
+    setLoginAtErro("");
+    setMostrarCadastro(false);
+    setShowLoginAtendente(true);
   }
 
   function aceitarPrivacidade() { localStorage.setItem("quanton3d_privacidade_aceita", "true"); setMostrarPrivacidade(false); setMostrarCadastro(!cliente); }
@@ -152,11 +185,11 @@ function App() {
       )}
       {!mostrarBoasVindas && mostrarPrivacidade && <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />}
       {mostrarCadastro && !mostrarPrivacidade && (
-        <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} onFechar={fecharCadastro} />
+        <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} onFechar={fecharCadastro} onAcessoEquipe={abrirAcessoEquipe} />
       )}
 
       {mostrarBot && <BotModal cliente={cliente} onClose={() => setMostrarBot(false)} />}
-      {mostrarAdm && <AdminModal atendenteLogado={atendenteLogado} onClose={() => setMostrarAdm(false)} />}
+      {mostrarAdm && <AdminModal atendenteLogado={atendenteLogado} onClose={() => setMostrarAdm(false)} onLogout={logoutAtendente} />}
       <ContactMessageModal aberto={mostrarContatoMensagem} aoFechar={() => setMostrarContatoMensagem(false)} cliente={cliente} />
       <PartnerRequestModal aberto={mostrarParceiroModal} aoFechar={() => setMostrarParceiroModal(false)} cliente={cliente} />
 
@@ -165,16 +198,16 @@ function App() {
           <div className="q-modal q-modal--narrow">
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
               <div style={{ display: "flex", justifyContent: "center" }}><UserCog size={30} /></div>
-              <h2 style={{ fontSize: "1.1rem" }}>Login de Atendente</h2>
-              <p style={{ fontSize: "0.8rem" }}>Área exclusiva para a equipe Quanton3D</p>
+              <h2 style={{ fontSize: "1.1rem" }}>Acesso da equipe</h2>
+              <p style={{ fontSize: "0.8rem" }}>O sistema identificará administrador ou atendente após validar a senha.</p>
             </div>
             {loginAtErro && <div className="q-alert q-alert--error">{loginAtErro}</div>}
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "18px" }}>
-              <input className="q-input" value={loginAtForm.email} onChange={(e) => setLoginAtForm((p) => ({ ...p, email: e.target.value }))} placeholder="Seu email" autoComplete="off" />
-              <input className="q-input" value={loginAtForm.senha} onChange={(e) => setLoginAtForm((p) => ({ ...p, senha: e.target.value }))} onKeyDown={(e) => e.key === "Enter" && loginAtendente()} placeholder="Sua senha" type="password" autoComplete="new-password" />
+              <input className="q-input" value={loginAtForm.email} onChange={(e) => setLoginAtForm((p) => ({ ...p, email: e.target.value }))} placeholder="E-mail ou usuário administrador" autoComplete="username" />
+              <input className="q-input" value={loginAtForm.senha} onChange={(e) => setLoginAtForm((p) => ({ ...p, senha: e.target.value }))} onKeyDown={(e) => e.key === "Enter" && loginEquipe()} placeholder="Sua senha" type="password" autoComplete="new-password" />
             </div>
             <div style={{ display: "flex", gap: "10px" }}>
-              <button type="button" className="q-btn q-btn--primary" style={{ flex: 1 }} onClick={loginAtendente} disabled={loginAtLoading}>
+              <button type="button" className="q-btn q-btn--primary" style={{ flex: 1 }} onClick={loginEquipe} disabled={loginAtLoading}>
                 {loginAtLoading ? "Entrando..." : <><Check size={14} /> Entrar</>}
               </button>
               <button type="button" className="q-btn q-btn--ghost" onClick={() => { setShowLoginAtendente(false); setLoginAtErro(""); }}>Cancelar</button>
