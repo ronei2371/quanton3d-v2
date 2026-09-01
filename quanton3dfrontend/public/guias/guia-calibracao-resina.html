@@ -1,445 +1,1113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Método Quanton3D para calibrar exposição, adesão, encaixe, precisão e repetibilidade de resinas em impressoras LCD, DLP e SLA."
+    />
     <title>Guia Completo de Calibração de Resina | Quanton3D</title>
     <style>
-    :root {
-        --bg:#060e1e; --surface:#0a1425; --card:#0f1e35;
-        --border:rgba(79,209,255,0.15); --cyan:#4fd1ff; --purple:#b89cff;
-        --green:#49e68b; --yellow:#ffd166; --red:#ff6b8a;
-        --text:#c5d8e8; --title:#eaf7ff;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding:20px; }
-    .container { max-width:960px; margin:0 auto; background:var(--surface); border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5); }
-    .header { background:linear-gradient(135deg,rgba(21,101,192,0.4),rgba(123,31,162,0.3)); border-bottom:1px solid var(--border); padding:40px 36px 32px; text-align:center; position:relative; }
-    .header::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(79,209,255,0.07) 0%,transparent 70%); pointer-events:none; }
-    .logo { display:inline-block; padding:4px 16px; border-radius:999px; background:rgba(79,209,255,0.1); border:1px solid rgba(79,209,255,0.3); color:var(--cyan); font-size:0.75rem; font-weight:700; letter-spacing:0.1em; margin-bottom:14px; }
-    .header h1 { font-size:clamp(1.4rem,3.5vw,2rem); font-weight:900; background:linear-gradient(135deg,#4fd1ff,#b89cff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
-    .header p { font-size:0.9rem; color:#9fb4c7; }
-    .content { padding:32px 36px 40px; }
-    .intro { background:rgba(79,209,255,0.05); border:1px solid var(--border); border-radius:12px; padding:22px 26px; margin-bottom:24px; }
-    .intro h2 { font-size:1rem; color:var(--cyan); font-weight:800; margin-bottom:10px; }
-    .intro p { font-size:0.88rem; }
-    .step { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:26px; margin:18px 0; transition:border-color 0.2s; }
-    .step:hover { border-color:rgba(79,209,255,0.3); }
-    .step-number { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#1565c0,#7c3aed); color:#fff; font-size:1.1rem; font-weight:900; margin-bottom:14px; box-shadow:0 4px 14px rgba(79,209,255,0.2); }
-    .step h3 { font-size:1rem; font-weight:800; color:var(--title); margin-bottom:14px; }
-    .step-image { width:100%; max-width:720px; height:auto; border-radius:10px; margin:16px auto; display:block; border:1px solid var(--border); box-shadow:0 8px 28px rgba(0,0,0,0.4); object-fit:cover; }
-    .step-description { font-size:0.88rem; margin-bottom:12px; }
-    .step-list { list-style:none; margin:12px 0; display:grid; gap:7px; }
-    .step-list li { background:rgba(255,255,255,0.02); border:1px solid rgba(79,209,255,0.07); border-left:3px solid var(--cyan); border-radius:7px; padding:10px 14px; font-size:0.865rem; }
-    .step-list li strong { color:var(--cyan); }
-    .tip-box { background:rgba(73,230,139,0.05); border:1px solid rgba(73,230,139,0.18); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .tip-box h3,.tip-box h4 { color:var(--green); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .tip-box p { font-size:0.84rem; color:#9fcfad; line-height:1.65; }
-    .warning-box { background:rgba(255,209,102,0.05); border:1px solid rgba(255,209,102,0.2); border-left:3px solid var(--yellow); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .warning-box h3,.warning-box h4 { color:var(--yellow); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .warning-box p { font-size:0.84rem; color:#c9a84c; line-height:1.65; }
-    .error-box { background:rgba(255,107,138,0.05); border:1px solid rgba(255,107,138,0.18); border-left:3px solid var(--red); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .error-box h3,.error-box h4 { color:var(--red); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .error-box p { font-size:0.84rem; color:#c49aab; line-height:1.65; }
-    .info-box { background:rgba(184,156,255,0.05); border:1px solid rgba(184,156,255,0.2); border-left:3px solid var(--purple); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .info-box h3,.info-box h4 { color:var(--purple); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .info-box p { font-size:0.84rem; color:#b8a8d4; line-height:1.65; }
-    .download-btn { display:inline-flex; align-items:center; gap:10px; padding:14px 28px; border-radius:10px; background:linear-gradient(135deg,rgba(21,101,192,0.4),rgba(79,209,255,0.2)); border:1px solid rgba(79,209,255,0.35); color:var(--title); font-size:0.9rem; font-weight:800; text-decoration:none; margin:14px 0; transition:all 0.2s; }
-    .download-btn:hover { background:rgba(79,209,255,0.2); border-color:var(--cyan); }
-    .encaixe-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:14px 0; }
-    .encaixe-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; }
-    .encaixe-card h4 { font-size:0.82rem; font-weight:800; margin-bottom:6px; }
-    .encaixe-card p { font-size:0.8rem; color:var(--text); }
-    .encaixe-card.ok h4 { color:var(--green); }
-    .encaixe-card.sub h4 { color:var(--yellow); }
-    .encaixe-card.sup h4 { color:var(--red); }
-    .footer { background:rgba(0,0,0,0.25); border-top:1px solid var(--border); padding:28px 36px; text-align:center; }
-    .footer h3 { color:var(--cyan); font-size:1rem; margin-bottom:12px; font-weight:800; }
-    .footer p { font-size:0.84rem; color:#9fb4c7; margin:6px 0; }
-    .footer a { color:var(--cyan); text-decoration:none; font-weight:700; }
-    .footer a:hover { text-decoration:underline; }
-    p { font-size:0.88rem; margin:8px 0; }
-    ul:not(.step-list) { padding-left:20px; margin:8px 0; }
-    ul:not(.step-list) li { font-size:0.88rem; margin:4px 0; }
-    @media(max-width:640px) { body{padding:10px;} .content{padding:20px 16px 32px;} .header{padding:28px 16px 22px;} .step{padding:18px 14px;} .encaixe-grid{grid-template-columns:1fr;} }
-</style>
-</head>
-<body>
+      :root {
+        --bg: #060e1e;
+        --surface: #0a1425;
+        --card: #0f1e35;
+        --border: rgba(79, 209, 255, 0.15);
+        --cyan: #4fd1ff;
+        --purple: #b89cff;
+        --green: #49e68b;
+        --yellow: #ffd166;
+        --red: #ff6b8a;
+        --text: #c5d8e8;
+        --title: #eaf7ff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        padding: 20px;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+      }
+      .header {
+        background: linear-gradient(
+          135deg,
+          rgba(21, 101, 192, 0.4),
+          rgba(123, 31, 162, 0.3)
+        );
+        border-bottom: 1px solid var(--border);
+        padding: 40px 36px 32px;
+        text-align: center;
+        position: relative;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 50% 0%,
+          rgba(79, 209, 255, 0.07) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .logo {
+        display: inline-block;
+        padding: 4px 16px;
+        border-radius: 999px;
+        background: rgba(79, 209, 255, 0.1);
+        border: 1px solid rgba(79, 209, 255, 0.3);
+        color: var(--cyan);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        margin-bottom: 14px;
+      }
+      .header h1 {
+        font-size: clamp(1.4rem, 3.5vw, 2rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #4fd1ff, #b89cff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .header p {
+        font-size: 0.9rem;
+        color: #9fb4c7;
+      }
+      .content {
+        padding: 32px 36px 40px;
+      }
+      .intro {
+        background: rgba(79, 209, 255, 0.05);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px 26px;
+        margin-bottom: 24px;
+      }
+      .intro h2 {
+        font-size: 1rem;
+        color: var(--cyan);
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .intro p {
+        font-size: 0.88rem;
+      }
+      .step {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 26px;
+        margin: 18px 0;
+        transition: border-color 0.2s;
+      }
+      .step:hover {
+        border-color: rgba(79, 209, 255, 0.3);
+      }
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1565c0, #7c3aed);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 900;
+        margin-bottom: 14px;
+        box-shadow: 0 4px 14px rgba(79, 209, 255, 0.2);
+      }
+      .step h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--title);
+        margin-bottom: 14px;
+      }
+      .step-image {
+        width: 100%;
+        max-width: 720px;
+        height: auto;
+        border-radius: 10px;
+        margin: 16px auto;
+        display: block;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+        object-fit: cover;
+      }
+      .step-description {
+        font-size: 0.88rem;
+        margin-bottom: 12px;
+      }
+      .step-list {
+        list-style: none;
+        margin: 12px 0;
+        display: grid;
+        gap: 7px;
+      }
+      .step-list li {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(79, 209, 255, 0.07);
+        border-left: 3px solid var(--cyan);
+        border-radius: 7px;
+        padding: 10px 14px;
+        font-size: 0.865rem;
+      }
+      .step-list li strong {
+        color: var(--cyan);
+      }
+      .tip-box {
+        background: rgba(73, 230, 139, 0.05);
+        border: 1px solid rgba(73, 230, 139, 0.18);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+      .tip-box h3,
+      .tip-box h4 {
+        color: var(--green);
+        font-size: 0.85rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .tip-box p {
+        font-size: 0.84rem;
+        color: #9fcfad;
+        line-height: 1.65;
+      }
+      .warning-box {
+        background: rgba(255, 209, 102, 0.05);
+        border: 1px solid rgba(255, 209, 102, 0.2);
+        border-left: 3px solid var(--yellow);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+      .warning-box h3,
+      .warning-box h4 {
+        color: var(--yellow);
+        font-size: 0.85rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .warning-box p {
+        font-size: 0.84rem;
+        color: #c9a84c;
+        line-height: 1.65;
+      }
+      .error-box {
+        background: rgba(255, 107, 138, 0.05);
+        border: 1px solid rgba(255, 107, 138, 0.18);
+        border-left: 3px solid var(--red);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+      .error-box h3,
+      .error-box h4 {
+        color: var(--red);
+        font-size: 0.85rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .error-box p {
+        font-size: 0.84rem;
+        color: #c49aab;
+        line-height: 1.65;
+      }
+      .info-box {
+        background: rgba(184, 156, 255, 0.05);
+        border: 1px solid rgba(184, 156, 255, 0.2);
+        border-left: 3px solid var(--purple);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+      .info-box h3,
+      .info-box h4 {
+        color: var(--purple);
+        font-size: 0.85rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .info-box p {
+        font-size: 0.84rem;
+        color: #b8a8d4;
+        line-height: 1.65;
+      }
+      .download-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 28px;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          rgba(21, 101, 192, 0.4),
+          rgba(79, 209, 255, 0.2)
+        );
+        border: 1px solid rgba(79, 209, 255, 0.35);
+        color: var(--title);
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-decoration: none;
+        margin: 14px 0;
+        transition: all 0.2s;
+      }
+      .download-btn:hover {
+        background: rgba(79, 209, 255, 0.2);
+        border-color: var(--cyan);
+      }
+      .encaixe-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .encaixe-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        text-align: center;
+      }
+      .encaixe-card h4 {
+        font-size: 0.82rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .encaixe-card p {
+        font-size: 0.8rem;
+        color: var(--text);
+      }
+      .encaixe-card.ok h4 {
+        color: var(--green);
+      }
+      .encaixe-card.sub h4 {
+        color: var(--yellow);
+      }
+      .encaixe-card.sup h4 {
+        color: var(--red);
+      }
+      .footer {
+        background: rgba(0, 0, 0, 0.25);
+        border-top: 1px solid var(--border);
+        padding: 28px 36px;
+        text-align: center;
+      }
+      .footer h3 {
+        color: var(--cyan);
+        font-size: 1rem;
+        margin-bottom: 12px;
+        font-weight: 800;
+      }
+      .footer p {
+        font-size: 0.84rem;
+        color: #9fb4c7;
+        margin: 6px 0;
+      }
+      .footer a {
+        color: var(--cyan);
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+      p {
+        font-size: 0.88rem;
+        margin: 8px 0;
+      }
+      ul:not(.step-list) {
+        padding-left: 20px;
+        margin: 8px 0;
+      }
+      ul:not(.step-list) li {
+        font-size: 0.88rem;
+        margin: 4px 0;
+      }
+      @media (max-width: 640px) {
+        body {
+          padding: 10px;
+        }
+        .content {
+          padding: 20px 16px 32px;
+        }
+        .header {
+          padding: 28px 16px 22px;
+        }
+        .step {
+          padding: 18px 14px;
+        }
+        .encaixe-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/guias/guia-padrao.css" />
+    <script src="/guias/guia-padrao.js" defer></script>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <div class="logo">🔬 QUANTON3D</div>
-            <h1>🎯 Guia Completo de Calibração de Resina</h1>
-            <p>Gabarito Quanton3D - Teste de Exposição Perfeito</p>
+      <div class="header">
+        <div class="logo">🔬 QUANTON3D</div>
+        <h1>🎯 Guia Completo de Calibração de Resina</h1>
+        <p>Gabarito Quanton3D - Teste de Exposição Perfeito</p>
+      </div>
+
+      <div class="content">
+        <div class="intro">
+          <h2>📋 Por que Calibrar a Resina?</h2>
+          <p>
+            Calibrar não é encontrar um número mágico. É definir uma janela de
+            processo na qual a combinação impressora–resina–camada–temperatura
+            reproduz detalhes, encaixes e resistência com repetibilidade. O
+            Gabarito Quanton3D ajuda a ajustar exposição e encaixe; a liberação
+            final ainda exige medição, repetição e uma peça representativa da
+            aplicação.
+          </p>
         </div>
 
-        <div class="content">
-            <div class="intro">
-                <h2>📋 Por que Calibrar a Resina?</h2>
-                <p>A calibração correta do tempo de exposição é fundamental para obter impressões 3D de resina com qualidade profissional. Cada resina e cada impressora possuem características únicas que exigem ajustes específicos. O tempo de exposição incorreto resulta em peças frágeis, detalhes perdidos, dimensões imprecisas e falhas estruturais. O Gabarito Quanton3D foi desenvolvido especificamente para tornar esse processo simples, rápido e preciso, garantindo que você encontre o ponto ideal de exposição para suas impressões!</p>
-            </div>
-
-            <div class="warning-box">
-                <h3>⚠️ ATENÇÃO IMPORTANTE</h3>
-                <p>A calibração deve ser feita SEMPRE que você trocar de resina, mudar de impressora, substituir a tela LCD ou notar problemas de qualidade nas impressões. Cada resina tem seu tempo ideal de exposição!</p>
-            </div>
-
-            <div class="download-box">
-                <h3>⬇️ BAIXE O GABARITO QUANTON3D</h3>
-                <p>Arquivo STL otimizado para calibração rápida e precisa</p>
-                <a href="https://quanton3d.com.br/calibrador/" target="_blank" class="download-button">📥 BAIXAR GABARITO AGORA</a>
-            </div>
-
-            <!-- PASSO 1 -->
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Download e Preparação do Arquivo</h3>
-                <img src="https://drive.google.com/thumbnail?id=1lZN_0iamg6LtW1oafGzgHPD62CmPPJZQ&sz=w1200" alt="Gabarito Quanton3D" class="step-image">
-                <div class="step-description">
-                    <p>O primeiro passo é obter o arquivo de calibração oficial da Quanton3D:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Acesse o site da Quanton3D:</strong> <a href="https://quanton3d.com.br/calibrador/" target="_blank">quanton3d.com.br/calibrador</a></li>
-                    <li><strong>Baixe o arquivo STL</strong> do gabarito de calibração - é gratuito!</li>
-                    <li><strong>Abra seu fatiador preferido</strong> (Chitubox, Lychee Slicer, PrusaSlicer, etc)</li>
-                    <li><strong>Importe o arquivo STL</strong> do gabarito para o fatiador</li>
-                    <li><strong>NÃO adicione suportes!</strong> O gabarito foi projetado para ser impresso sem suportes</li>
-                    <li><strong>Mantenha a posição original</strong> - não rotacione ou incline o modelo</li>
-                </ul>
-                <div class="tip-box">
-                    <h4>💡 Dica Profissional</h4>
-                    <p>O gabarito Quanton3D possui 5 posições de teste numeradas (1, 2, 3, 4, 5) e um pino de encaixe. Cada posição testa um nível diferente de tolerância dimensional, permitindo identificar o tempo de exposição perfeito!</p>
-                </div>
-            </div>
-
-            <!-- PASSO 2 -->
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>Configuração dos Parâmetros Iniciais</h3>
-                <img src="https://drive.google.com/thumbnail?id=1DNKiQpczrxaTaR55x_9d1lQLmCmO7hup&sz=w1200" alt="Passos de calibração" class="step-image">
-                <div class="step-description">
-                    <p>Configure seu fatiador com os parâmetros iniciais recomendados para sua resina:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Acesse a seção "Parâmetros de Impressão"</strong> no site da Quanton3D</li>
-                    <li><strong>Selecione sua resina específica</strong> (ABS-Like, Flexível, Dental, etc)</li>
-                    <li><strong>Selecione seu modelo de impressora</strong> (Elegoo Mars, Anycubic Photon, etc)</li>
-                    <li><strong>Anote os parâmetros recomendados:</strong> tempo de exposição, camadas base, lift speed, etc</li>
-                    <li><strong>Configure o fatiador</strong> com esses parâmetros como ponto de partida</li>
-                    <li><strong>Fatie o modelo</strong> e salve o arquivo no pendrive/cartão SD</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📊 Parâmetros Típicos para Calibração:</h4>
-                <table class="comparison-table">
-                    <tr>
-                        <th>Parâmetro</th>
-                        <th>Valor Típico</th>
-                        <th>Observação</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Altura de Camada</strong></td>
-                        <td>0.05mm</td>
-                        <td>Padrão para maioria das resinas</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Camadas Base</strong></td>
-                        <td>5-8 camadas</td>
-                        <td>Para garantir boa adesão</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Exposição Base</strong></td>
-                        <td>30-50s</td>
-                        <td>Varia conforme impressora</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Exposição Normal</strong></td>
-                        <td>2-3s (inicial)</td>
-                        <td>Será ajustado na calibração</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Lift Speed</strong></td>
-                        <td>60-80mm/min</td>
-                        <td>Velocidade de elevação</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Lift Distance</strong></td>
-                        <td>6-8mm</td>
-                        <td>Distância de elevação</td>
-                    </tr>
-                </table>
-
-                <div class="warning-box">
-                    <h3>⚠️ IMPORTANTE</h3>
-                    <p>Use os parâmetros fornecidos pela Quanton3D como ponto de partida. Eles foram testados e otimizados para cada resina específica. O teste de calibração vai ajustar apenas o tempo de exposição normal!</p>
-                </div>
-            </div>
-
-            <!-- PASSO 3 -->
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Impressão do Gabarito</h3>
-                <img src="https://drive.google.com/thumbnail?id=1Q2I6gsaFDhROsw1IQ0S6to12MSmI-GO1&sz=w1200" alt="Teste de exposição" class="step-image">
-                <div class="step-description">
-                    <p>Agora é hora de imprimir o gabarito de calibração:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Certifique-se de que a impressora está nivelada</strong> - um nivelamento incorreto compromete o teste</li>
-                    <li><strong>Use resina nova e bem agitada</strong> - resina velha ou sedimentada dá resultados incorretos</li>
-                    <li><strong>Verifique a temperatura ambiente</strong> - ideal entre 20-25°C</li>
-                    <li><strong>Inicie a impressão</strong> e aguarde a conclusão (geralmente 30-60 minutos)</li>
-                    <li><strong>Não abra a tampa durante a impressão</strong> - luz externa pode afetar o resultado</li>
-                    <li><strong>Aguarde a impressão finalizar completamente</strong></li>
-                </ul>
-                <div class="tip-box">
-                    <h4>💡 Dica Profissional</h4>
-                    <p>Se a impressão falhar completamente (não aderir à plataforma), o problema é o nivelamento ou os parâmetros de camada base, não o tempo de exposição normal. Resolva isso primeiro antes de continuar a calibração!</p>
-                </div>
-            </div>
-
-            <!-- PASSO 4 -->
-            <div class="step">
-                <div class="step-number">4</div>
-                <h3>Pós-Processamento Correto</h3>
-                <img src="https://drive.google.com/thumbnail?id=19jI14zOgX4CZVBTBosfhv3sc2RVBE5ys&sz=w1200" alt="Cones de calibração" class="step-image">
-                <div class="step-description">
-                    <p>O pós-processamento correto é crucial para resultados precisos:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Remova a peça da plataforma</strong> com cuidado usando a espátula</li>
-                    <li><strong>Lave em álcool isopropílico 99%</strong> por 2-3 minutos com agitação suave</li>
-                    <li><strong>Use escova macia</strong> para remover resina não curada dos detalhes</li>
-                    <li><strong>Seque completamente</strong> com ar comprimido ou deixe secar naturalmente</li>
-                    <li><strong>Cure na câmara UV</strong> conforme recomendação da resina (geralmente 2-5 minutos)</li>
-                    <li><strong>Deixe esfriar completamente</strong> antes de fazer o teste de encaixe</li>
-                </ul>
-                <div class="warning-box">
-                    <h3>⚠️ ATENÇÃO</h3>
-                    <p>NÃO pule a etapa de limpeza! Resina não curada entre as peças pode fazer parecer que o encaixe está correto quando não está. A limpeza inadequada invalida o teste!</p>
-                </div>
-            </div>
-
-            <!-- PASSO 5 -->
-            <div class="step">
-                <div class="step-number">5</div>
-                <h3>Teste de Encaixe - Interpretação dos Resultados</h3>
-                <img src="https://drive.google.com/thumbnail?id=1ajwYSXzggGuehiWmrkLyTYG_2Eul7KNc&sz=w1200" alt="Ajuste de exposição" class="step-image">
-                <div class="step-description">
-                    <p>Agora vem a parte mais importante - interpretar os resultados do teste:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Pegue o pino de teste</strong> que foi impresso junto com a base</li>
-                    <li><strong>Tente encaixar no orifício número 3</strong> SEM FORÇAR - deve entrar com leve pressão</li>
-                    <li><strong>Se encaixou perfeitamente no 3:</strong> PARABÉNS! Sua calibração está perfeita! ✅</li>
-                    <li><strong>Se NÃO encaixou no 3:</strong> Vamos identificar o problema e ajustar</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">🔍 Interpretação Detalhada:</h4>
-
-                <div class="error-box">
-                    <h4>❌ CASO 1: Pino encaixa fácil nos números 1 e 2, mas NÃO encaixa no 3</h4>
-                    <p><strong>Diagnóstico:</strong> SUBEXPOSIÇÃO - Tempo de exposição muito baixo<br>
-                    <strong>Sintoma:</strong> As peças estão saindo com dimensões maiores que o esperado<br>
-                    <strong>Solução:</strong> AUMENTAR o tempo de exposição em 0.5s<br>
-                    <strong>Exemplo:</strong> Se estava em 2.5s, mude para 3.0s</p>
-                </div>
-
-                <div class="error-box">
-                    <h4>❌ CASO 2: Pino encaixa fácil nos números 4 e 5, mas NÃO encaixa no 3</h4>
-                    <p><strong>Diagnóstico:</strong> SUPEREXPOSIÇÃO - Tempo de exposição muito alto<br>
-                    <strong>Sintoma:</strong> As peças estão saindo com dimensões menores que o esperado<br>
-                    <strong>Solução:</strong> REDUZIR o tempo de exposição em 0.5s<br>
-                    <strong>Exemplo:</strong> Se estava em 3.0s, mude para 2.5s</p>
-                </div>
-
-                <div class="tip-box">
-                    <h4>💡 Entendendo a Lógica</h4>
-                    <p><strong>Números 1 e 2:</strong> Orifícios MAIORES (tolerância alta) - pino encaixa fácil em peças subexpostas<br>
-                    <strong>Número 3:</strong> Orifício IDEAL (tolerância perfeita) - objetivo da calibração<br>
-                    <strong>Números 4 e 5:</strong> Orifícios MENORES (tolerância baixa) - pino encaixa fácil em peças superexpostas</p>
-                </div>
-            </div>
-
-            <!-- PASSO 6 -->
-            <div class="step">
-                <div class="step-number">6</div>
-                <h3>Ajuste Fino e Repetição do Teste</h3>
-                <img src="https://drive.google.com/thumbnail?id=1IYm-CNv7QDIhk8IvTWlKfLl4DfN3wKrX&sz=w1200" alt="Matriz de validação" class="step-image">
-                <div class="step-description">
-                    <p>Se o pino não encaixou perfeitamente no número 3, siga este processo iterativo:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Ajuste o tempo de exposição</strong> conforme identificado no passo anterior (±0.5s)</li>
-                    <li><strong>Imprima o gabarito novamente</strong> com o novo tempo de exposição</li>
-                    <li><strong>Repita o pós-processamento</strong> (limpeza e cura)</li>
-                    <li><strong>Teste o encaixe novamente</strong> no número 3</li>
-                    <li><strong>Continue ajustando</strong> até que o pino encaixe perfeitamente no 3</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📈 Exemplo de Processo Iterativo:</h4>
-                <table class="comparison-table">
-                    <tr>
-                        <th>Tentativa</th>
-                        <th>Tempo de Exposição</th>
-                        <th>Resultado</th>
-                        <th>Ação</th>
-                    </tr>
-                    <tr>
-                        <td>1ª</td>
-                        <td>2.5s</td>
-                        <td>Encaixa em 1 e 2, não em 3</td>
-                        <td>Aumentar para 3.0s</td>
-                    </tr>
-                    <tr>
-                        <td>2ª</td>
-                        <td>3.0s</td>
-                        <td>Encaixa em 4 e 5, não em 3</td>
-                        <td>Reduzir para 2.7s</td>
-                    </tr>
-                    <tr>
-                        <td>3ª</td>
-                        <td>2.7s</td>
-                        <td>Encaixa perfeitamente em 3! ✅</td>
-                        <td>Calibração concluída!</td>
-                    </tr>
-                </table>
-
-                <div class="tip-box">
-                    <h4>💡 Dica Profissional</h4>
-                    <p>Geralmente são necessárias 2-3 tentativas para encontrar o ponto ideal. Não desanime! Cada teste te aproxima da calibração perfeita. Anote todos os resultados para referência futura!</p>
-                </div>
-            </div>
-
-            <!-- PASSO 7 -->
-            <div class="step">
-                <div class="step-number">7</div>
-                <h3>Validação Final e Documentação</h3>
-                <div class="step-description">
-                    <p>Após encontrar o tempo de exposição ideal, valide e documente:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Imprima uma peça de teste real</strong> (não apenas o gabarito) para confirmar</li>
-                    <li><strong>Verifique dimensões com paquímetro</strong> - devem estar precisas</li>
-                    <li><strong>Verifique a qualidade dos detalhes</strong> - devem estar nítidos e bem definidos</li>
-                    <li><strong>Verifique a resistência mecânica</strong> - peça não deve ser frágil</li>
-                    <li><strong>Documente o tempo ideal</strong> em uma tabela ou caderno</li>
-                    <li><strong>Salve o perfil no fatiador</strong> com nome descritivo (ex: "Quanton3D ABS-Like Mars 3")</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📝 Modelo de Documentação:</h4>
-                <div class="tip-box">
-                    <h4>📋 Registro de Calibração</h4>
-                    <p><strong>Data:</strong> __/__/____<br>
-                    <strong>Resina:</strong> Quanton3D [nome da resina]<br>
-                    <strong>Impressora:</strong> [modelo]<br>
-                    <strong>Tela LCD:</strong> [resolução e condição]<br>
-                    <strong>Tempo de Exposição Ideal:</strong> ____s<br>
-                    <strong>Camadas Base:</strong> ____ camadas a ____s<br>
-                    <strong>Temperatura Ambiente:</strong> ____°C<br>
-                    <strong>Observações:</strong> ________________________</p>
-                </div>
-            </div>
-
-            <!-- TROUBLESHOOTING -->
-            <div class="step">
-                <div class="step-number">?</div>
-                <h3>🔧 Solução de Problemas Comuns</h3>
-                <div class="step-description">
-                    <p>Se você está tendo problemas durante a calibração, confira estas soluções:</p>
-                </div>
-
-                <div class="error-box">
-                    <h4>❌ Problema: Gabarito não adere à plataforma</h4>
-                    <p><strong>Causa:</strong> Problema de nivelamento ou camadas base<br>
-                    <strong>Solução:</strong><br>
-                    • Refaça o nivelamento da plataforma<br>
-                    • Aumente o tempo de exposição das camadas base para 40-50s<br>
-                    • Aumente o número de camadas base para 8-10<br>
-                    • Limpe e lixe levemente a plataforma com lixa 220-400</p>
-                </div>
-
-                <div class="error-box">
-                    <h4>❌ Problema: Pino não encaixa em NENHUMA posição</h4>
-                    <p><strong>Causa:</strong> Superexposição extrema ou limpeza inadequada<br>
-                    <strong>Solução:</strong><br>
-                    • Reduza o tempo de exposição em 1.0s (não apenas 0.5s)<br>
-                    • Verifique se limpou bem a resina não curada<br>
-                    • Verifique se a resina não está vencida ou contaminada<br>
-                    • Teste se a tela LCD não está com brilho muito alto</p>
-                </div>
-
-                <div class="error-box">
-                    <h4>❌ Problema: Pino encaixa em TODAS as posições</h4>
-                    <p><strong>Causa:</strong> Subexposição extrema ou pino deformado<br>
-                    <strong>Solução:</strong><br>
-                    • Aumente o tempo de exposição em 1.0s (não apenas 0.5s)<br>
-                    • Verifique se o pino não deformou durante a cura<br>
-                    • Certifique-se de que a resina está bem agitada<br>
-                    • Verifique se a tela LCD não está com brilho muito baixo ou pixels mortos</p>
-                </div>
-
-                <div class="error-box">
-                    <h4>❌ Problema: Resultados inconsistentes entre impressões</h4>
-                    <p><strong>Causa:</strong> Variações de temperatura ou resina<br>
-                    <strong>Solução:</strong><br>
-                    • Mantenha temperatura ambiente constante (20-25°C)<br>
-                    • Agite bem a resina antes de cada impressão<br>
-                    • Filtre a resina para remover partículas curadas<br>
-                    • Verifique se a resina não está próxima do vencimento<br>
-                    • Limpe a tela LCD entre cada teste</p>
-                </div>
-
-                <div class="tip-box">
-                    <h4>💡 Quando Recalibrar</h4>
-                    <p>• Ao trocar de resina (mesmo que seja da mesma marca)<br>
-                    • Ao trocar de impressora ou substituir a tela LCD<br>
-                    • Após 3-6 meses de uso contínuo da mesma resina<br>
-                    • Quando notar perda de qualidade ou precisão dimensional<br>
-                    • Após mudanças significativas de temperatura ambiente<br>
-                    • Ao abrir um frasco novo de resina (pode ter pequenas variações de lote)</p>
-                </div>
-            </div>
-
-            <!-- DICAS AVANÇADAS -->
-            <div class="step">
-                <div class="step-number">⚡</div>
-                <h3>Dicas Avançadas de Calibração</h3>
-                <div class="step-description">
-                    <p>Para usuários que desejam otimização máxima:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Calibração por cor:</strong> Resinas de cores diferentes da mesma linha podem precisar de ajustes de ±0.2-0.5s</li>
-                    <li><strong>Calibração sazonal:</strong> No inverno, pode ser necessário aumentar 0.2-0.3s devido à temperatura mais baixa</li>
-                    <li><strong>Envelhecimento da tela:</strong> Telas LCD perdem eficiência com o tempo - recalibre a cada 500-1000h de uso</li>
-                    <li><strong>Teste de detalhes finos:</strong> Após calibrar, imprima um modelo com texto pequeno (0.5mm) para validar</li>
-                    <li><strong>Teste de resistência:</strong> Imprima um gancho de teste e aplique peso para verificar resistência mecânica</li>
-                    <li><strong>Perfis múltiplos:</strong> Crie perfis separados para "qualidade" (exposição ideal) e "velocidade" (exposição -0.3s)</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">🎯 Sinais de Calibração Perfeita:</h4>
-                <div class="tip-box">
-                    <h4>✅ Sua calibração está perfeita quando:</h4>
-                    <p>• Pino encaixa perfeitamente no número 3 sem forçar<br>
-                    • Dimensões das peças conferem com o modelo 3D (±0.1mm)<br>
-                    • Detalhes finos (0.5mm) são reproduzidos com clareza<br>
-                    • Superfícies lisas sem marcas de camadas excessivas<br>
-                    • Peças têm boa resistência mecânica (não quebram fácil)<br>
-                    • Não há resina não curada grudada nas peças após limpeza<br>
-                    • Furos e encaixes têm dimensões corretas</p>
-                </div>
-            </div>
-
+        <div class="warning-box">
+          <h3>⚠️ ATENÇÃO IMPORTANTE</h3>
+          <p>
+            Crie uma calibração por impressora, resina/cor, altura de camada e
+            condição térmica. Reavalie após mudança de tela, firmware que altere
+            o ciclo, lote com comportamento diferente ou desvio comprovado. Não
+            altere o perfil aprovado apenas porque o calendário virou.
+          </p>
         </div>
 
-        <div class="footer">
-            <h3>🔬 Quanton3D - Resinas UV de Alta Performance</h3>
-            <p>Precisa de ajuda com calibração? Entre em contato conosco!</p>
-            <p>📱 WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a></p>
-            <p>📧 Email: <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p>
-            <p>🌐 Site: <a href="https://quanton3d.com.br">quanton3d.com.br</a></p>
-            <p>📥 Baixe o gabarito: <a href="https://quanton3d.com.br/calibrador/">quanton3d.com.br/calibrador</a></p>
-            <br>
-            <p style="font-size: 0.9em; opacity: 0.8;">© 2025 Quanton3D - Todos os direitos reservados</p>
-            <p style="font-size: 0.85em; opacity: 0.7; margin-top: 10px;">Guia de calibração usando o Gabarito Quanton3D oficial</p>
+        <div class="download-box">
+          <h3>⬇️ BAIXE O GABARITO QUANTON3D</h3>
+          <p>Arquivo STL otimizado para calibração rápida e precisa</p>
+          <a
+            href="https://quanton3d.com.br/calibrador/"
+            target="_blank"
+            class="download-button"
+            >📥 BAIXAR GABARITO AGORA</a
+          >
         </div>
+
+        <!-- PASSO 1 -->
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Download e Preparação do Arquivo</h3>
+          <img
+            src="https://drive.google.com/thumbnail?id=1lZN_0iamg6LtW1oafGzgHPD62CmPPJZQ&sz=w1200"
+            alt="Gabarito Quanton3D"
+            class="step-image"
+          />
+          <div class="step-description">
+            <p>
+              O primeiro passo é obter o arquivo de calibração oficial da
+              Quanton3D:
+            </p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Acesse o site da Quanton3D:</strong>
+              <a href="https://quanton3d.com.br/calibrador/" target="_blank"
+                >quanton3d.com.br/calibrador</a
+              >
+            </li>
+            <li>
+              <strong>Baixe o arquivo STL</strong> do gabarito de calibração - é
+              gratuito!
+            </li>
+            <li>
+              <strong>Abra seu fatiador preferido</strong> (Chitubox, Lychee
+              Slicer, PrusaSlicer, etc)
+            </li>
+            <li>
+              <strong>Importe o arquivo STL</strong> do gabarito para o fatiador
+            </li>
+            <li>
+              <strong>NÃO adicione suportes!</strong> O gabarito foi projetado
+              para ser impresso sem suportes
+            </li>
+            <li>
+              <strong>Mantenha a posição original</strong> - não rotacione ou
+              incline o modelo
+            </li>
+          </ul>
+          <div class="tip-box">
+            <h4>💡 Dica Profissional</h4>
+            <p>
+              O gabarito Quanton3D possui 5 posições de teste numeradas (1, 2,
+              3, 4, 5) e um pino de encaixe. Cada posição testa um nível
+              diferente de tolerância dimensional, permitindo identificar o
+              tempo de exposição perfeito!
+            </p>
+          </div>
+        </div>
+
+        <!-- PASSO 2 -->
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Configuração dos Parâmetros Iniciais</h3>
+          <img
+            src="https://drive.google.com/thumbnail?id=1DNKiQpczrxaTaR55x_9d1lQLmCmO7hup&sz=w1200"
+            alt="Passos de calibração"
+            class="step-image"
+          />
+          <div class="step-description">
+            <p>
+              Configure seu fatiador com os parâmetros iniciais recomendados
+              para sua resina:
+            </p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Acesse a seção "Parâmetros de Impressão"</strong> no site
+              da Quanton3D
+            </li>
+            <li>
+              <strong>Selecione sua resina específica</strong> (ABS-Like,
+              Flexível, Dental, etc)
+            </li>
+            <li>
+              <strong>Selecione seu modelo de impressora</strong> (Elegoo Mars,
+              Anycubic Photon, etc)
+            </li>
+            <li>
+              <strong>Anote os parâmetros recomendados:</strong> tempo de
+              exposição, camadas base, lift speed, etc
+            </li>
+            <li>
+              <strong>Configure o fatiador</strong> com esses parâmetros como
+              ponto de partida
+            </li>
+            <li>
+              <strong>Fatie o modelo</strong> e salve o arquivo no
+              pendrive/cartão SD
+            </li>
+          </ul>
+
+          <h4 style="color: #667eea; margin: 30px 0 15px 0">
+            📊 Parâmetros Típicos para Calibração:
+          </h4>
+          <table class="comparison-table">
+            <tr>
+              <th>Parâmetro</th>
+              <th>Valor Típico</th>
+              <th>Observação</th>
+            </tr>
+            <tr>
+              <td><strong>Altura de Camada</strong></td>
+              <td>0.05mm</td>
+              <td>Padrão para maioria das resinas</td>
+            </tr>
+            <tr>
+              <td><strong>Camadas Base</strong></td>
+              <td>5-8 camadas</td>
+              <td>Para garantir boa adesão</td>
+            </tr>
+            <tr>
+              <td><strong>Exposição Base</strong></td>
+              <td>30-50s</td>
+              <td>Varia conforme impressora</td>
+            </tr>
+            <tr>
+              <td><strong>Exposição Normal</strong></td>
+              <td>2-3s (inicial)</td>
+              <td>Será ajustado na calibração</td>
+            </tr>
+            <tr>
+              <td><strong>Lift Speed</strong></td>
+              <td>60-80mm/min</td>
+              <td>Velocidade de elevação</td>
+            </tr>
+            <tr>
+              <td><strong>Lift Distance</strong></td>
+              <td>6-8mm</td>
+              <td>Distância de elevação</td>
+            </tr>
+          </table>
+
+          <div class="warning-box">
+            <h3>⚠️ IMPORTANTE</h3>
+            <p>
+              Use os parâmetros fornecidos pela Quanton3D como ponto de partida.
+              Eles foram testados e otimizados para cada resina específica. O
+              teste de calibração vai ajustar apenas o tempo de exposição
+              normal!
+            </p>
+          </div>
+        </div>
+
+        <!-- PASSO 3 -->
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Impressão do Gabarito</h3>
+          <img
+            src="https://drive.google.com/thumbnail?id=1Q2I6gsaFDhROsw1IQ0S6to12MSmI-GO1&sz=w1200"
+            alt="Teste de exposição"
+            class="step-image"
+          />
+          <div class="step-description">
+            <p>Agora é hora de imprimir o gabarito de calibração:</p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Certifique-se de que a impressora está nivelada</strong> -
+              um nivelamento incorreto compromete o teste
+            </li>
+            <li>
+              <strong>Use resina nova e bem agitada</strong> - resina velha ou
+              sedimentada dá resultados incorretos
+            </li>
+            <li>
+              <strong>Meça a temperatura da resina</strong> — como ponto de
+              partida, muitas formulações trabalham melhor entre 25–30 °C; siga
+              a ficha do material
+            </li>
+            <li>
+              <strong>Inicie a impressão</strong> e aguarde a conclusão
+              (geralmente 30-60 minutos)
+            </li>
+            <li>
+              <strong>Não abra a tampa durante a impressão</strong> - luz
+              externa pode afetar o resultado
+            </li>
+            <li>
+              <strong>Aguarde a impressão finalizar completamente</strong>
+            </li>
+          </ul>
+          <div class="tip-box">
+            <h4>💡 Dica Profissional</h4>
+            <p>
+              Se o gabarito não aderir, investigue primeiro base, nivelamento,
+              limpeza, temperatura, filme, arquivo e emissão de luz. Não conclua
+              automaticamente que é apenas nivelamento.
+            </p>
+          </div>
+        </div>
+
+        <!-- PASSO 4 -->
+        <div class="step">
+          <div class="step-number">4</div>
+          <h3>Pós-Processamento Correto</h3>
+          <img
+            src="https://drive.google.com/thumbnail?id=19jI14zOgX4CZVBTBosfhv3sc2RVBE5ys&sz=w1200"
+            alt="Cones de calibração"
+            class="step-image"
+          />
+          <div class="step-description">
+            <p>
+              O pós-processamento correto é crucial para resultados precisos:
+            </p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Remova a peça da plataforma</strong> com cuidado usando a
+              espátula
+            </li>
+            <li>
+              <strong>Lave com o agente compatível</strong> pelo tempo validado
+              para a resina; controle saturação, agitação e número de banhos
+            </li>
+            <li>
+              <strong>Use escova macia</strong> para remover resina não curada
+              dos detalhes
+            </li>
+            <li>
+              <strong>Seque completamente</strong> com ar comprimido ou deixe
+              secar naturalmente
+            </li>
+            <li>
+              <strong>Pós-cure conforme a ficha técnica</strong>, controlando
+              comprimento de onda, intensidade, tempo e temperatura
+            </li>
+            <li>
+              <strong>Deixe esfriar completamente</strong> antes de fazer o
+              teste de encaixe
+            </li>
+          </ul>
+          <div class="warning-box">
+            <h3>⚠️ ATENÇÃO</h3>
+            <p>
+              NÃO pule a etapa de limpeza! Resina não curada entre as peças pode
+              fazer parecer que o encaixe está correto quando não está. A
+              limpeza inadequada invalida o teste!
+            </p>
+          </div>
+        </div>
+
+        <!-- PASSO 5 -->
+        <div class="step">
+          <div class="step-number">5</div>
+          <h3>Teste de Encaixe - Interpretação dos Resultados</h3>
+          <img
+            src="https://drive.google.com/thumbnail?id=1ajwYSXzggGuehiWmrkLyTYG_2Eul7KNc&sz=w1200"
+            alt="Ajuste de exposição"
+            class="step-image"
+          />
+          <div class="step-description">
+            <p>
+              Agora vem a parte mais importante - interpretar os resultados do
+              teste:
+            </p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Pegue o pino de teste</strong> que foi impresso junto com
+              a base
+            </li>
+            <li>
+              <strong>Tente encaixar no orifício número 3</strong> SEM FORÇAR -
+              deve entrar com leve pressão
+            </li>
+            <li>
+              <strong>Se encaixou no 3:</strong> a exposição candidata passou no
+              ensaio de encaixe; ainda falta validar repetibilidade e aplicação
+              real
+            </li>
+            <li>
+              <strong>Se NÃO encaixou no 3:</strong> Vamos identificar o
+              problema e ajustar
+            </li>
+          </ul>
+
+          <h4 style="color: #667eea; margin: 30px 0 15px 0">
+            🔍 Interpretação Detalhada:
+          </h4>
+
+          <div class="error-box">
+            <h4>
+              ❌ CASO 1: Pino encaixa fácil nos números 1 e 2, mas NÃO encaixa
+              no 3
+            </h4>
+            <p>
+              <strong>Hipótese indicada pelo gabarito:</strong> exposição abaixo
+              da faixa de encaixe.<br />
+              <strong>Antes de ajustar:</strong> confirme limpeza completa, pino
+              sem deformação e temperatura controlada.<br />
+              <strong>Ação:</strong> aumente um pequeno passo proporcional ao
+              tempo atual e à resolução do controle — não use +0,5 s como regra
+              para toda máquina.
+            </p>
+          </div>
+
+          <div class="error-box">
+            <h4>
+              ❌ CASO 2: Pino encaixa fácil nos números 4 e 5, mas NÃO encaixa
+              no 3
+            </h4>
+            <p>
+              <strong>Hipótese indicada pelo gabarito:</strong> exposição acima
+              da faixa de encaixe.<br />
+              <strong>Antes de ajustar:</strong> elimine resíduo interno,
+              pós-cura desigual e compensação dimensional ativa.<br />
+              <strong>Ação:</strong> reduza um pequeno passo e repita o mesmo
+              processo; não use −0,5 s como correção universal.
+            </p>
+          </div>
+
+          <div class="tip-box">
+            <h4>💡 Entendendo a Lógica</h4>
+            <p>
+              <strong>Números 1 e 2:</strong> faixas de maior folga previstas
+              pelo desenho.<br />
+              <strong>Número 3:</strong> alvo nominal deste gabarito, não uma
+              tolerância universal para qualquer produto.<br />
+              <strong>Números 4 e 5:</strong> faixas de menor folga. Interprete
+              sempre segundo a geometria original e sem forçar o pino.
+            </p>
+          </div>
+        </div>
+
+        <!-- PASSO 6 -->
+        <div class="step">
+          <div class="step-number">6</div>
+          <h3>Ajuste Fino e Repetição do Teste</h3>
+          <img
+            src="https://drive.google.com/thumbnail?id=1IYm-CNv7QDIhk8IvTWlKfLl4DfN3wKrX&sz=w1200"
+            alt="Matriz de validação"
+            class="step-image"
+          />
+          <div class="step-description">
+            <p>
+              Se o pino ainda não atingir o comportamento-alvo no número 3, siga
+              este processo iterativo:
+            </p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Ajuste o tempo de exposição</strong> em passo pequeno e
+              documentado; máquinas rápidas podem exigir incrementos bem menores
+              que 0,5 s
+            </li>
+            <li>
+              <strong>Imprima o gabarito novamente</strong> com o novo tempo de
+              exposição
+            </li>
+            <li>
+              <strong>Repita o pós-processamento</strong> (limpeza e cura)
+            </li>
+            <li><strong>Teste o encaixe novamente</strong> no número 3</li>
+            <li>
+              <strong>Continue ajustando</strong> até o encaixe-alvo e confirme
+              com repetição
+            </li>
+          </ul>
+
+          <h4 style="color: #667eea; margin: 30px 0 15px 0">
+            📈 Exemplo de Processo Iterativo:
+          </h4>
+          <table class="comparison-table">
+            <tr>
+              <th>Tentativa</th>
+              <th>Tempo de Exposição</th>
+              <th>Resultado</th>
+              <th>Ação</th>
+            </tr>
+            <tr>
+              <td>1ª</td>
+              <td>2.5s</td>
+              <td>Encaixa em 1 e 2, não em 3</td>
+              <td>Aumentar para 3.0s</td>
+            </tr>
+            <tr>
+              <td>2ª</td>
+              <td>3.0s</td>
+              <td>Encaixa em 4 e 5, não em 3</td>
+              <td>Reduzir para 2.7s</td>
+            </tr>
+            <tr>
+              <td>3ª</td>
+              <td>2.7s</td>
+              <td>Atinge o encaixe-alvo no 3</td>
+              <td>Candidato para validação final</td>
+            </tr>
+          </table>
+
+          <div class="tip-box">
+            <h4>💡 Dica Profissional</h4>
+            <p>
+              Use busca por faixa: encontre um resultado claramente baixo e
+              outro claramente alto, depois teste valores intermediários. Anote
+              todos os resultados e repita o candidato final em posições
+              diferentes da plataforma.
+            </p>
+          </div>
+        </div>
+
+        <!-- PASSO 7 -->
+        <div class="step">
+          <div class="step-number">7</div>
+          <h3>Validação Final e Documentação</h3>
+          <div class="step-description">
+            <p>
+              Após encontrar o tempo de exposição ideal, valide e documente:
+            </p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Imprima uma peça de teste real</strong> (não apenas o
+              gabarito) para confirmar
+            </li>
+            <li>
+              <strong>Verifique dimensões com paquímetro</strong> - devem estar
+              precisas
+            </li>
+            <li>
+              <strong>Verifique a qualidade dos detalhes</strong> - devem estar
+              nítidos e bem definidos
+            </li>
+            <li>
+              <strong>Verifique a resistência mecânica</strong> - peça não deve
+              ser frágil
+            </li>
+            <li>
+              <strong>Documente o tempo ideal</strong> em uma tabela ou caderno
+            </li>
+            <li>
+              <strong>Salve o perfil no fatiador</strong> com nome descritivo
+              (ex: "Quanton3D ABS-Like Mars 3")
+            </li>
+          </ul>
+
+          <h4 style="color: #667eea; margin: 30px 0 15px 0">
+            📝 Modelo de Documentação:
+          </h4>
+          <div class="tip-box">
+            <h4>📋 Registro de Calibração</h4>
+            <p>
+              <strong>Data:</strong> __/__/____<br />
+              <strong>Resina:</strong> Quanton3D [nome da resina]<br />
+              <strong>Impressora:</strong> [modelo]<br />
+              <strong>Tela LCD:</strong> [resolução e condição]<br />
+              <strong>Tempo de Exposição Ideal:</strong> ____s<br />
+              <strong>Camadas Base:</strong> ____ camadas a ____s<br />
+              <strong>Temperatura Ambiente:</strong> ____°C<br />
+              <strong>Observações:</strong> ________________________
+            </p>
+          </div>
+        </div>
+
+        <!-- TROUBLESHOOTING -->
+        <div class="step">
+          <div class="step-number">?</div>
+          <h3>🔧 Solução de Problemas Comuns</h3>
+          <div class="step-description">
+            <p>
+              Se você está tendo problemas durante a calibração, confira estas
+              soluções:
+            </p>
+          </div>
+
+          <div class="error-box">
+            <h4>❌ Problema: Gabarito não adere à plataforma</h4>
+            <p>
+              <strong>Causa:</strong> Problema de nivelamento ou camadas base<br />
+              <strong>Solução:</strong><br />
+              • Refaça o nivelamento da plataforma<br />
+              • Compare cinco zonas antes de concluir que é nivelamento<br />
+              • Ajuste exposição e quantidade de base em pequenos passos,
+              partindo do perfil oficial<br />
+              • Só altere a textura da plataforma quando o fabricante permitir;
+              lixar muda permanentemente a superfície
+            </p>
+          </div>
+
+          <div class="error-box">
+            <h4>❌ Problema: Pino não encaixa em NENHUMA posição</h4>
+            <p>
+              <strong>Causa:</strong> Superexposição extrema ou limpeza
+              inadequada<br />
+              <strong>Solução:</strong><br />
+              • Reduza a exposição em passo pequeno e repita; 1,0 s pode ser uma
+              alteração extrema em impressoras rápidas<br />
+              • Verifique se limpou bem a resina não curada<br />
+              • Verifique se a resina não está vencida ou contaminada<br />
+              • Teste se a tela LCD não está com brilho muito alto
+            </p>
+          </div>
+
+          <div class="error-box">
+            <h4>❌ Problema: Pino encaixa em TODAS as posições</h4>
+            <p>
+              <strong>Causa:</strong> Subexposição extrema ou pino deformado<br />
+              <strong>Solução:</strong><br />
+              • Aumente a exposição em passo pequeno e compare uma nova
+              amostra<br />
+              • Verifique se o pino não deformou durante a cura<br />
+              • Certifique-se de que a resina está bem agitada<br />
+              • Verifique se a tela LCD não está com brilho muito baixo ou
+              pixels mortos
+            </p>
+          </div>
+
+          <div class="error-box">
+            <h4>❌ Problema: Resultados inconsistentes entre impressões</h4>
+            <p>
+              <strong>Causa:</strong> Variações de temperatura ou resina<br />
+              <strong>Solução:</strong><br />
+              • Mantenha a temperatura da resina constante e registrada; 25–30
+              °C é um ponto de partida comum<br />
+              • Agite bem a resina antes de cada impressão<br />
+              • Filtre a resina para remover partículas curadas<br />
+              • Verifique se a resina não está próxima do vencimento<br />
+              • Limpe a tela LCD entre cada teste
+            </p>
+          </div>
+
+          <div class="tip-box">
+            <h4>💡 Quando Recalibrar</h4>
+            <p>
+              • Ao trocar de resina (mesmo que seja da mesma marca)<br />
+              • Ao trocar de impressora ou substituir a tela LCD<br />
+              • Quando o controle periódico mostrar tendência ou desvio<br />
+              • Quando notar perda de qualidade ou precisão dimensional<br />
+              • Após mudanças significativas de temperatura ambiente<br />
+              • Ao abrir um frasco novo de resina (pode ter pequenas variações
+              de lote)
+            </p>
+          </div>
+        </div>
+
+        <!-- DICAS AVANÇADAS -->
+        <div class="step">
+          <div class="step-number">⚡</div>
+          <h3>Dicas Avançadas de Calibração</h3>
+          <div class="step-description">
+            <p>Para usuários que desejam otimização máxima:</p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Calibração por cor:</strong> pigmentação e absorção mudam
+              a curva de cura; trate cada cor como perfil próprio, sem
+              incremento fixo
+            </li>
+            <li>
+              <strong>Controle térmico:</strong> estabilize a resina em vez de
+              compensar o inverno acrescentando segundos sem medir
+            </li>
+            <li>
+              <strong>Envelhecimento da tela:</strong> acompanhe intensidade ou
+              um corpo de controle e recalibre quando houver tendência, não por
+              uma contagem universal de horas
+            </li>
+            <li>
+              <strong>Teste de detalhes finos:</strong> Após calibrar, imprima
+              um modelo com texto pequeno (0.5mm) para validar
+            </li>
+            <li>
+              <strong>Teste de resistência:</strong> use corpo de prova,
+              orientação, pós-cura e método de carga repetíveis; um gancho
+              improvisado não produz dado comparável
+            </li>
+            <li>
+              <strong>Perfis múltiplos:</strong> crie versões por aplicação
+              somente depois de cada uma atender aos próprios critérios;
+              “velocidade” não significa subexpor
+            </li>
+          </ul>
+
+          <h4 style="color: #667eea; margin: 30px 0 15px 0">
+            🎯 Sinais de Calibração Perfeita:
+          </h4>
+          <div class="tip-box">
+            <h4>✅ O perfil pode ser liberado quando:</h4>
+            <p>
+              • Pino atinge o encaixe-alvo no número 3 sem forçar<br />
+              • Dimensões atendem à tolerância definida para a aplicação e o
+              instrumento utilizado<br />
+              • Detalhes finos (0.5mm) são reproduzidos com clareza<br />
+              • Superfícies lisas sem marcas de camadas excessivas<br />
+              • Corpos de prova repetidos atendem ao critério mecânico
+              definido<br />
+              • Não há resina não curada grudada nas peças após limpeza<br />
+              • Furos e encaixes têm dimensões corretas
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">8</div>
+          <h3>Matriz de liberação do perfil</h3>
+          <div class="step-description">
+            <p>
+              Um único gabarito não mede tudo. Libere o perfil com ensaios
+              complementares:
+            </p>
+          </div>
+          <ul class="step-list">
+            <li>
+              <strong>Adesão:</strong> cinco zonas na plataforma, remoção
+              controlada e expansão de base aceitável
+            </li>
+            <li>
+              <strong>Exposição:</strong> detalhes positivos e negativos, sem
+              escolher apenas o resultado visualmente mais cheio
+            </li>
+            <li>
+              <strong>Encaixe:</strong> gabarito Quanton3D limpo, seco,
+              condicionado e testado sem força
+            </li>
+            <li>
+              <strong>Dimensão:</strong> medir externos e internos
+              separadamente, em X, Y e Z, com instrumento adequado
+            </li>
+            <li>
+              <strong>Repetibilidade:</strong> pelo menos três amostras ou
+              rodadas quando a aplicação for crítica
+            </li>
+            <li>
+              <strong>Aplicação:</strong> peça representativa orientada e
+              pós-curada como será na produção
+            </li>
+          </ul>
+          <div class="warning-box">
+            <h3>⚠️ Ordem de ajuste</h3>
+            <p>
+              Estabilize temperatura e pós-processo → calibre base → exposição
+              normal → movimento → dimensão/compensação → resistência e
+              aplicação. Alterar compensação antes da exposição mascara o erro.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">R</div>
+          <h3>Referências de método</h3>
+          <ul class="step-list">
+            <li>
+              <strong>Lychee / Mango3D:</strong>
+              <a
+                href="https://docs.mango3d.io/doc/j3d-tech-s-guide-to-resin-printing/printer-calibration/normal-layer-calibration/"
+                target="_blank"
+                rel="noopener"
+                >calibração de camadas normais e necessidade de perfil por
+                combinação</a
+              >
+            </li>
+            <li>
+              <strong>Camadas base:</strong>
+              <a
+                href="https://docs.mango3d.io/doc/j3d-tech-s-guide-to-resin-printing/printer-calibration/burn-in-layers-bottom-layers-calibration/"
+                target="_blank"
+                rel="noopener"
+                >calibração separada de burn-in e transição</a
+              >
+            </li>
+            <li>
+              <strong>Chitubox:</strong>
+              <a
+                href="https://docs.chitubox.com/en-US/chitubox-basic/latest/ui-and-features/configure-print-parameters"
+                target="_blank"
+                rel="noopener"
+                >definição oficial dos parâmetros do perfil</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer">
+        <h3>🔬 Quanton3D - Resinas UV de Alta Performance</h3>
+        <p>Precisa de ajuda com calibração? Entre em contato conosco!</p>
+        <p>
+          📱 WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a>
+        </p>
+        <p>
+          📧 Email:
+          <a href="mailto:atendimento@quanton3d.com.br"
+            >atendimento@quanton3d.com.br</a
+          >
+        </p>
+        <p>🌐 Site: <a href="https://quanton3d.com.br">quanton3d.com.br</a></p>
+        <p>
+          📥 Baixe o gabarito:
+          <a href="https://quanton3d.com.br/calibrador/"
+            >quanton3d.com.br/calibrador</a
+          >
+        </p>
+        <br />
+        <p style="font-size: 0.9em; opacity: 0.8">
+          © 2026 Quanton3D - Todos os direitos reservados
+        </p>
+        <p style="font-size: 0.85em; opacity: 0.7; margin-top: 10px">
+          Guia de calibração usando o Gabarito Quanton3D oficial
+        </p>
+      </div>
     </div>
-</body>
+  </body>
 </html>
