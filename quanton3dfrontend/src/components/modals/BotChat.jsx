@@ -29,13 +29,14 @@ const ChatInput = React.memo(function ChatInput({ onEnviar, pensando }) {
     setValor("");
   }
   return (
-    <div style={{ display: "flex", gap: "8px", padding: "12px 4px 4px", borderTop: "1px solid var(--border-soft)", flexShrink: 0 }}>
+    <div style={{ display: "flex", gap: "8px", padding: "12px 4px 4px", borderTop: "1px solid var(--border-soft)", flexShrink: 0, width: "100%", minWidth: 0, boxSizing: "border-box" }}>
       <input
         className="q-input"
         value={valor}
         onChange={(e) => setValor(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
         placeholder="Tire sua dúvida técnica..."
+        style={{ flex: 1, minWidth: 0 }}
       />
       <button type="button" className="q-btn q-btn--primary" onClick={handleEnviar} disabled={pensando} style={{ flexShrink: 0 }}>
         <Send size={15} />
@@ -247,7 +248,7 @@ function BotChat({ cliente }) {
   );
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0, width: "100%", overflow: "hidden" }}>
       {(ctx.resina || ctx.impressora) && (
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", padding: "8px 4px", borderBottom: "1px solid var(--border-soft)", fontSize: "0.76rem", color: "var(--text-muted)" }}>
           {ctx.resina && <span>{ctx.resina}</span>}
@@ -257,11 +258,11 @@ function BotChat({ cliente }) {
         </div>
       )}
 
-      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "14px 4px", display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", overflowX: "hidden", width: "100%", minWidth: 0, boxSizing: "border-box", padding: "14px 6px", display: "flex", flexDirection: "column", gap: "12px" }}>
         {mensagens.map((m, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", width: "100%" }}>
+          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", width: "100%", minWidth: 0, boxSizing: "border-box" }}>
             <div
-              style={{ padding: "10px 14px", borderRadius: "var(--r-md)", background: m.isBot ? "var(--bg-raised)" : "rgba(47,123,255,0.12)", border: "1px solid " + (m.isBot ? "var(--border-soft)" : "rgba(47,123,255,0.3)"), color: "var(--text-primary)", fontSize: "0.9rem", lineHeight: 1.55, maxWidth: "85%", wordBreak: "break-word" }}
+              style={{ padding: "10px 14px", borderRadius: "var(--r-md)", background: m.isBot ? "var(--bg-raised)" : "rgba(47,123,255,0.12)", border: "1px solid " + (m.isBot ? "var(--border-soft)" : "rgba(47,123,255,0.3)"), color: "var(--text-primary)", fontSize: "0.9rem", lineHeight: 1.55, maxWidth: "min(88%, 640px)", boxSizing: "border-box", overflowWrap: "anywhere", wordBreak: "normal" }}
               dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
             />
 
