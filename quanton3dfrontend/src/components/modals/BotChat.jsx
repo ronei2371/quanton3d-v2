@@ -82,7 +82,7 @@ function BotChat({ cliente }) {
           impressora: atual.impressora || ultima.impressoraDetectada || "",
         }));
         setMensagens([
-          { text: `Bem-vindo de volta, ${cliente?.nome || ""}! Aqui está seu histórico com o Assistente Quanton3D. Pode continuar de onde parou.`, isBot: true },
+          { text: `Bem-vindo de volta, ${cliente?.nome || ""}! Aqui está seu histórico com a IAQ3D. Pode continuar de onde parou.`, isBot: true },
           ...restauradas,
         ]);
         setEtapa("chat");
@@ -113,7 +113,7 @@ function BotChat({ cliente }) {
     const ctxTexto = resina !== "não informada" || impressora !== "não informada"
       ? `Estou usando a resina **${resina}**, impressora **${impressora}**, altura de camada **${altura}mm**.`
       : "";
-    const boasVindas = `Olá ${cliente?.nome || ""}! Sou o **Assistente Quanton3D**.${ctxTexto ? `\n\nContexto registrado: ${ctxTexto}` : ""}\n\nComo posso te ajudar hoje?`;
+    const boasVindas = `Olá ${cliente?.nome || ""}! Sou a **IAQ3D**, assistente técnica da Quanton3D.${ctxTexto ? `\n\nContexto registrado: ${ctxTexto}` : ""}\n\nComo posso te ajudar hoje?`;
     setMensagens((atuais) => atuais.length
       ? [...atuais, { text: `Contexto atualizado. ${ctxTexto || "Pode continuar de onde parou."}`, isBot: true }]
       : [{ text: boasVindas, isBot: true }]);
@@ -239,7 +239,7 @@ function BotChat({ cliente }) {
       </div>
 
       <button type="button" className="q-btn q-btn--primary q-btn--block" style={{ marginTop: "20px" }} onClick={iniciarChat}>
-        Iniciar atendimento com o Assistente <ArrowRight size={15} />
+        Iniciar atendimento com a IAQ3D <ArrowRight size={15} />
       </button>
       <button type="button" className="q-btn q-btn--ghost q-btn--block" style={{ marginTop: "8px" }} onClick={iniciarChat}>
         <SkipForward size={14} /> Pular e começar sem informar configuração

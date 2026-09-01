@@ -611,8 +611,8 @@
   .guide-viewer-open { display: none; }
 }
 
-/* Botão flutuante — ELIO */
-.elio-fab {
+/* Botão flutuante — IAQ3D */
+.iaq3d-fab {
   position: fixed;
   right: 26px;
   bottom: 26px;
@@ -629,10 +629,10 @@
   font-weight: 800;
   letter-spacing: -0.01em;
   box-shadow: 0 14px 34px rgba(47, 123, 255, 0.5), 0 0 0 0 rgba(47, 123, 255, 0.4);
-  animation: elioFabPulse 2.6s ease-in-out infinite;
+  animation: iaq3dFabPulse 2.6s ease-in-out infinite;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.elio-fab:hover {
+.iaq3d-fab:hover {
   background: var(--primary-strong);
   border-color: var(--primary-strong);
   transform: translateY(-3px) scale(1.03);
@@ -640,7 +640,7 @@
   box-shadow: 0 18px 38px rgba(47, 123, 255, 0.55);
 }
 
-.elio-fab-dot {
+.iaq3d-fab-dot {
   width: 8px;
   height: 8px;
   flex-shrink: 0;
@@ -649,18 +649,18 @@
   box-shadow: 0 0 8px rgba(23, 201, 130, 0.85);
 }
 
-@keyframes elioFabPulse {
+@keyframes iaq3dFabPulse {
   0%, 100% { box-shadow: 0 14px 34px rgba(47, 123, 255, 0.5), 0 0 0 0 rgba(47, 123, 255, 0.4); }
   50% { box-shadow: 0 14px 34px rgba(47, 123, 255, 0.6), 0 0 0 12px rgba(47, 123, 255, 0); }
 }
 
 @media (max-width: 560px) {
-  .elio-fab { right: 16px; bottom: 16px; padding: 15px; }
-  .elio-fab-label { display: none; }
+  .iaq3d-fab { right: 16px; bottom: 16px; padding: 15px; }
+  .iaq3d-fab-label { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .elio-fab { animation: none; }
+  .iaq3d-fab { animation: none; }
 }
 
 /* Tela de boas-vindas existente */

@@ -15,7 +15,7 @@ function BotModal({ cliente, onClose }) {
       >
         <div className="q-modal-head">
           <h2 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1rem" }}>
-            <Bot size={18} color="var(--primary)" /> Assistente Quanton3D
+            <Bot size={18} color="var(--primary)" /> IAQ3D
           </h2>
           <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
         </div>

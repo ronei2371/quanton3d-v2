@@ -58,7 +58,7 @@ export function AdminContent({ tokenAtendente }) {
   const [buscaParam, setBuscaParam] = useState("");
   const [editandoParam, setEditandoParam] = useState(null); // id do parametro em edicao
   const [paramEdit, setParamEdit] = useState({}); // dados sendo editados
-  const [sugestoesElio, setSugestoesElio] = useState([]);
+  const [sugestoesIaq3d, setSugestoesIaq3d] = useState([]);
 
   async function entrar(e) {
     e.preventDefault(); setErro("");
@@ -108,7 +108,7 @@ export function AdminContent({ tokenAtendente }) {
       const clientesCarregados = Array.isArray(m.clientes) ? m.clientes : [];
       carregarAtendentes();
       carregarLogs();
-      try { const sResp = await api.get("/sugestoes-conhecimento", { headers }); setSugestoesElio(sResp.data?.sugestoes || []); } catch(_) {}
+      try { const sResp = await api.get("/sugestoes-conhecimento", { headers }); setSugestoesIaq3d(sResp.data?.sugestoes || []); } catch(_) {}
       setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
@@ -413,7 +413,7 @@ export function AdminContent({ tokenAtendente }) {
     { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
     { id: "atendentes", label: "Atendentes", icon: "👨‍💼", count: null },
     { id: "logs", label: "Logs", icon: "📋", count: null },
-    { id: "sugestoes_elio", label: "Sugestões Assistente", icon: "💡", count: sugestoesElio.filter(s => s.status === "pendente").length },
+    { id: "sugestoes_iaq3d", label: "Sugestões IAQ3D", icon: "💡", count: sugestoesIaq3d.filter(s => s.status === "pendente").length },
     { id: "limpeza", label: "Limpeza", icon: "🧹", count: null },
   ];
 
@@ -435,9 +435,9 @@ export function AdminContent({ tokenAtendente }) {
               }}>
               <span style={{ fontSize: "1.4rem", position: "relative" }}>
                 {a.icon}
-                {a.id === "sugestoes_elio" && sugestoesElio.filter(s => s.status === "pendente").length > 0 && (
+                {a.id === "sugestoes_iaq3d" && sugestoesIaq3d.filter(s => s.status === "pendente").length > 0 && (
                   <span style={{ position: "absolute", top: "-4px", right: "-8px", background: "#ff4444", color: "#fff", borderRadius: "999px", fontSize: "0.55rem", fontWeight: 900, padding: "1px 5px", lineHeight: 1.4 }}>
-                    {sugestoesElio.filter(s => s.status === "pendente").length}
+                    {sugestoesIaq3d.filter(s => s.status === "pendente").length}
                   </span>
                 )}
               </span>
@@ -477,7 +477,7 @@ export function AdminContent({ tokenAtendente }) {
               { icon: "✉️", label: "Mensagens", valor: dados.mensagens.length, cor: "#9650f5", bg: "rgba(184,156,255,0.08)", border: "rgba(184,156,255,0.2)", aba: "mensagens" },
               { icon: "🧪", label: "Formulações", valor: dados.formulacoes.length, cor: "#0aff87", bg: "rgba(73,230,139,0.08)", border: "rgba(73,230,139,0.2)", aba: "formulacoes" },
               { icon: "📸", label: "Galeria", valor: dados.galeria.filter(g => g.status === "pendente").length, cor: "#d73c3c", bg: "rgba(255,143,171,0.08)", border: "rgba(255,143,171,0.2)", aba: "galeria", suffix: " pendentes" },
-              { icon: "💡", label: "Sugestões Assistente", valor: sugestoesElio.filter(s => s.status === "pendente").length, cor: "#dc913c", bg: "rgba(255,209,102,0.08)", border: "rgba(255,209,102,0.2)", aba: "sugestoes_elio", suffix: " pendentes" },
+              { icon: "💡", label: "Sugestões IAQ3D", valor: sugestoesIaq3d.filter(s => s.status === "pendente").length, cor: "#dc913c", bg: "rgba(255,209,102,0.08)", border: "rgba(255,209,102,0.2)", aba: "sugestoes_iaq3d", suffix: " pendentes" },
             ].map(item => (
               <button key={item.aba} type="button" onClick={() => setAba(item.aba)}
                 style={{ background: item.bg, border: `1px solid ${item.border}`, borderRadius: "14px", padding: "16px 14px", textAlign: "center", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
@@ -489,7 +489,7 @@ export function AdminContent({ tokenAtendente }) {
           </div>
 
           {/* Alertas de pendências */}
-          {(dados.chamados.filter(c => c.status === "novo").length > 0 || sugestoesElio.filter(s => s.status === "pendente").length > 0 || dados.galeria.filter(g => g.status === "pendente").length > 0) && (
+          {(dados.chamados.filter(c => c.status === "novo").length > 0 || sugestoesIaq3d.filter(s => s.status === "pendente").length > 0 || dados.galeria.filter(g => g.status === "pendente").length > 0) && (
             <div style={{ background: "rgba(255,209,102,0.05)", border: "1px solid rgba(255,209,102,0.2)", borderRadius: "14px", padding: "16px 20px", marginBottom: "20px" }}>
               <p style={{ fontWeight: 800, color: "#dc913c", fontSize: "0.88rem", margin: "0 0 10px" }}>⚠️ Itens que precisam da sua atenção:</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -501,11 +501,11 @@ export function AdminContent({ tokenAtendente }) {
                     <span style={{ marginLeft: "auto", color: "#dc913c", fontSize: "0.8rem" }}>Ver →</span>
                   </button>
                 )}
-                {sugestoesElio.filter(s => s.status === "pendente").length > 0 && (
-                  <button type="button" onClick={() => setAba("sugestoes_elio")}
+                {sugestoesIaq3d.filter(s => s.status === "pendente").length > 0 && (
+                  <button type="button" onClick={() => setAba("sugestoes_iaq3d")}
                     style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "10px", padding: "10px 14px", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
                     <span style={{ fontSize: "1.1rem" }}>💡</span>
-                    <span style={{ color: "#0092ff", fontWeight: 700, fontSize: "0.85rem" }}>{sugestoesElio.filter(s => s.status === "pendente").length} sugestão(ões) de conhecimento aguardando aprovação</span>
+                    <span style={{ color: "#0092ff", fontWeight: 700, fontSize: "0.85rem" }}>{sugestoesIaq3d.filter(s => s.status === "pendente").length} sugestão(ões) de conhecimento aguardando aprovação</span>
                     <span style={{ marginLeft: "auto", color: "#0092ff", fontSize: "0.8rem" }}>Ver →</span>
                   </button>
                 )}
@@ -1940,11 +1940,11 @@ export function AdminContent({ tokenAtendente }) {
         </div>
       )}
 
-      {aba === "sugestoes_elio" && (
+      {aba === "sugestoes_iaq3d" && (
         <div>
-          <p style={{ fontWeight: 900, color: "#0092ff", fontSize: "0.9rem", marginBottom: "14px" }}>💡 Sugestões de Conhecimento para o Assistente ({sugestoesElio.length})</p>
-          {sugestoesElio.length === 0 && <div className="gallery-empty">Nenhuma sugestão enviada pelos atendentes.</div>}
-          {sugestoesElio.map(s => {
+          <p style={{ fontWeight: 900, color: "#0092ff", fontSize: "0.9rem", marginBottom: "14px" }}>💡 Sugestões de Conhecimento para a IAQ3D ({sugestoesIaq3d.length})</p>
+          {sugestoesIaq3d.length === 0 && <div className="gallery-empty">Nenhuma sugestão enviada pelos atendentes.</div>}
+          {sugestoesIaq3d.map(s => {
             const cores = { pendente: "#dc913c", aprovado: "#0aff87", rejeitado: "#d73c3c" };
             const catIcons = { resina: "🧪", impressora: "🖨️", problema: "⚠️", dica: "💡", outro: "📝" };
             return (
@@ -1967,7 +1967,7 @@ export function AdminContent({ tokenAtendente }) {
                       try {
                         await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "aprovado" }, { headers: { Authorization: "Bearer " + token } });
                         const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
-                        setSugestoesElio(r.data?.sugestoes || []);
+                        setSugestoesIaq3d(r.data?.sugestoes || []);
                       } catch(e) { alert("Erro"); }
                     }}
                       style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.1)", color: "#0aff87", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
@@ -1978,7 +1978,7 @@ export function AdminContent({ tokenAtendente }) {
                       try {
                         await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "rejeitado", observacaoAdmin: obs || "" }, { headers: { Authorization: "Bearer " + token } });
                         const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
-                        setSugestoesElio(r.data?.sugestoes || []);
+                        setSugestoesIaq3d(r.data?.sugestoes || []);
                       } catch(e) { alert("Erro"); }
                     }}
                       style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
@@ -2165,7 +2165,7 @@ export function BotContent({ cliente }) {
     const ctxTexto = resina !== "não informada" || impressora !== "não informada"
       ? `Estou usando a resina **${resina}**, impressora **${impressora}**, altura de camada **${altura}mm**.`
       : "";
-    const boasVindas = `Olá ${cliente?.nome || ""}! 👋 Sou o **Assistente Quanton3D**.${ctxTexto ? `
+    const boasVindas = `Olá ${cliente?.nome || ""}! 👋 Sou a **IAQ3D**, assistente técnica da Quanton3D.${ctxTexto ? `
 
 Contexto registrado: ${ctxTexto}` : ""}
 
@@ -2252,7 +2252,7 @@ Como posso te ajudar hoje?`;
   if (etapa === "contexto") return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, height: "100%", overflowY: "auto", padding: "8px 4px" }}>
       <div style={{ background: "rgba(79,209,255,0.08)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
-        <p style={{ margin: "0 0 4px", fontWeight: 800, color: "#0092ff", fontSize: "0.85rem" }}>🤖 Assistente Técnico Quanton3D</p>
+        <p style={{ margin: "0 0 4px", fontWeight: 800, color: "#0092ff", fontSize: "0.85rem" }}>🤖 IAQ3D — Assistente Técnica Quanton3D</p>
         <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.55 }}>
           Para respostas precisas, informe sua configuração antes de começar. É rápido!
         </p>
@@ -2310,7 +2310,7 @@ Como posso te ajudar hoje?`;
 
       <button type="button" onClick={iniciarChat}
         style={{ width: "100%", marginTop: "18px", padding: "14px", borderRadius: "12px", border: 0, background: "linear-gradient(135deg, #2563eb, #7c3aed)", color: "#ffffff", fontWeight: 900, fontSize: "0.95rem", cursor: "pointer", fontFamily: "inherit", boxShadow: "0 8px 24px rgba(37,99,235,0.3)" }}>
-        Iniciar atendimento com o Assistente →
+        Iniciar atendimento com a IAQ3D →
       </button>
 
       <button type="button" onClick={iniciarChat}

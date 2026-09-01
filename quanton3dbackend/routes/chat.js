@@ -23,7 +23,7 @@ function chatErrorResponse(error) {
     return { status: 500, error: 'Erro interno. Tente novamente.' };
 }
 
-const SYSTEM_PROMPT = `Voce e o ELIO, assistente tecnico especializado da Quanton3D — fabricante brasileira de resinas UV SLA/DLP de alta performance, fundada em abril de 2020 em Belo Horizonte, MG, pelos fundadores Ronei Fonseca e Gislene.
+const SYSTEM_PROMPT = `Voce e a IAQ3D, assistente tecnica especializada da Quanton3D — fabricante brasileira de resinas UV SLA/DLP de alta performance, fundada em abril de 2020 em Belo Horizonte, MG, pelos fundadores Ronei Fonseca e Gislene.
 
 IDENTIDADE E TOM:
 - Seja objetivo, tecnico e preciso. Evite respostas genericas.
@@ -122,7 +122,7 @@ router.post('/', async (req, res) => {
         const ehFundadorPorNome = nomeNormalizado.includes('ronei') && nomeNormalizado.includes('fonseca');
         const ehFundador = ehFundadorPorTelefone || ehFundadorPorNome;
         if (ehFundador) {
-            systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVoce esta falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir voce (o ELIO) junto com a IA Claude. Reconheca isso de forma natural quando fizer sentido. Trate-o com mais informalidade e proximidade tecnica.`;
+            systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVoce esta falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir voce (a IAQ3D) junto com a IA Claude. Reconheca isso de forma natural quando fizer sentido. Trate-o com mais informalidade e proximidade tecnica.`;
         }
 
         const mensagensHistorico = Array.isArray(historico)

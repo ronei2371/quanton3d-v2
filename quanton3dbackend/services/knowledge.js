@@ -1,6 +1,6 @@
 // ================================================================
 // QUANTON3D — BASE DE CONHECIMENTO TÉCNICO
-// Injetada no system prompt do ELIO para respostas precisas
+// Recuperada pelo RAG da IAQ3D para respostas precisas
 // ================================================================
 
 export const KNOWLEDGE_BASE = `
@@ -56,7 +56,7 @@ export const KNOWLEDGE_BASE = `
 - Lavagem: Álcool isopropílico, 2-4 minutos em movimento
 
 ### ATHOM DENTAL (fonte: site oficial)
-⚠️ AVISO DE SEGURANÇA OFICIAL DO FABRICANTE: "Esta resina é destinada apenas para uso EXTERNO, NÃO sendo biocompatível." Uso confirmado apenas para modelos de estudo, troquéis e protótipos de peças dentárias — NUNCA para contato direto/prolongado com a mucosa oral do paciente. O ELIO NUNCA deve sugerir uso intraoral desta resina.
+⚠️ AVISO DE SEGURANÇA OFICIAL DO FABRICANTE: "Esta resina é destinada apenas para uso EXTERNO, NÃO sendo biocompatível." Uso confirmado apenas para modelos de estudo, troquéis e protótipos de peças dentárias — NUNCA para contato direto/prolongado com a mucosa oral do paciente. A IAQ3D NUNCA deve sugerir uso intraoral desta resina.
 - Aplicação oficial: Modelos de estudo, troquéis e protótipos de peças dentárias (uso de laboratório/bancada)
 - Dica oficial: para modelos com encaixe, evitar resinas totalmente rígidas — a SPIN tem leve flexibilidade que ajuda em encaixes que precisam de mais firmeza
 - Cores: White Cream, Ocre, Light Grey, Terracota, Dark Grey, Blue, Skin, White, Marfim

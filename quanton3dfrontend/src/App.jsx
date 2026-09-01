@@ -244,8 +244,8 @@ function App() {
       </footer>
 
       {!mostrarBot && (
-        <button type="button" className="elio-fab" onClick={() => setMostrarBot(true)} aria-label="Converse com o Assistente">
-          <span className="elio-fab-dot" /> <Bot size={22} /> <span className="elio-fab-label">Converse com o Assistente</span>
+        <button type="button" className="iaq3d-fab" onClick={() => setMostrarBot(true)} aria-label="Converse com a IAQ3D">
+          <span className="iaq3d-fab-dot" /> <Bot size={22} /> <span className="iaq3d-fab-label">Converse com a IAQ3D</span>
         </button>
       )}
     </div>
