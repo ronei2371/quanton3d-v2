@@ -7,8 +7,10 @@ function BotModal({ cliente, onClose }) {
       <section
         className="q-modal"
         style={{
-          width: "98vw", maxWidth: "760px", height: "88vh", maxHeight: "88vh",
-          padding: "18px 20px", display: "flex", flexDirection: "column", overflow: "hidden",
+          width: "min(760px, calc(100vw - 20px))",
+          height: "88dvh", maxHeight: "calc(100dvh - 20px)",
+          padding: "18px 20px", boxSizing: "border-box", minWidth: 0,
+          display: "flex", flexDirection: "column", overflow: "hidden",
         }}
       >
         <div className="q-modal-head">
