@@ -2010,6 +2010,7 @@ function LimpezaContent({ token }) {
     { id: "logacoes",        label: "📋 Logs de Ações",     desc: "Logs de ações dos atendentes" },
     { id: "partnerrequests", label: "🤝 Parceiros",         desc: "Pedidos de parceria" },
     { id: "galleryitems",    label: "📸 Fotos da Galeria",  desc: "Fotos enviadas por clientes" },
+    { id: "atendentes",      label: "🧑‍💼 Atendentes",        desc: "Todas as contas de atendentes cadastradas" },
   ];
   const [selecionadas, setSelecionadas] = useState([]);
   const [confirmando, setConfirmando]   = useState(false);
@@ -2042,7 +2043,7 @@ function LimpezaContent({ token }) {
     <div>
       <div style={{ background: "rgba(255,107,107,0.05)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "12px", padding: "16px 18px", marginBottom: "20px" }}>
         <p style={{ fontWeight: 900, color: "#d73c3c", fontSize: "0.9rem", margin: "0 0 6px" }}>⚠️ Limpeza de Dados</p>
-        <p style={{ fontSize: "0.82rem", color: "#c49aab", margin: 0 }}>Selecione as coleções que deseja limpar. <strong style={{ color: "#d73c3c" }}>Esta ação é irreversível!</strong> Os parâmetros do Assistente, atendentes e sugestões aprovadas nunca são afetados.</p>
+        <p style={{ fontSize: "0.82rem", color: "#c49aab", margin: 0 }}>Selecione as coleções que deseja limpar. <strong style={{ color: "#d73c3c" }}>Esta ação é irreversível!</strong> Os parâmetros do Assistente, sugestões aprovadas e o administrador principal do Render nunca são afetados.</p>
       </div>
 
       {resultado && (
@@ -2070,7 +2071,7 @@ function LimpezaContent({ token }) {
       </div>
 
       <div style={{ display: "flex", gap: "8px" }}>
-        <button type="button" onClick={() => setSelecionadas(COLECOES.map(c => c.id))}
+        <button type="button" onClick={() => setSelecionadas(COLECOES.filter(c => c.id !== "atendentes").map(c => c.id))}
           style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 700, fontFamily: "inherit" }}>
           Selecionar tudo
         </button>
@@ -2090,6 +2091,7 @@ function LimpezaContent({ token }) {
       {confirmando && (
         <div style={{ marginTop: "14px", padding: "16px", borderRadius: "12px", border: "2px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.06)" }}>
           <p style={{ color: "#d73c3c", fontWeight: 800, margin: "0 0 10px", fontSize: "0.9rem" }}>⚠️ Confirmação final — esta ação NÃO pode ser desfeita!</p>
+          {selecionadas.includes("atendentes") && <p style={{ color: "#ffb4b4", fontSize: "0.82rem", margin: "0 0 10px", fontWeight: 800 }}>As contas de todos os atendentes serão apagadas e perderão o acesso. O administrador principal do Render será preservado.</p>}
           <p style={{ color: "#c49aab", fontSize: "0.82rem", margin: "0 0 12px" }}>Digite <strong style={{ color: "#d73c3c" }}>LIMPAR</strong> para confirmar:</p>
           <input value={confirmInput} onChange={e => setConfirmInput(e.target.value)}
             placeholder='Digite: LIMPAR'
