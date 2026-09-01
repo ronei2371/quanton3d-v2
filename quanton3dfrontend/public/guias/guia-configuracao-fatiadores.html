@@ -1,896 +1,832 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia de Configuração de Fatiadores | Quanton3D</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Guia técnico Quanton3D para configurar perfis de resina no Chitubox e Lychee Slicer com calibração, rastreabilidade e diagnóstico."
+    />
+    <meta name="theme-color" content="#060e1e" />
+    <title>Configuração de Fatiadores | Quanton3D</title>
     <style>
-    :root {
-        --bg:      #060e1e;
+      :root {
+        --bg: #060e1e;
         --surface: #0a1425;
-        --card:    #0f1e35;
-        --border:  rgba(79,209,255,0.15);
-        --cyan:    #4fd1ff;
-        --purple:  #b89cff;
-        --green:   #49e68b;
-        --yellow:  #ffd166;
-        --red:     #ff6b8a;
-        --text:    #c5d8e8;
-        --title:   #eaf7ff;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-
-    body {
-        font-family: 'Segoe UI', system-ui, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        line-height: 1.7;
+        --card: #0f1e35;
+        --border: rgba(79, 209, 255, 0.15);
+        --cyan: #4fd1ff;
+        --green: #49e68b;
+        --yellow: #ffd166;
+        --red: #ff6b8a;
+        --text: #c5d8e8;
+        --title: #eaf7ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
         padding: 20px;
-    }
-
-    .container {
-        max-width: 960px;
-        margin: 0 auto;
-        background: var(--surface);
-        border-radius: 16px;
-        border: 1px solid var(--border);
+        background: radial-gradient(
+            circle at 50% 0,
+            rgba(21, 101, 192, 0.18),
+            transparent 34%
+          ),
+          var(--bg);
+        color: var(--text);
+        font:
+          16px/1.7 "Segoe UI",
+          system-ui,
+          sans-serif;
+      }
+      .container {
+        max-width: 1060px;
+        margin: auto;
         overflow: hidden;
-        box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-    }
-
-    /* HEADER */
-    .header {
-        background: linear-gradient(135deg, rgba(21,101,192,0.4), rgba(123,31,162,0.3));
-        border-bottom: 1px solid var(--border);
-        padding: 40px 36px 32px;
-        text-align: center;
-        position: relative;
-    }
-    .header::before {
-        content: '';
-        position: absolute; inset: 0;
-        background: radial-gradient(ellipse at 50% 0%, rgba(79,209,255,0.07) 0%, transparent 70%);
-        pointer-events: none;
-    }
-    .logo {
-        display: inline-block;
-        padding: 4px 16px; border-radius: 999px;
-        background: rgba(79,209,255,0.1);
-        border: 1px solid rgba(79,209,255,0.3);
-        color: var(--cyan);
-        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
-        margin-bottom: 14px;
-    }
-    .header h1 {
-        font-size: clamp(1.4rem, 3.5vw, 2rem);
-        font-weight: 900;
-        background: linear-gradient(135deg, #4fd1ff, #b89cff);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        margin-bottom: 8px;
-    }
-    .header p { font-size: 0.9rem; color: #9fb4c7; }
-
-    /* CONTENT */
-    .content { padding: 32px 36px 40px; }
-
-    /* INTRO */
-    .intro {
-        background: rgba(79,209,255,0.05);
         border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 22px 26px; margin-bottom: 24px;
-    }
-    .intro h2 { font-size: 1rem; color: var(--cyan); font-weight: 800; margin-bottom: 10px; }
-    .intro p  { font-size: 0.88rem; }
-
-    /* SECTION */
-    .section {
-        background: var(--card);
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+      }
+      .header {
+        padding: 48px 36px 38px;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          rgba(21, 101, 192, 0.4),
+          rgba(123, 31, 162, 0.3)
+        );
+        border-bottom: 1px solid var(--border);
+      }
+      .logo,
+      .tag {
+        display: inline-flex;
+        padding: 5px 13px;
+        border: 1px solid rgba(79, 209, 255, 0.3);
+        border-radius: 999px;
+        background: rgba(79, 209, 255, 0.1);
+        color: var(--cyan);
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+      .header p {
+        color: #9fb4c7;
+      }
+      .content {
+        padding: 32px 36px 44px;
+      }
+      .intro,
+      .step,
+      .card {
         border: 1px solid var(--border);
         border-radius: 14px;
-        padding: 26px; margin: 18px 0;
-        transition: border-color 0.2s;
-    }
-    .section:hover { border-color: rgba(79,209,255,0.3); }
-    .section h3 {
-        font-size: 1rem; font-weight: 800;
-        color: var(--title); margin-bottom: 14px;
-    }
-    .section h4 {
-        font-size: 0.9rem; font-weight: 700;
-        color: var(--cyan); margin: 14px 0 8px;
-    }
-
-    /* STEP NUMBER */
-    .step-number {
-        display: inline-flex; align-items: center; justify-content: center;
-        width: 44px; height: 44px; border-radius: 50%;
-        background: linear-gradient(135deg, #1565c0, #7c3aed);
-        color: #fff; font-size: 1.1rem; font-weight: 900;
+        background: var(--card);
+      }
+      .intro,
+      .step {
+        padding: 25px;
+        margin: 18px 0;
+      }
+      .intro {
+        background: rgba(79, 209, 255, 0.05);
+      }
+      h2,
+      h3 {
+        color: var(--title);
+        line-height: 1.2;
+      }
+      h2 {
+        font-size: 1.35rem;
+      }
+      h3 {
+        font-size: 1.05rem;
+      }
+      .stepHead {
+        display: flex;
+        gap: 14px;
+        align-items: center;
         margin-bottom: 14px;
-        box-shadow: 0 4px 14px rgba(79,209,255,0.2);
-    }
-
-    /* IMAGENS */
-    .step-image {
-        width: 100%; max-width: 720px; height: auto;
-        border-radius: 10px; margin: 16px auto; display: block;
+      }
+      .stepHead h2 {
+        margin: 0;
+      }
+      .stepNo {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1565c0, #7c3aed);
+        color: #fff;
+        font-weight: 900;
+      }
+      .grid2,
+      .grid3,
+      .map {
+        display: grid;
+        gap: 14px;
+      }
+      .grid2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .grid3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .map {
+        grid-template-columns: repeat(4, 1fr);
+        margin: 20px 0;
+      }
+      .map a,
+      .card {
+        padding: 16px;
+      }
+      .map a {
+        text-decoration: none;
         border: 1px solid var(--border);
-        box-shadow: 0 8px 28px rgba(0,0,0,0.4);
-        object-fit: cover;
-    }
-
-    /* TABELA */
-    .params-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.85rem; }
-    .params-table th {
-        background: rgba(79,209,255,0.1);
-        color: var(--cyan); font-weight: 800;
-        padding: 10px 12px; text-align: left;
-        border-bottom: 1px solid var(--border);
-    }
-    .params-table td {
-        padding: 9px 12px; border-bottom: 1px solid rgba(79,209,255,0.06);
-        color: var(--text);
-    }
-    .params-table tr:last-child td { border-bottom: none; }
-    .params-table tr:hover td { background: rgba(79,209,255,0.03); }
-
-    /* LISTAS */
-    .step-list, .checklist { list-style: none; margin: 12px 0; display: grid; gap: 7px; }
-    .step-list li, .checklist li {
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(79,209,255,0.07);
+        border-radius: 12px;
+        background: #0b1729;
+        color: var(--title);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+      .map a:hover {
+        border-color: var(--cyan);
+        color: var(--cyan);
+      }
+      .card h3 {
+        margin: 7px 0;
+      }
+      .card p {
+        margin: 0;
+        font-size: 0.86rem;
+        color: #aebfd0;
+      }
+      .step-image {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 16px auto;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+      }
+      .tableWrap {
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+        background: #091426;
+      }
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid rgba(79, 209, 255, 0.08);
+      }
+      th {
+        color: var(--cyan);
+        background: rgba(79, 209, 255, 0.08);
+      }
+      td {
+        font-size: 0.85rem;
+      }
+      .callout {
+        margin: 16px 0;
+        padding: 15px 18px;
         border-left: 3px solid var(--cyan);
-        border-radius: 7px; padding: 10px 14px; font-size: 0.865rem;
-    }
-    .step-list li strong, .checklist li strong { color: var(--cyan); }
-    .checklist li::before { content: '☑ '; color: var(--green); font-weight: 900; }
-
-    /* BOXES */
-    .tip-box {
-        background: rgba(73,230,139,0.05);
-        border: 1px solid rgba(73,230,139,0.18);
-        border-radius: 10px; padding: 14px 18px; margin: 14px 0;
-    }
-    .tip-box h3, .tip-box h4 { color: var(--green); font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; }
-    .tip-box p, .tip-box ul { font-size: 0.84rem; color: #9fcfad; line-height: 1.65; }
-
-    .warning-box {
-        background: rgba(255,209,102,0.05);
-        border: 1px solid rgba(255,209,102,0.2);
-        border-left: 3px solid var(--yellow);
-        border-radius: 10px; padding: 14px 18px; margin: 14px 0;
-    }
-    .warning-box h3, .warning-box h4 { color: var(--yellow); font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; }
-    .warning-box p { font-size: 0.84rem; color: #c9a84c; line-height: 1.65; }
-
-    .error-box {
-        background: rgba(255,107,138,0.05);
-        border: 1px solid rgba(255,107,138,0.18);
-        border-left: 3px solid var(--red);
-        border-radius: 10px; padding: 14px 18px; margin: 14px 0;
-    }
-    .error-box h3, .error-box h4 { color: var(--red); font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; }
-    .error-box p { font-size: 0.84rem; color: #c49aab; line-height: 1.65; }
-
-    .info-box {
-        background: rgba(184,156,255,0.05);
-        border: 1px solid rgba(184,156,255,0.2);
-        border-left: 3px solid var(--purple);
-        border-radius: 10px; padding: 14px 18px; margin: 14px 0;
-    }
-    .info-box h3, .info-box h4 { color: var(--purple); font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; }
-    .info-box p { font-size: 0.84rem; color: #b8a8d4; line-height: 1.65; }
-
-    /* SLICER CARDS */
-    .slicer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
-    .slicer-card {
-        background: rgba(79,209,255,0.04);
-        border: 1px solid var(--border); border-radius: 10px; padding: 16px;
-    }
-    .slicer-card h4 { color: var(--cyan); font-size: 0.88rem; font-weight: 800; margin-bottom: 8px; }
-    .slicer-card p  { font-size: 0.82rem; color: var(--text); }
-
-    /* FOOTER */
-    .footer {
-        background: rgba(0,0,0,0.25);
+        border-radius: 0 10px 10px 0;
+        background: rgba(79, 209, 255, 0.06);
+        font-size: 0.87rem;
+      }
+      .warning {
+        border-color: var(--yellow);
+        background: rgba(255, 209, 102, 0.06);
+        color: #e2c979;
+      }
+      .danger {
+        border-color: var(--red);
+        background: rgba(255, 107, 138, 0.06);
+        color: #ddaaba;
+      }
+      .good {
+        border-color: var(--green);
+        background: rgba(73, 230, 139, 0.06);
+        color: #a8d9b8;
+      }
+      .list {
+        display: grid;
+        gap: 8px;
+        padding: 0;
+        list-style: none;
+      }
+      .list li {
+        padding: 11px 13px;
+        border: 1px solid rgba(79, 209, 255, 0.08);
+        border-left: 3px solid var(--cyan);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        font-size: 0.86rem;
+      }
+      .list b {
+        color: var(--cyan);
+      }
+      .flow {
+        counter-reset: flow;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .flow article {
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #0b1729;
+      }
+      .flow article:before {
+        counter-increment: flow;
+        content: counter(flow);
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        margin-bottom: 8px;
+        border-radius: 50%;
+        background: #1565c0;
+        color: white;
+        font-weight: 900;
+      }
+      .flow b {
+        display: block;
+        color: var(--title);
+        font-size: 0.85rem;
+      }
+      .flow span {
+        font-size: 0.77rem;
+        color: #aebfd0;
+      }
+      .refs a {
+        color: var(--cyan);
+      }
+      footer {
+        padding: 28px 36px;
+        text-align: center;
         border-top: 1px solid var(--border);
-        padding: 28px 36px; text-align: center;
-    }
-    .footer h3 { color: var(--cyan); font-size: 1rem; margin-bottom: 12px; font-weight: 800; }
-    .footer p  { font-size: 0.84rem; color: #9fb4c7; margin: 6px 0; }
-    .footer a  { color: var(--cyan); text-decoration: none; font-weight: 700; }
-    .footer a:hover { text-decoration: underline; }
-
-    /* STEP DESCRIPTION */
-    .step-description { font-size: 0.88rem; margin-bottom: 12px; }
-
-    p { font-size: 0.88rem; margin: 8px 0; }
-    ul:not(.step-list):not(.checklist) { padding-left: 20px; margin: 8px 0; }
-    ul:not(.step-list):not(.checklist) li { font-size: 0.88rem; margin: 4px 0; }
-
-    @media (max-width: 640px) {
-        body { padding: 10px; }
-        .content { padding: 20px 16px 32px; }
-        .header { padding: 28px 16px 22px; }
-        .section { padding: 18px 14px; }
-        .slicer-grid { grid-template-columns: 1fr; }
-    }
-</style>
-</head>
-<body>
+        background: rgba(0, 0, 0, 0.25);
+        font-size: 0.84rem;
+        color: #9fb4c7;
+      }
+      footer a {
+        color: var(--cyan);
+      }
+      @media (max-width: 760px) {
+        body {
+          padding: 10px;
+        }
+        .content {
+          padding: 20px 15px 32px;
+        }
+        .header {
+          padding: 34px 16px;
+        }
+        .grid2,
+        .grid3,
+        .map {
+          grid-template-columns: 1fr;
+        }
+        .flow {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 460px) {
+        .flow {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body {
+          padding: 0;
+          background: #fff;
+          color: #111;
+        }
+        .container,
+        .step,
+        .intro,
+        .card,
+        .flow article {
+          box-shadow: none;
+          background: #fff;
+          color: #111;
+        }
+        .map {
+          display: none;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/guias/guia-padrao.css" />
+    <script src="/guias/guia-padrao.js" defer></script>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <div class="logo">🔬 QUANTON3D</div>
-            <h1>⚙️ Guia de Configuração de Fatiadores</h1>
-            <p>Chitubox e Lychee Slicer - Parâmetros Essenciais</p>
+      <header class="header">
+        <span class="logo">Quanton3D Academy</span>
+        <h1>Configuração de Fatiadores</h1>
+        <p>
+          Chitubox e Lychee Slicer: parâmetros, calibração e diagnóstico sem
+          receitas universais
+        </p>
+      </header>
+      <main class="content">
+        <div class="intro">
+          <h2>O perfil é um sistema, não uma lista de números</h2>
+          <p>
+            O fatiador converte a geometria em imagens de camada e comandos de
+            movimento. O resultado depende da combinação entre impressora,
+            firmware, tela ou projetor, mecanismo de separação, filme, resina,
+            pigmentação, temperatura, altura de camada, geometria e
+            pós-processo. Um perfil compartilhado é um
+            <strong>ponto de partida</strong>; só o teste local pode liberá-lo
+            para produção.
+          </p>
         </div>
+        <nav class="map" aria-label="Mapa do guia">
+          <a href="#perfil">1 · Perfil correto</a
+          ><a href="#camada">2 · Camada e exposição</a
+          ><a href="#base">3 · Camadas base</a
+          ><a href="#movimento">4 · Movimento</a
+          ><a href="#esperas">5 · Esperas</a
+          ><a href="#recursos">6 · AA e compensação</a
+          ><a href="#fluxo">7 · Calibração</a
+          ><a href="#diagnostico">8 · Diagnóstico</a>
+        </nav>
 
-        <div class="content">
-            <div class="intro">
-                <h2>📋 Por que Configurar Corretamente?</h2>
-                <p>A configuração adequada do fatiador é fundamental para obter impressões 3D de resina com qualidade profissional. Parâmetros incorretos resultam em falhas de impressão, peças frágeis, detalhes perdidos e desperdício de resina. Este guia apresenta os parâmetros essenciais para Chitubox e Lychee Slicer, os dois fatiadores mais populares para impressão em resina, com foco especial na relação entre altura de camada e tempo de exposição!</p>
+        <section class="step" id="perfil">
+          <div class="stepHead">
+            <span class="stepNo">1</span>
+            <h2>Comece pela impressora exata</h2>
+          </div>
+          <div class="grid2">
+            <div>
+              <img
+                class="step-image"
+                src="images/chitubox-interface .png"
+                alt="Interface do Chitubox"
+              />
+              <h3>Chitubox</h3>
+              <p>
+                Selecione fabricante e modelo. Resolução, tamanho de tela,
+                espelhamento e formato de saída devem corresponder ao
+                equipamento. Não altere dimensões da máquina para corrigir peça
+                fora de medida.
+              </p>
             </div>
-
-            <!-- FATIADORES SUPORTADOS -->
-            <div class="step">
-                <div class="step-number">📱</div>
-                <h3>Fatiadores Compatíveis</h3>
-                <div class="step-description">
-                    <p>Este guia cobre os dois principais fatiadores para impressão em resina:</p>
-                </div>
-                <ul class="step-list">
-                    <li><strong>Chitubox:</strong> Fatiador gratuito e popular, com interface intuitiva e suporte a diversos modelos de impressoras</li>
-                    <li><strong>Lychee Slicer:</strong> Fatiador moderno com recursos avançados de suportes automáticos e otimização</li>
-                </ul>
-                <img src="images/chitubox-interface .png" alt="Interface do Chitubox" class="step-image">
-                <img src="images/lychee-interface.jpg" alt="Interface do Lychee Slicer" class="step-image">
+            <div>
+              <img
+                class="step-image"
+                src="images/lychee-interface.jpg"
+                alt="Interface do Lychee Slicer"
+              />
+              <h3>Lychee Slicer</h3>
+              <p>
+                Adicione a impressora de resina e crie um perfil próprio para
+                cada combinação de material e altura de camada. Perfis da
+                comunidade precisam ser testados, não apenas copiados.
+              </p>
             </div>
-
-            <!-- ALTURA DE CAMADA -->
-            <div class="step">
-                <div class="step-number">📏</div>
-                <h3>Altura de Camada (Layer Height)</h3>
-                <div class="step-description">
-                    <p><strong>0.05mm é o padrão de fábrica</strong> e oferece o melhor equilíbrio entre qualidade e velocidade para a maioria das aplicações.</p>
-                </div>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📊 Tabela Comparativa de Alturas de Camada:</h4>
-                <table class="comparison-table">
-                    <tr>
-                        <th>Altura de Camada</th>
-                        <th>Qualidade</th>
-                        <th>Velocidade</th>
-                        <th>Uso Recomendado</th>
-                    </tr>
-                    <tr>
-                        <td><strong>0.025mm</strong></td>
-                        <td>⭐⭐⭐⭐⭐ Excelente</td>
-                        <td>🐌 Muito Lenta</td>
-                        <td>Miniaturas, joias, detalhes extremos</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.03mm</strong></td>
-                        <td>⭐⭐⭐⭐⭐ Excelente</td>
-                        <td>🐌 Lenta</td>
-                        <td>Miniaturas detalhadas, protótipos de precisão</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.05mm</strong></td>
-                        <td>⭐⭐⭐⭐ Ótima</td>
-                        <td>⚡ Normal</td>
-                        <td>Uso geral, padrão recomendado</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.08mm</strong></td>
-                        <td>⭐⭐⭐ Boa</td>
-                        <td>⚡⚡ Rápida</td>
-                        <td>Protótipos, peças funcionais</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.10mm</strong></td>
-                        <td>⭐⭐ Regular</td>
-                        <td>⚡⚡⚡ Muito Rápida</td>
-                        <td>Rascunhos, testes rápidos</td>
-                    </tr>
-                </table>
-
-                <div class="tip-box">
-                    <h4>💡 Dica Importante</h4>
-                    <p><strong>Camadas menores aumentam a qualidade e o tempo de impressão.</strong> Uma impressão com 0.025mm leva o DOBRO do tempo de uma com 0.05mm, mas os detalhes são significativamente melhores!</p>
-                </div>
-            </div>
-
-            <!-- RELAÇÃO CAMADA X EXPOSIÇÃO -->
-            <div class="step">
-                <div class="step-number">⏱️</div>
-                <h3>Relação Camada x Exposição</h3>
-                <div class="step-description">
-                    <p>Esta é a regra mais importante para configurar fatiadores:</p>
-                </div>
-
-                <div class="highlight-box">
-                    <h4>🔥 REGRA DE OURO</h4>
-                    <p><strong>Quanto MENOR a camada → MENOR o tempo de exposição</strong><br>
-                    <strong>Quanto MAIOR a camada → MAIOR o tempo de exposição</strong></p>
-                </div>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📊 Tabela de Tempos de Exposição por Altura de Camada:</h4>
-                <table class="comparison-table">
-                    <tr>
-                        <th>Altura de Camada</th>
-                        <th>Tempo de Exposição (Típico)</th>
-                        <th>Ajuste Recomendado</th>
-                    </tr>
-                    <tr>
-                        <td><strong>0.025mm</strong></td>
-                        <td>1.5s - 2.0s</td>
-                        <td>Reduzir 40-50% do tempo padrão</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.03mm</strong></td>
-                        <td>2.0s - 2.5s</td>
-                        <td>Reduzir 30-40% do tempo padrão</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.05mm</strong></td>
-                        <td>2.5s - 3.5s</td>
-                        <td>Tempo padrão (referência)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.08mm</strong></td>
-                        <td>3.5s - 4.5s</td>
-                        <td>Aumentar 30-40% do tempo padrão</td>
-                    </tr>
-                    <tr>
-                        <td><strong>0.10mm</strong></td>
-                        <td>4.5s - 6.0s</td>
-                        <td>Aumentar 50-70% do tempo padrão</td>
-                    </tr>
-                </table>
-
-                <div class="warning-box">
-                    <h3>⚠️ POR QUE ESSA RELAÇÃO?</h3>
-                    <p><strong>Camadas mais finas:</strong> A resina líquida tem menos espessura para curar, então precisa de MENOS tempo de exposição UV.<br><br>
-                    <strong>Camadas mais grossas:</strong> A resina líquida tem MAIS espessura para curar, então precisa de MAIS tempo de exposição UV para garantir que cure completamente até o fundo da camada.</p>
-                </div>
-
-                <div class="tip-box">
-                    <h4>💡 Exemplo Prático</h4>
-                    <p>Se sua resina Quanton3D recomenda 3.0s para 0.05mm:<br>
-                    • Para 0.025mm: use aproximadamente 1.8s (40% menos)<br>
-                    • Para 0.10mm: use aproximadamente 5.0s (65% mais)<br><br>
-                    <strong>Sempre faça o teste de calibração após mudar a altura de camada!</strong></p>
-                </div>
-            </div>
-
-            <!-- PARÂMETROS ESSENCIAIS -->
-            <div class="step">
-                <div class="step-number">⚙️</div>
-                <h3>Parâmetros Essenciais no Chitubox/Lychee</h3>
-                <img src="images/chitubox-detalhado.png" alt="Configurações do Chitubox" class="step-image">
-                <img src="images/lychee-settings.png" alt="Configurações do Lychee Slicer" class="step-image">
-
-                <div class="step-description">
-                    <p>Principais parâmetros que você precisa configurar:</p>
-                </div>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📋 Parâmetros Detalhados:</h4>
-
-                <ul class="step-list">
-                    <li><strong>Altura de Camada (Layer Height):</strong> 0.05mm é o padrão de fábrica. Ajuste conforme necessidade de qualidade vs velocidade.</li>
-
-                    <li><strong>Camadas Base (Bottom Layers):</strong> 5-8 camadas. Garante boa adesão à plataforma. Impressoras com plataforma flexível podem usar menos.</li>
-
-                    <li><strong>Tempo de Exposição Base (Bottom Exposure Time):</strong> Deve ser de 8 a 10 vezes MAIOR que o tempo de exposição normal para garantir adesão forte.</li>
-
-                    <li><strong>Tempo de Exposição Normal (Exposure Time):</strong> Varia conforme resina e altura de camada. Use o gabarito de calibração Quanton3D para encontrar o tempo ideal!</li>
-
-                    <li><strong>Velocidade de Elevação (Lift Speed):</strong> 60-80mm/min para resinas normais. Use velocidades MENORES (40-60mm/min) para resinas com alta rigidez para evitar quebra da peça.</li>
-
-                    <li><strong>Distância de Elevação (Lift Distance):</strong> 6-8mm é o padrão. Impressoras com tanque raso podem usar menos (4-5mm).</li>
-
-                    <li><strong>Tempo de Retração (Retract Speed):</strong> 150-200mm/min. Pode ser mais rápido que o lift speed pois não há risco de quebrar a peça.</li>
-
-                    <li><strong>Tempo de Descanso (Rest Time After Lift):</strong> 0-2 segundos. Permite que a resina se estabilize no tanque antes da próxima camada.</li>
-                </ul>
-
-                <div class="highlight-box">
-                    <h4>🎯 Otimização de Parâmetros</h4>
-                    <p><strong>Para resinas com "alta rigidez":</strong> Use velocidades de elevação (Lift Speed) MAIS LENTAS (40-60mm/min) para evitar quebra da peça durante a impressão.<br><br>
-                    <strong>Para resinas flexíveis:</strong> Use lift speed normal (60-80mm/min) e aumente ligeiramente o tempo de exposição (+0.5s).</p>
-                </div>
-            </div>
-<!-- SEÇÃO PARA INSERIR NO HTML PRINCIPAL -->
-
-            <!-- PARÂMETROS DETALHADOS CHITUBOX -->
-            <div class="step">
-                <div class="step-number">🔧</div>
-                <h3>Parâmetros Detalhados do Chitubox</h3>
-                <img src="images/chitubox-detalhado.png" alt="Parâmetros detalhados do Chitubox" class="step-image">
-
-                <div class="step-description">
-                    <p>Entenda CADA parâmetro do Chitubox e como ele afeta sua impressão:</p>
-                </div>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📋 Seção: Imprimir (Print Settings)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Altura da Camada (Layer Height):</strong>
-                    <br><strong>O que é:</strong> Espessura de cada camada de resina curada
-                    <br><strong>Valor típico:</strong> 0.05mm
-                    <br><strong>Como afeta:</strong> Camadas menores = mais qualidade + mais tempo. Camadas maiores = menos qualidade + menos tempo
-                    <br><strong>Ajuste:</strong> 0.025mm (alta qualidade) até 0.10mm (rápido)</li>
-
-                    <li><strong>Camadas de Base (Bottom Layers):</strong>
-                    <br><strong>O que é:</strong> Número de camadas iniciais com exposição prolongada
-                    <br><strong>Valor típico:</strong> 5-8 camadas
-                    <br><strong>Como afeta:</strong> Garante adesão forte à plataforma de impressão
-                    <br><strong>Ajuste:</strong> Plataforma flexível pode usar 3-5. Plataforma rígida use 6-8</li>
-
-                    <li><strong>Tempo Exposição (Exposure Time):</strong>
-                    <br><strong>O que é:</strong> Tempo que a luz UV fica ligada para curar cada camada normal
-                    <br><strong>Valor típico:</strong> 2.5-3.5s (para 0.05mm)
-                    <br><strong>Como afeta:</strong> Muito baixo = peça frágil. Muito alto = perda de detalhes
-                    <br><strong>Ajuste:</strong> Use gabarito de calibração Quanton3D!</li>
-
-                    <li><strong>Tempo Exposição Base (Bottom Exposure Time):</strong>
-                    <br><strong>O que é:</strong> Tempo de exposição das camadas base
-                    <br><strong>Valor típico:</strong> 30-50s (8-10x o tempo normal)
-                    <br><strong>Como afeta:</strong> Garante que a peça grude forte na plataforma
-                    <br><strong>Ajuste:</strong> Se peça não adere, aumente para 40-60s</li>
-
-                    <li><strong>Contagem de Camadas de Transição (Transition Layers Count):</strong>
-                    <br><strong>O que é:</strong> Número de camadas que fazem transição gradual entre base e normal
-                    <br><strong>Valor típico:</strong> 5 camadas
-                    <br><strong>Como afeta:</strong> Suaviza a mudança brusca entre camadas base e normais, reduz marcas
-                    <br><strong>Ajuste:</strong> 3-8 camadas. Mais camadas = transição mais suave</li>
-
-                    <li><strong>Tipo da Primeira Transição (Transition Type):</strong>
-                    <br><strong>O que é:</strong> Como o tempo de exposição muda nas camadas de transição
-                    <br><strong>Valor típico:</strong> Linear
-                    <br><strong>Como afeta:</strong> Linear = mudança gradual uniforme. Exponencial = mudança mais rápida no início
-                    <br><strong>Ajuste:</strong> Mantenha Linear para maioria dos casos</li>
-
-                    <li><strong>Diferença de Tempo de Intervalo da Camada (Transition Time Difference):</strong>
-                    <br><strong>O que é:</strong> Quanto o tempo de exposição diminui a cada camada de transição
-                    <br><strong>Valor típico:</strong> Calculado automaticamente
-                    <br><strong>Como afeta:</strong> Determina a velocidade da transição
-                    <br><strong>Ajuste:</strong> Deixe automático na maioria dos casos</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⬆️ Seção: Movimento (Motion Settings)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Dist. Elevação Inferior (Bottom Lift Distance):</strong>
-                    <br><strong>O que é:</strong> Distância que a plataforma sobe após curar cada camada base
-                    <br><strong>Valor típico:</strong> 6-8mm
-                    <br><strong>Como afeta:</strong> Precisa ser suficiente para resina fluir sob a peça
-                    <br><strong>Ajuste:</strong> Tanque raso = 5mm. Tanque fundo = 8mm</li>
-
-                    <li><strong>Distância Elevação (Lift Distance):</strong>
-                    <br><strong>O que é:</strong> Distância que a plataforma sobe após curar cada camada normal
-                    <br><strong>Valor típico:</strong> 6-8mm
-                    <br><strong>Como afeta:</strong> Igual ao anterior, mas para camadas normais
-                    <br><strong>Ajuste:</strong> Pode ser igual ou ligeiramente menor que o bottom lift</li>
-
-                    <li><strong>Distância de Retração Inferior (Bottom Retract Distance):</strong>
-                    <br><strong>O que é:</strong> Distância extra que a plataforma desce antes de parar
-                    <br><strong>Valor típico:</strong> 0-2mm
-                    <br><strong>Como afeta:</strong> Ajuda a comprimir a resina uniformemente
-                    <br><strong>Ajuste:</strong> Geralmente 0mm. Use 1-2mm se tiver bolhas</li>
-
-                    <li><strong>Distância de Retração (Retract Distance):</strong>
-                    <br><strong>O que é:</strong> Igual ao anterior, mas para camadas normais
-                    <br><strong>Valor típico:</strong> 0-2mm
-                    <br><strong>Como afeta:</strong> Mesmo efeito do bottom retract
-                    <br><strong>Ajuste:</strong> Mantenha igual ao bottom retract</li>
-
-                    <li><strong>Vel. Elevação Inferior (Bottom Lift Speed):</strong>
-                    <br><strong>O que é:</strong> Velocidade que a plataforma sobe nas camadas base
-                    <br><strong>Valor típico:</strong> 60-80mm/min
-                    <br><strong>Como afeta:</strong> Muito rápido pode quebrar a peça. Muito lento aumenta tempo
-                    <br><strong>Ajuste:</strong> Resina rígida = 40-60mm/min. Resina flexível = 80-100mm/min</li>
-
-                    <li><strong>Velocidade de Elevação (Lift Speed):</strong>
-                    <br><strong>O que é:</strong> Velocidade que a plataforma sobe nas camadas normais
-                    <br><strong>Valor típico:</strong> 60-80mm/min
-                    <br><strong>Como afeta:</strong> Parâmetro CRÍTICO! Muito rápido = peça quebra durante impressão
-                    <br><strong>Ajuste:</strong> Resinas com alta rigidez = 40-60mm/min</li>
-
-                    <li><strong>Velocidade de Retração Inferior (Bottom Retract Speed):</strong>
-                    <br><strong>O que é:</strong> Velocidade que a plataforma desce após lift nas camadas base
-                    <br><strong>Valor típico:</strong> 150-200mm/min
-                    <br><strong>Como afeta:</strong> Pode ser mais rápido pois não há risco de quebrar
-                    <br><strong>Ajuste:</strong> 150-250mm/min é seguro</li>
-
-                    <li><strong>Vel. Retração (Retract Speed):</strong>
-                    <br><strong>O que é:</strong> Velocidade que a plataforma desce após lift nas camadas normais
-                    <br><strong>Valor típico:</strong> 150-200mm/min
-                    <br><strong>Como afeta:</strong> Afeta tempo total, mas não qualidade
-                    <br><strong>Ajuste:</strong> Pode ser 2-3x mais rápido que lift speed</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⏱️ Seção: Tempos de Espera (Wait Times)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Modo de Espera Durante a Impressão (Rest Mode):</strong>
-                    <br><strong>O que é:</strong> Quando a impressora aguarda antes de curar
-                    <br><strong>Opções:</strong> "Tempo de descanso" ou "Antes da exposição"
-                    <br><strong>Como afeta:</strong> Define se espera antes ou depois do lift
-                    <br><strong>Ajuste:</strong> "Tempo de descanso" é mais comum</li>
-
-                    <li><strong>Tempo de Descanso Antes da Elevação (Rest Time Before Lift):</strong>
-                    <br><strong>O que é:</strong> Pausa após curar, antes de subir a plataforma
-                    <br><strong>Valor típico:</strong> 0s
-                    <br><strong>Como afeta:</strong> Permite resina drenar antes do movimento
-                    <br><strong>Ajuste:</strong> 0-1s. Só use se tiver problemas de adesão</li>
-
-                    <li><strong>Tempo de Descanso Após a Elevação (Rest Time After Lift):</strong>
-                    <br><strong>O que é:</strong> Pausa após subir, antes de descer
-                    <br><strong>Valor típico:</strong> 0-2s
-                    <br><strong>Como afeta:</strong> Permite resina se estabilizar no tanque
-                    <br><strong>Ajuste:</strong> 1-2s para resinas viscosas. 0s para resinas fluidas</li>
-
-                    <li><strong>Tempo de Descanso Após a Retração (Rest Time After Retract):</strong>
-                    <br><strong>O que é:</strong> Pausa após descer, antes de curar próxima camada
-                    <br><strong>Valor típico:</strong> 0.5-1s
-                    <br><strong>Como afeta:</strong> Tempo para resina fluir sob a peça
-                    <br><strong>Ajuste:</strong> 0.5s para resinas fluidas. 1-2s para resinas viscosas</li>
-                </ul>
-
-                <div class="warning-box">
-                    <h3>⚠️ ATENÇÃO - Lift Speed</h3>
-                    <p><strong>Velocidade de Elevação (Lift Speed)</strong> é o parâmetro que MAIS causa falhas!<br><br>
-                    Se sua impressão quebra no meio do processo, o problema é quase sempre lift speed muito alto para aquela resina.<br><br>
-                    <strong>Resinas com alta rigidez (Spin+, Tough, Engineering):</strong> Use 40-60mm/min<br>
-                    <strong>Resinas normais (Standard):</strong> Use 60-80mm/min<br>
-                    <strong>Resinas flexíveis:</strong> Use 80-100mm/min</p>
-                </div>
-            </div>
-
-            <!-- PARÂMETROS DETALHADOS LYCHEE -->
-            <div class="step">
-                <div class="step-number">🔧</div>
-                <h3>Parâmetros Detalhados do Lychee Slicer</h3>
-                <img src="images/lychee-detalhado.png" alt="Parâmetros detalhados do Lychee Slicer" class="step-image">
-
-                <div class="step-description">
-                    <p>Entenda CADA parâmetro do Lychee Slicer e como ele afeta sua impressão:</p>
-                </div>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📋 Global Parameters (Parâmetros Globais)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Two Stage Motion Control (TSMC):</strong>
-                    <br><strong>O que é:</strong> Sistema de movimento em dois estágios
-                    <br><strong>Valor típico:</strong> ON
-                    <br><strong>Como afeta:</strong> Permite lift speed diferente no início (mais lento) e depois (mais rápido)
-                    <br><strong>Ajuste:</strong> Ative para reduzir risco de quebra mantendo velocidade</li>
-
-                    <li><strong>Light Off Delay (On) / Resting Time (Off):</strong>
-                    <br><strong>O que é:</strong> Tempo de espera após desligar a luz UV
-                    <br><strong>Valor típico:</strong> ON
-                    <br><strong>Como afeta:</strong> ON = espera após curar. OFF = espera após movimento
-                    <br><strong>Ajuste:</strong> ON é mais moderno e eficiente</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">🔥 Burn In Layers (Camadas Base)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Number of Layers:</strong>
-                    <br><strong>O que é:</strong> Quantidade de camadas base
-                    <br><strong>Valor típico:</strong> 6 camadas
-                    <br><strong>Como afeta:</strong> Garante adesão à plataforma
-                    <br><strong>Ajuste:</strong> 5-8 camadas conforme tipo de plataforma</li>
-
-                    <li><strong>Exposure Time:</strong>
-                    <br><strong>O que é:</strong> Tempo de exposição das camadas base
-                    <br><strong>Valor típico:</strong> 30-50s
-                    <br><strong>Como afeta:</strong> Deve ser 8-10x maior que exposição normal
-                    <br><strong>Ajuste:</strong> Se não aderir, aumente para 40-60s</li>
-
-                    <li><strong>Transition Layers Count:</strong>
-                    <br><strong>O que é:</strong> Camadas de transição entre base e normal
-                    <br><strong>Valor típico:</strong> 6 camadas
-                    <br><strong>Como afeta:</strong> Suaviza mudança, reduz marcas
-                    <br><strong>Ajuste:</strong> 4-8 camadas</li>
-
-                    <li><strong>Lift Distance:</strong>
-                    <br><strong>O que é:</strong> Distância de elevação nas camadas base
-                    <br><strong>Valor típico:</strong> 4-6mm
-                    <br><strong>Como afeta:</strong> Precisa ser suficiente para resina fluir
-                    <br><strong>Ajuste:</strong> 4-8mm conforme tanque</li>
-
-                    <li><strong>Retract Distance:</strong>
-                    <br><strong>O que é:</strong> Distância extra ao descer
-                    <br><strong>Valor típico:</strong> 0-2mm
-                    <br><strong>Como afeta:</strong> Comprime resina uniformemente
-                    <br><strong>Ajuste:</strong> 0mm padrão. 1-2mm se tiver bolhas</li>
-
-                    <li><strong>Lift Speed:</strong>
-                    <br><strong>O que é:</strong> Velocidade de subida nas camadas base
-                    <br><strong>Valor típico:</strong> 60-100mm/min
-                    <br><strong>Como afeta:</strong> Muito rápido pode quebrar
-                    <br><strong>Ajuste:</strong> 40-60mm/min para resinas rígidas</li>
-
-                    <li><strong>Retract Speed:</strong>
-                    <br><strong>O que é:</strong> Velocidade de descida
-                    <br><strong>Valor típico:</strong> 150-200mm/min
-                    <br><strong>Como afeta:</strong> Pode ser mais rápido que lift
-                    <br><strong>Ajuste:</strong> 150-250mm/min</li>
-
-                    <li><strong>Light Intensity:</strong>
-                    <br><strong>O que é:</strong> Intensidade da luz UV (%)
-                    <br><strong>Valor típico:</strong> 100%
-                    <br><strong>Como afeta:</strong> Reduzir aumenta tempo necessário
-                    <br><strong>Ajuste:</strong> Mantenha 100% e ajuste tempo de exposição</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📄 Normal Layers (Camadas Normais)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Layer Thickness:</strong>
-                    <br><strong>O que é:</strong> Altura de cada camada (Layer Height)
-                    <br><strong>Valor típico:</strong> 50 microns (0.05mm)
-                    <br><strong>Como afeta:</strong> Menor = mais qualidade. Maior = mais rápido
-                    <br><strong>Ajuste:</strong> 25-100 microns (0.025-0.10mm)</li>
-
-                    <li><strong>Exposure Time:</strong>
-                    <br><strong>O que é:</strong> Tempo de exposição das camadas normais
-                    <br><strong>Valor típico:</strong> 2.5-3.5s (para 0.05mm)
-                    <br><strong>Como afeta:</strong> Parâmetro CRÍTICO! Use gabarito de calibração
-                    <br><strong>Ajuste:</strong> Varia com altura de camada e resina</li>
-
-                    <li><strong>Lift Distance:</strong>
-                    <br><strong>O que é:</strong> Distância de elevação nas camadas normais
-                    <br><strong>Valor típico:</strong> 4-6mm
-                    <br><strong>Como afeta:</strong> Igual às camadas base
-                    <br><strong>Ajuste:</strong> Pode ser igual ou menor que base</li>
-
-                    <li><strong>Retract Distance:</strong>
-                    <br><strong>O que é:</strong> Distância de retração
-                    <br><strong>Valor típico:</strong> 0-2mm
-                    <br><strong>Como afeta:</strong> Compressão da resina
-                    <br><strong>Ajuste:</strong> Igual às camadas base</li>
-
-                    <li><strong>Lift Speed:</strong>
-                    <br><strong>O que é:</strong> Velocidade de subida - PARÂMETRO CRÍTICO!
-                    <br><strong>Valor típico:</strong> 60-180mm/min (com TSMC)
-                    <br><strong>Como afeta:</strong> Principal causa de quebra durante impressão
-                    <br><strong>Ajuste:</strong> Resina rígida = 40-60mm/min inicial</li>
-
-                    <li><strong>Retract Speed:</strong>
-                    <br><strong>O que é:</strong> Velocidade de descida
-                    <br><strong>Valor típico:</strong> 150-200mm/min
-                    <br><strong>Como afeta:</strong> Tempo total de impressão
-                    <br><strong>Ajuste:</strong> Pode ser 2-3x mais rápido que lift</li>
-
-                    <li><strong>Wait Before Print:</strong>
-                    <br><strong>O que é:</strong> Tempo de espera antes de curar
-                    <br><strong>Valor típico:</strong> 0-1s
-                    <br><strong>Como afeta:</strong> Permite resina se acomodar
-                    <br><strong>Ajuste:</strong> 0.5-1s para resinas viscosas</li>
-
-                    <li><strong>Wait After Print:</strong>
-                    <br><strong>O que é:</strong> Tempo de espera após curar
-                    <br><strong>Valor típico:</strong> 0s
-                    <br><strong>Como afeta:</strong> Permite drenagem antes de mover
-                    <br><strong>Ajuste:</strong> Geralmente 0s</li>
-
-                    <li><strong>Wait After Lift:</strong>
-                    <br><strong>O que é:</strong> Tempo de espera após subir
-                    <br><strong>Valor típico:</strong> 0-2s
-                    <br><strong>Como afeta:</strong> Estabilização da resina no tanque
-                    <br><strong>Ajuste:</strong> 1-2s para resinas viscosas</li>
-
-                    <li><strong>Light Intensity:</strong>
-                    <br><strong>O que é:</strong> Intensidade da luz UV (%)
-                    <br><strong>Valor típico:</strong> 100%
-                    <br><strong>Como afeta:</strong> Potência da cura
-                    <br><strong>Ajuste:</strong> Mantenha 100%</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">📐 Scene Scale Compensation (Compensação de Escala)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Scale X, Y, Z:</strong>
-                    <br><strong>O que é:</strong> Compensação dimensional em cada eixo
-                    <br><strong>Valor típico:</strong> 100% (sem compensação)
-                    <br><strong>Como afeta:</strong> Corrige encolhimento da resina após cura
-                    <br><strong>Ajuste:</strong> 100-102% se peças saem menores que esperado</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⚖️ Compensation (Compensação)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Compensation Type:</strong>
-                    <br><strong>O que é:</strong> Tipo de compensação dimensional
-                    <br><strong>Opções:</strong> Grey Pixel ou Fixed Removal
-                    <br><strong>Como afeta:</strong> Corrige superexposição nas bordas
-                    <br><strong>Ajuste:</strong> Grey Pixel é mais preciso</li>
-
-                    <li><strong>Burn In Layers / Normal Layers:</strong>
-                    <br><strong>O que é:</strong> Valor de compensação em mm
-                    <br><strong>Valor típico:</strong> 0mm (sem compensação)
-                    <br><strong>Como afeta:</strong> Reduz dimensões para compensar superexposição
-                    <br><strong>Ajuste:</strong> 0-0.2mm se furos saem menores</li>
-
-                    <li><strong>Support Resin Compensation:</strong>
-                    <br><strong>O que é:</strong> Compensação específica para suportes
-                    <br><strong>Valor típico:</strong> OFF
-                    <br><strong>Como afeta:</strong> Facilita remoção de suportes
-                    <br><strong>Ajuste:</strong> ON se suportes grudarem muito</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">⏱️ Print Time Override (Sobrescrever Tempo)</h4>
-
-                <ul class="step-list">
-                    <li><strong>Time per Burn In Layer / Time per Layer:</strong>
-                    <br><strong>O que é:</strong> Sobrescrever tempo de exposição por camada
-                    <br><strong>Valor típico:</strong> OFF
-                    <br><strong>Como afeta:</strong> Permite ajuste fino por camada
-                    <br><strong>Ajuste:</strong> Raramente necessário, use apenas para testes avançados</li>
-                </ul>
-
-                <div class="highlight-box">
-                    <h4>🎯 Diferenças Chitubox vs Lychee</h4>
-                    <p><strong>Chitubox:</strong> Mais simples e direto. Melhor para iniciantes.<br>
-                    <strong>Lychee:</strong> Mais opções avançadas (TSMC, compensação). Melhor para usuários experientes.<br><br>
-                    <strong>Ambos produzem resultados excelentes quando configurados corretamente!</strong></p>
-                </div>
-            </div>
-
-            <!-- CONFIGURAÇÃO PASSO A PASSO -->
-            <div class="step">
-                <div class="step-number">📝</div>
-                <h3>Como Configurar Passo a Passo</h3>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">No Chitubox:</h4>
-                <ul class="step-list">
-                    <li><strong>1.</strong> Abra o Chitubox e clique em "Settings" (ícone de engrenagem)</li>
-                    <li><strong>2.</strong> Selecione seu modelo de impressora na lista</li>
-                    <li><strong>3.</strong> Acesse a seção "Parâmetros de Impressão" no site da Quanton3D</li>
-                    <li><strong>4.</strong> Selecione sua resina específica</li>
-                    <li><strong>5.</strong> Copie os parâmetros recomendados para o Chitubox</li>
-                    <li><strong>6.</strong> Ajuste a altura de camada conforme necessário</li>
-                    <li><strong>7.</strong> Ajuste o tempo de exposição conforme a tabela acima</li>
-                    <li><strong>8.</strong> Salve o perfil com nome descritivo (ex: "Quanton3D Spin+ 0.05mm")</li>
-                </ul>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">No Lychee Slicer:</h4>
-                <ul class="step-list">
-                    <li><strong>1.</strong> Abra o Lychee Slicer e clique no ícone de impressora</li>
-                    <li><strong>2.</strong> Selecione "Add Printer" e escolha seu modelo</li>
-                    <li><strong>3.</strong> Clique em "Resin Settings" (configurações de resina)</li>
-                    <li><strong>4.</strong> Crie um novo perfil clicando em "+"</li>
-                    <li><strong>5.</strong> Acesse os parâmetros da Quanton3D no site</li>
-                    <li><strong>6.</strong> Configure "Burn In Layers" (camadas base) e "Normal Layers"</li>
-                    <li><strong>7.</strong> Ajuste "Layer Height" e "Exposure Time" conforme necessário</li>
-                    <li><strong>8.</strong> Salve o perfil com nome descritivo</li>
-                </ul>
-
-                <div class="tip-box">
-                    <h4>💡 Dica Profissional</h4>
-                    <p>Crie perfis separados para cada combinação de resina + altura de camada. Por exemplo:<br>
-                    • "Quanton3D Spin+ 0.05mm - Qualidade"<br>
-                    • "Quanton3D Spin+ 0.025mm - Alta Qualidade"<br>
-                    • "Quanton3D Spin+ 0.10mm - Rápido"</p>
-                </div>
-            </div>
-
-            <!-- ERROS COMUNS -->
-            <div class="step">
-                <div class="step-number">❌</div>
-                <h3>Erros Comuns e Como Evitar</h3>
-
-                <h4 style="color: #667eea; margin: 30px 0 15px 0;">🚫 Problemas Frequentes:</h4>
-
-                <table class="comparison-table">
-                    <tr>
-                        <th>Problema</th>
-                        <th>Causa Provável</th>
-                        <th>Solução</th>
-                    </tr>
-                    <tr>
-                        <td>Peça não adere à plataforma</td>
-                        <td>Tempo de exposição base muito baixo ou nivelamento incorreto</td>
-                        <td>Aumentar tempo base para 40-50s e verificar nivelamento</td>
-                    </tr>
-                    <tr>
-                        <td>Peça quebra durante impressão</td>
-                        <td>Lift speed muito alto para resina rígida</td>
-                        <td>Reduzir lift speed para 40-60mm/min</td>
-                    </tr>
-                    <tr>
-                        <td>Detalhes perdidos ou fundidos</td>
-                        <td>Superexposição - tempo muito alto</td>
-                        <td>Reduzir tempo de exposição em 0.5s</td>
-                    </tr>
-                    <tr>
-                        <td>Peça frágil ou quebradiça</td>
-                        <td>Subexposição - tempo muito baixo</td>
-                        <td>Aumentar tempo de exposição em 0.5s</td>
-                    </tr>
-                    <tr>
-                        <td>Linhas de camada muito visíveis</td>
-                        <td>Altura de camada muito alta</td>
-                        <td>Reduzir para 0.03mm ou 0.025mm</td>
-                    </tr>
-                    <tr>
-                        <td>Impressão muito lenta</td>
-                        <td>Altura de camada muito baixa</td>
-                        <td>Aumentar para 0.05mm ou 0.08mm</td>
-                    </tr>
-                </table>
-
-                <div class="warning-box">
-                    <h3>⚠️ LEMBRE-SE</h3>
-                    <p>Sempre que mudar a altura de camada, você DEVE ajustar o tempo de exposição! Não use o mesmo tempo de 0.05mm para 0.025mm ou 0.10mm - isso resultará em falhas!</p>
-                </div>
-            </div>
-
-            <!-- DICAS AVANÇADAS -->
-            <div class="step">
-                <div class="step-number">🎓</div>
-                <h3>Dicas Avançadas</h3>
-
-                <ul class="step-list">
-                    <li><strong>Anti-Aliasing:</strong> Ative no Chitubox/Lychee para suavizar bordas. Recomendado nível 4-8 para melhor qualidade.</li>
-
-                    <li><strong>Transição de Camadas Base:</strong> Use "Transition Layers" para suavizar a mudança entre camadas base e normais, reduzindo marcas.</li>
-
-                    <li><strong>Temperatura da Resina:</strong> Resina fria (abaixo de 20°C) precisa de +0.5-1.0s no tempo de exposição. Resina quente (acima de 25°C) pode precisar de -0.3-0.5s.</li>
-
-                    <li><strong>Envelhecimento da Tela LCD:</strong> Telas com mais de 1000h de uso podem precisar de +0.5-1.0s no tempo de exposição.</li>
-
-                    <li><strong>Hollow (Oco):</strong> Para peças grandes, use a função "Hollow" para economizar resina. Adicione furos de drenagem de 2-3mm!</li>
-
-                    <li><strong>Suportes:</strong> Use suportes médios (0.5-0.6mm) para maioria das peças. Suportes leves (0.3-0.4mm) para miniaturas delicadas.</li>
-                </ul>
-
-                <div class="tip-box">
-                    <h4>💡 Otimização Final</h4>
-                    <p>Após configurar todos os parâmetros, SEMPRE imprima o gabarito de calibração Quanton3D para validar o tempo de exposição! Isso garante que suas configurações estão perfeitas para aquela resina específica.</p>
-                </div>
-            </div>
-
-            <!-- CHECKLIST -->
-            <div class="step">
-                <div class="step-number">✅</div>
-                <h3>Checklist de Configuração</h3>
-
-                <div class="step-description">
-                    <p>Antes de iniciar qualquer impressão, verifique:</p>
-                </div>
-
-                <ul class="step-list">
-                    <li>✅ Impressora selecionada corretamente no fatiador</li>
-                    <li>✅ Altura de camada definida (0.05mm recomendado)</li>
-                    <li>✅ Tempo de exposição ajustado conforme altura de camada</li>
-                    <li>✅ Camadas base configuradas (5-8 camadas)</li>
-                    <li>✅ Tempo de exposição base 8-10x maior que normal</li>
-                    <li>✅ Lift speed adequado para tipo de resina</li>
-                    <li>✅ Suportes adicionados e verificados</li>
-                    <li>✅ Orientação da peça otimizada</li>
-                    <li>✅ Perfil salvo com nome descritivo</li>
-                    <li>✅ Calibração feita com gabarito Quanton3D</li>
-                </ul>
-            </div>
-
-        </div>
-
-        <div class="footer">
-            <h3>🔬 Quanton3D - Resinas UV de Alta Performance</h3>
-            <p>Precisa de ajuda com configuração? Entre em contato conosco!</p>
-            <p>📱 WhatsApp: <a href="https://wa.me/553132716935">(31) 3271-6935</a></p>
-            <p>📧 Email: <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p>
-            <p>🌐 Site: <a href="https://quanton3d.com.br">quanton3d.com.br</a></p>
-            <p>📥 Parâmetros de Impressão: <a href="https://quanton3d.com.br">quanton3d.com.br</a></p>
-            <br>
-            <p style="font-size: 0.9em; opacity: 0.8;">© 2025 Quanton3D - Todos os direitos reservados</p>
-        </div>
+          </div>
+          <div class="callout danger">
+            <b>Erro crítico:</b> resolução, tamanho físico, espelhamento ou
+            formato incorretos podem gerar escala errada, arquivo recusado ou
+            imagem invertida. Corrija o cadastro da máquina antes de calibrar
+            resina.
+          </div>
+          <ul class="list">
+            <li>
+              <b>Nome recomendado:</b> resina + cor + impressora + camada +
+              versão, por exemplo “Iron Cinza · Saturn 3 Ultra · 50 µm · v03”.
+            </li>
+            <li>
+              <b>Rastreabilidade:</b> registre versão do fatiador, firmware,
+              lote da resina e temperatura de teste.
+            </li>
+            <li>
+              <b>Unidades:</b> confirme se velocidade aparece em mm/min ou mm/s.
+              Confundir as duas cria diferença de 60 vezes.
+            </li>
+          </ul>
+        </section>
+
+        <section class="step" id="camada">
+          <div class="stepHead">
+            <span class="stepNo">2</span>
+            <h2>Altura de camada e exposição</h2>
+          </div>
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Faixa inicial</th>
+                  <th>Benefício provável</th>
+                  <th>Custo ou risco</th>
+                  <th>Validação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>25–30 µm</td>
+                  <td>Menos degraus em curvas e inclinações</td>
+                  <td>
+                    Mais camadas; nem toda resina ou eixo Z ganha detalhe real
+                  </td>
+                  <td>Recalibrar exposição, dimensão e resistência</td>
+                </tr>
+                <tr>
+                  <td>50 µm</td>
+                  <td>Bom ponto de partida para muitos fluxos</td>
+                  <td>Não é “padrão perfeito” para toda aplicação</td>
+                  <td>Usar perfil do fabricante e teste local</td>
+                </tr>
+                <tr>
+                  <td>80–100 µm</td>
+                  <td>Menos camadas e possível redução de tempo</td>
+                  <td>Degraus e maior profundidade de cura necessária</td>
+                  <td>Confirmar se a resina suporta a espessura</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout warning">
+            <b>Relação correta:</b> mudar a espessura normalmente exige
+            recalibrar exposição, mas a relação não é linear nem permite aplicar
+            porcentagens fixas. A curva de profundidade de cura depende de
+            absorção, fotoiniciador, pigmentos, potência e espalhamento de luz.
+          </div>
+          <p>
+            Camada mais fina pode aceitar menor exposição, mas exposição curta
+            demais perde união entre camadas e detalhes negativos. Camada maior
+            pode exigir mais energia, porém aumentar o tempo sem medir também
+            amplia sangramento lateral. Compare pinos, cavidades, texto, encaixe
+            e resistência — não aprove apenas pela aparência.
+          </p>
+        </section>
+
+        <section class="step" id="base">
+          <div class="stepHead">
+            <span class="stepNo">3</span>
+            <h2>Camadas base e transição</h2>
+          </div>
+          <div class="grid3">
+            <article class="card">
+              <span class="tag">Bottom layers</span>
+              <h3>Quantidade</h3>
+              <p>
+                Forma a zona de ancoragem. Camadas demais aumentam pé de
+                elefante e rigidez da base; poucas podem reduzir segurança.
+              </p>
+            </article>
+            <article class="card">
+              <span class="tag">Bottom exposure</span>
+              <h3>Energia de adesão</h3>
+              <p>
+                Calibre pelo menor valor que mantém a impressão firme e permite
+                remoção controlada. A regra “8–10 vezes” não é universal.
+              </p>
+            </article>
+            <article class="card">
+              <span class="tag">Transition</span>
+              <h3>Mudança gradual</h3>
+              <p>
+                Evita salto brusco entre exposição de base e normal. Seu efeito
+                depende de como firmware e formato distribuem os tempos.
+              </p>
+            </article>
+          </div>
+          <div class="callout good">
+            <b>Critério de liberação:</b> todas as zonas do teste permanecem
+            aderidas, a base sai sem violência e o pé de elefante fica dentro da
+            tolerância da aplicação.
+          </div>
+        </section>
+
+        <section class="step" id="movimento">
+          <div class="stepHead">
+            <span class="stepNo">4</span>
+            <h2>Lift, retract e mecanismo de separação</h2>
+          </div>
+          <img
+            class="step-image"
+            src="images/chitubox-detalhado.png"
+            alt="Parâmetros de movimento no Chitubox"
+          />
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Parâmetro</th>
+                  <th>Função física</th>
+                  <th>Risco</th>
+                  <th>Como ajustar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lift distance</td>
+                  <td>Permitir separação completa entre camada e filme</td>
+                  <td>A camada não solta antes do retorno</td>
+                  <td>Depende de tela, flexão do filme, posição e mecanismo</td>
+                </tr>
+                <tr>
+                  <td>Lift speed</td>
+                  <td>Controlar a taxa de aplicação da carga de peel</td>
+                  <td>Pico de força, suporte alongado, delaminação</td>
+                  <td>Comece no perfil oficial e altere com teste</td>
+                </tr>
+                <tr>
+                  <td>Retract speed</td>
+                  <td>Reposicionar a plataforma</td>
+                  <td>Impacto hidrodinâmico e resina sem acomodação</td>
+                  <td>Considere viscosidade, seção e área da plataforma</td>
+                </tr>
+                <tr>
+                  <td>TSMC</td>
+                  <td>Dividir subida/descida em dois estágios</td>
+                  <td>Primeiro estágio rápido eleva o pico de peel</td>
+                  <td>
+                    O inicial controla separação; o seguinte recupera tempo
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout danger">
+            <b>Não classifique lift apenas por “resina rígida ou flexível”.</b>
+            Área da camada, suporte, temperatura, filme e cinemática pesam mais
+            que esse rótulo isolado. Cubas basculantes também não devem receber
+            valores copiados de uma máquina bottom-up convencional.
+          </div>
+        </section>
+
+        <section class="step" id="esperas">
+          <div class="stepHead">
+            <span class="stepNo">5</span>
+            <h2>Tempos de espera: cada posição tem uma função</h2>
+          </div>
+          <div class="grid3">
+            <article class="card">
+              <h3>Antes da elevação</h3>
+              <p>
+                Ocorre depois da exposição. Pode permitir relaxamento ou
+                drenagem, mas não substitui movimento correto.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Depois da elevação</h3>
+              <p>
+                Ocorre com a plataforma afastada. Nem sempre melhora o
+                preenchimento sob a peça.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Após retração / antes da luz</h3>
+              <p>
+                Permite acomodação da resina e redução do movimento antes da
+                próxima exposição.
+              </p>
+            </article>
+          </div>
+          <p>
+            “Light-off delay”, “wait before print” e “rest time” podem ser
+            interpretados de forma diferente conforme formato e firmware.
+            Confirme na documentação e observe o ciclo real. Em peças grandes ou
+            resinas viscosas, descanso insuficiente pode gerar espessura
+            irregular; tempo excessivo só aumenta o ciclo.
+          </p>
+        </section>
+
+        <section class="step" id="recursos">
+          <div class="stepHead">
+            <span class="stepNo">6</span>
+            <h2>Anti-aliasing, blur e compensação</h2>
+          </div>
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Recurso</th>
+                  <th>O que faz</th>
+                  <th>Risco</th>
+                  <th>Uso correto</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Grayscale / AA</td>
+                  <td>Modula pixels de borda</td>
+                  <td>Amolecer detalhe, fechar cavidades ou mudar dimensão</td>
+                  <td>Comparar sem AA e níveis compatíveis com o formato</td>
+                </tr>
+                <tr>
+                  <td>Image blur</td>
+                  <td>Espalha a transição por mais pixels</td>
+                  <td>Perda crescente de nitidez</td>
+                  <td>Usar se o ganho visual superar a perda metrológica</td>
+                </tr>
+                <tr>
+                  <td>Shrinkage / scale</td>
+                  <td>Escala o corpo do modelo</td>
+                  <td>Não corrige igualmente furo e externo</td>
+                  <td>Calibrar eixos com corpos grandes e repetidos</td>
+                </tr>
+                <tr>
+                  <td>Dimensional compensation</td>
+                  <td>Expande ou contrai contornos</td>
+                  <td>Melhora externo e pode piorar interno</td>
+                  <td>Medir pinos e furos separadamente</td>
+                </tr>
+                <tr>
+                  <td>Bottom tolerance</td>
+                  <td>Compensa expansão das bases</td>
+                  <td>Pode criar degrau ou reduzir apoio</td>
+                  <td>Ajustar depois da exposição de base</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout warning">
+            <b>Ordem importante:</b> calibre exposição antes de compensação
+            dimensional. Compensar uma peça superexposta mascara a causa e cria
+            um perfil frágil.
+          </div>
+        </section>
+
+        <section class="step" id="fluxo">
+          <div class="stepHead">
+            <span class="stepNo">7</span>
+            <h2>Fluxo Quanton3D de calibração</h2>
+          </div>
+          <div class="flow">
+            <article>
+              <b>Fixe o processo</b
+              ><span>Máquina, lote, temperatura, camada e pós-cura.</span>
+            </article>
+            <article>
+              <b>Valide a base</b
+              ><span>Adesão uniforme e remoção controlada.</span>
+            </article>
+            <article>
+              <b>Calibre exposição</b
+              ><span>Detalhes positivos, negativos e resistência.</span>
+            </article>
+            <article>
+              <b>Calibre movimento</b
+              ><span>Separação sem deformar suporte.</span>
+            </article>
+            <article>
+              <b>Meça e versione</b
+              ><span>Compense depois e salve o aprovado.</span>
+            </article>
+          </div>
+          <ul class="list">
+            <li>
+              <b>Uma variável por rodada:</b> não altere exposição, velocidade e
+              compensação ao mesmo tempo.
+            </li>
+            <li>
+              <b>Repetição:</b> imprima mais de uma amostra e distribua posições
+              na plataforma.
+            </li>
+            <li>
+              <b>Critério prévio:</b> defina o que será medido e qual tolerância
+              aprova a aplicação.
+            </li>
+            <li>
+              <b>Novo perfil:</b> mudança de máquina, resina, pigmentação ou
+              altura de camada exige validação.
+            </li>
+          </ul>
+        </section>
+
+        <section class="step" id="diagnostico">
+          <div class="stepHead">
+            <span class="stepNo">8</span>
+            <h2>Diagnóstico sem trocar tudo de uma vez</h2>
+          </div>
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sintoma</th>
+                  <th>Hipóteses</th>
+                  <th>Próximo teste</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Nada adere</td>
+                  <td>Base, temperatura, limpeza, nível, arquivo ou luz</td>
+                  <td>Cinco zonas e exposição de base em pequenos passos</td>
+                </tr>
+                <tr>
+                  <td>Falha de um lado</td>
+                  <td>Paralelismo, planicidade, filme, luz ou mecânica</td>
+                  <td>Trocar posições mantendo o arquivo</td>
+                </tr>
+                <tr>
+                  <td>Suportes imprimem, peça solta</td>
+                  <td>Contato, seção, peel ou exposição normal</td>
+                  <td>Preview e contato antes de culpar a base</td>
+                </tr>
+                <tr>
+                  <td>Furos fechados</td>
+                  <td>Superexposição, AA/blur ou compensação</td>
+                  <td>Desativar filtros e recalibrar exposição</td>
+                </tr>
+                <tr>
+                  <td>Linhas após retração</td>
+                  <td>Resina em movimento, folga Z ou retorno agressivo</td>
+                  <td>Aumentar descanso após retração e verificar mecânica</td>
+                </tr>
+                <tr>
+                  <td>Peça frágil</td>
+                  <td>
+                    Subcura, material, temperatura, orientação ou pós-cura
+                  </td>
+                  <td>Corpo de prova; não somar 0,5 s automaticamente</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="step refs" id="fontes">
+          <div class="stepHead">
+            <span class="stepNo">R</span>
+            <h2>Documentação técnica consultada</h2>
+          </div>
+          <ul class="list">
+            <li>
+              <b>Chitubox:</b>
+              <a
+                href="https://docs.chitubox.com/en-US/chitubox/latest/configure-print-settings"
+                target="_blank"
+                rel="noopener"
+                >impressão, grayscale, anti-aliasing, blur e compensação</a
+              >.
+            </li>
+            <li>
+              <b>Chitubox Basic:</b>
+              <a
+                href="https://docs.chitubox.com/en-US/chitubox-basic/latest/ui-and-features/configure-print-parameters"
+                target="_blank"
+                rel="noopener"
+                >perfil da impressora, TSMC, PWM e parâmetros avançados</a
+              >.
+            </li>
+            <li>
+              <b>Lychee Slicer:</b>
+              <a
+                href="https://docs.mango3d.io/doc/resin-documentation/resin-toolbar/resin/"
+                target="_blank"
+                rel="noopener"
+                >gestão de perfis por impressora e resina</a
+              >.
+            </li>
+            <li>
+              <b>Mango3D/J3D Tech:</b>
+              <a
+                href="https://docs.mango3d.io/doc/j3d-tech-s-guide-to-resin-printing/print-settings/introduction-6/"
+                target="_blank"
+                rel="noopener"
+                >controle de movimento em dois estágios</a
+              >.
+            </li>
+          </ul>
+          <div class="callout">
+            <b>Nota:</b> nomes e disponibilidade de campos mudam entre versões,
+            formatos e firmwares. A documentação da impressora prevalece quando
+            limita ou interpreta um parâmetro.
+          </div>
+        </section>
+      </main>
+      <footer>
+        <strong>Quanton3D — Resinas UV de Alta Performance</strong
+        ><br />Parâmetros iniciais orientam; medição e repetibilidade liberam o
+        processo.<br /><a href="https://wa.me/553132716935"
+          >WhatsApp (31) 3271-6935</a
+        >
+        · <a href="https://quanton3d.com.br">quanton3d.com.br</a><br />© 2026
+        Quanton3D
+      </footer>
     </div>
-</body>
+  </body>
 </html>
