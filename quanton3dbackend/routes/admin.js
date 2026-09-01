@@ -63,7 +63,7 @@ router.delete('/limpar-testes', auth, async (req, res) => {
       return res.status(400).json({ success: false, error: 'Nenhuma coleção selecionada.' });
 
     // Lista branca — só essas podem ser limpas, nunca parametros/atendentes
-    const PERMITIDAS = ['clientes', 'visitas', 'conversas', 'bottickets', 'contactmessages', 'formulacoes', 'logacoes', 'partnerrequests', 'galleryitems'];
+    const PERMITIDAS = ['clientes', 'visitas', 'conversas', 'bottickets', 'contactmessages', 'formulacoes', 'logacoes', 'partnerrequests', 'galleryitems', 'atendentes'];
     const invalidas = colecoes.filter(c => !PERMITIDAS.includes(c));
     if (invalidas.length > 0)
       return res.status(400).json({ success: false, error: `Coleções não permitidas: ${invalidas.join(', ')}` });
@@ -78,8 +78,9 @@ router.delete('/limpar-testes', auth, async (req, res) => {
     const { default: LogAcao }        = await import('../models/LogAcao.js');
     const { default: PartnerRequest } = await import('../models/PartnerRequest.js');
     const { default: GalleryItem }    = await import('../models/GalleryItem.js');
+    const { default: Atendente }      = await import('../models/Atendente.js');
 
-    const MAPA = { clientes: Cliente, visitas: Visita, conversas: Conversa, bottickets: BotTicket, contactmessages: ContactMessage, formulacoes: Formulacao, logacoes: LogAcao, partnerrequests: PartnerRequest, galleryitems: GalleryItem };
+    const MAPA = { clientes: Cliente, visitas: Visita, conversas: Conversa, bottickets: BotTicket, contactmessages: ContactMessage, formulacoes: Formulacao, logacoes: LogAcao, partnerrequests: PartnerRequest, galleryitems: GalleryItem, atendentes: Atendente };
 
     const resultados = {};
     for (const nome of colecoes) {
