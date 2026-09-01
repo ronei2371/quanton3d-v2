@@ -304,9 +304,13 @@ router.post('/', async (req, res) => {
         ];
 
         const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash';
+        const maxTokens = Math.min(
+            2000,
+            Math.max(600, Number.parseInt(process.env.BOT_MAX_TOKENS, 10) || 1200)
+        );
         const completion = await client().chat.completions.create(
-            { model, temperature: contextRAG ? 0.05 : 0.1, max_tokens: 500, messages },
-            { timeout: 25000 }
+            { model, temperature: contextRAG ? 0.05 : 0.1, max_tokens: maxTokens, messages },
+            { timeout: 60000 }
         );
 
         const reply = completion.choices?.[0]?.message?.content || 'Nao consegui entender essa pergunta. Pode reformular? Se preferir, chame a equipe pelo WhatsApp (31) 3271-6935.';
