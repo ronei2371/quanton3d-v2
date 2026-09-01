@@ -11,6 +11,9 @@ const Schema = new mongoose.Schema(
     liftDistance: String,
     liftSpeed: String,
     retractSpeed: String,
+    lightOffDelay: String,
+    codigoChitubox: String,
+    observacoes: String,
     // Selo de confiança do parâmetro — ajuda o cliente a saber se é testado ou estimado
     confianca: {
       type: String,

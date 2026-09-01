@@ -22,6 +22,7 @@ const SugestaoConhecimentoSchema = new mongoose.Schema(
 );
 
 SugestaoConhecimentoSchema.index({ status: 1, createdAt: -1 });
+SugestaoConhecimentoSchema.index({ status: 1, updatedAt: -1 });
 
 const SugestaoConhecimento =
   mongoose.models.SugestaoConhecimento ||

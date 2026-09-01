@@ -25,6 +25,7 @@ const ConversaSchema = new mongoose.Schema(
 
 ConversaSchema.index({ createdAt: -1 });
 ConversaSchema.index({ aprovado: 1, resinaDetectada: 1 });
+ConversaSchema.index({ aprovado: 1, updatedAt: -1 });
 ConversaSchema.index({ feedback: 1, revisadoFeedback: 1 });
 
 export default mongoose.model('Conversa', ConversaSchema);

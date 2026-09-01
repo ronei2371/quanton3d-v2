@@ -45,11 +45,17 @@ ADMIN_SECRET
 Variaveis para recursos de IA:
 
 ```text
-OPENAI_API_KEY
-OPENAI_CHAT_MODEL
-OPENAI_MODEL
+DEEPSEEK_API_KEY
+DEEPSEEK_BASE_URL
+DEEPSEEK_CHAT_MODEL
 RAG_MIN_RELEVANCE
+RAG_MAX_RESULTS
 ```
+
+O RAG usa, nesta ordem: parametros oficiais do MongoDB, conversas aprovadas,
+sugestoes aprovadas e a base tecnica antiga. `RAG_MIN_RELEVANCE` aceita valores
+entre 0 e 1; o padrao recomendado e `0.55`. `RAG_MAX_RESULTS` limita quantos
+trechos de cada fonte entram no contexto.
 
 ## Frontend
 

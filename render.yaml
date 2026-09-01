@@ -29,12 +29,8 @@ services:
       - key: DEEPSEEK_BASE_URL
         value: https://api.deepseek.com
       - key: DEEPSEEK_CHAT_MODEL
-        value: deepseek-chat
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: OPENAI_CHAT_MODEL
-        value: gpt-4o-mini
-      - key: OPENAI_MODEL
-        value: gpt-4o-mini
+        value: deepseek-v4-flash
       - key: RAG_MIN_RELEVANCE
         value: "0.55"
+      - key: RAG_MAX_RESULTS
+        value: "3"
