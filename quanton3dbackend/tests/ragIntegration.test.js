@@ -64,3 +64,31 @@ test('integra as fontes reais na ordem correta', async (t) => {
   assert.doesNotMatch(result.context, /2\.1ss/);
   assert.match(result.context, /Velocidade de elevacao: 80mm\/min/);
 });
+
+test('integra corpus externo rastreavel quando nao ha conhecimento superior', async (t) => {
+  const originalParametroFind = Parametro.find;
+  const originalConversaFind = Conversa.find;
+  const originalSugestaoFind = SugestaoConhecimento.find;
+  const originalThreshold = process.env.RAG_MIN_RELEVANCE;
+
+  t.after(() => {
+    Parametro.find = originalParametroFind;
+    Conversa.find = originalConversaFind;
+    SugestaoConhecimento.find = originalSugestaoFind;
+    if (originalThreshold === undefined) delete process.env.RAG_MIN_RELEVANCE;
+    else process.env.RAG_MIN_RELEVANCE = originalThreshold;
+  });
+
+  process.env.RAG_MIN_RELEVANCE = '0.55';
+  Parametro.find = () => queryResult([]);
+  Conversa.find = () => queryResult([]);
+  SugestaoConhecimento.find = () => queryResult([]);
+
+  const result = await retrieveRagContext('Minha peça oca está criando efeito de sucção', []);
+
+  assert.equal(result.used, true);
+  assert.ok(result.sources.includes('base_externa_curada'));
+  assert.match(result.context, /FONTES EXTERNAS CURADAS E RASTREAVEIS/);
+  assert.match(result.context, /CHITUBOX Docs/);
+  assert.match(result.context, /https:\/\/docs\.chitubox\.com/);
+});
