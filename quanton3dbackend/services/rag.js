@@ -1,6 +1,7 @@
 import Conversa from '../models/Conversa.js';
 import Parametro from '../models/Parametro.js';
 import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
+import EXTERNAL_KNOWLEDGE from './externalKnowledge.js';
 import KNOWLEDGE_BASE from './knowledge.js';
 import {
   buildPriorityContext,
@@ -205,12 +206,14 @@ export async function retrieveRagContext(message, history = []) {
       return [];
     }),
   ]);
+  const externalDocuments = rankDocuments(query, EXTERNAL_KNOWLEDGE, rankingOptions);
   const legacyDocuments = rankDocuments(query, LEGACY_DOCUMENTS, rankingOptions);
 
   const context = buildPriorityContext({
     parameterContext: official.context,
     approvedConversations,
     approvedSuggestions,
+    externalDocuments,
     legacyDocuments,
   });
 
@@ -218,6 +221,7 @@ export async function retrieveRagContext(message, history = []) {
     ...(official.found ? ['parametros_oficiais'] : []),
     ...(approvedConversations.length ? ['conversas_aprovadas'] : []),
     ...(approvedSuggestions.length ? ['sugestoes_aprovadas'] : []),
+    ...(externalDocuments.length ? ['base_externa_curada'] : []),
     ...(legacyDocuments.length ? ['base_tecnica'] : []),
   ];
 
@@ -229,6 +233,7 @@ export async function retrieveRagContext(message, history = []) {
     results: {
       conversations: approvedConversations.length,
       suggestions: approvedSuggestions.length,
+      external: externalDocuments.length,
       legacy: legacyDocuments.length,
       officialParameters: official.found ? 1 : 0,
     },
