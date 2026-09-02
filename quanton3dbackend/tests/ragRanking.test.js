@@ -27,6 +27,15 @@ test('normaliza termos de quimica, pigmentacao e seguranca', () => {
   assert.ok(tokenize('posso jogar no ralo').includes('descarte'));
 });
 
+test('normaliza linguagem de reologia, dispersao e particulas decorativas', () => {
+  assert.ok(tokenize('resina grossa que afina quando mexo').includes('viscosidade'));
+  assert.ok(tokenize('resina grossa que afina quando mexo').includes('pseudoplastico'));
+  assert.ok(tokenize('resina grossa que afina quando mexo').includes('cisalhamento'));
+  assert.ok(tokenize('mica dourada com grumos e espuma').includes('metalica'));
+  assert.ok(tokenize('mica dourada com grumos e espuma').includes('aglomerado'));
+  assert.ok(tokenize('mica dourada com grumos e espuma').includes('bolha'));
+});
+
 test('relaciona peca menor com contracao e dimensao', () => {
   const queryTokens = tokenize('Minhas peças estão ficando menores do que deveriam');
   const knowledgeTokens = tokenize('Contração dimensional: a peça encolheu e a medida ficou abaixo do modelo');
