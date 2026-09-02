@@ -1,591 +1,829 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia de Diagnóstico de Problemas - Quanton3D</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Guia técnico Quanton3D para diagnosticar falhas em impressão 3D de resina por sintomas, evidências e testes controlados."
+    />
+    <title>Diagnóstico de Falhas em Impressão 3D | Quanton3D</title>
+    <link rel="stylesheet" href="base-guia.css" />
+    <link rel="stylesheet" href="/guias/guia-padrao.css" />
+    <script src="/guias/guia-padrao.js" defer></script>
     <style>
-    :root {
-        --bg:#060e1e; --surface:#0a1425; --card:#0f1e35;
-        --border:rgba(79,209,255,0.15); --cyan:#4fd1ff; --purple:#b89cff;
-        --green:#49e68b; --yellow:#ffd166; --red:#ff6b8a;
-        --text:#c5d8e8; --title:#eaf7ff;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding:20px; }
-    .container { max-width:960px; margin:0 auto; background:var(--surface); border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5); }
-    .header { background:linear-gradient(135deg,rgba(21,101,192,0.4),rgba(123,31,162,0.3)); border-bottom:1px solid var(--border); padding:40px 36px 32px; text-align:center; position:relative; }
-    .header::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(79,209,255,0.07) 0%,transparent 70%); pointer-events:none; }
-    .logo { display:inline-block; padding:4px 16px; border-radius:999px; background:rgba(79,209,255,0.1); border:1px solid rgba(79,209,255,0.3); color:var(--cyan); font-size:0.75rem; font-weight:700; letter-spacing:0.1em; margin-bottom:14px; }
-    .header h1 { font-size:clamp(1.4rem,3.5vw,2rem); font-weight:900; background:linear-gradient(135deg,#4fd1ff,#b89cff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
-    .header p { font-size:0.9rem; color:#9fb4c7; }
-    .content { padding:32px 36px 40px; }
-    .intro { background:rgba(79,209,255,0.05); border:1px solid var(--border); border-radius:12px; padding:22px 26px; margin-bottom:24px; }
-    .intro h2 { font-size:1rem; color:var(--cyan); font-weight:800; margin-bottom:10px; }
-    .intro p { font-size:0.88rem; }
-    .step { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:26px; margin:18px 0; transition:border-color 0.2s; }
-    .step:hover { border-color:rgba(79,209,255,0.3); }
-    .step-number { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#1565c0,#7c3aed); color:#fff; font-size:1.1rem; font-weight:900; margin-bottom:14px; box-shadow:0 4px 14px rgba(79,209,255,0.2); }
-    .step h3 { font-size:1rem; font-weight:800; color:var(--title); margin-bottom:14px; }
-    .step-image { width:100%; max-width:720px; height:auto; border-radius:10px; margin:16px auto; display:block; border:1px solid var(--border); box-shadow:0 8px 28px rgba(0,0,0,0.4); object-fit:cover; }
-    .step-description { font-size:0.88rem; margin-bottom:12px; }
-    .step-list { list-style:none; margin:12px 0; display:grid; gap:7px; }
-    .step-list li { background:rgba(255,255,255,0.02); border:1px solid rgba(79,209,255,0.07); border-left:3px solid var(--cyan); border-radius:7px; padding:10px 14px; font-size:0.865rem; }
-    .step-list li strong { color:var(--cyan); }
-    .tip-box { background:rgba(73,230,139,0.05); border:1px solid rgba(73,230,139,0.18); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .tip-box h3,.tip-box h4 { color:var(--green); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .tip-box p,.tip-box ul { font-size:0.84rem; color:#9fcfad; line-height:1.65; }
-    .warning-box { background:rgba(255,209,102,0.05); border:1px solid rgba(255,209,102,0.2); border-left:3px solid var(--yellow); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .warning-box h3,.warning-box h4 { color:var(--yellow); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .warning-box p { font-size:0.84rem; color:#c9a84c; line-height:1.65; }
-    .error-box { background:rgba(255,107,138,0.05); border:1px solid rgba(255,107,138,0.18); border-left:3px solid var(--red); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .error-box h3,.error-box h4 { color:var(--red); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .error-box p { font-size:0.84rem; color:#c49aab; line-height:1.65; }
-    .info-box { background:rgba(184,156,255,0.05); border:1px solid rgba(184,156,255,0.2); border-left:3px solid var(--purple); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .info-box h3,.info-box h4 { color:var(--purple); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .info-box p { font-size:0.84rem; color:#b8a8d4; line-height:1.65; }
-    .materials { background:rgba(73,230,139,0.04); border:1px solid rgba(73,230,139,0.18); border-radius:12px; padding:22px 26px; margin:24px 0; }
-    .materials h3 { color:var(--green); font-size:1rem; font-weight:800; margin-bottom:14px; }
-    .materials ul { list-style:none; }
-    .materials li { padding:8px 0; border-bottom:1px solid rgba(73,230,139,0.08); font-size:0.875rem; display:flex; align-items:center; gap:10px; }
-    .materials li:last-child { border-bottom:none; }
-    .materials li:before { content:'✓'; color:var(--green); font-weight:900; flex-shrink:0; }
-    .problem-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
-    .problem-card { background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:10px; padding:16px; }
-    .problem-card h4 { color:var(--cyan); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .problem-card p { font-size:0.82rem; }
-    .footer { background:rgba(0,0,0,0.25); border-top:1px solid var(--border); padding:28px 36px; text-align:center; }
-    .footer h3 { color:var(--cyan); font-size:1rem; margin-bottom:12px; font-weight:800; }
-    .footer p { font-size:0.84rem; color:#9fb4c7; margin:6px 0; }
-    .footer a { color:var(--cyan); text-decoration:none; font-weight:700; }
-    .footer a:hover { text-decoration:underline; }
-    p { font-size:0.88rem; margin:8px 0; }
-    ul:not(.step-list):not(.materials ul) { padding-left:20px; margin:8px 0; }
-    ul:not(.step-list) li { font-size:0.88rem; margin:4px 0; }
-    @media(max-width:640px) { body{padding:10px;} .content{padding:20px 16px 32px;} .header{padding:28px 16px 22px;} .step{padding:18px 14px;} .problem-grid{grid-template-columns:1fr;} }
-</style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🔍 Guia de Diagnóstico de Problemas</h1>
-            <p>Identifique e resolva problemas em impressão 3D de resina</p>
-        </header>
+      .route {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .route article,
+      .fault {
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.025);
+      }
+      .route b,
+      .fault b {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--cyan);
+      }
+      .route span,
+      .fault span {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .fault-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .fault h3 {
+        margin-bottom: 8px;
+        color: var(--title);
+        font-size: 1rem;
+      }
+      .fault ul {
+        margin: 8px 0 0;
+        padding-left: 19px;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+      .fault li + li {
+        margin-top: 5px;
+      }
+      .priority {
+        display: inline-flex;
+        margin-bottom: 9px;
+        padding: 3px 9px;
+        border: 1px solid rgba(79, 209, 255, 0.25);
+        border-radius: 999px;
+        color: var(--cyan);
+        font-size: 0.69rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .diag-form select {
+        width: 100%;
+        margin: 7px 0 14px;
+        padding: 11px 12px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--surface);
+        color: var(--title);
+      }
+      .diag-form label {
+        color: var(--title);
+        font-size: 0.86rem;
+        font-weight: 700;
+      }
+      .diag-result {
+        min-height: 260px;
+        border-left: 3px solid var(--cyan-strong);
+      }
+      .diag-result ol {
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+      .diag-result li {
+        margin: 7px 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+      .matrix {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      .matrix th,
+      .matrix td {
+        padding: 10px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+      .matrix th {
+        color: var(--cyan);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+      .matrix tr:last-child td {
+        border-bottom: 0;
+      }
+      @media (max-width: 760px) {
+        .route,
+        .fault-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="guidenav" aria-label="Seções deste guia">
+      <div class="guidenav-track">
+        <a href="#metodo">Método</a>
+        <a href="#evidencias">Evidências</a>
+        <a href="#adesao">Adesão</a>
+        <a href="#camadas">Camadas e detalhes</a>
+        <a href="#suportes">Suportes e deformação</a>
+        <a href="#superficie">Superfície</a>
+        <a href="#assistente">Assistente</a>
+        <a href="#seguranca">Segurança</a>
+        <a href="#registro">Registro</a>
+      </div>
+    </nav>
 
-        <div class="content">
-            <div class="intro">
-                <h2>Solucione Problemas com Confiança</h2>
-                <p>Este guia completo ajuda você a identificar causas e aplicar soluções eficazes para os problemas mais comuns em impressão 3D de resina. Cada problema inclui diagnóstico detalhado e passo a passo para resolução!</p>
-            </div>
-
-            <!-- PROBLEMA 1: PEÇA NÃO ADERE À PLATAFORMA -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">1</div>
-                    Peça Não Adere à Plataforma
-                </h2>
-                <p><strong>Sintoma:</strong> A impressão não gruda na plataforma de construção e fica no tanque ou no FEP.</p>
-
-                <img src="images/falha-impressao.jpg" alt="Falha de adesão" class="problem-image">
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Plataforma mal nivelada</li>
-                            <li>Tempo de exposição das camadas base insuficiente</li>
-                            <li>Plataforma suja ou com resina curada</li>
-                            <li>Temperatura ambiente muito baixa (abaixo de 20°C)</li>
-                            <li>Resina vencida ou mal armazenada</li>
-                            <li>Plataforma lisa demais (sem textura)</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Refaça o nivelamento com papel sulfite</li>
-                            <li>Aumente tempo de exposição base para 40-60s</li>
-                            <li>Limpe plataforma com IPA e lixe levemente (lixa 400)</li>
-                            <li>Mantenha temperatura entre 25-30°C</li>
-                            <li>Verifique validade da resina</li>
-                            <li>Aumente número de camadas base para 6-8</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Dica Profissional:</strong>
-                    Lixe a plataforma em movimentos cruzados (X) com lixa 400. Isso cria micro-ranhuras que aumentam a adesão sem danificar a superfície.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 2: PEÇA COM FALHAS OU BURACOS -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">2</div>
-                    Peça com Falhas ou Buracos
-                </h2>
-                <p><strong>Sintoma:</strong> Impressão completa mas com partes faltando, buracos ou áreas não curadas.</p>
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Tempo de exposição muito baixo</li>
-                            <li>Resina contaminada ou vencida</li>
-                            <li>LCD/tela danificada ou com pixels mortos</li>
-                            <li>Falta de suportes adequados</li>
-                            <li>Resina não filtrada (partículas bloqueando luz)</li>
-                            <li>FEP arranhado ou opaco</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Aumente tempo de exposição em 0.5-1s</li>
-                            <li>Filtre a resina e verifique validade</li>
-                            <li>Teste o LCD com arquivo de teste</li>
-                            <li>Adicione mais suportes em áreas críticas</li>
-                            <li>Filtre resina com filtro de café ou malha fina</li>
-                            <li>Verifique e troque FEP se necessário</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <strong>⚠️ Teste do LCD:</strong>
-                    Imprima um quadrado sólido para verificar se o LCD tem pixels mortos. Áreas escuras no quadrado indicam problemas no LCD.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 3: RESINA GRUDANDO NO FEP -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">3</div>
-                    Resina Grudando no FEP/Filme
-                </h2>
-                <p><strong>Sintoma:</strong> Peça não se solta do FEP e fica presa no fundo do tanque em vez de subir com a plataforma.</p>
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>FEP muito apertado ou frouxo</li>
-                            <li>Lift speed (velocidade de elevação) muito rápida</li>
-                            <li>Falta de lubrificação do FEP</li>
-                            <li>Tempo de exposição excessivo</li>
-                            <li>Área de contato muito grande sem suportes</li>
-                            <li>FEP desgastado ou com resina curada grudada</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Ajuste tensão do FEP (som de tambor leve)</li>
-                            <li>Reduza lift speed para 60-80mm/min</li>
-                            <li>Aplique óleo de PTFE no FEP</li>
-                            <li>Reduza tempo de exposição em 0.5s</li>
-                            <li>Adicione suportes e incline a peça 30-45°</li>
-                            <li>Limpe ou troque o FEP</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Teste de Tensão do FEP:</strong>
-                    Bata levemente no FEP com o dedo. Deve soar como um tambor afinado. Muito frouxo = som grave. Muito apertado = som muito agudo ou risco de rasgar.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 4: PEÇA SUPER-CURADA -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">4</div>
-                    Peça Super-Curada (Muito Dura/Quebradiça)
-                </h2>
-                <p><strong>Sintoma:</strong> Impressão muito rígida, quebradiça, com perda de detalhes finos e cor amarelada.</p>
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Tempo de exposição muito alto</li>
-                            <li>Potência do LED muito alta</li>
-                            <li>Pós-cura excessiva</li>
-                            <li>Camadas muito grossas com tempo alto</li>
-                            <li>Resina exposta à luz ambiente durante impressão</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Reduza tempo de exposição em 1-2s</li>
-                            <li>Diminua potência do LED para 70-80%</li>
-                            <li>Reduza tempo de pós-cura UV</li>
-                            <li>Use camadas mais finas (0.025-0.05mm)</li>
-                            <li>Proteja impressora de luz solar/ambiente</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <strong>⚠️ Atenção:</strong>
-                    Super-cura causa perda de flexibilidade e detalhes. Peças ficam frágeis e quebram facilmente ao remover suportes.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 5: PEÇA SUB-CURADA -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">5</div>
-                    Peça Sub-Curada (Mole/Pegajosa)
-                </h2>
-                <p><strong>Sintoma:</strong> Impressão mole, pegajosa ao toque, deforma facilmente e não endurece completamente.</p>
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Tempo de exposição muito baixo</li>
-                            <li>LED fraco ou envelhecido</li>
-                            <li>Resina vencida ou mal armazenada</li>
-                            <li>Falta de pós-cura</li>
-                            <li>Temperatura muito baixa durante impressão</li>
-                            <li>Resina não agitada (pigmentos decantados)</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Aumente tempo de exposição em 1-2s</li>
-                            <li>Verifique potência do LED (teste com fotômetro)</li>
-                            <li>Use resina dentro da validade</li>
-                            <li>Faça pós-cura UV por 5-10 minutos</li>
-                            <li>Aqueça ambiente para 25-30°C</li>
-                            <li>Agite resina suavemente antes de usar</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Teste de Cura:</strong>
-                    Após limpar com IPA, a peça deve estar firme ao toque. Se ainda estiver pegajosa, precisa de mais pós-cura ou o tempo de exposição está muito baixo.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 6: WARPING (EMPENAMENTO) -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">6</div>
-                    Warping (Empenamento da Peça)
-                </h2>
-                <p><strong>Sintoma:</strong> Peça deforma, entorta ou empena após impressão ou durante a cura.</p>
-
-                <img src="images/warping-deformacao.jpg" alt="Warping e deformação" class="problem-image">
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Tensão interna durante a cura</li>
-                            <li>Resfriamento desigual</li>
-                            <li>Suportes insuficientes</li>
-                            <li>Orientação inadequada da peça</li>
-                            <li>Paredes muito finas</li>
-                            <li>Pós-cura com temperatura muito alta</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Adicione mais suportes nas extremidades</li>
-                            <li>Oriente peça em ângulo de 30-45°</li>
-                            <li>Use hollow (oco) com furos de drenagem</li>
-                            <li>Deixe peça esfriar lentamente após impressão</li>
-                            <li>Aumente espessura de paredes finas</li>
-                            <li>Faça pós-cura em temperatura ambiente primeiro</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="highlight-box">
-                    <h3>🎯 Prevenção de Warping</h3>
-                    <ul style="list-style: none; padding-left: 0;">
-                        <li style="margin-bottom: 10px;">🔹 Nunca imprima peças planas paralelas à plataforma</li>
-                        <li style="margin-bottom: 10px;">🔹 Sempre incline pelo menos 30° para distribuir tensão</li>
-                        <li style="margin-bottom: 10px;">🔹 Use suportes mais densos em áreas grandes</li>
-                        <li style="margin-bottom: 10px;">🔹 Deixe peça em água morna após limpeza para relaxar tensões</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- PROBLEMA 7: LINHAS HORIZONTAIS -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">7</div>
-                    Linhas Horizontais (Layer Lines)
-                </h2>
-                <p><strong>Sintoma:</strong> Linhas visíveis horizontais na superfície da peça, efeito "escada".</p>
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Altura de camada muito alta (0.1mm ou mais)</li>
-                            <li>Eixo Z com atrito ou mal lubrificado</li>
-                            <li>Velocidade de elevação muito rápida</li>
-                            <li>Parafusos do eixo Z soltos</li>
-                            <li>Vibração durante impressão</li>
-                            <li>Anti-aliasing desativado</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Reduza altura de camada para 0.025-0.05mm</li>
-                            <li>Lubrif ique eixo Z adequadamente</li>
-                            <li>Reduza lift speed para 60-80mm/min</li>
-                            <li>Aperte parafusos do eixo Z</li>
-                            <li>Coloque impressora em superfície estável</li>
-                            <li>Ative anti-aliasing no fatiador</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Anti-Aliasing:</strong>
-                    Ative nos níveis 4x ou 8x no fatiador. Suaviza as bordas das camadas e reduz muito o efeito de linhas horizontais.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 8: SUPORTES QUEBRANDO -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">8</div>
-                    Suportes Quebrando Durante Impressão
-                </h2>
-                <p><strong>Sintoma:</strong> Suportes se rompem durante a impressão, causando falha total.</p>
-
-                <img src="images/falhas-suportes.jpg" alt="Falhas em suportes" class="problem-image">
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Suportes muito finos ou fracos</li>
-                            <li>Tempo de exposição muito baixo</li>
-                            <li>Lift speed muito rápida</li>
-                            <li>Peça muito pesada para os suportes</li>
-                            <li>Ângulo de suporte inadequado</li>
-                            <li>Resina com baixa resistência</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Aumente diâmetro dos suportes (médio ou pesado)</li>
-                            <li>Aumente tempo de exposição em 0.5-1s</li>
-                            <li>Reduza lift speed para 60mm/min</li>
-                            <li>Adicione mais suportes ou use hollow</li>
-                            <li>Use suportes em ângulo de 45-60°</li>
-                            <li>Considere resina mais resistente (Tough/ABS-Like)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <strong>⚠️ Regra de Ouro:</strong>
-                    Melhor ter suportes demais do que de menos! Suportes extras são fáceis de remover, mas uma impressão falhada não tem conserto.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 9: BOLHAS NA IMPRESSÃO -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">9</div>
-                    Bolhas ou Furos na Impressão
-                </h2>
-                <p><strong>Sintoma:</strong> Pequenas bolhas ou furos distribuídos pela peça.</p>
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Resina agitada com muita força (ar incorporado)</li>
-                            <li>Tempo de repouso (rest time) insuficiente</li>
-                            <li>Resina muito fria (bolhas não sobem)</li>
-                            <li>Lift speed muito rápida (cria vácuo)</li>
-                            <li>Falta de furos de drenagem em peças ocas</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Agite resina suavemente, sem criar bolhas</li>
-                            <li>Aumente rest time para 3-5 segundos</li>
-                            <li>Aqueça resina para 25-30°C antes de usar</li>
-                            <li>Reduza lift speed para 60-80mm/min</li>
-                            <li>Adicione furos de drenagem em peças ocas</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Dica de Aquecimento:</strong>
-                    Coloque o frasco de resina em água morna (não quente!) por 5-10 minutos antes de usar. Resina aquecida flui melhor e libera bolhas mais facilmente.
-                </div>
-            </div>
-
-            <!-- PROBLEMA 10: ELEFANTE'S FOOT -->
-            <div class="problem-card">
-                <h2>
-                    <div class="problem-icon">10</div>
-                    Elephant's Foot (Pé de Elefante)
-                </h2>
-                <p><strong>Sintoma:</strong> Primeiras camadas mais largas que o resto da peça, formando uma "saia".</p>
-
-                <div class="causes-solutions">
-                    <div class="causes-box">
-                        <h3>🔍 Causas Possíveis:</h3>
-                        <ul>
-                            <li>Tempo de exposição base muito alto</li>
-                            <li>Plataforma pressionando demais o FEP</li>
-                            <li>Muitas camadas base</li>
-                            <li>Lift distance muito baixo</li>
-                        </ul>
-                    </div>
-                    <div class="solutions-box">
-                        <h3>✅ Soluções:</h3>
-                        <ul>
-                            <li>Reduza tempo de exposição base para 30-40s</li>
-                            <li>Ajuste nivelamento (menos pressão)</li>
-                            <li>Reduza camadas base para 4-5</li>
-                            <li>Aumente lift distance para 6-8mm</li>
-                            <li>Use transição de camadas (transition layers)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="highlight-box">
-                    <h3>🎯 Transition Layers</h3>
-                    <p>Use camadas de transição no fatiador! Elas gradualmente reduzem o tempo de exposição das camadas base para as normais, evitando o elephant's foot.</p>
-                    <p style="margin-top: 10px;"><strong>Exemplo:</strong> Base 40s → Transição 1: 30s → Transição 2: 20s → Normal 2.5s</p>
-                </div>
-            </div>
-
-            <!-- TABELA DE REFERÊNCIA RÁPIDA -->
-            <div class="highlight-box">
-                <h3>📊 Tabela de Referência Rápida</h3>
-                <table>
-                    <tr>
-                        <th>Sintoma</th>
-                        <th>Causa Mais Comum</th>
-                        <th>Solução Rápida</th>
-                    </tr>
-                    <tr>
-                        <td>Não adere à plataforma</td>
-                        <td>Nivelamento incorreto</td>
-                        <td>Renivelar com papel sulfite</td>
-                    </tr>
-                    <tr>
-                        <td>Buracos na peça</td>
-                        <td>Tempo de exposição baixo</td>
-                        <td>Aumentar +1s</td>
-                    </tr>
-                    <tr>
-                        <td>Gruda no FEP</td>
-                        <td>Lift speed muito rápida</td>
-                        <td>Reduzir para 60-80mm/min</td>
-                    </tr>
-                    <tr>
-                        <td>Muito dura/quebradiça</td>
-                        <td>Tempo de exposição alto</td>
-                        <td>Reduzir -1s</td>
-                    </tr>
-                    <tr>
-                        <td>Mole/pegajosa</td>
-                        <td>Falta de pós-cura</td>
-                        <td>Pós-cura UV 5-10min</td>
-                    </tr>
-                    <tr>
-                        <td>Warping</td>
-                        <td>Orientação inadequada</td>
-                        <td>Inclinar 30-45°</td>
-                    </tr>
-                    <tr>
-                        <td>Linhas horizontais</td>
-                        <td>Camada muito grossa</td>
-                        <td>Usar 0.05mm ou menos</td>
-                    </tr>
-                    <tr>
-                        <td>Suportes quebram</td>
-                        <td>Suportes muito finos</td>
-                        <td>Usar suportes médios/pesados</td>
-                    </tr>
-                    <tr>
-                        <td>Bolhas</td>
-                        <td>Resina agitada demais</td>
-                        <td>Agitar suavemente</td>
-                    </tr>
-                    <tr>
-                        <td>Elephant's foot</td>
-                        <td>Exposição base muito alta</td>
-                        <td>Reduzir para 30-40s</td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- CHECKLIST DE DIAGNÓSTICO -->
-            <div class="checklist">
-                <h3>✅ Checklist de Diagnóstico Sistemático</h3>
-                <p style="margin-bottom: 15px;">Quando tiver um problema, siga esta ordem de verificação:</p>
-                <ul>
-                    <li>Verificar nivelamento da plataforma</li>
-                    <li>Confirmar validade e condição da resina</li>
-                    <li>Inspecionar FEP (arranhões, opacidade, tensão)</li>
-                    <li>Verificar limpeza da tela LCD</li>
-                    <li>Conferir parâmetros de exposição</li>
-                    <li>Analisar suportes e orientação da peça</li>
-                    <li>Verificar temperatura ambiente (25-30°C)</li>
-                    <li>Conferir lubrificação do eixo Z</li>
-                    <li>Verificar aperto de parafusos</li>
-                    <li>Filtrar resina se houver partículas</li>
-                </ul>
-            </div>
-
-            <!-- DICAS FINAIS -->
-            <div class="highlight-box">
-                <h3>🎯 Dicas Finais para Diagnóstico Eficaz</h3>
-                <ul style="list-style: none; padding-left: 0;">
-                    <li style="margin-bottom: 10px;">🔹 <strong>Mude uma variável por vez:</strong> Não altere múltiplos parâmetros simultaneamente</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Documente tudo:</strong> Anote parâmetros que funcionam para cada resina</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Faça testes de calibração:</strong> Use o gabarito Quanton3D regularmente</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Mantenha manutenção em dia:</strong> Prevenção evita 80% dos problemas</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Use resinas de qualidade:</strong> Resinas ruins causam problemas inexplicáveis</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Consulte a comunidade:</strong> Compartilhe fotos e parâmetros para ajuda</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Seja paciente:</strong> Diagnóstico correto economiza tempo e material</li>
-                </ul>
-            </div>
-
-            <!-- QUANDO PEDIR AJUDA -->
-            <div class="warning-box">
-                <strong>⚠️ Quando Pedir Ajuda Profissional:</strong>
-                <ul style="margin-top: 10px; padding-left: 20px;">
-                    <li>Problemas persistem após todas as tentativas</li>
-                    <li>Suspeita de defeito de hardware (LCD, LED, placa)</li>
-                    <li>Problemas com resinas específicas da Quanton3D</li>
-                    <li>Necessidade de calibração avançada</li>
-                </ul>
-                <p style="margin-top: 15px;"><strong>Contato Quanton3D:</strong></p>
-                <p>📱 WhatsApp: (31) 3271-6935</p>
-                <p>📧 Email: suporte@quanton3d.com.br</p>
-            </div>
+    <div class="page">
+      <header class="hero">
+        <div class="eyebrow">Guia técnico Quanton3D</div>
+        <h1>Diagnóstico de falhas em impressão 3D de resina</h1>
+        <p>
+          Uma falha é uma evidência do processo, não um convite para alterar dez
+          parâmetros. Localize onde ela começou, preserve as provas e teste uma
+          hipótese por vez.
+        </p>
+        <div class="hero-meta" aria-label="O que este guia cobre">
+          <span>Triagem por sintoma</span>
+          <span>Ordem de testes</span>
+          <span>Causa × evidência</span>
+          <span>Registro reproduzível</span>
         </div>
+      </header>
 
-        <footer>
-            <p><strong>Quanton3D</strong> - Resinas UV SLA de Alta Performance</p>
-            <p>Diagnóstico correto = Impressões perfeitas!</p>
-        </footer>
+      <main>
+        <figure class="evidence">
+          <img
+            src="images/falha-impressao.jpg"
+            alt="Falha de impressão em resina usada para diagnóstico"
+          />
+          <figcaption>
+            Não descarte a peça nem limpe o tanque imediatamente: posição,
+            altura e padrão da falha ajudam a separar arquivo, processo e
+            hardware.
+          </figcaption>
+        </figure>
+
+        <section class="summary" aria-labelledby="resumo">
+          <div class="summary-card">
+            <h2 id="resumo">Regra central</h2>
+            <p>
+              Antes de aumentar exposição, descubra se a falha começou na
+              plataforma, nos suportes, numa ilha, numa mesma altura Z ou numa
+              mesma região XY da tela.
+            </p>
+          </div>
+          <aside class="attention">
+            <h2>Não use números mágicos</h2>
+            <p>
+              Tempo, velocidade, distância e pós-cura dependem de impressora,
+              filme, camada, geometria, temperatura e resina. Ajuste a partir de
+              um perfil validado.
+            </p>
+          </aside>
+        </section>
+
+        <section class="topic" aria-labelledby="metodo">
+          <div class="topic-head">
+            <div class="topic-num">1</div>
+            <div>
+              <h2 id="metodo">Método de diagnóstico em quatro etapas</h2>
+              <p>
+                A ordem evita confundir causa com consequência e reduz o
+                desperdício de resina.
+              </p>
+            </div>
+          </div>
+          <div class="route">
+            <article>
+              <b>1 · Preserve</b>
+              <span
+                >Fotografe peça, plataforma e tanque antes de remover
+                resíduos.</span
+              >
+            </article>
+            <article>
+              <b>2 · Localize</b>
+              <span
+                >Identifique a primeira camada ou região em que o desvio
+                aparece.</span
+              >
+            </article>
+            <article>
+              <b>3 · Compare</b>
+              <span
+                >Separe falha do arquivo, da posição XY, da altura Z e do
+                lote.</span
+              >
+            </article>
+            <article>
+              <b>4 · Confirme</b>
+              <span
+                >Altere uma variável e repita com corpo de prova
+                controlado.</span
+              >
+            </article>
+          </div>
+          <div class="callout warn" style="margin-top: 13px">
+            <b>Antes de reimprimir:</b> remova do tanque qualquer fragmento
+            curado. Um resíduo pressionado contra o filme pode perfurá-lo ou
+            danificar a tela.
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="evidencias">
+          <div class="topic-head">
+            <div class="topic-num">2</div>
+            <div>
+              <h2 id="evidencias">Leia o padrão antes de escolher a causa</h2>
+              <p>
+                A distribuição do defeito é mais informativa que sua aparência
+                isolada.
+              </p>
+            </div>
+          </div>
+          <div class="panel">
+            <table class="matrix">
+              <thead>
+                <tr>
+                  <th>Padrão observado</th>
+                  <th>Suspeita inicial</th>
+                  <th>Teste discriminante</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sempre na mesma posição XY</td>
+                  <td>Tela, fonte de luz, filme ou sujeira localizada</td>
+                  <td>
+                    Mover o mesmo corpo de prova para outra região da mesa
+                  </td>
+                </tr>
+                <tr>
+                  <td>Sempre na mesma altura Z</td>
+                  <td>Movimento Z, arquivo, pausa ou perturbação mecânica</td>
+                  <td>Inspecionar eixo e comparar a camada no preview</td>
+                </tr>
+                <tr>
+                  <td>Só em uma geometria</td>
+                  <td>Ilha, orientação, sucção, suporte ou malha</td>
+                  <td>Revisar camada por camada e imprimir peça de controle</td>
+                </tr>
+                <tr>
+                  <td>Em toda a plataforma</td>
+                  <td>Perfil, nivelamento, temperatura, mistura ou filme</td>
+                  <td>Teste curto e distribuído em vários pontos</td>
+                </tr>
+                <tr>
+                  <td>Começou após troca de material</td>
+                  <td>Perfil incompatível, mistura, temperatura ou lote</td>
+                  <td>Usar perfil validado e corpo de prova da nova resina</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="adesao">
+          <div class="topic-head">
+            <div class="topic-num">3</div>
+            <div>
+              <h2 id="adesao">Falhas de adesão e peças no filme</h2>
+              <p>
+                “Grudou no FEP” é o local onde a peça terminou, não
+                necessariamente a causa raiz.
+              </p>
+            </div>
+          </div>
+          <div class="fault-grid">
+            <article class="fault">
+              <span class="priority">Peça inteira no filme</span>
+              <h3>Base não transferiu para a plataforma</h3>
+              <ul>
+                <li>Confira nivelamento, zero Z e fixação da plataforma.</li>
+                <li>
+                  Verifique limpeza, planicidade e condição da superfície.
+                </li>
+                <li>Confirme temperatura e homogeneização da resina.</li>
+                <li>Calibre exposição e número de camadas de base.</li>
+              </ul>
+            </article>
+            <article class="fault">
+              <span class="priority">Raft presente, modelo ausente</span>
+              <h3>Base aderiu; suportes ou primeiras ilhas falharam</h3>
+              <ul>
+                <li>Não culpe o nivelamento: a base já imprimiu.</li>
+                <li>Revise contatos, troncos, contraventamento e ilhas.</li>
+                <li>Reduza seção por camada ou força de separação.</li>
+                <li>Verifique exposição normal com corpo de prova.</li>
+              </ul>
+            </article>
+            <article class="fault">
+              <span class="priority">Só um lado solta</span>
+              <h3>Paralelismo, filme ou distribuição de carga</h3>
+              <ul>
+                <li>
+                  Compare espessura e aderência da base nos quatro cantos.
+                </li>
+                <li>Cheque aperto, folgas e paralelismo da plataforma.</li>
+                <li>Procure desgaste ou contaminação localizada no filme.</li>
+                <li>Confirme se a geometria concentra carga naquele lado.</li>
+              </ul>
+            </article>
+            <article class="fault">
+              <span class="priority">Base aderiu demais</span>
+              <h3>Excesso de margem na camada de base</h3>
+              <ul>
+                <li>
+                  Reduza exposição de base em passos pequenos e documentados.
+                </li>
+                <li>Revise quantidade e transição das camadas de base.</li>
+                <li>
+                  Use compensação XY própria para base, quando disponível.
+                </li>
+                <li>Não altere nivelamento para mascarar superexposição.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="callout warn" style="margin-top: 13px">
+            <b>Evite atalhos:</b> não aplique óleo ou PTFE no filme como solução
+            padrão e não lixe a plataforma sem orientação do fabricante. Essas
+            ações podem contaminar o processo, alterar a superfície e esconder a
+            causa real.
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="camadas">
+          <div class="topic-head">
+            <div class="topic-num">4</div>
+            <div>
+              <h2 id="camadas">
+                Partes faltando, delaminação e perda de detalhe
+              </h2>
+              <p>
+                Exposição é apenas uma hipótese. Arquivo, ilhas e luz localizada
+                podem produzir o mesmo sintoma.
+              </p>
+            </div>
+          </div>
+          <div class="fault-grid">
+            <article class="fault">
+              <span class="priority">Buraco ou parte ausente</span>
+              <h3>Primeiro procure uma ilha no preview</h3>
+              <ul>
+                <li>Localize a primeira camada ausente no fatiador.</li>
+                <li>Confirme suporte antes do início daquela região.</li>
+                <li>Teste a malha e refatie o arquivo se houver corrupção.</li>
+                <li>Se repetir no mesmo XY, investigue tela e filme.</li>
+              </ul>
+            </article>
+            <article class="fault">
+              <span class="priority">Separação entre camadas</span>
+              <h3>Cura insuficiente ou separação agressiva</h3>
+              <ul>
+                <li>Verifique temperatura e calibração da exposição normal.</li>
+                <li>
+                  Reduza velocidade/força de separação conforme a máquina.
+                </li>
+                <li>Revise distância de elevação e tempo de espera.</li>
+                <li>Reduza grandes áreas por camada e efeitos de sucção.</li>
+              </ul>
+            </article>
+            <article class="fault">
+              <span class="priority">Detalhes engrossados</span>
+              <h3>Sobreexposição, espalhamento ou compensação</h3>
+              <ul>
+                <li>Calibre exposição com dimensões positivas e negativas.</li>
+                <li>Revise anti-aliasing, blur e compensação XY.</li>
+                <li>Confirme homogeneização de pigmentos e cargas.</li>
+                <li>Não reduza potência da impressora sem método validado.</li>
+              </ul>
+            </article>
+            <article class="fault">
+              <span class="priority">Linhas ou deslocamentos</span>
+              <h3>Separe degrau geométrico de instabilidade</h3>
+              <ul>
+                <li>
+                  Linhas regulares acompanham altura e orientação de camada.
+                </li>
+                <li>Bandas isoladas sugerem movimento, suporte ou pausa.</li>
+                <li>
+                  Cheque eixo Z, acoplamento, folgas e estabilidade da mesa.
+                </li>
+                <li>
+                  Anti-aliasing suaviza bordas XY; não corrige folga no Z.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="suportes">
+          <div class="topic-head">
+            <div class="topic-num">5</div>
+            <div>
+              <h2 id="suportes">Suportes rompidos, deformação e sucção</h2>
+              <p>
+                Reforçar tudo indiscriminadamente aumenta marcas e pode elevar a
+                carga de separação.
+              </p>
+            </div>
+          </div>
+          <div class="split-2">
+            <div class="panel">
+              <h3>Quando os suportes rompem</h3>
+              <ul class="panel-list">
+                <li>Identifique se rompeu o contato, o tronco ou a base.</li>
+                <li>
+                  Reforce primeiro suportes iniciais e regiões de maior carga.
+                </li>
+                <li>
+                  Distribua contatos em vez de criar poucos pontos brutais.
+                </li>
+                <li>Reduza ilhas, alavancas e grandes seções por camada.</li>
+                <li>Calibre exposição antes de engrossar toda a estrutura.</li>
+              </ul>
+            </div>
+            <div class="anim-card">
+              <img
+                src="images/falhas-suportes.jpg"
+                alt="Suportes de impressão em resina usados para análise de falha"
+                style="
+                  display: block;
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                "
+              />
+            </div>
+          </div>
+          <div class="issue-grid" style="margin-top: 14px">
+            <div class="issue">
+              <b>Empenou durante a impressão</b
+              ><span
+                >Suspeite de suporte, seção por camada, sucção e
+                movimento.</span
+              >
+            </div>
+            <div class="issue">
+              <b>Empenou na pós-cura</b
+              ><span
+                >Suspeite de cura desigual, geometria fina, tensão e
+                apoio.</span
+              >
+            </div>
+            <div class="issue">
+              <b>Trincou dias depois</b
+              ><span
+                >Verifique resina/solvente preso, cavidades, cura e
+                armazenamento.</span
+              >
+            </div>
+            <div class="issue">
+              <b>Peça oca vazou</b
+              ><span
+                >Interrompa o uso; revise drenagem, lavagem interna e
+                cura.</span
+              >
+            </div>
+          </div>
+          <div class="callout" style="margin-top: 13px">
+            Consulte também os guias de
+            <a href="guia-posicionamento-suportes.html"
+              >Suportes e Posicionamento</a
+            >
+            e
+            <a href="guia-cavidades-succao.html">Cavidades, Drenagem e Sucção</a
+            >.
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="superficie">
+          <div class="topic-head">
+            <div class="topic-num">6</div>
+            <div>
+              <h2 id="superficie">
+                Pegajosidade, bolhas e marcas superficiais
+              </h2>
+              <p>
+                A superfície pode revelar lavagem, oxigênio, mistura,
+                contaminação ou pós-cura — não apenas exposição de impressão.
+              </p>
+            </div>
+          </div>
+          <div class="panel">
+            <table class="matrix">
+              <thead>
+                <tr>
+                  <th>Sintoma</th>
+                  <th>Verifique primeiro</th>
+                  <th>Evite concluir sem teste</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Superfície pegajosa após lavagem</td>
+                  <td>Solvente saturado, tempo/agitação, secagem e pós-cura</td>
+                  <td>Que a exposição normal está baixa</td>
+                </tr>
+                <tr>
+                  <td>Poros ou bolhas aleatórios</td>
+                  <td>
+                    Mistura, repouso, viscosidade, temperatura e enchimento
+                  </td>
+                  <td>Que todo furo foi criado por “vácuo”</td>
+                </tr>
+                <tr>
+                  <td>Crateras nos suportes</td>
+                  <td>Contato, profundidade, resina e técnica de remoção</td>
+                  <td>Que pós-cura menor resolverá tudo</td>
+                </tr>
+                <tr>
+                  <td>Esbranquiçamento</td>
+                  <td>Lavagem, microtrincas, tensão e abrasão</td>
+                  <td>Que é apenas pigmentação</td>
+                </tr>
+                <tr>
+                  <td>Amarelamento</td>
+                  <td>Material, dose UV, calor e histórico de exposição</td>
+                  <td>Que sempre significa “supercura” na impressão</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout warn" style="margin-top: 13px">
+            <b>Pós-cura não é cronômetro universal:</b> siga a ficha técnica da
+            resina e valide tempo, irradiância, comprimento de onda, temperatura
+            e geometria. Uma cabine de alta potência não equivale a outra de
+            baixa potência pelo mesmo número de minutos.
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="assistente">
+          <div class="topic-head">
+            <div class="topic-num">7</div>
+            <div>
+              <h2 id="assistente">Assistente de triagem</h2>
+              <p>
+                Escolha o padrão observado para receber a primeira sequência de
+                testes. O resultado não substitui a inspeção.
+              </p>
+            </div>
+          </div>
+          <div class="split-2">
+            <div class="panel diag-form">
+              <label for="symptom">Onde a falha aparece?</label>
+              <select id="symptom">
+                <option value="platform">Peça inteira ficou no filme</option>
+                <option value="supports">
+                  Raft imprimiu, mas o modelo soltou
+                </option>
+                <option value="xy">Repete na mesma posição XY</option>
+                <option value="z">Repete na mesma altura Z</option>
+                <option value="geometry">
+                  Acontece apenas em uma geometria
+                </option>
+                <option value="surface">
+                  A peça imprime, mas a superfície falha
+                </option>
+              </select>
+
+              <label for="scope">Qual é a abrangência?</label>
+              <select id="scope">
+                <option value="all">Toda a plataforma</option>
+                <option value="local">Uma região localizada</option>
+                <option value="random">Muda de posição entre impressões</option>
+              </select>
+
+              <label class="check-item">
+                <input type="checkbox" id="changed" />
+                <span
+                  ><b>Algo mudou antes da falha</b><br />Resina, perfil, filme,
+                  arquivo, manutenção ou temperatura.</span
+                >
+              </label>
+            </div>
+            <div class="panel diag-result" id="diagResult" aria-live="polite">
+              <h3>Primeira rota de verificação</h3>
+              <p>Selecione o padrão observado.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="seguranca">
+          <div class="topic-head">
+            <div class="topic-num">8</div>
+            <div>
+              <h2 id="seguranca">Segurança durante o diagnóstico</h2>
+              <p>
+                Uma falha pode deixar fragmentos ocultos, filme perfurado e
+                resina não curada dentro da peça.
+              </p>
+            </div>
+          </div>
+          <div class="issue-grid">
+            <div class="issue">
+              <b>Proteção pessoal</b
+              ><span
+                >Use luvas nitrílicas e proteção ocular; siga a FISPQ/SDS da
+                resina e do solvente.</span
+              >
+            </div>
+            <div class="issue">
+              <b>Tanque</b
+              ><span
+                >Não raspe o filme com metal. Filtre a resina com material
+                compatível e inspecione contra a luz.</span
+              >
+            </div>
+            <div class="issue">
+              <b>Teste de tela</b
+              ><span
+                >Faça o teste conforme o fabricante, com proteção instalada; não
+                olhe diretamente para UV intenso.</span
+              >
+            </div>
+            <div class="issue">
+              <b>Peças ocas</b
+              ><span
+                >Não entregue nem sele cavidades com resina líquida. Drene,
+                lave, seque e cure o interior.</span
+              >
+            </div>
+          </div>
+          <div class="callout warn" style="margin-top: 13px">
+            <b>Não aqueça no improviso:</b> banho de água, soprador ou aquecedor
+            sem controle pode contaminar o processo, deformar a peça e aumentar
+            exposição a vapores. Use apenas método compatível com a ficha
+            técnica.
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="registro">
+          <div class="topic-head">
+            <div class="topic-num">9</div>
+            <div>
+              <h2 id="registro">Registro mínimo para resolver e repetir</h2>
+              <p>
+                Sem registro, uma correção vira sorte. Com dados, vira perfil de
+                produção.
+              </p>
+            </div>
+          </div>
+          <div class="split-2">
+            <div class="panel">
+              <h3>Dados do processo</h3>
+              <ul class="panel-list">
+                <li>Impressora, firmware, filme e data da manutenção.</li>
+                <li>Resina, cor, lote, validade e temperatura.</li>
+                <li>Altura, exposições, esperas e movimentos.</li>
+                <li>Orientação, suportes, oco, furos e arquivo fatiado.</li>
+                <li>Lavagem, secagem e pós-cura.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Evidências da falha</h3>
+              <ul class="panel-list">
+                <li>Fotos da plataforma, tanque e peça sem limpeza.</li>
+                <li>Altura e posição XY do primeiro defeito.</li>
+                <li>Captura do preview na camada correspondente.</li>
+                <li>Mudança realizada e resultado do novo teste.</li>
+                <li>Perfil final aprovado e limite de aceitação.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout" style="margin-top: 13px">
+            <b>Diretriz Quanton3D:</b> volte ao último estado conhecido que
+            imprimia corretamente, reproduza a falha e mude uma variável por
+            vez. Se duas variáveis mudam juntas, a causa continua sem prova.
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <strong>Quanton3D · Resinas UV de alta performance</strong>
+        <p>
+          Suporte técnico:
+          <a href="https://wa.me/553132716935">(31) 3271-6935</a> ·
+          <a href="mailto:atendimento@quanton3d.com.br"
+            >atendimento@quanton3d.com.br</a
+          >
+        </p>
+        <p style="margin-top: 12px; font-size: 0.79rem; opacity: 0.75">
+          Envie fotos da falha, parâmetros, impressora, resina e temperatura.
+          Diagnóstico sem contexto é chute com jaleco.
+        </p>
+      </footer>
     </div>
-</body>
+
+    <script>
+      (function () {
+        var symptom = document.getElementById("symptom");
+        var scope = document.getElementById("scope");
+        var changed = document.getElementById("changed");
+        var result = document.getElementById("diagResult");
+        if (!symptom || !scope || !changed || !result) return;
+
+        var routes = {
+          platform: {
+            title: "Comece pela interface plataforma × base",
+            steps: [
+              "Inspecione o que ficou no filme e confirme se a base chegou a ser formada.",
+              "Verifique fixação, nivelamento, zero Z, limpeza e planicidade.",
+              "Confirme temperatura, mistura e perfil de camadas de base.",
+              "Faça um teste curto distribuído antes de aumentar exposição.",
+            ],
+          },
+          supports: {
+            title: "A base funcionou; investigue suporte e separação",
+            steps: [
+              "Localize o primeiro contato ou ilha que não se formou.",
+              "Revise contatos iniciais, troncos e contraventamento.",
+              "Reduza a seção por camada, sucção ou agressividade do movimento.",
+              "Calibre exposição normal com corpo de prova independente.",
+            ],
+          },
+          xy: {
+            title: "Falha fixa em XY aponta para região física",
+            steps: [
+              "Mova o mesmo corpo de prova para outra região da plataforma.",
+              "Inspecione filme e vidro/tela na posição correspondente.",
+              "Execute o teste de exposição recomendado pelo fabricante.",
+              "Se a falha acompanha a posição física, investigue o hardware.",
+            ],
+          },
+          z: {
+            title: "Falha fixa em Z pede correlação com camada e movimento",
+            steps: [
+              "Anote a altura exata e abra a camada correspondente no preview.",
+              "Procure mudança brusca de seção, ilha ou cavidade fechando.",
+              "Inspecione eixo Z, acoplamento, folgas e pontos de atrito.",
+              "Repita com uma geometria de controle na mesma altura.",
+            ],
+          },
+          geometry: {
+            title: "Isole o arquivo e a estratégia da peça",
+            steps: [
+              "Revise o preview camada por camada desde a primeira ilha.",
+              "Valide malha, orientação, suportes, cavidades e drenagem.",
+              "Compare com um arquivo conhecido usando o mesmo perfil.",
+              "Só altere exposição se o teste de calibração também indicar.",
+            ],
+          },
+          surface: {
+            title: "Separe impressão de pós-processamento",
+            steps: [
+              "Fotografe a peça após imprimir, lavar, secar e curar.",
+              "Verifique saturação do solvente, secagem e acesso às cavidades.",
+              "Compare o procedimento com a ficha técnica da resina.",
+              "Classifique relevo, cratera, microtrinca, pegajosidade ou poro.",
+            ],
+          },
+        };
+
+        function analyze() {
+          var route = routes[symptom.value];
+          var extra = [];
+          if (scope.value === "local") {
+            extra.push(
+              "Como é localizada, compare posição XY, filme, luz e distribuição de carga.",
+            );
+          } else if (scope.value === "random") {
+            extra.push(
+              "Como muda de posição, priorize processo, mistura, temperatura, movimento e contaminação.",
+            );
+          } else {
+            extra.push(
+              "Como afeta toda a mesa, priorize perfil, nivelamento, temperatura e condição geral do filme.",
+            );
+          }
+          if (changed.checked) {
+            extra.push(
+              "Reverta temporariamente a última mudança e repita o mesmo teste.",
+            );
+          }
+
+          result.innerHTML =
+            "<h3>" +
+            route.title +
+            "</h3><ol>" +
+            route.steps
+              .concat(extra)
+              .map(function (step) {
+                return "<li>" + step + "</li>";
+              })
+              .join("") +
+            '</ol><div class="callout" style="margin-top:12px"><b>Confirmação:</b> mude uma variável, repita e registre.</div>';
+        }
+
+        symptom.addEventListener("change", analyze);
+        scope.addEventListener("change", analyze);
+        changed.addEventListener("change", analyze);
+        analyze();
+      })();
+    </script>
+  </body>
 </html>
