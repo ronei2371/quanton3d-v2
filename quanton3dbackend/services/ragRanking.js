@@ -8,6 +8,9 @@ const STOP_WORDS = new Set([
   'entre', 'sem', 'seu', 'sua', 'tem', 'um', 'uma', 'voce', 'voces', 'isso', 'isto',
   'deve', 'deveria', 'deveriam', 'estao', 'ficando', 'ficou',
   'nao', 'muito', 'deixei', 'depois', 'depoi', 'posso', 'jogar',
+  'quando', 'coloquei', 'apareceram', 'deixou', 'toda', 'todo', 'muda',
+  'outro', 'outra', 'novo', 'nova', 'tirar', 'usar', 'serve', 'servir',
+  'direito', 'cheia', 'cheio',
 ]);
 
 const SYNONYM_GROUPS = [
@@ -40,6 +43,25 @@ const SYNONYM_GROUPS = [
   ['biocompativel', 'biocompatibilidade', 'intraoral', 'clinico'],
   ['descarte', 'descartar', 'residuo', 'lixo', 'ralo', 'pia'],
   ['ventilacao', 'exaustao', 'voc', 'vapor', 'vapores', 'inalacao'],
+  ['silica', 'silicas', 'fumed', 'pirogenica', 'pirogenico'],
+  ['tixotropia', 'tixotropico', 'tixotropica', 'thixotropy', 'recuperacao'],
+  ['pseudoplastico', 'pseudoplastica', 'shearthinning', 'afinamento'],
+  ['escoamento', 'yield', 'yieldstress'],
+  ['dispersante', 'dispersantes', 'dispersao', 'molhabilidade'],
+  ['aglomerado', 'aglomerados', 'aglomeracao', 'grumo', 'grumos'],
+  ['bolha', 'bolhas', 'espuma', 'aeracao', 'ar'],
+  ['desaeracao', 'desaerar', 'degas', 'degassing', 'vacuo'],
+  ['metalica', 'metalico', 'dourada', 'dourado', 'prateada', 'prateado', 'perolizada', 'perolizado'],
+  ['plaqueta', 'plaquetas', 'flake', 'flakes'],
+  ['lote', 'lotes', 'batch'],
+  ['densidade', 'massaespecifica'],
+  ['viscosidade', 'viscosa', 'viscoso', 'grossa', 'grosso', 'espessa', 'espesso'],
+  ['pseudoplastico', 'pseudoplastica', 'afina', 'afinar', 'fluidifica'],
+  ['cisalhamento', 'mexer', 'mexo', 'mistura', 'movimento'],
+  ['turbidez', 'turva', 'turvo', 'haze', 'nevoa'],
+  ['aumentar', 'aumentou', 'aumentando', 'elevar', 'elevou'],
+  ['aquecer', 'aquecimento', 'aqueca', 'aquecida', 'aquecido'],
+  ['liberar', 'liberacao', 'aprovar', 'aprovacao'],
 ];
 
 const SYNONYM_MAP = new Map();
