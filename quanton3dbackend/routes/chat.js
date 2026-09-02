@@ -144,7 +144,10 @@ router.post('/', async (req, res) => {
             { model, temperature: rag.used || rag.guardInstruction ? 0.05 : 0.1, max_tokens: maxTokens, messages }
         );
 
-        const reply = completion.choices?.[0]?.message?.content || 'Nao consegui entender essa pergunta. Pode reformular? Se preferir, chame a equipe pelo WhatsApp (31) 3271-6935.';
+        const providerReply = completion.choices?.[0]?.message?.content?.trim();
+        const reply = providerReply
+            || ruleBasedAnswer(text)
+            || 'Nao consegui gerar uma resposta segura agora. Informe a resina, o modelo da impressora e descreva o sintoma; se preferir, chame a equipe pelo WhatsApp (31) 3271-6935.';
 
         let conversaId = null;
         try {
