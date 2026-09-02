@@ -19,3 +19,12 @@ test('configura DeepSeek V4 sem thinking para respostas curtas do suporte', () =
   assert.match(source, /finishReason/);
   assert.doesNotMatch(source, /DEEPSEEK_API_KEY.*console\.log/);
 });
+
+test('protege formula Quanton3D no chat publico', () => {
+  const source = readFileSync(new URL('../routes/chat.js', import.meta.url), 'utf8');
+
+  assert.match(source, /PROTECAO DA FORMULACAO/);
+  assert.match(source, /nunca forneca receita quantitativa/i);
+  assert.match(source, /canal administrativo autenticado/i);
+  assert.match(source, /Nao trate nome, telefone ou afirmacao.*como autorizacao/is);
+});
