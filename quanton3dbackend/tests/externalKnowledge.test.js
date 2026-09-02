@@ -4,7 +4,7 @@ import EXTERNAL_KNOWLEDGE, { validateExternalKnowledge } from '../services/exter
 import { rankDocuments } from '../services/ragRanking.js';
 
 test('corpus externo possui volume, metadados e fontes rastreaveis', () => {
-  assert.ok(EXTERNAL_KNOWLEDGE.length >= 50);
+  assert.ok(EXTERNAL_KNOWLEDGE.length >= 70);
   assert.equal(validateExternalKnowledge(EXTERNAL_KNOWLEDGE), true);
 
   for (const document of EXTERNAL_KNOWLEDGE) {
@@ -31,6 +31,15 @@ const cases = [
   ['posso jogar resina líquida no ralo?', /não devem ir ao ralo/i],
   ['a peça está quebradiça', /Peça quebradiça/i],
   ['a resina serve para uso intraoral?', /Biocompatibilidade depende/i],
+  ['minha resina está grossa mas afina quando mexo', /Pseudoplasticidade/i],
+  ['a sílica pirogênica deixou a resina turva e não cura direito', /Sílica pirogênica pode aumentar névoa/i],
+  ['coloquei mais dispersante e apareceram grumos', /Aglomerado não é corrigido/i],
+  ['a mica dourada está toda no fundo do tanque', /Mica sedimentada cria gradiente/i],
+  ['o brilho da mica muda de um lado da peça para outro', /Orientação das plaquetas/i],
+  ['a resina está cheia de bolhas e poros', /Bolhas no tanque/i],
+  ['posso usar vácuo e aquecer para tirar a espuma?', /Desaeração deve preservar/i],
+  ['como liberar um lote novo da resina?', /Controle de lote/i],
+  ['a carga mineral aumentou muito a viscosidade', /Maior carga sólida/i],
 ];
 
 for (const [query, expectedTitle] of cases) {
