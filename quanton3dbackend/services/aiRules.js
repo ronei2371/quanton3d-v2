@@ -4,6 +4,10 @@ export function ruleBasedAnswer(message) {
 
   const mencionouResina = /\biron\b|\bflexform\b|alchemist|athom|poseidon|pyroblast|vulcan|spark|\bspin\b|low smell|70.30|velvet/.test(t);
 
+  if (/(peca|peças|peça|impressao|modelo).*(menor|pequena|encolh|contra[cç][aã]o)|(?:menor|encolh).*(peca|peças|peça|impressao|modelo)/i.test(t)) {
+    return 'Quando a peça inteira sai menor que o modelo, verifique primeiro **escala/unidade do STL**, compensação XY já ativa e contração após a pós-cura. Meça um corpo de prova nos eixos X, Y e Z antes e depois da pós-cura; para redução uniforme, calcule **fator de escala = medida nominal ÷ medida real**. Só aplique a correção depois de confirmar que exposição, orientação e pós-cura estão padronizadas, pois furos e medidas externas podem exigir compensações diferentes.\n\nQual é a medida no arquivo e quanto ela ficou na peça curada?';
+  }
+
   if (/suporte|suportes/.test(t) && /(duro|dificil|tirar|remover|grudado|quebra)/.test(t)) {
     return 'Suporte difícil de remover:\n1. **Reduza exposição normal** em 0,2s a 0,5s\n2. **Use suporte leve** (light/medium) no fatiador\n3. **Diminua o diâmetro da ponta** do suporte\n4. **Remova antes da cura UV final**\n\nQual resina e impressora você está usando?';
   }
