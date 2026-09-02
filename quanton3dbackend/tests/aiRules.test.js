@@ -6,9 +6,9 @@ import { ruleBasedAnswer } from '../services/aiRules.js';
 test('responde sobre peca menor mesmo se o provedor de IA vier vazio', () => {
   const answer = ruleBasedAnswer('minhas peças esta ficando menor que deveria');
 
-  assert.match(answer, /escala\/unidade/i);
-  assert.match(answer, /medida nominal.*medida real/i);
-  assert.match(answer, /Qual é a medida no arquivo/i);
+  assert.match(answer, /causa mais provável.*exposição normal baixa/is);
+  assert.match(answer, /aumentando em passos pequenos/i);
+  assert.match(answer, /correta antes da pós-cura.*diminuir somente depois/is);
 });
 
 test('configura DeepSeek V4 sem thinking para respostas curtas do suporte', () => {
