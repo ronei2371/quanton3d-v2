@@ -19,6 +19,14 @@ test('normaliza acentos e sinonimos tecnicos', () => {
   assert.ok(tokens.includes('trinca'));
 });
 
+test('normaliza termos de quimica, pigmentacao e seguranca', () => {
+  assert.ok(tokenize('mica e fillers decantando').includes('carga'));
+  assert.ok(tokenize('mica e fillers decantando').includes('sedimentacao'));
+  assert.ok(tokenize('cabine de pós-cura com maior potência').includes('poscura'));
+  assert.ok(tokenize('cabine de pós-cura com maior potência').includes('irradiancia'));
+  assert.ok(tokenize('posso jogar no ralo').includes('descarte'));
+});
+
 test('relaciona peca menor com contracao e dimensao', () => {
   const queryTokens = tokenize('Minhas peças estão ficando menores do que deveriam');
   const knowledgeTokens = tokenize('Contração dimensional: a peça encolheu e a medida ficou abaixo do modelo');
