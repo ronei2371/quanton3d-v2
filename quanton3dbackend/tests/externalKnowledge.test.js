@@ -4,7 +4,7 @@ import EXTERNAL_KNOWLEDGE, { validateExternalKnowledge } from '../services/exter
 import { rankDocuments } from '../services/ragRanking.js';
 
 test('corpus externo possui volume, metadados e fontes rastreaveis', () => {
-  assert.ok(EXTERNAL_KNOWLEDGE.length >= 30);
+  assert.ok(EXTERNAL_KNOWLEDGE.length >= 50);
   assert.equal(validateExternalKnowledge(EXTERNAL_KNOWLEDGE), true);
 
   for (const document of EXTERNAL_KNOWLEDGE) {
@@ -22,6 +22,15 @@ const cases = [
   ['minha peça oca está fazendo efeito de sucção', /Câmara fechada e efeito de sucção/i],
   ['apareceu uma camada vazia no arquivo', /Camadas vazias/i],
   ['o tanque ficou com fragmentos de resina curada', /Fragmentos no tanque/i],
+  ['resina com muito pigmento não cura em profundidade', /Pigmentos e cargas alteram/i],
+  ['peça ficou pegajosa depois da cura', /inibição por oxigênio/i],
+  ['minha cabine UV é mais forte, uso o mesmo tempo de pós-cura?', /Equipamento e intensidade/i],
+  ['orientação muda a resistência da peça', /Orientação de impressão/i],
+  ['deixei muito tempo no IPA', /Método e tempo de lavagem/i],
+  ['o pigmento e a mica estão decantando no fundo', /Sedimentação muda/i],
+  ['posso jogar resina líquida no ralo?', /não devem ir ao ralo/i],
+  ['a peça está quebradiça', /Peça quebradiça/i],
+  ['a resina serve para uso intraoral?', /Biocompatibilidade depende/i],
 ];
 
 for (const [query, expectedTitle] of cases) {
