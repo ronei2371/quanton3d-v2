@@ -69,18 +69,20 @@ test('monta o contexto na hierarquia definida pela Quanton3D', () => {
     parameterContext: 'Parametro oficial',
     approvedConversations: [{ title: 'Conversa', content: 'Resposta validada', relevance: 0.9 }],
     approvedSuggestions: [{ title: 'Sugestao', content: 'Melhoria aprovada', relevance: 0.8 }],
+    externalDocuments: [{ title: 'Fonte externa', content: 'Resumo rastreavel', relevance: 0.78 }],
     legacyDocuments: [{ title: 'Antigo', content: 'Apoio tecnico', relevance: 0.75 }],
   });
 
   const parameterPosition = context.indexOf('PRIORIDADE 1');
   const conversationPosition = context.indexOf('PRIORIDADE 2');
   const suggestionPosition = context.indexOf('PRIORIDADE 3');
-  const legacyPosition = context.indexOf('PRIORIDADE 4');
+  const externalPosition = context.indexOf('PRIORIDADE 4');
 
   assert.ok(parameterPosition < conversationPosition);
   assert.ok(conversationPosition < suggestionPosition);
-  assert.ok(suggestionPosition < legacyPosition);
-  assert.match(context, /Nunca substitua parametro oficial/i);
+  assert.ok(suggestionPosition < externalPosition);
+  assert.ok(externalPosition < context.indexOf('PRIORIDADE 5'));
+  assert.match(context, /nunca substitui parametro.*Quanton3D/i);
 });
 
 test('formata todos os campos oficiais sem duplicar unidades', () => {
@@ -110,4 +112,5 @@ test('o servico consulta todas as fontes aprovadas', () => {
   assert.match(serviceSource, /Conversa\.find\(\{ aprovado: true \}\)/);
   assert.match(serviceSource, /SugestaoConhecimento\.find\(\{ status: 'aprovado' \}\)/);
   assert.match(serviceSource, /splitKnowledgeBase\(KNOWLEDGE_BASE\)/);
+  assert.match(serviceSource, /rankDocuments\(query, EXTERNAL_KNOWLEDGE/);
 });
