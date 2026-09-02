@@ -513,6 +513,14 @@ Sempre filtre a resina (peneira/filtro de café) depois de uma impressão que fa
 - Fórmula externa: -(medida_real - medida_stl) / 2
 - Valores típicos: -0,05mm a -0,15mm
 
+### Peça menor que o modelo: contração, escala e compensação dimensional
+Sintomas: peça inteira sai menor que o STL | medidas externas abaixo do nominal | encaixe fica folgado | redução aumenta depois da pós-cura
+Causas prováveis: escala ou unidade incorreta na exportação/importação | contração da resina durante a cura e a pós-cura | compensação XY externa configurada no sentido errado | perfil de exposição inadequado | deformação por orientação, suporte ou pós-cura desigual | erro de medição ou comparação entre eixos diferentes
+Como diagnosticar: medir um corpo de prova conhecido nos eixos X, Y e Z após lavagem, secagem e pós-cura padronizadas | comparar a medida antes e depois da pós-cura | conferir se STL e fatiador usam a mesma unidade e escala de 100% | verificar compensações XY e de base já ativas | repetir na mesma orientação
+Correção: primeiro corrija unidade, escala, exposição e processo; depois aplique compensação dimensional com base na medição. Para escala uniforme, use fator = medida nominal / medida real. Para erro localizado em X/Y, use a compensação externa do fatiador conforme a convenção de sinal e a documentação da versão utilizada. Não aplique um valor universal sem medir.
+Confirmação: reimprima o mesmo corpo de prova, meça nos mesmos pontos e valide também furos e encaixes, porque dimensões externas e internas podem exigir compensações diferentes.
+Termos relacionados: peça menor, impressão encolheu, contração da resina, dimensão errada, medida menor, escala, shrinkage, compensação XY, tolerance compensation
+
 ### Calibração de exposição
 - Imprima cubo 20x20x20mm com parâmetros padrão
 - Meça com paquímetro
