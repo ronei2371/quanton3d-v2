@@ -141,10 +141,26 @@ router.post('/', async (req, res) => {
             Math.max(600, Number.parseInt(process.env.BOT_MAX_TOKENS, 10) || 1200)
         );
         const completion = await client().chat.completions.create(
-            { model, temperature: rag.used || rag.guardInstruction ? 0.05 : 0.1, max_tokens: maxTokens, messages }
+            {
+                model,
+                thinking: { type: 'disabled' },
+                reasoning_effort: 'low',
+                temperature: rag.used || rag.guardInstruction ? 0.05 : 0.1,
+                max_tokens: maxTokens,
+                messages,
+            }
         );
 
-        const providerReply = completion.choices?.[0]?.message?.content?.trim();
+        const firstChoice = completion.choices?.[0];
+        const providerReply = firstChoice?.message?.content?.trim();
+        console.log('[DEEPSEEK-INFO]', JSON.stringify({
+            model,
+            requestId: completion.id || null,
+            finishReason: firstChoice?.finish_reason || null,
+            contentReturned: Boolean(providerReply),
+            promptTokens: completion.usage?.prompt_tokens ?? null,
+            completionTokens: completion.usage?.completion_tokens ?? null,
+        }));
         const reply = providerReply
             || ruleBasedAnswer(text)
             || 'Nao consegui gerar uma resposta segura agora. Informe a resina, o modelo da impressora e descreva o sintoma; se preferir, chame a equipe pelo WhatsApp (31) 3271-6935.';
