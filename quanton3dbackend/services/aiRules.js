@@ -5,7 +5,7 @@ export function ruleBasedAnswer(message) {
   const mencionouResina = /\biron\b|\bflexform\b|alchemist|athom|poseidon|pyroblast|vulcan|spark|\bspin\b|low smell|70.30|velvet/.test(t);
 
   if (/(peca|peças|peça|impressao|modelo).*(menor|pequena|encolh|contra[cç][aã]o)|(?:menor|encolh).*(peca|peças|peça|impressao|modelo)/i.test(t)) {
-    return 'Quando a peça inteira sai menor que o modelo, verifique primeiro **escala/unidade do STL**, compensação XY já ativa e contração após a pós-cura. Meça um corpo de prova nos eixos X, Y e Z antes e depois da pós-cura; para redução uniforme, calcule **fator de escala = medida nominal ÷ medida real**. Só aplique a correção depois de confirmar que exposição, orientação e pós-cura estão padronizadas, pois furos e medidas externas podem exigir compensações diferentes.\n\nQual é a medida no arquivo e quanto ela ficou na peça curada?';
+    return 'A causa mais provável de a peça sair menor nas dimensões externas é **exposição normal baixa**: a borda não polimeriza até o contorno nominal e perde medida. Primeiro calibre a exposição aumentando em passos pequenos e repetindo o mesmo corpo de prova; não use escala ou compensação XY para esconder exposição descalibrada. Se a medida estiver correta antes da pós-cura e diminuir somente depois, aí investigue contração, dose UV e temperatura da pós-cura.\n\nQual exposição normal, altura de camada, resina e impressora você está usando?';
   }
 
   if (/suporte|suportes/.test(t) && /(duro|dificil|tirar|remover|grudado|quebra)/.test(t)) {
