@@ -7,6 +7,7 @@ const STOP_WORDS = new Set([
   'os', 'ou', 'para', 'pela', 'pelo', 'por', 'porque', 'qual', 'que',
   'entre', 'sem', 'seu', 'sua', 'tem', 'um', 'uma', 'voce', 'voces', 'isso', 'isto',
   'deve', 'deveria', 'deveriam', 'estao', 'ficando', 'ficou',
+  'nao', 'muito', 'deixei', 'depois', 'depoi', 'posso', 'jogar',
 ]);
 
 const SYNONYM_GROUPS = [
@@ -26,6 +27,19 @@ const SYNONYM_GROUPS = [
   ['menor', 'menores', 'encolheu', 'encolheram', 'encolhendo', 'encolhimento', 'retracao', 'contracao'],
   ['dimensao', 'dimensoes', 'dimensional', 'medida', 'medidas', 'tamanho', 'escala'],
   ['compensar', 'compensacao', 'corrigir', 'ajustar', 'offset'],
+  ['pigmento', 'pigmentos', 'pigmentada', 'pigmentado', 'corante', 'corantes'],
+  ['carga', 'cargas', 'filler', 'fillers', 'mica', 'particula', 'particulas'],
+  ['sedimentacao', 'sedimentar', 'sedimentando', 'decantacao', 'decantar', 'decantando', 'separacao', 'separada'],
+  ['homogeneizar', 'homogeneizacao', 'misturar', 'agitar', 'remexer'],
+  ['fotoiniciador', 'fotoiniciadores', 'iniciador', 'photoinitiator'],
+  ['irradiancia', 'intensidade', 'potencia', 'dose', 'energia'],
+  ['comprimento', 'espectro', 'wavelength'],
+  ['poscura', 'poscurar', 'pospolimerizacao', 'cabine'],
+  ['conversao', 'polimerizacao', 'reticulacao', 'crosslink'],
+  ['quebradica', 'quebradico', 'fragil', 'fragilidade', 'brittle'],
+  ['biocompativel', 'biocompatibilidade', 'intraoral', 'clinico'],
+  ['descarte', 'descartar', 'residuo', 'lixo', 'ralo', 'pia'],
+  ['ventilacao', 'exaustao', 'voc', 'vapor', 'vapores', 'inalacao'],
 ];
 
 const SYNONYM_MAP = new Map();
