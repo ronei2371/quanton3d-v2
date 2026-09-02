@@ -19,6 +19,24 @@ test('normaliza acentos e sinonimos tecnicos', () => {
   assert.ok(tokens.includes('trinca'));
 });
 
+test('relaciona peca menor com contracao e dimensao', () => {
+  const queryTokens = tokenize('Minhas peças estão ficando menores do que deveriam');
+  const knowledgeTokens = tokenize('Contração dimensional: a peça encolheu e a medida ficou abaixo do modelo');
+
+  assert.ok(queryTokens.includes('menor'));
+  assert.ok(knowledgeTokens.includes('menor'));
+  assert.ok(knowledgeTokens.includes('dimensao'));
+
+  const documents = splitKnowledgeBase(KNOWLEDGE_BASE);
+  const results = rankDocuments('Minhas peças estão ficando menores do que deveriam', documents, {
+    threshold: 0.55,
+    limit: 3,
+  });
+
+  assert.ok(results.length >= 1);
+  assert.match(results[0].title, /Peça menor que o modelo/i);
+});
+
 test('usa RAG_MIN_RELEVANCE e protege valores fora da faixa', () => {
   assert.equal(getRagMinRelevance({ RAG_MIN_RELEVANCE: '0.7' }), 0.7);
   assert.equal(getRagMinRelevance({ RAG_MIN_RELEVANCE: '2' }), 0.95);
