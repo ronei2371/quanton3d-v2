@@ -35,6 +35,7 @@ test('relaciona peca menor com contracao e dimensao', () => {
 
   assert.ok(results.length >= 1);
   assert.match(results[0].title, /Peça menor que o modelo/i);
+  assert.match(results[0].content, /causa mais provável é exposição normal baixa/i);
 });
 
 test('usa RAG_MIN_RELEVANCE e protege valores fora da faixa', () => {
