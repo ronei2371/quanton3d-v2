@@ -6,6 +6,7 @@ const STOP_WORDS = new Set([
   'mais', 'mas', 'me', 'meu', 'minha', 'na', 'nas', 'no', 'nos', 'o',
   'os', 'ou', 'para', 'pela', 'pelo', 'por', 'porque', 'qual', 'que',
   'entre', 'sem', 'seu', 'sua', 'tem', 'um', 'uma', 'voce', 'voces', 'isso', 'isto',
+  'deve', 'deveria', 'deveriam', 'estao', 'ficando', 'ficou',
 ]);
 
 const SYNONYM_GROUPS = [
@@ -22,6 +23,9 @@ const SYNONYM_GROUPS = [
   ['usar', 'uso', 'usa', 'utilizar', 'escolher', 'escolha', 'recomendar', 'recomendada'],
   ['pegajosa', 'grudenta', 'pegajoso', 'grudento'],
   ['furo', 'furos', 'buraco', 'buracos', 'poro', 'poros', 'porosa'],
+  ['menor', 'menores', 'encolheu', 'encolheram', 'encolhendo', 'encolhimento', 'retracao', 'contracao'],
+  ['dimensao', 'dimensoes', 'dimensional', 'medida', 'medidas', 'tamanho', 'escala'],
+  ['compensar', 'compensacao', 'corrigir', 'ajustar', 'offset'],
 ];
 
 const SYNONYM_MAP = new Map();
@@ -43,11 +47,17 @@ export function tokenize(value = '') {
   const tokens = normalizeText(value)
     .split(' ')
     .filter(Boolean)
-    .filter((token) => !STOP_WORDS.has(token))
     .filter((token) => token.length >= 3 || SHORT_TECH_TERMS.has(token))
-    .map((token) => (token.length > 4 && token.endsWith('s') ? token.slice(0, -1) : token));
+    .map((token) => {
+      const directSynonym = SYNONYM_MAP.get(token);
+      if (directSynonym) return directSynonym[0];
 
-  return [...new Set(tokens.map((token) => SYNONYM_MAP.get(token)?.[0] || token))];
+      const singular = token.length > 4 && token.endsWith('s') ? token.slice(0, -1) : token;
+      return SYNONYM_MAP.get(singular)?.[0] || singular;
+    })
+    .filter((token) => !STOP_WORDS.has(token));
+
+  return [...new Set(tokens)];
 }
 
 export function getRagMinRelevance(env = process.env) {
