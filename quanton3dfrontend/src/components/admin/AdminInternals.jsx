@@ -418,6 +418,23 @@ export function AdminContent({ tokenAtendente }) {
   const [salvandoSugestao, setSalvandoSugestao] = useState("");
   const [relatorioSemanal, setRelatorioSemanal] = useState(null);
   const [carregandoRelatorio, setCarregandoRelatorio] = useState(false);
+  const [migrandoFotos, setMigrandoFotos] = useState(false);
+  const [resultadoMigracao, setResultadoMigracao] = useState(null);
+
+  async function migrarFotosImpressoras() {
+    if (!window.confirm("Isso vai preencher automaticamente as fotos de todas as impressoras cadastradas sem foto. Continuar?")) return;
+    try {
+      setMigrandoFotos(true);
+      setResultadoMigracao(null);
+      const res = await api.post("/admin/migrar-fotos-impressoras", {}, { headers: { Authorization: "Bearer " + token } });
+      setResultadoMigracao(res.data);
+      await carregarDados();
+    } catch (err) {
+      alert("Erro ao migrar fotos: " + (err?.response?.data?.error || err.message));
+    } finally {
+      setMigrandoFotos(false);
+    }
+  }
 
   async function aprovarSugestao(id) {
     try {
@@ -1622,6 +1639,20 @@ export function AdminContent({ tokenAtendente }) {
 
       {aba === "parametros_adm" && (
         <div>
+          {/* Botão migração de fotos */}
+          <div style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <button type="button" onClick={migrarFotosImpressoras} disabled={migrandoFotos}
+              style={{ padding: "9px 18px", borderRadius: "999px", border: "1px solid rgba(150,80,245,0.5)", background: migrandoFotos ? "rgba(150,80,245,0.05)" : "rgba(150,80,245,0.12)", color: "#c084fc", cursor: migrandoFotos ? "wait" : "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
+              {migrandoFotos ? "⏳ Preenchendo fotos…" : "🖼️ Auto-preencher fotos das impressoras"}
+            </button>
+            {resultadoMigracao && (
+              <span style={{ fontSize: "0.78rem", color: "#9fb4c7" }}>
+                ✅ {resultadoMigracao.atualizados} atualizadas
+                {resultadoMigracao.semMatch?.length > 0 && ` · ⚠️ sem foto: ${resultadoMigracao.semMatch.join(", ")}`}
+              </span>
+            )}
+          </div>
+
           {/* Formulário de cadastro */}
           <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "18px", marginBottom: "20px" }}>
             <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#0092ff", fontSize: "0.88rem" }}>➕ CADASTRAR NOVO PARÂMETRO</p>
