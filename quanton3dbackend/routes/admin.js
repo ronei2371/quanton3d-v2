@@ -199,6 +199,63 @@ router.get('/metrics', auth, async (_req, res) => {
   }
 });
 
+// ── SUGERIR MELHORIA COM IA (DeepSeek) ────────────────────────────────────────
+router.post('/sugerir-melhoria', auth, async (req, res) => {
+  try {
+    const { pergunta, respostaOriginal, configuracaoCliente, resinaDetectada, impressoraDetectada } = req.body || {};
+    if (!pergunta || !respostaOriginal)
+      return res.status(400).json({ success: false, error: 'pergunta e respostaOriginal são obrigatórios.' });
+
+    const contextoParts = [];
+    if (resinaDetectada) contextoParts.push(`Resina: ${resinaDetectada}`);
+    if (impressoraDetectada) contextoParts.push(`Impressora: ${impressoraDetectada}`);
+    if (configuracaoCliente) contextoParts.push(`Configuração do cliente: ${configuracaoCliente}`);
+    const contexto = contextoParts.length ? `\n${contextoParts.join('\n')}` : '';
+
+    const promptIA = `Você é um especialista em impressão 3D de resina UV da Quanton3D.
+Um cliente fez uma pergunta e a resposta do bot NÃO ajudou (feedback negativo). Melhore a resposta.
+
+PERGUNTA DO CLIENTE:
+${pergunta}
+${contexto}
+
+RESPOSTA ORIGINAL (não ajudou):
+${respostaOriginal}
+
+Escreva uma resposta melhorada em português do Brasil. Seja técnico, direto e use passos numerados quando aplicável. Não explique o que você está fazendo, apenas escreva a resposta melhorada.`;
+
+    const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
+    const model   = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash';
+
+    const resp = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: promptIA }],
+        max_tokens: 600,
+        temperature: 0.4,
+      }),
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      console.error('DeepSeek error:', errText);
+      return res.status(500).json({ success: false, error: 'Erro na API DeepSeek.' });
+    }
+
+    const data = await resp.json();
+    const sugestao = data.choices?.[0]?.message?.content?.trim() || '';
+    res.json({ success: true, sugestao });
+  } catch (err) {
+    console.error('Erro em /admin/sugerir-melhoria:', err);
+    res.status(500).json({ success: false, error: 'Erro ao gerar sugestão com IA.' });
+  }
+});
+
 export default router;
 
 // ── LIMPEZA DE DADOS DE TESTE ─────────────────────────────────────────────────
