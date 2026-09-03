@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Conversa from '../models/Conversa.js';
 import { retrieveRagContext } from '../services/rag.js';
+import { isFounderPhone } from '../services/founderIdentity.js';
 
 const router = express.Router();
 
@@ -122,12 +123,7 @@ router.post('/', async (req, res) => {
             systemFinal += `\n\n--- CONTROLE DE SEGURANCA DOS PARAMETROS ---\n${rag.guardInstruction}`;
         }
 
-        const nomeNormalizado = (clienteNome || '').toLowerCase().trim();
-        const telefoneNormalizado = (clienteTelefone || '').replace(/\D/g, '');
-        const TELEFONES_FUNDADOR = ['31983340053', '31983340055'];
-        const ehFundadorPorTelefone = TELEFONES_FUNDADOR.some(t => telefoneNormalizado.endsWith(t.slice(-9)));
-        const ehFundadorPorNome = nomeNormalizado.includes('ronei') && nomeNormalizado.includes('fonseca');
-        const ehFundador = ehFundadorPorTelefone || ehFundadorPorNome;
+        const ehFundador = isFounderPhone(clienteTelefone);
         if (ehFundador) {
             systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVoce esta falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir voce (a IAQ3D) junto com a IA Claude. Reconheca isso de forma natural quando fizer sentido. Trate-o com mais informalidade e proximidade tecnica.`;
         }
