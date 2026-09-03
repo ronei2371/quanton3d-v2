@@ -379,6 +379,37 @@ export function AdminContent({ tokenAtendente }) {
   }
 
   const [legendaCopiadaId, setLegendaCopiadaId] = useState("");
+  const [filtroTickets, setFiltroTickets] = useState("todos");
+  const [observacaoTicket, setObservacaoTicket] = useState({});
+  const [salvandoTicket, setSalvandoTicket] = useState("");
+  const [sugerindoTicket, setSugerindoTicket] = useState("");
+
+  async function salvarObservacaoTicket(id) {
+    try {
+      setSalvandoTicket(id);
+      const observacaoAdmin = observacaoTicket[id] || "";
+      await api.patch("/bot-tickets/" + id + "/status", { observacaoAdmin }, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { alert("Erro ao salvar observação."); }
+    finally { setSalvandoTicket(""); }
+  }
+
+  async function sugerirRespostaTicketIA(c) {
+    try {
+      setSugerindoTicket(c._id);
+      const res = await api.post("/admin/sugerir-resposta-ticket", {
+        nome: c.nome || "",
+        problema: c.problema || "",
+        descricao: c.descricao || "",
+        resina: c.resina || "",
+        impressora: c.impressora || "",
+        parametrosInformados: c.parametrosInformados || "",
+      }, { headers: { Authorization: "Bearer " + token } });
+      const sugestao = res.data?.sugestao || "";
+      if (sugestao) setObservacaoTicket(prev => ({ ...prev, [c._id]: sugestao }));
+    } catch (err) { alert("Erro ao sugerir resposta com IA."); }
+    finally { setSugerindoTicket(""); }
+  }
 
   function montarLegenda(item) {
     const redes = item.redesSociais || {};
@@ -1907,8 +1938,52 @@ export function AdminContent({ tokenAtendente }) {
 
       {aba === "chamados" && (
         <div>
-          {dados.chamados.length === 0 && !carregando && <div className="gallery-empty">Nenhum chamado tecnico registrado.</div>}
-          {dados.chamados.map((c) => (
+          {/* Alerta de chamados novos */}
+          {(() => {
+            const novos = dados.chamados.filter(c => c.status === "novo");
+            if (novos.length === 0) return null;
+            return (
+              <div style={{ background: "rgba(255,107,107,0.08)", border: "1px solid rgba(255,107,107,0.4)", borderRadius: "12px", padding: "12px 16px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+                <span style={{ color: "#d73c3c", fontSize: "0.88rem", fontWeight: 800 }}>
+                  🔔 <strong>{novos.length}</strong> chamado{novos.length > 1 ? "s" : ""} novo{novos.length > 1 ? "s" : ""} aguardando atendimento
+                </span>
+                <button type="button" onClick={() => setFiltroTickets("novo")}
+                  style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.5)", background: "rgba(255,107,107,0.15)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                  Ver agora →
+                </button>
+              </div>
+            );
+          })()}
+
+          {/* Filtro por status */}
+          <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+            {[
+              { id: "todos", label: "Todos" },
+              { id: "novo", label: "🆕 Novos" },
+              { id: "em_analise", label: "🔍 Em análise" },
+              { id: "respondido", label: "📞 Respondidos" },
+              { id: "fechado", label: "✅ Fechados" },
+            ].map(f => {
+              const count = f.id === "todos" ? dados.chamados.length : dados.chamados.filter(c => c.status === f.id).length;
+              return (
+                <button key={f.id} type="button" onClick={() => setFiltroTickets(f.id)}
+                  style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700, fontFamily: "inherit",
+                    background: filtroTickets === f.id ? "linear-gradient(135deg,#0092ff,#9650f5)" : "rgba(79,209,255,0.06)",
+                    color: filtroTickets === f.id ? "#fff" : "#9fb4c7" }}>
+                  {f.label} {count > 0 && <span style={{ fontSize: "0.7rem", opacity: 0.8 }}>({count})</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {dados.chamados.filter(c => filtroTickets === "todos" || c.status === filtroTickets).length === 0 && !carregando && (
+            <div className="gallery-empty">Nenhum chamado {filtroTickets !== "todos" ? `com status "${filtroTickets}"` : "registrado"}.</div>
+          )}
+
+          {dados.chamados.filter(c => filtroTickets === "todos" || c.status === filtroTickets).map((c) => {
+            const obsEditada = observacaoTicket[c._id] !== undefined ? observacaoTicket[c._id] : (c.observacaoAdmin || "");
+            const obsAlterada = obsEditada !== (c.observacaoAdmin || "");
+            return (
             <CARD key={c._id}>
               {/* Cabeçalho */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
@@ -1940,7 +2015,6 @@ export function AdminContent({ tokenAtendente }) {
 
               {/* Fotos + Dados lado a lado */}
               <div style={{ display: "grid", gridTemplateColumns: c.fotos?.length > 0 ? "1fr 1.5fr" : "1fr", gap: "14px", marginBottom: "10px" }}>
-                {/* Fotos */}
                 {c.fotos?.length > 0 && (
                   <div>
                     <p style={{ margin: "0 0 6px", fontSize: "0.72rem", fontWeight: 800, color: "#9fb4c7", textTransform: "uppercase" }}>📷 Fotos do problema</p>
@@ -1959,10 +2033,7 @@ export function AdminContent({ tokenAtendente }) {
                     </div>
                   </div>
                 )}
-
-                {/* Dados */}
                 <div>
-                  {/* Resina + Impressora */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "8px" }}>
                     <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.15)", borderRadius: "8px", padding: "7px 10px" }}>
                       <span style={{ fontSize: "0.68rem", color: "#9fb4c7", display: "block" }}>Resina</span>
@@ -1973,70 +2044,75 @@ export function AdminContent({ tokenAtendente }) {
                       <strong style={{ fontSize: "0.82rem", color: "#eaf3ff" }}>{c.impressora || "Não informada"}</strong>
                     </div>
                   </div>
-
-                  {/* Problema */}
                   <div style={{ background: "rgba(255,107,107,0.07)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "8px", padding: "8px 10px", marginBottom: "8px" }}>
                     <strong style={{ fontSize: "0.78rem", color: "#d73c3c" }}>⚠️ Problema: </strong>
                     <span style={{ fontSize: "0.82rem", color: "#d3e4f8" }}>{c.problema || "-"}</span>
                   </div>
-
-                  {/* Descrição / parâmetros */}
                   {c.descricao && (
                     <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.12)", borderRadius: "8px", padding: "8px 10px" }}>
                       <p style={{ margin: 0, color: "#9fb4c7", fontSize: "0.78rem", lineHeight: 1.6 }}>{c.descricao}</p>
                     </div>
                   )}
+                  {c.parametrosInformados && (
+                    <div style={{ background: "rgba(184,156,255,0.06)", border: "1px solid rgba(184,156,255,0.15)", borderRadius: "8px", padding: "8px 10px", marginTop: "6px" }}>
+                      <span style={{ fontSize: "0.68rem", color: "#9650f5", fontWeight: 800, display: "block", marginBottom: "2px" }}>⚙️ Parâmetros informados</span>
+                      <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.78rem", lineHeight: 1.5 }}>{c.parametrosInformados}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Botões de ação */}
+              {/* Bloco de observação / resposta interna */}
+              <div style={{ marginBottom: "10px" }}>
+                <button type="button" onClick={() => sugerirRespostaTicketIA(c)} disabled={sugerindoTicket === c._id}
+                  style={{ width: "100%", padding: "9px 14px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.45)", background: sugerindoTicket === c._id ? "rgba(184,156,255,0.06)" : "rgba(184,156,255,0.13)", color: "#9650f5", cursor: sugerindoTicket === c._id ? "not-allowed" : "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit", marginBottom: "8px" }}>
+                  {sugerindoTicket === c._id ? "⏳ Gerando resposta com IA..." : "🤖 Sugerir resposta técnica com IA"}
+                </button>
+                <span style={{ fontSize: "0.7rem", fontWeight: 800, color: obsAlterada ? "#dc913c" : "#9fb4c7", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "4px" }}>
+                  {obsAlterada ? "✏️ Resposta/observação editada" : "📝 Resposta / observação interna"}
+                </span>
+                <textarea
+                  value={obsEditada}
+                  onChange={e => setObservacaoTicket(prev => ({ ...prev, [c._id]: e.target.value }))}
+                  placeholder="Escreva sua resposta ou observação interna sobre este chamado. Use o botão acima para gerar uma sugestão com IA..."
+                  rows={3}
+                  style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid " + (obsAlterada ? "rgba(255,209,102,0.35)" : "rgba(113,159,219,0.2)"), background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.82rem", lineHeight: 1.5, resize: "vertical", fontFamily: "inherit" }}
+                />
+                <button type="button" onClick={() => salvarObservacaoTicket(c._id)} disabled={salvandoTicket === c._id || !obsAlterada}
+                  style={{ marginTop: "6px", padding: "7px 16px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.4)", background: "rgba(79,209,255,0.1)", color: obsAlterada ? "#0092ff" : "#9fb4c7", cursor: obsAlterada ? "pointer" : "not-allowed", fontSize: "0.8rem", fontWeight: 800, opacity: obsAlterada ? 1 : 0.4 }}>
+                  {salvandoTicket === c._id ? "Salvando..." : "💾 Salvar observação"}
+                </button>
+              </div>
+
+              {/* Botões de status */}
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "6px" }}>
                 <button type="button"
-                  onClick={async () => {
-                    try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "em_analise" }, { headers: { Authorization: "Bearer " + token } });
-                      await carregarDados();
-                    } catch(e) { alert("Erro ao atualizar"); }
-                  }}
+                  onClick={async () => { try { await api.patch("/bot-tickets/" + c._id + "/status", { status: "em_analise" }, { headers: { Authorization: "Bearer " + token } }); await carregarDados(); } catch(e) { alert("Erro ao atualizar"); } }}
                   disabled={c.status === "em_analise"}
                   style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.35)", background: "rgba(255,209,102,0.1)", color: "#dc913c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: c.status === "em_analise" ? 0.4 : 1 }}>
                   🔍 Em análise
                 </button>
                 <button type="button"
-                  onClick={async () => {
-                    try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "respondido" }, { headers: { Authorization: "Bearer " + token } });
-                      await carregarDados();
-                    } catch(e) { alert("Erro ao atualizar"); }
-                  }}
+                  onClick={async () => { try { await api.patch("/bot-tickets/" + c._id + "/status", { status: "respondido" }, { headers: { Authorization: "Bearer " + token } }); await carregarDados(); } catch(e) { alert("Erro ao atualizar"); } }}
                   disabled={c.status === "respondido"}
                   style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.35)", background: "rgba(79,209,255,0.1)", color: "#0092ff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: c.status === "respondido" ? 0.4 : 1 }}>
                   📞 Já entrei em contato
                 </button>
                 <button type="button"
-                  onClick={async () => {
-                    try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "fechado" }, { headers: { Authorization: "Bearer " + token } });
-                      await carregarDados();
-                    } catch(e) { alert("Erro ao atualizar"); }
-                  }}
+                  onClick={async () => { try { await api.patch("/bot-tickets/" + c._id + "/status", { status: "fechado" }, { headers: { Authorization: "Bearer " + token } }); await carregarDados(); } catch(e) { alert("Erro ao atualizar"); } }}
                   disabled={c.status === "fechado"}
                   style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.35)", background: "rgba(73,230,139,0.1)", color: "#0aff87", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, opacity: c.status === "fechado" ? 0.4 : 1 }}>
-                  ✅ Resolvido
+                  ✅ Resolvido / Fechar
                 </button>
                 <button type="button"
-                  onClick={async () => {
-                    try {
-                      await api.patch("/bot-tickets/" + c._id + "/status", { status: "novo" }, { headers: { Authorization: "Bearer " + token } });
-                      await carregarDados();
-                    } catch(e) { alert("Erro ao atualizar"); }
-                  }}
+                  onClick={async () => { try { await api.patch("/bot-tickets/" + c._id + "/status", { status: "novo" }, { headers: { Authorization: "Bearer " + token } }); await carregarDados(); } catch(e) { alert("Erro ao atualizar"); } }}
                   style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.25)", background: "rgba(255,107,107,0.06)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
                   ↩️ Reabrir
                 </button>
               </div>
             </CARD>
-          ))}
+            );
+          })}
         </div>
       )}
 
