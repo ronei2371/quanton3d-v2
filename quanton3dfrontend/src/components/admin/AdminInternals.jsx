@@ -59,6 +59,11 @@ export function AdminContent({ tokenAtendente }) {
   const [editandoParam, setEditandoParam] = useState(null); // id do parametro em edicao
   const [paramEdit, setParamEdit] = useState({}); // dados sendo editados
   const [sugestoesIaq3d, setSugestoesIaq3d] = useState([]);
+  const [botMetrics, setBotMetrics] = useState(null);
+  const [ticketMetrics, setTicketMetrics] = useState(null);
+  const [clienteMetrics, setClienteMetrics] = useState(null);
+  const [visitaMetrics, setVisitaMetrics] = useState(null);
+  const [atencaoMetrics, setAtencaoMetrics] = useState(null);
 
   async function entrar(e) {
     e.preventDefault(); setErro("");
@@ -109,6 +114,11 @@ export function AdminContent({ tokenAtendente }) {
       carregarAtendentes();
       carregarLogs();
       try { const sResp = await api.get("/sugestoes-conhecimento", { headers }); setSugestoesIaq3d(sResp.data?.sugestoes || []); } catch(_) {}
+      setBotMetrics(m.botMetrics || null);
+      setTicketMetrics(m.ticketMetrics || null);
+      setClienteMetrics(m.clienteMetrics || null);
+      setVisitaMetrics(m.visitaMetrics || null);
+      setAtencaoMetrics(m.atencaoMetrics || null);
       setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
@@ -654,6 +664,313 @@ export function AdminContent({ tokenAtendente }) {
             );
           })()}
 
+
+          {/* ── BLOCO 1: Métricas do Bot IAQ3D ── */}
+          {botMetrics && (
+            <div style={{ background: "rgba(0,146,255,0.05)", border: "1px solid rgba(0,146,255,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+              <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#0092ff", fontSize: "0.85rem" }}>🤖 BOT IAQ3D — DESEMPENHO</p>
+
+              {/* Totais de conversas */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px,1fr))", gap: "10px", marginBottom: "14px" }}>
+                {[
+                  { label: "Total de perguntas", valor: botMetrics.totalConversas, cor: "#0092ff", icon: "💬" },
+                  { label: "Hoje", valor: botMetrics.conversasHoje, cor: "#0aff87", icon: "📅" },
+                  { label: "Últimos 7 dias", valor: botMetrics.conversas7d, cor: "#4fd1ff", icon: "📆" },
+                  { label: "Últimos 30 dias", valor: botMetrics.conversas30d, cor: "#9650f5", icon: "🗓️" },
+                ].map(item => (
+                  <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px", textAlign: "center", border: `1px solid ${item.cor}22` }}>
+                    <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>{item.icon}</div>
+                    <strong style={{ fontSize: "1.6rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
+                    <span style={{ fontSize: "0.68rem", color: "#9fb4c7", fontWeight: 600 }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Fonte das respostas */}
+              {botMetrics.porFonte && botMetrics.porFonte.length > 0 && (
+                <div style={{ marginBottom: "14px" }}>
+                  <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>Como o bot respondeu</p>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    {botMetrics.porFonte.map(f => {
+                      const pct = botMetrics.totalConversas > 0 ? ((f.total / botMetrics.totalConversas) * 100).toFixed(1) : 0;
+                      const labels = { rules: { label: "Regras fixas", cor: "#0aff87", icon: "⚡" }, deepseek: { label: "IA (DeepSeek)", cor: "#0092ff", icon: "🧠" }, "rag+deepseek": { label: "RAG + IA", cor: "#9650f5", icon: "📚" } };
+                      const info = labels[f._id] || { label: f._id, cor: "#dc913c", icon: "❓" };
+                      return (
+                        <div key={f._id} style={{ background: `${info.cor}11`, border: `1px solid ${info.cor}33`, borderRadius: "10px", padding: "10px 14px", flex: "1", minWidth: "120px" }}>
+                          <span style={{ fontSize: "1rem" }}>{info.icon}</span>
+                          <strong style={{ display: "block", color: info.cor, fontSize: "1.3rem" }}>{f.total}</strong>
+                          <span style={{ fontSize: "0.7rem", color: "#9fb4c7" }}>{info.label}</span>
+                          <span style={{ display: "block", fontSize: "0.68rem", color: info.cor, fontWeight: 700 }}>{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Feedback dos clientes */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px,1fr))", gap: "10px", marginBottom: "14px" }}>
+                <div style={{ background: "rgba(10,255,135,0.07)", border: "1px solid rgba(10,255,135,0.2)", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                  <div style={{ fontSize: "1.3rem" }}>👍</div>
+                  <strong style={{ fontSize: "1.5rem", color: "#0aff87", display: "block" }}>{botMetrics.feedbackPositivo}</strong>
+                  <span style={{ fontSize: "0.7rem", color: "#9fb4c7" }}>Feedback positivo</span>
+                </div>
+                <div style={{ background: "rgba(215,60,60,0.07)", border: "1px solid rgba(215,60,60,0.2)", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                  <div style={{ fontSize: "1.3rem" }}>👎</div>
+                  <strong style={{ fontSize: "1.5rem", color: "#d73c3c", display: "block" }}>{botMetrics.feedbackNegativo}</strong>
+                  <span style={{ fontSize: "0.7rem", color: "#9fb4c7" }}>Feedback negativo</span>
+                </div>
+                <div style={{ background: botMetrics.feedbackNaoRevisado > 0 ? "rgba(255,209,102,0.1)" : "rgba(255,255,255,0.03)", border: `1px solid ${botMetrics.feedbackNaoRevisado > 0 ? "rgba(255,209,102,0.3)" : "rgba(255,255,255,0.08)"}`, borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                  <div style={{ fontSize: "1.3rem" }}>⚠️</div>
+                  <strong style={{ fontSize: "1.5rem", color: botMetrics.feedbackNaoRevisado > 0 ? "#dc913c" : "#0aff87", display: "block" }}>{botMetrics.feedbackNaoRevisado}</strong>
+                  <span style={{ fontSize: "0.7rem", color: "#9fb4c7" }}>Negativos não revisados</span>
+                </div>
+                <div style={{ background: "rgba(150,80,245,0.07)", border: "1px solid rgba(150,80,245,0.2)", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                  <div style={{ fontSize: "1.3rem" }}>✅</div>
+                  <strong style={{ fontSize: "1.5rem", color: "#9650f5", display: "block" }}>{botMetrics.conversasAprovadas}</strong>
+                  <span style={{ fontSize: "0.7rem", color: "#9fb4c7" }}>Respostas no RAG</span>
+                </div>
+              </div>
+
+              {/* Resinas mais perguntadas */}
+              {botMetrics.resinasMaisPerguntadas && botMetrics.resinasMaisPerguntadas.length > 0 && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                  <div>
+                    <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>🧪 Resinas mais perguntadas</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                      {botMetrics.resinasMaisPerguntadas.map((r, i) => (
+                        <div key={r._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", borderRadius: "7px", padding: "6px 10px" }}>
+                          <span style={{ fontSize: "0.78rem", color: "#d3e4f8" }}>{i + 1}. {r._id}</span>
+                          <span style={{ background: "rgba(0,146,255,0.15)", color: "#0092ff", borderRadius: "999px", padding: "2px 9px", fontSize: "0.72rem", fontWeight: 800 }}>{r.total}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {botMetrics.impressorasMaisPerguntadas && botMetrics.impressorasMaisPerguntadas.length > 0 && (
+                    <div>
+                      <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>🖨️ Impressoras mais perguntadas</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                        {botMetrics.impressorasMaisPerguntadas.map((p, i) => (
+                          <div key={p._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", borderRadius: "7px", padding: "6px 10px" }}>
+                            <span style={{ fontSize: "0.78rem", color: "#d3e4f8" }}>{i + 1}. {p._id}</span>
+                            <span style={{ background: "rgba(150,80,245,0.15)", color: "#9650f5", borderRadius: "999px", padding: "2px 9px", fontSize: "0.72rem", fontWeight: 800 }}>{p.total}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── BLOCO 1b: Métricas de Chamados ── */}
+          {ticketMetrics && (
+            <div style={{ background: "rgba(220,145,60,0.05)", border: "1px solid rgba(220,145,60,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+              <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#dc913c", fontSize: "0.85rem" }}>🎫 CHAMADOS TÉCNICOS</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px,1fr))", gap: "10px" }}>
+                {[
+                  { label: "Total", valor: ticketMetrics.total, cor: "#dc913c", icon: "🎫" },
+                  { label: "Novos", valor: ticketMetrics.novo, cor: "#d73c3c", icon: "🆕" },
+                  { label: "Em aberto", valor: ticketMetrics.abertos, cor: "#dc913c", icon: "⏳" },
+                  { label: "Resolvidos", valor: ticketMetrics.resolvidos, cor: "#0aff87", icon: "✅" },
+                  { label: "Bot ajudou", valor: ticketMetrics.feedbackPositivo, cor: "#0aff87", icon: "👍" },
+                  { label: "Não ajudou", valor: ticketMetrics.feedbackNegativo, cor: "#d73c3c", icon: "👎" },
+                  { label: "Precisou humano", valor: ticketMetrics.precisaHumano, cor: "#9650f5", icon: "👨‍💼" },
+                ].map(item => (
+                  <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px", textAlign: "center", border: `1px solid ${item.cor}22` }}>
+                    <div style={{ fontSize: "1.1rem", marginBottom: "4px" }}>{item.icon}</div>
+                    <strong style={{ fontSize: "1.5rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
+                    <span style={{ fontSize: "0.67rem", color: "#9fb4c7", fontWeight: 600 }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── BLOCO 2: Crescimento de Clientes ── */}
+          {clienteMetrics && (
+            <div style={{ background: "rgba(10,255,135,0.04)", border: "1px solid rgba(10,255,135,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+              <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#0aff87", fontSize: "0.85rem" }}>👥 CRESCIMENTO DE CLIENTES</p>
+
+              {/* Totais por período */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px,1fr))", gap: "10px", marginBottom: "14px" }}>
+                {[
+                  { label: "Total geral", valor: dados.totais.clientes || 0, cor: "#0092ff", icon: "👥" },
+                  { label: "Hoje", valor: clienteMetrics.hoje, cor: "#0aff87", icon: "📅" },
+                  { label: "Últimos 7 dias", valor: clienteMetrics.ultimos7d, cor: "#4fd1ff", icon: "📆" },
+                  { label: "Últimos 30 dias", valor: clienteMetrics.ultimos30d, cor: "#9650f5", icon: "🗓️" },
+                ].map(item => (
+                  <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px", textAlign: "center", border: `1px solid ${item.cor}22` }}>
+                    <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>{item.icon}</div>
+                    <strong style={{ fontSize: "1.6rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
+                    <span style={{ fontSize: "0.68rem", color: "#9fb4c7", fontWeight: 600 }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                {/* Gráfico de barras - clientes por dia (últimos 30d) */}
+                {clienteMetrics.por30d && clienteMetrics.por30d.length > 0 && (() => {
+                  const maxVal = Math.max(...clienteMetrics.por30d.map(d => d.total), 1);
+                  return (
+                    <div>
+                      <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>📈 Novos clientes por dia (30d)</p>
+                      <div style={{ maxHeight: "200px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "4px" }}>
+                        {[...clienteMetrics.por30d].reverse().map(d => (
+                          <div key={d._id} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <span style={{ fontSize: "0.68rem", color: "#6b8aad", minWidth: "54px" }}>
+                              {new Date(d._id + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                            </span>
+                            <div style={{ flex: 1, background: "rgba(255,255,255,0.05)", borderRadius: "4px", height: "14px", overflow: "hidden" }}>
+                              <div style={{ width: `${(d.total / maxVal) * 100}%`, background: "linear-gradient(90deg,#0aff87,#0092ff)", height: "100%", borderRadius: "4px", minWidth: "6px" }} />
+                            </div>
+                            <span style={{ fontSize: "0.72rem", color: "#0aff87", fontWeight: 800, minWidth: "16px", textAlign: "right" }}>{d.total}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Origem dos clientes */}
+                {clienteMetrics.porOrigem && clienteMetrics.porOrigem.length > 0 && (
+                  <div>
+                    <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>🌐 Origem dos clientes</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                      {clienteMetrics.porOrigem.map(o => {
+                        const total = dados.totais.clientes || 1;
+                        const pct = ((o.total / total) * 100).toFixed(1);
+                        const origemLabels = { site: "Site", whatsapp: "WhatsApp", instagram: "Instagram", indicacao: "Indicação", outros: "Outros", "": "Não informado" };
+                        const label = origemLabels[o._id] || o._id || "Não informado";
+                        return (
+                          <div key={o._id} style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px", padding: "8px 10px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                              <span style={{ fontSize: "0.78rem", color: "#d3e4f8" }}>{label}</span>
+                              <span style={{ fontSize: "0.72rem", color: "#0aff87", fontWeight: 800 }}>{o.total} ({pct}%)</span>
+                            </div>
+                            <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "4px", height: "6px" }}>
+                              <div style={{ width: `${pct}%`, background: "linear-gradient(90deg,#0aff87,#0092ff)", height: "100%", borderRadius: "4px", minWidth: "4px" }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── BLOCO 3: Visitas ao Site ── */}
+          {visitaMetrics && (
+            <div style={{ background: "rgba(150,80,245,0.05)", border: "1px solid rgba(150,80,245,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+              <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#9650f5", fontSize: "0.85rem" }}>🌐 VISITAS AO SITE</p>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px,1fr))", gap: "10px", marginBottom: "14px" }}>
+                {[
+                  { label: "Hoje", valor: visitaMetrics.hoje, cor: "#9650f5", icon: "📅" },
+                  { label: "Últimos 7 dias", valor: visitaMetrics.ultimos7d, cor: "#b89cff", icon: "📆" },
+                  { label: "Últimos 30 dias", valor: visitaMetrics.ultimos30d, cor: "#4fd1ff", icon: "🗓️" },
+                ].map(item => (
+                  <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px", textAlign: "center", border: `1px solid ${item.cor}22` }}>
+                    <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>{item.icon}</div>
+                    <strong style={{ fontSize: "1.6rem", color: item.cor, display: "block", lineHeight: 1 }}>{item.valor}</strong>
+                    <span style={{ fontSize: "0.68rem", color: "#9fb4c7", fontWeight: 600 }}>{item.label} (únicos)</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                {/* Páginas mais acessadas */}
+                {visitaMetrics.porPagina && visitaMetrics.porPagina.length > 0 && (
+                  <div>
+                    <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>📄 Páginas mais acessadas (30d)</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                      {visitaMetrics.porPagina.map((p, i) => {
+                        const maxP = visitaMetrics.porPagina[0]?.total || 1;
+                        const paginaLabel = { "/": "Home", "/chat": "Chat Bot", "/galeria": "Galeria", "/calculadora": "Calculadora", "/contato": "Contato", "/parametros": "Parâmetros" };
+                        const label = paginaLabel[p._id] || p._id || "/";
+                        return (
+                          <div key={p._id} style={{ background: "rgba(255,255,255,0.03)", borderRadius: "7px", padding: "6px 10px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
+                              <span style={{ fontSize: "0.75rem", color: "#d3e4f8" }}>{i + 1}. {label}</span>
+                              <span style={{ fontSize: "0.72rem", color: "#9650f5", fontWeight: 800 }}>{p.total}</span>
+                            </div>
+                            <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "3px", height: "5px" }}>
+                              <div style={{ width: `${(p.total / maxP) * 100}%`, background: "linear-gradient(90deg,#9650f5,#4fd1ff)", height: "100%", borderRadius: "3px" }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  {/* Horário de pico */}
+                  {visitaMetrics.porHora && visitaMetrics.porHora.length > 0 && (
+                    <div style={{ marginBottom: "12px" }}>
+                      <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>⏰ Horários de pico (7d)</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                        {[...visitaMetrics.porHora].sort((a, b) => b.total - a.total).slice(0, 5).map(h => (
+                          <div key={h._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", borderRadius: "7px", padding: "6px 10px" }}>
+                            <span style={{ fontSize: "0.78rem", color: "#d3e4f8" }}>🕐 {String(h._id).padStart(2, "0")}h–{String((h._id + 1) % 24).padStart(2, "0")}h</span>
+                            <span style={{ background: "rgba(150,80,245,0.15)", color: "#9650f5", borderRadius: "999px", padding: "2px 9px", fontSize: "0.72rem", fontWeight: 800 }}>{h.total} visitas</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Gráfico dia a dia 30d */}
+                  {visitaMetrics.porDia30d && visitaMetrics.porDia30d.length > 0 && (() => {
+                    const maxV = Math.max(...visitaMetrics.porDia30d.map(d => d.total), 1);
+                    return (
+                      <div>
+                        <p style={{ margin: "0 0 8px", fontSize: "0.75rem", color: "#9fb4c7", fontWeight: 700, textTransform: "uppercase" }}>📈 Visitantes únicos por dia (30d)</p>
+                        <div style={{ maxHeight: "130px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "3px" }}>
+                          {[...visitaMetrics.porDia30d].reverse().map(d => (
+                            <div key={d._id} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                              <span style={{ fontSize: "0.65rem", color: "#6b8aad", minWidth: "40px" }}>
+                                {new Date(d._id + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                              </span>
+                              <div style={{ flex: 1, background: "rgba(255,255,255,0.05)", borderRadius: "3px", height: "11px", overflow: "hidden" }}>
+                                <div style={{ width: `${(d.total / maxV) * 100}%`, background: "linear-gradient(90deg,#9650f5,#b89cff)", height: "100%", borderRadius: "3px", minWidth: "4px" }} />
+                              </div>
+                              <span style={{ fontSize: "0.68rem", color: "#9650f5", fontWeight: 800, minWidth: "16px", textAlign: "right" }}>{d.total}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── BLOCO 4: Atenção — Contato e Conhecimento ── */}
+          {atencaoMetrics && (
+            <div style={{ background: "rgba(215,60,60,0.04)", border: "1px solid rgba(215,60,60,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+              <p style={{ margin: "0 0 14px", fontWeight: 800, color: "#d73c3c", fontSize: "0.85rem" }}>🔔 ITENS QUE PRECISAM DE ATENÇÃO</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px,1fr))", gap: "10px" }}>
+                {[
+                  { label: "Mensagens não lidas", valor: atencaoMetrics.msgNaoLidas, cor: "#d73c3c", icon: "✉️", aba: "mensagens", alerta: atencaoMetrics.msgNaoLidas > 0 },
+                  { label: "Sugestões pendentes", valor: atencaoMetrics.sugestoesPendentes, cor: "#dc913c", icon: "💡", aba: "sugestoes_iaq3d", alerta: atencaoMetrics.sugestoesPendentes > 0 },
+                  { label: "Respostas p/ aprovar no RAG", valor: atencaoMetrics.conversasPendentesAprovacao, cor: "#9650f5", icon: "✅", aba: "conversas", alerta: false },
+                ].map(item => (
+                  <button key={item.label} type="button" onClick={() => setAba(item.aba)}
+                    style={{ background: item.alerta ? `${item.cor}11` : "rgba(255,255,255,0.04)", border: `1px solid ${item.alerta ? item.cor + "44" : item.cor + "22"}`, borderRadius: "12px", padding: "14px 12px", textAlign: "center", cursor: "pointer", fontFamily: "inherit" }}>
+                    <div style={{ fontSize: "1.4rem", marginBottom: "6px" }}>{item.icon}{item.alerta ? " ⚠️" : ""}</div>
+                    <strong style={{ fontSize: "1.6rem", color: item.alerta ? item.cor : "#9fb4c7", display: "block", lineHeight: 1 }}>{item.valor}</strong>
+                    <span style={{ fontSize: "0.68rem", color: "#9fb4c7", fontWeight: 600, display: "block", marginTop: "4px" }}>{item.label}</span>
+                    <span style={{ fontSize: "0.65rem", color: item.cor, marginTop: "4px", display: "block" }}>Ver →</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "18px" }}>
             {[
