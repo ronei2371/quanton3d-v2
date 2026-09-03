@@ -68,14 +68,11 @@ function escapeRegex(value) {
 }
 
 function queryWithHistory(message, history = []) {
-  // Expande a query se tiver poucos tokens OU se for uma pergunta curta de continuação
-  const messageTokens = tokenize(message);
-  const isShortContinuation = messageTokens.length < 4;
-  if (!isShortContinuation) return message;
+  if (tokenize(message).length >= 2) return message;
   const recentUserMessages = Array.isArray(history)
     ? history
       .filter((item) => item?.role === 'user' && item?.content)
-      .slice(-2)
+      .slice(-1)
       .map((item) => item.content)
     : [];
   return [...recentUserMessages, message].filter(Boolean).join(' ');
@@ -209,8 +206,9 @@ export async function retrieveRagContext(message, history = []) {
       return [];
     }),
   ]);
-  const externalDocuments = rankDocuments(query, EXTERNAL_KNOWLEDGE, rankingOptions);
-  const legacyDocuments = rankDocuments(query, LEGACY_DOCUMENTS, rankingOptions);
+  const technicalRankingOptions = { ...rankingOptions, requireTechnicalAnchor: true };
+  const externalDocuments = rankDocuments(query, EXTERNAL_KNOWLEDGE, technicalRankingOptions);
+  const legacyDocuments = rankDocuments(query, LEGACY_DOCUMENTS, technicalRankingOptions);
 
   const context = buildPriorityContext({
     parameterContext: official.context,
