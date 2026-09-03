@@ -51,7 +51,38 @@ export function AdminContent({ tokenAtendente }) {
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
   const [diagnostico, setDiagnostico] = useState({});
-  const [novoParam, setNovoParam] = useState({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", codigoChitubox:"", liftSpeed:"", retractSpeed:"", confianca:"oficial" });
+  const PRINTER_PHOTOS = {
+    "Elegoo Mars 4 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_4_Ultra.png",
+    "Elegoo Saturn 3 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3_Ultra.png",
+    "Elegoo Saturn 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3.png",
+    "Elegoo Mars 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_MARS_3.png",
+    "Elegoo Mars 5 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_5_Ultra.png",
+    "Elegoo Saturn 4 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Saturn_4_Ultra.png",
+    "Elegoo Jupiter": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Jupiter.png",
+    "Anycubic Photon Mono M5s": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s.png",
+    "Anycubic Photon Mono M5s Pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s_Pro.png",
+    "Anycubic Photon M3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3.png",
+    "Anycubic Photon M3 Max": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3_Max.png",
+    "Anycubic Photon Mono M7": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_Anycubic_Photon_Mono_M7.png",
+    "Anycubic Photon Mono X 6K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_X_6K.png",
+    "Phrozen Sonic Mini 4K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_4K.png",
+    "Phrozen Sonic Mini 8K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_8K.png",
+    "Phrozen Sonic Mega 8K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mega_8K.png",
+    "Phrozen Sonic Mighty 4K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_4K.png",
+    "Phrozen Sonic Mighty 8K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_8K.png",
+    "Uniformation GKtwo": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniformation_UniFormation_GKtwo.png",
+    "Creality Halot One Pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-ONE_PRO.png",
+    "Creality Halot Mage Pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-MAGE_PRO.png",
+  };
+  function sugerirFotoImpressora(nomeImpressora) {
+    if (!nomeImpressora) return "";
+    const nLow = nomeImpressora.toLowerCase();
+    const match = Object.entries(PRINTER_PHOTOS).find(([k]) => k.toLowerCase() === nLow)
+      || Object.entries(PRINTER_PHOTOS).find(([k]) => nLow.includes(k.toLowerCase().split(" ").slice(-2).join(" ")))
+      || Object.entries(PRINTER_PHOTOS).find(([k]) => k.toLowerCase().split(" ").some(w => w.length > 4 && nLow.includes(w)));
+    return match ? match[1] : "";
+  }
+  const [novoParam, setNovoParam] = useState({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", codigoChitubox:"", liftSpeed:"", retractSpeed:"", confianca:"oficial", fotoImpressora:"" });
   const [salvandoParam, setSalvandoParam] = useState(false);
   const [msgParam, setMsgParam] = useState("");
   const [parametrosAdm, setParametrosAdm] = useState([]);
@@ -143,7 +174,7 @@ export function AdminContent({ tokenAtendente }) {
       setSalvandoParam(true); setMsgParam("");
       await api.post("/parametros", novoParam, { headers: { Authorization: "Bearer " + token } });
       setMsgParam("✅ Parâmetro salvo com sucesso!");
-      setNovoParam({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", codigoChitubox:"", liftSpeed:"", retractSpeed:"", confianca:"oficial" });
+      setNovoParam({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", codigoChitubox:"", liftSpeed:"", retractSpeed:"", confianca:"oficial", fotoImpressora:"" });
       await carregarDados();
     } catch (err) { setMsgParam("❌ Erro ao salvar: " + (err?.response?.data?.error || err.message)); }
     finally { setSalvandoParam(false); }
@@ -165,6 +196,7 @@ export function AdminContent({ tokenAtendente }) {
       exposicaoBase: p.exposicaoBase || "", camadasBase: p.camadasBase || "",
       liftSpeed: p.liftSpeed || "", retractSpeed: p.retractSpeed || "",
       codigoChitubox: p.codigoChitubox || "", confianca: p.confianca || "oficial",
+      fotoImpressora: p.fotoImpressora || "",
     });
   }
 
@@ -1617,6 +1649,29 @@ export function AdminContent({ tokenAtendente }) {
                 </label>
               ))}
             </div>
+            {/* Foto da impressora */}
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "6px" }}>📸 Foto da impressora (URL)</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input
+                  value={novoParam.fotoImpressora}
+                  onChange={e => setNovoParam(p => ({ ...p, fotoImpressora: e.target.value }))}
+                  placeholder="Cole a URL da imagem ou clique em Auto-sugerir"
+                  style={{ flex: 1, padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.82rem" }}
+                />
+                <button type="button" onClick={() => {
+                  const sugestao = sugerirFotoImpressora(novoParam.impressora);
+                  if (sugestao) setNovoParam(p => ({ ...p, fotoImpressora: sugestao }));
+                  else alert("Nenhuma foto encontrada para '" + novoParam.impressora + "'. Cole a URL manualmente.");
+                }} style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(150,80,245,0.4)", background: "rgba(150,80,245,0.1)", color: "#c084fc", cursor: "pointer", fontSize: "0.78rem", fontWeight: 700, whiteSpace: "nowrap" }}>
+                  🔍 Auto-sugerir
+                </button>
+              </div>
+              {novoParam.fotoImpressora && (
+                <img src={novoParam.fotoImpressora} alt="preview" onError={e => e.target.style.display="none"}
+                  style={{ marginTop: "8px", height: "80px", objectFit: "contain", borderRadius: "8px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }} />
+              )}
+            </div>
             <div style={{ marginBottom: "12px" }}>
               <label style={{ fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700, display: "block", marginBottom: "6px" }}>Confiança do parâmetro</label>
               <div style={{ display: "flex", gap: "8px" }}>
@@ -1682,6 +1737,18 @@ export function AdminContent({ tokenAtendente }) {
                         <option value="estimado">⚠️ Estimativa</option>
                       </select>
                       <div style={{ display: "flex", gap: "8px" }}>
+                        <input value={paramEdit.fotoImpressora || ""} onChange={e => setParamEdit(a => ({ ...a, fotoImpressora: e.target.value }))} placeholder="URL foto da impressora (opcional)"
+                          style={{ flex: 1, padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.25)", background: "rgba(4,10,24,0.7)", color: "#fff", fontSize: "0.82rem" }} />
+                        <button type="button" onClick={() => {
+                          const s = sugerirFotoImpressora(paramEdit.impressora);
+                          if (s) setParamEdit(a => ({ ...a, fotoImpressora: s }));
+                        }} style={{ padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(150,80,245,0.4)", background: "rgba(150,80,245,0.1)", color: "#c084fc", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700 }}>🔍</button>
+                      </div>
+                      {paramEdit.fotoImpressora && (
+                        <img src={paramEdit.fotoImpressora} alt="preview" onError={e => e.target.style.display="none"}
+                          style={{ height: "70px", objectFit: "contain", borderRadius: "8px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }} />
+                      )}
+                      <div style={{ display: "flex", gap: "8px" }}>
                         <button type="button" onClick={() => salvarEdicaoParam(p._id)} disabled={salvandoParam}
                           style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "none", background: "linear-gradient(135deg, #1565c0, #0092ff)", color: "#fff", cursor: "pointer", fontSize: "0.82rem", fontWeight: 700 }}>
                           {salvandoParam ? "Salvando..." : "💾 Salvar alterações"}
@@ -1694,6 +1761,10 @@ export function AdminContent({ tokenAtendente }) {
                     </div>
                   ) : (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+                      {p.fotoImpressora && (
+                        <img src={p.fotoImpressora} alt={p.impressora} onError={e => e.target.style.display="none"}
+                          style={{ width: "64px", height: "64px", objectFit: "contain", borderRadius: "8px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }} />
+                      )}
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px", flexWrap: "wrap" }}>
                           <strong style={{ color: "#0092ff", fontSize: "0.88rem" }}>{p.resina}</strong>
