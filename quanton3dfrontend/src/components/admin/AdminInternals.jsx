@@ -51,36 +51,72 @@ export function AdminContent({ tokenAtendente }) {
   const [filtroGaleria, setFiltroGaleria] = useState({ status: "pendente", dataInicio: "", dataFim: "" });
   const [salvandoId, setSalvandoId] = useState("");
   const [diagnostico, setDiagnostico] = useState({});
+  const _B = "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/";
   const PRINTER_PHOTOS = {
-    "Elegoo Mars 4 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_4_Ultra.png",
-    "Elegoo Saturn 3 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3_Ultra.png",
-    "Elegoo Saturn 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3.png",
-    "Elegoo Mars 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_MARS_3.png",
-    "Elegoo Mars 5 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_5_Ultra.png",
-    "Elegoo Saturn 4 Ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Saturn_4_Ultra.png",
-    "Elegoo Jupiter": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Jupiter.png",
-    "Anycubic Photon Mono M5s": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s.png",
-    "Anycubic Photon Mono M5s Pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s_Pro.png",
-    "Anycubic Photon M3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3.png",
-    "Anycubic Photon M3 Max": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3_Max.png",
-    "Anycubic Photon Mono M7": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_Anycubic_Photon_Mono_M7.png",
-    "Anycubic Photon Mono X 6K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_X_6K.png",
-    "Phrozen Sonic Mini 4K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_4K.png",
-    "Phrozen Sonic Mini 8K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_8K.png",
-    "Phrozen Sonic Mega 8K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mega_8K.png",
-    "Phrozen Sonic Mighty 4K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_4K.png",
-    "Phrozen Sonic Mighty 8K": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_8K.png",
-    "Uniformation GKtwo": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniformation_UniFormation_GKtwo.png",
-    "Creality Halot One Pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-ONE_PRO.png",
-    "Creality Halot Mage Pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-MAGE_PRO.png",
+    // Elegoo
+    "mars":              _B + "Elegoo_ELEGOO_MARS.png",
+    "mars 2":            _B + "Elegoo_ELEGOO_MARS_2.png",
+    "mars 2 pro":        _B + "Elegoo_ELEGOO_MARS_2_Pro.png",
+    "mars 3":            _B + "Elegoo_ELEGOO_MARS_3.png",
+    "mars 3 pro":        _B + "Elegoo_ELEGOO_MARS_3_PRO.png",
+    "mars 3 ultra":      _B + "Elegoo_ELEGOO_MARS_3_PRO.png",
+    "mars 4":            _B + "Elegoo_ELEGOO_MARS_4.png",
+    "mars 4 ultra":      _B + "Elegoo_ELEGOO_Mars_4_Ultra.png",
+    "mars 5 ultra":      _B + "Elegoo_ELEGOO_Mars_5_Ultra.png",
+    "saturn":            _B + "Elegoo_ELEGOO_SATURN.png",
+    "saturn 2":          _B + "Elegoo_ELEGOO_SATURN_2.png",
+    "saturn 3":          _B + "Elegoo_ELEGOO_SATURN_3.png",
+    "saturn 3 ultra":    _B + "Elegoo_ELEGOO_SATURN_3_Ultra.png",
+    "saturn 4 ultra":    _B + "Elegoo_ELEGOO_Saturn_4_Ultra.png",
+    "jupiter":           _B + "Elegoo_ELEGOO_JUPITER.png",
+    // AnyCubic
+    "photon clássica":   _B + "AnyCubic_AnyCubic_Photon.png",
+    "photon classica":   _B + "AnyCubic_AnyCubic_Photon.png",
+    "photon":            _B + "AnyCubic_AnyCubic_Photon.png",
+    "photon s":          _B + "AnyCubic_AnyCubic_Photon_S.png",
+    "photon se":         _B + "AnyCubic_AnyCubic_Photon_Mono_SE.png",
+    "photon mono":       _B + "AnyCubic_AnyCubic_Photon_Mono.png",
+    "photon mono 4k":    _B + "AnyCubic_AnyCubic_Photon_Mono_4K.png",
+    "photon mono x 4k":  _B + "AnyCubic_AnyCubic_Photon_Mono_X.png",
+    "photon mono x 6k":  _B + "AnyCubic_AnyCubic_Photon_Mono_X_6K.png",
+    "photon mono m5s":   _B + "AnyCubic_AnyCubic_Photon_Mono_M5s.png",
+    "photon mono m5s pro": _B + "AnyCubic_AnyCubic_Photon_Mono_M5s_Pro.png",
+    "photon mono m7":    _B + "AnyCubic_Anycubic_Photon_Mono_M7.png",
+    "photon m3 4k":      _B + "AnyCubic_AnyCubic_Photon_M3.png",
+    "photon m3":         _B + "AnyCubic_AnyCubic_Photon_M3.png",
+    "photon m3 max":     _B + "AnyCubic_AnyCubic_Photon_M3_Max.png",
+    // Creality
+    "halot one":         _B + "CREALITY_HALOT-ONE.png",
+    "halote one":        _B + "CREALITY_HALOT-ONE.png",
+    "halot one pro":     _B + "CREALITY_HALOT-ONE_PRO.png",
+    "halot one plus":    _B + "CREALITY_HALOT-ONE_PLUS.png",
+    "halot mage":        _B + "CREALITY_HALOT-MAGE.png",
+    "halot mage pro":    _B + "CREALITY_HALOT-MAGE_PRO.png",
+    "halot mage s":      _B + "CREALITY_HALOT-MAGE_S.png",
+    "halot play":        _B + "CREALITY_HALOT-PLAY.png",
+    "halot lite":        _B + "CREALITY_HALOT-LITE.png",
+    "halot ray":         _B + "CREALITY_HALOT-RAY.png",
+    "ld-002h":           _B + "CREALITY_CREALITY_LD-002H.png",
+    "ld-002r":           _B + "CREALITY_CREALITY_LD-002R.png",
+    "ld-006":            _B + "CREALITY_CREALITY_LD-006.png",
+    // Phrozen
+    "sonic mini 4k":     _B + "Phrozen_Phrozen_Sonic_Mini_4K.png",
+    "sonic mini 8k":     _B + "Phrozen_Phrozen_Sonic_Mini_8K.png",
+    "sonic mega 8k":     _B + "Phrozen_Phrozen_Sonic_Mega_8K.png",
+    "sonic mighty 4k":   _B + "Phrozen_Phrozen_Sonic_Mighty_4K.png",
+    "sonic mighty 8k":   _B + "Phrozen_Phrozen_Sonic_Mighty_8K.png",
+    // Uniformation
+    "gktwo":             _B + "Uniformation_UniFormation_GKtwo.png",
   };
   function sugerirFotoImpressora(nomeImpressora) {
     if (!nomeImpressora) return "";
-    const nLow = nomeImpressora.toLowerCase();
-    const match = Object.entries(PRINTER_PHOTOS).find(([k]) => k.toLowerCase() === nLow)
-      || Object.entries(PRINTER_PHOTOS).find(([k]) => nLow.includes(k.toLowerCase().split(" ").slice(-2).join(" ")))
-      || Object.entries(PRINTER_PHOTOS).find(([k]) => k.toLowerCase().split(" ").some(w => w.length > 4 && nLow.includes(w)));
-    return match ? match[1] : "";
+    const n = nomeImpressora.toLowerCase().trim();
+    if (PRINTER_PHOTOS[n]) return PRINTER_PHOTOS[n];
+    // contém a chave (mais longa primeiro)
+    const sorted = Object.entries(PRINTER_PHOTOS).sort((a, b) => b[0].length - a[0].length);
+    for (const [k, v] of sorted) { if (n.includes(k)) return v; }
+    for (const [k, v] of sorted) { if (k.includes(n)) return v; }
+    return "";
   }
   const [novoParam, setNovoParam] = useState({ resina:"", impressora:"", alturaCamada:"", exposicaoNormal:"", exposicaoBase:"", camadasBase:"", codigoChitubox:"", liftSpeed:"", retractSpeed:"", confianca:"oficial", fotoImpressora:"" });
   const [salvandoParam, setSalvandoParam] = useState(false);
