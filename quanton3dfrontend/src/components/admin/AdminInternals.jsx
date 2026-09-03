@@ -189,6 +189,7 @@ export function AdminContent({ tokenAtendente }) {
   const [edicaoConversa, setEdicaoConversa] = useState({}); // { [id]: textoEditado }
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
+  const [sugerindoMelhoria, setSugerindoMelhoria] = useState("");
 
   const [atendentes, setAtendentes] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -280,6 +281,33 @@ export function AdminContent({ tokenAtendente }) {
       await api.patch("/conversas/" + id + "/revisar-feedback", {}, { headers: { Authorization: "Bearer " + token } });
       await carregarDados();
     } catch (err) { alert("Erro ao marcar como revisado."); }
+  }
+
+  async function aprovarERevisar(id) {
+    try {
+      setSalvandoConversa(id);
+      const respostaMelhorada = edicaoConversa[id] || "";
+      await api.patch("/conversas/" + id + "/aprovar", { respostaMelhorada, revisadoPor: "Admin" }, { headers: { Authorization: "Bearer " + token } });
+      await api.patch("/conversas/" + id + "/revisar-feedback", {}, { headers: { Authorization: "Bearer " + token } });
+      await carregarDados();
+    } catch (err) { alert("Erro ao aprovar e revisar."); }
+    finally { setSalvandoConversa(""); }
+  }
+
+  async function sugerirMelhoriaIA(c) {
+    try {
+      setSugerindoMelhoria(c._id);
+      const res = await api.post("/admin/sugerir-melhoria", {
+        pergunta: c.pergunta,
+        respostaOriginal: c.resposta,
+        configuracaoCliente: c.configuracaoCliente || "",
+        resinaDetectada: c.resinaDetectada || "",
+        impressoraDetectada: c.impressoraDetectada || "",
+      }, { headers: { Authorization: "Bearer " + token } });
+      const sugestao = res.data?.sugestao || "";
+      if (sugestao) setEdicaoConversa(prev => ({ ...prev, [c._id]: sugestao }));
+    } catch (err) { alert("Erro ao sugerir melhoria com IA."); }
+    finally { setSugerindoMelhoria(""); }
   }
 
   async function copiarContato(c) {
@@ -1242,9 +1270,26 @@ export function AdminContent({ tokenAtendente }) {
 
       {aba === "conversas" && (
         <div>
+          {/* Alerta de feedbacks negativos não revisados */}
+          {(() => {
+            const naoRevisados = (dados.conversas || []).filter(c => c.feedback === "nao_satisfatoria" && !c.revisadoFeedback);
+            if (naoRevisados.length === 0) return null;
+            return (
+              <div style={{ background: "rgba(255,107,107,0.08)", border: "1px solid rgba(255,107,107,0.4)", borderRadius: "12px", padding: "12px 16px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+                <span style={{ color: "#d73c3c", fontSize: "0.88rem", fontWeight: 800 }}>
+                  🔔 <strong>{naoRevisados.length}</strong> feedback{naoRevisados.length > 1 ? "s" : ""} negativo{naoRevisados.length > 1 ? "s" : ""} aguardando revisão
+                </span>
+                <button type="button" onClick={() => setFiltroConversas("nao_revisado")}
+                  style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.5)", background: "rgba(255,107,107,0.15)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                  Ver agora →
+                </button>
+              </div>
+            );
+          })()}
+
           <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "14px 16px", marginBottom: "12px" }}>
             <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.6 }}>
-              💡 Veja as perguntas dos clientes e as respostas do Assistente. Edite e clique em <strong style={{ color: "#0092ff" }}>Aprovar</strong> para transformar em conhecimento validado. Casos marcados <strong style={{ color: "#d73c3c" }}>👎 Não ajudou</strong> pelo cliente aparecem destacados abaixo.
+              💡 Veja as perguntas dos clientes e as respostas do Assistente. Edite e clique em <strong style={{ color: "#0092ff" }}>Aprovar</strong> para transformar em conhecimento validado. Casos marcados <strong style={{ color: "#d73c3c" }}>👎 Não ajudou</strong> pelo cliente aparecem destacados. Use <strong style={{ color: "#9650f5" }}>🤖 Sugerir com IA</strong> para gerar uma resposta melhorada automaticamente.
             </p>
           </div>
 
@@ -1252,6 +1297,7 @@ export function AdminContent({ tokenAtendente }) {
             {[
               { id: "todas", label: "Todas" },
               { id: "nao_satisfatoria", label: "👎 Não ajudou" },
+              { id: "nao_revisado", label: "🔔 Não revisados" },
               { id: "aprovadas", label: "✅ Aprovadas" },
             ].map(f => (
               <button key={f.id} type="button" onClick={() => setFiltroConversas(f.id)}
@@ -1290,7 +1336,14 @@ export function AdminContent({ tokenAtendente }) {
           )}
 
           {(dados.conversas || [])
-            .filter(c => (filtroConversas === "todas" ? true : filtroConversas === "nao_satisfatoria" ? c.feedback === "nao_satisfatoria" : filtroConversas === "aprovadas" ? c.aprovado : true) && (filtroClienteConv ? c.clienteId === filtroClienteConv : true))
+            .filter(c => {
+              const passaFiltro =
+                filtroConversas === "todas" ? true :
+                filtroConversas === "nao_satisfatoria" ? c.feedback === "nao_satisfatoria" :
+                filtroConversas === "nao_revisado" ? (c.feedback === "nao_satisfatoria" && !c.revisadoFeedback) :
+                filtroConversas === "aprovadas" ? c.aprovado : true;
+              return passaFiltro && (filtroClienteConv ? c.clienteId === filtroClienteConv : true);
+            })
             .map((c) => {
             const textoEditado = edicaoConversa[c._id] !== undefined ? edicaoConversa[c._id] : (c.respostaMelhorada || c.resposta);
             const foiEditado = textoEditado !== c.resposta;
@@ -1353,16 +1406,34 @@ export function AdminContent({ tokenAtendente }) {
                   />
                 </div>
 
+                {/* Botão IA - só aparece em feedbacks negativos não revisados */}
+                {naoAjudou && (
+                  <div style={{ marginBottom: "10px" }}>
+                    <button type="button" onClick={() => sugerirMelhoriaIA(c)} disabled={sugerindoMelhoria === c._id}
+                      style={{ width: "100%", padding: "9px 14px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.45)", background: sugerindoMelhoria === c._id ? "rgba(184,156,255,0.06)" : "rgba(184,156,255,0.13)", color: "#9650f5", cursor: sugerindoMelhoria === c._id ? "not-allowed" : "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
+                      {sugerindoMelhoria === c._id ? "⏳ Gerando sugestão com IA..." : "🤖 Sugerir melhoria com IA"}
+                    </button>
+                  </div>
+                )}
+
                 {/* Botões de ação */}
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {naoAjudou && !c.revisadoFeedback && (
+                    <button type="button" onClick={() => aprovarERevisar(c._id)} disabled={salvandoConversa === c._id}
+                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.5)", background: "rgba(73,230,139,0.18)", color: "#0aff87", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                      {salvandoConversa === c._id ? "Salvando..." : "✅ Aprovar e marcar revisado"}
+                    </button>
+                  )}
                   <button type="button" onClick={() => salvarMelhoriaConversa(c._id)} disabled={salvandoConversa === c._id || !foiEditado}
                     style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.4)", background: "rgba(79,209,255,0.1)", color: "#0092ff", cursor: foiEditado ? "pointer" : "not-allowed", fontSize: "0.8rem", fontWeight: 800, opacity: foiEditado ? 1 : 0.4 }}>
                     {salvandoConversa === c._id ? "Salvando..." : "💾 Salvar melhoria"}
                   </button>
-                  <button type="button" onClick={() => aprovarConversa(c._id)} disabled={salvandoConversa === c._id}
-                    style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#0aff87", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
-                    {salvandoConversa === c._id ? "Salvando..." : c.aprovado ? "🔄 Atualizar aprovação" : "✅ Aprovar como conhecimento"}
-                  </button>
+                  {(!naoAjudou || c.revisadoFeedback) && (
+                    <button type="button" onClick={() => aprovarConversa(c._id)} disabled={salvandoConversa === c._id}
+                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.12)", color: "#0aff87", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                      {salvandoConversa === c._id ? "Salvando..." : c.aprovado ? "🔄 Atualizar aprovação" : "✅ Aprovar como conhecimento"}
+                    </button>
+                  )}
                   {c.aprovado && (
                     <button type="button" onClick={() => desaprovarConversa(c._id)} disabled={salvandoConversa === c._id}
                       style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.35)", background: "rgba(255,209,102,0.08)", color: "#dc913c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
@@ -1372,7 +1443,7 @@ export function AdminContent({ tokenAtendente }) {
                   {naoAjudou && !c.revisadoFeedback && (
                     <button type="button" onClick={() => marcarFeedbackRevisado(c._id)}
                       style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.35)", background: "rgba(184,156,255,0.08)", color: "#9650f5", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
-                      👁️ Marcar como revisado
+                      👁️ Só marcar revisado
                     </button>
                   )}
                   <button type="button" onClick={() => excluirConversa(c._id)}
@@ -1381,7 +1452,7 @@ export function AdminContent({ tokenAtendente }) {
                   </button>
                 </div>
                 <p style={{ margin: "8px 0 0", fontSize: "0.7rem", color: "#8ba3be", lineHeight: 1.5 }}>
-                  💡 <strong>Salvar melhoria</strong> guarda seu texto editado como rascunho. <strong>Aprovar</strong> libera oficialmente para o Assistente usar em respostas futuras.
+                  💡 <strong>Salvar melhoria</strong> guarda rascunho. <strong>Aprovar e marcar revisado</strong> faz tudo de uma vez — libera para o Assistente e remove o alerta.
                 </p>
               </div>
             );
