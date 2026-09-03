@@ -34,6 +34,9 @@ test('configura DeepSeek V4 sem thinking para respostas curtas do suporte', () =
   assert.doesNotMatch(source, /DEEPSEEK_API_KEY.*console\.log/);
   assert.match(source, /contexto recuperado nao trouxer explicitamente.*NAO inclua segundos, minutos, porcentagens, temperaturas ou dimensoes/is);
   assert.doesNotMatch(source, /Ajuste concreto com numero|Reduza a exposicao base em 20%/i);
+  assert.match(source, /containsTechnicalQuantity\(providerReply\)/);
+  assert.match(source, /REVISAO NUMERICA OBRIGATORIA/);
+  assert.match(source, /numericRewrite/);
 });
 
 test('protege formula Quanton3D no chat publico', () => {
