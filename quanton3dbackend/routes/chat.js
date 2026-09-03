@@ -5,6 +5,10 @@ import { ruleBasedAnswer } from '../services/aiRules.js';
 import Conversa from '../models/Conversa.js';
 import { retrieveRagContext } from '../services/rag.js';
 import { isFounderPhone } from '../services/founderIdentity.js';
+import {
+    containsTechnicalQuantity,
+    hasApprovedQuantitativeSource,
+} from '../services/responseSafety.js';
 
 const router = express.Router();
 
@@ -22,15 +26,6 @@ function chatErrorResponse(error) {
     if (status === 429) return { status: 429, error: 'Muitas solicitacoes. Tente novamente em instantes.' };
     if (status >= 500 || error?.code === 'ETIMEDOUT') return { status: 503, error: 'Nao consegui consultar o assistente agora. Tente novamente.' };
     return { status: 500, error: 'Erro interno. Tente novamente.' };
-}
-
-function containsTechnicalQuantity(value = '') {
-    return /\b\d+(?:[.,]\d+)?(?:\s*[-–a]\s*\d+(?:[.,]\d+)?)?\s*(?:%|s(?:egundos?)?|min(?:utos?)?|mm|cm|°\s*c)\b/i.test(String(value));
-}
-
-function hasApprovedQuantitativeSource(sources = []) {
-    return ['parametros_oficiais', 'conversas_aprovadas', 'sugestoes_aprovadas']
-        .some(source => sources.includes(source));
 }
 
 const SYSTEM_PROMPT = `Voce e a IAQ3D, assistente tecnica especializada da Quanton3D — fabricante brasileira de resinas UV SLA/DLP de alta performance, fundada em abril de 2020 em Belo Horizonte, MG, pelos fundadores Ronei Fonseca e Gislene.
