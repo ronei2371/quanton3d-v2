@@ -4,6 +4,11 @@ import Cliente from '../models/Cliente.js';
 import Formulacao from '../models/Formulacao.js';
 import Parametro from '../models/Parametro.js';
 import GalleryItem from '../models/GalleryItem.js';
+import Conversa from '../models/Conversa.js';
+import BotTicket from '../models/BotTicket.js';
+import Visita from '../models/Visita.js';
+import ContactMessage from '../models/ContactMessage.js';
+import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
 
 const router = express.Router();
 
@@ -25,9 +30,23 @@ router.post('/login', (req, res) => {
 
 router.get('/metrics', auth, async (_req, res) => {
   try {
+    const agora = new Date();
+    const inicioDia = new Date(agora); inicioDia.setHours(0,0,0,0);
+    const inicio7d = new Date(agora); inicio7d.setDate(agora.getDate() - 7);
+    const inicio30d = new Date(agora); inicio30d.setDate(agora.getDate() - 30);
+
     const [
       totalClientes, totalFormulacoes, totalParametros, totalGallery,
       clientes, formulacoes, parametros, gallery,
+      // Bot metrics
+      totalConversas, conversasHoje, conversas7d,
+      conversasPorFonte, feedbackPositivo, feedbackNegativo,
+      feedbackNaoRevisado, conversasAprovadas,
+      resinasMaisPergutnadas, impressorasMaisPerguntadas,
+      // Chamados
+      totalChamados, chamadosNovo, chamadosAbertos,
+      chamadosResolvidos, ticketsFeedbackPositivo, ticketsFeedbackNegativo,
+      ticketsPrecisaHumano,
     ] = await Promise.all([
       Cliente.countDocuments(),
       Formulacao.countDocuments(),
@@ -37,6 +56,91 @@ router.get('/metrics', auth, async (_req, res) => {
       Formulacao.find().sort({ createdAt: -1 }).limit(500).lean(),
       Parametro.find().sort({ resina: 1 }).limit(500).lean(),
       GalleryItem.find().sort({ createdAt: -1 }).limit(500).lean(),
+      // Bot metrics queries
+      Conversa.countDocuments(),
+      Conversa.countDocuments({ createdAt: { $gte: inicioDia } }),
+      Conversa.countDocuments({ createdAt: { $gte: inicio7d } }),
+      Conversa.aggregate([
+        { $group: { _id: '$fonte', total: { $sum: 1 } } },
+        { $sort: { total: -1 } },
+      ]),
+      Conversa.countDocuments({ feedback: 'satisfatoria' }),
+      Conversa.countDocuments({ feedback: 'nao_satisfatoria' }),
+      Conversa.countDocuments({ feedback: 'nao_satisfatoria', revisadoFeedback: false }),
+      Conversa.countDocuments({ aprovado: true }),
+      Conversa.aggregate([
+        { $match: { resinaDetectada: { $ne: '' } } },
+        { $group: { _id: '$resinaDetectada', total: { $sum: 1 } } },
+        { $sort: { total: -1 } },
+        { $limit: 8 },
+      ]),
+      Conversa.aggregate([
+        { $match: { impressoraDetectada: { $ne: '' } } },
+        { $group: { _id: '$impressoraDetectada', total: { $sum: 1 } } },
+        { $sort: { total: -1 } },
+        { $limit: 8 },
+      ]),
+      // Chamados queries
+      BotTicket.countDocuments(),
+      BotTicket.countDocuments({ status: 'novo' }),
+      BotTicket.countDocuments({ status: { $in: ['novo', 'em_analise'] } }),
+      BotTicket.countDocuments({ status: { $in: ['respondido', 'fechado'] } }),
+      BotTicket.countDocuments({ feedbackCliente: 'ajudou' }),
+      BotTicket.countDocuments({ feedbackCliente: 'nao_ajudou' }),
+      BotTicket.countDocuments({ precisaHumano: true }),
+    ]);
+
+    // Bloco 2: crescimento de clientes por dia (últimos 30 dias) e por origem
+    const clientesPor30d = await Cliente.aggregate([
+      { $match: { createdAt: { $gte: inicio30d } } },
+      { $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        total: { $sum: 1 },
+      }},
+      { $sort: { _id: 1 } },
+    ]);
+    const clientesPorOrigem = await Cliente.aggregate([
+      { $group: { _id: { $ifNull: ['$origem', 'outros'] }, total: { $sum: 1 } } },
+      { $sort: { total: -1 } },
+    ]);
+    const clientesHoje = await Cliente.countDocuments({ createdAt: { $gte: inicioDia } });
+    const clientes7d = await Cliente.countDocuments({ createdAt: { $gte: inicio7d } });
+    const clientes30d = await Cliente.countDocuments({ createdAt: { $gte: inicio30d } });
+
+    // Bloco 3: métricas de visitas
+    const [
+      visitasHoje, visitasUnicas7d, visitasUnicas30d,
+      visitasPorPagina, visitasPorHora, visitasPorDia30d,
+      // Bloco 4: contato e conhecimento
+      msgNaoLidas, sugestoesPendentes, conversasPendentesAprovacao,
+    ] = await Promise.all([
+      Visita.distinct('sessionId', { createdAt: { $gte: inicioDia } }).then(r => r.length),
+      Visita.distinct('sessionId', { createdAt: { $gte: inicio7d } }).then(r => r.length),
+      Visita.distinct('sessionId', { createdAt: { $gte: inicio30d } }).then(r => r.length),
+      Visita.aggregate([
+        { $match: { createdAt: { $gte: inicio30d } } },
+        { $group: { _id: '$pagina', total: { $sum: 1 } } },
+        { $sort: { total: -1 } },
+        { $limit: 8 },
+      ]),
+      Visita.aggregate([
+        { $match: { createdAt: { $gte: inicio7d } } },
+        { $group: { _id: { $hour: '$createdAt' }, total: { $sum: 1 } } },
+        { $sort: { total: -1 } },
+        { $limit: 5 },
+      ]),
+      Visita.aggregate([
+        { $match: { createdAt: { $gte: inicio30d } } },
+        { $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          visitantes: { $addToSet: '$sessionId' },
+        }},
+        { $project: { _id: 1, total: { $size: '$visitantes' } } },
+        { $sort: { _id: 1 } },
+      ]),
+      ContactMessage.countDocuments({ lida: { $ne: true } }).catch(() => 0),
+      SugestaoConhecimento.countDocuments({ status: 'pendente' }),
+      Conversa.countDocuments({ aprovado: false }),
     ]);
 
     res.json({
@@ -46,6 +150,48 @@ router.get('/metrics', auth, async (_req, res) => {
       formulacoes,
       parametros,
       gallery,
+      botMetrics: {
+        totalConversas,
+        conversasHoje,
+        conversas7d,
+        conversas30d: await Conversa.countDocuments({ createdAt: { $gte: inicio30d } }),
+        porFonte: conversasPorFonte,
+        feedbackPositivo,
+        feedbackNegativo,
+        feedbackNaoRevisado,
+        conversasAprovadas,
+        resinasMaisPerguntadas: resinasMaisPergutnadas,
+        impressorasMaisPerguntadas,
+      },
+      ticketMetrics: {
+        total: totalChamados,
+        novo: chamadosNovo,
+        abertos: chamadosAbertos,
+        resolvidos: chamadosResolvidos,
+        feedbackPositivo: ticketsFeedbackPositivo,
+        feedbackNegativo: ticketsFeedbackNegativo,
+        precisaHumano: ticketsPrecisaHumano,
+      },
+      clienteMetrics: {
+        hoje: clientesHoje,
+        ultimos7d: clientes7d,
+        ultimos30d: clientes30d,
+        por30d: clientesPor30d,
+        porOrigem: clientesPorOrigem,
+      },
+      visitaMetrics: {
+        hoje: visitasHoje,
+        ultimos7d: visitasUnicas7d,
+        ultimos30d: visitasUnicas30d,
+        porPagina: visitasPorPagina,
+        porHora: visitasPorHora,
+        porDia30d: visitasPorDia30d,
+      },
+      atencaoMetrics: {
+        msgNaoLidas,
+        sugestoesPendentes,
+        conversasPendentesAprovacao,
+      },
     });
   } catch (err) {
     console.error('Erro em /admin/metrics:', err);
