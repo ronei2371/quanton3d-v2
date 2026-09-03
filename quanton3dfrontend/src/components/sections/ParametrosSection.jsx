@@ -117,12 +117,23 @@ function ParametrosSection({ onAbrirExposicao }) {
       {resultado && (
         <div style={{ background: "rgba(0,146,255,0.04)", border: "1px solid var(--border-soft)", borderRadius: "var(--r-md)", padding: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px", marginBottom: "12px" }}>
-            <h3 style={{ fontSize: "1.05rem" }}>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              {resultado.fotoImpressora && (
+                <img
+                  src={resultado.fotoImpressora}
+                  alt={resultado.impressora}
+                  onError={e => e.target.style.display = "none"}
+                  style={{ width: "72px", height: "72px", objectFit: "contain", borderRadius: "10px", background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-soft)", flexShrink: 0 }}
+                />
+              )}
+              <h3 style={{ fontSize: "1.05rem" }}>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
+            </div>
             {perfilChituboxTeste && (
               <button type="button" className={"q-btn q-btn--sm " + (copiado ? "q-btn--success" : "q-btn--primary")} onClick={copiarCodigoChitubox} disabled={!codigoChitubox} title={codigoChitubox ? "Copiar código para importar no CHITUBOX" : "Aguardando publicação do perfil no Fusion Material Center"}>
                 {copiado ? <><CheckCircle2 size={13} /> Código copiado!</> : "Copiar Código CHITUBOX"}
               </button>
             )}
+          </div>
           </div>
 
           <span className={"q-badge " + (resultado.confianca === "estimado" ? "q-badge--warning" : "q-badge--success")} style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginBottom: "14px" }}>
