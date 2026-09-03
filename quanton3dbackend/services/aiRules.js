@@ -11,32 +11,32 @@ export function ruleBasedAnswer(message) {
 
   // Suporte difícil de remover
   if (/suporte|suportes/.test(t) && /(duro|dificil|tirar|remover|grudado|quebra)/.test(t)) {
-    return 'Suporte difícil de remover:\n1. **Reduza exposição normal** em 0,2s a 0,5s\n2. **Use suporte leve** (light/medium) no fatiador\n3. **Diminua o diâmetro da ponta** do suporte\n4. **Remova antes da cura UV final**\n\nQual resina e impressora você está usando?';
+    return 'Suporte difícil de remover costuma indicar **contato grande ou profundo demais**, exposição normal acima do necessário ou remoção somente após a pós-cura final. Primeiro confira o perfil oficial e o diâmetro/profundidade da ponta; altere um fator por vez e valide em uma peça de teste. Quando o fluxo da resina permitir, remova os suportes após lavar e secar, antes da pós-cura final.\n\nQual resina, impressora e exposição normal você está usando?';
   }
 
-  // Peça pegajosa após pós-cura
+  // Peça pegajosa após lavagem ou pós-cura
   if (/(peca|peça|impressao|superficie).*(pegaj|viscosa|gruda|grudenta)|(pegaj|grudenta|viscosa).*(peca|peça|impressao|superficie)/i.test(t)) {
-    return 'Peça pegajosa após pós-cura:\n1. **Lave novamente** em álcool isopropílico por 3-5 min — a causa mais comum é resina líquida ainda na superfície\n2. **Seque bem** antes de entrar na câmara UV — peça úmida cura mal\n3. **Câmara UV**: gire a peça e cure por mais 5 min em cada lado\n4. Se persistir: o álcool pode estar saturado, troque por álcool limpo\n\nQual resina você está usando?';
+    return 'Superfície pegajosa geralmente aponta para **lavagem insuficiente, solvente saturado, secagem incompleta ou pós-cura inadequada**. Faça uma nova lavagem com o agente indicado para a resina, seque totalmente e aplique somente o ciclo de pós-cura validado; aumentar UV sem controle pode mascarar o problema. Se continuar pegajosa, compare com solvente limpo e confirme se a cabine entrega o espectro correto.\n\nQual resina e processo de lavagem você usou?';
   }
 
   // Peça não adere / cai no tanque
   if (/(peca|peça|impressao).*(nao adere|nao cola|nao gruda|nao fixa|caiu|soltou|cai no tanque|soltando|descolou)/i.test(t) || /caiu no tanque|soltou da plataforma|nao colou na plataforma/i.test(t)) {
-    return 'Peça não aderindo à plataforma:\n1. **Refaça o nivelamento** — causa mais comum\n2. **Aumente exposição base** em 20-30% (ex: de 30s para 36-40s)\n3. **Limpe a plataforma** com álcool isopropílico\n4. **Temperatura abaixo de 18°C** — aqueça o ambiente ou pré-aqueça a resina (máx 40°C)\n5. **Aumente camadas base** para 6-8\n\nQual resina, impressora e exposição base você está usando?';
+    return 'Peça soltando da plataforma: comece por **refazer o nivelamento e limpar a plataforma**. Depois confirme temperatura da resina, condição do filme, área da primeira camada e se exposição e quantidade de camadas de base coincidem com o perfil oficial. Não aumente a exposição de base às cegas: sucção, elevação agressiva ou suporte insuficiente podem produzir o mesmo sintoma.\n\nQual resina, impressora e exposição de base você está usando?';
   }
 
   // Warping / empenamento
   if (/(peca|peça|impressao|base).*(empen|torceu|torto|entortou|nao ficou reto|curvou|curva|deformou)|(empen|warping|torceu|deformou).*(peca|peça|impressao)/i.test(t)) {
-    return 'Peça empenando (warping):\n1. **Reduza exposição base** em 15-20% — super-exposição na base causa curvamento\n2. **Adicione suportes nas bordas** da peça\n3. **Incline a peça** 15-30° no fatiador — evita grandes áreas planas\n4. **Reduza o raft** se usar\n5. Peças grandes e planas pioram o efeito — sempre usar suportes\n\nQual resina e impressora você está usando?';
+    return 'Empenamento costuma vir de **grande seção por camada, orientação desfavorável, suportes insuficientes ou cura desigual**. Incline a peça para reduzir áreas simultâneas, distribua apoios nas bordas e verifique sucção em cavidades. Compare a geometria ao sair da impressora e após a pós-cura: isso separa falha de impressão de deformação criada no acabamento.\n\nEla já sai empenada da impressora ou deforma somente depois da pós-cura?';
   }
 
   // Linhas visíveis entre camadas
   if (/(linha|linhas|marca|marcas).*(camada|layer)|(camada|layer).*(linha|linhas|marca|marcas)|layer lines|linhas horizontais/i.test(t)) {
-    return 'Linhas visíveis entre camadas:\n1. **Aumente exposição normal** em 0,2-0,5s\n2. **Reduza velocidade de elevação** (lift speed) em 20-30%\n3. **Agite bem a resina** antes de usar — sedimentação causa variação de cura\n4. **Limpe a tela LCD** com pano de microfibra seco\n\nAjustar exposição E velocidade juntos resolve a maioria dos casos. Qual impressora e resina?';
+    return 'Para linhas entre camadas, veja primeiro se a marca aparece **sempre na mesma altura**. Se sim, investigue arquivo, eixo Z, pausa ou falha localizada; se varia entre impressões, confira temperatura, homogeneização, suportes, sucção e movimento de elevação. Não altere exposição e velocidade ao mesmo tempo, porque isso impede identificar a causa.\n\nA linha se repete na mesma altura em todas as peças?';
   }
 
   // Peças flexíveis (pneus, juntas, borracha)
   if (/pneu|pneus|borracha|junta|vedacao|sola|flexivel/.test(t) && !mencionouResina) {
-    return 'Para peças flexíveis (pneus, juntas, solas, vedações), a resina indicada é a **FLEXFORM**. Qual impressora você usa?';
+    return 'Para peças flexíveis como pneus, juntas, solas e vedações, a resina indicada é a **FLEXFORM**. Confirme dureza e deformação exigidas pela aplicação antes de escolher o perfil. Qual impressora você usa?';
   }
 
   // Peças funcionais com resistência
@@ -46,27 +46,22 @@ export function ruleBasedAnswer(message) {
 
   // Joalheria / fundição
   if (/(joalheria|joia|jóia|fundição|fundicao|cera perdida|castable|ourivesaria)/.test(t) && !mencionouResina) {
-    return 'Para joalheria e fundição por cera perdida, a resina indicada é a **VULCAN CAST**. Ela queima completamente sem resíduo de cinzas. Qual impressora você usa?';
+    return 'Para joalheria e fundição por cera perdida, a opção Quanton3D é a **VULCAN CAST**. O resultado depende do ciclo de queima, revestimento, espessura e cura da peça; siga o procedimento validado do produto em vez de assumir um ciclo universal. Qual impressora você usa?';
   }
 
   // Miniatura / RPG / detalhes finos
   if (/(miniatura|miniaturas|rpg|dungeons|fantasia|detalhe fino|detalhes finos)/.test(t) && !mencionouResina) {
-    return 'Para miniaturas e detalhes finos, as resinas indicadas são **ALCHEMIST** (versátil, ótima para iniciantes) ou **PYROBLAST** (alta precisão, prototipagem rápida). Qual impressora você usa?';
+    return 'Para miniaturas e detalhes finos, compare **ALCHEMIST** para uso versátil e **PYROBLAST** para alta definição. A escolha final depende de resistência, acabamento e velocidade desejados. Qual impressora você usa?';
   }
 
   // Odontologia / dental
   if (/(dentista|odontolog|dental|odontal|alinhador|model.*odonto|odonto.*model|troquel)/.test(t) && !mencionouResina) {
-    return 'Para aplicações odontológicas, a Quanton3D tem:\n- **ATHOM DENTAL**: modelos de estudo e troquéis\n- **ATHOM ALINHADORES**: termoformagem de alinhadores, placas\n- **ATHOM WASHABLE**: lavável em água, sem álcool\n\n⚠️ Todas são de uso **externo** (laboratório), não intraoral. Qual impressora você usa?';
+    return 'Para laboratório odontológico, a Quanton3D oferece **ATHOM DENTAL**, **ATHOM ALINHADORES** e **ATHOM WASHABLE**, conforme a aplicação. Esses materiais são para uso externo/laboratorial e **não devem ser usados diretamente na boca do paciente**. Qual aplicação e impressora você usa?';
   }
 
-  // Cheiro forte / sem ventilação
+  // Cheiro forte / ventilação
   if (/(cheiro|odor|fede|fedendo|cheiro forte|mal cheiro|sem ventilacao|ventilacao ruim)/.test(t) && !mencionouResina) {
-    return 'Para ambientes sem ventilação adequada, as resinas com menor odor são:\n- **LOW SMELL**: baixíssimo odor, ótima para uso doméstico\n- **POSEIDON**: lavável em água, baixo odor\n\nQual impressora você usa?';
-  }
-
-  // Resina vazando/vasando da peça / peça com vazamento
-  if (/(peca|peça|peças).*(va[sz]ando|va[sz]a|vazamento|va[sz]ou|saindo liquido|resina saindo|resina va[sz]ando)|(va[sz]ando|vazamento|va[sz]a|va[sz]ou).*(peca|peça|resina|interior|dentro)|(resina).*(va[sz]ando|va[sz]a|vazamento|sai|saindo)/i.test(t)) {
-    return 'Resina vazando da peça após impressão:\n\n**Causa principal:** a peça é **oca** e não tem **furo de drenagem** — a resina líquida fica presa no interior e escoa depois de horas ou dias.\n\n**Solução:**\n1. **Adicione furos de drenagem** de 2-3 mm em pontos não visíveis (embaixo, atrás) no fatiador\n2. **Lave o interior** com álcool isopropílico — sacuda bem para o álcool entrar pelos furos\n3. **Pos-cura girando a peça** em vários ângulos para curar o interior por igual\n4. Se já estiver impresso sem furo: faça um furo com micro-broca (2-3 mm), esvazie, lave e cure novamente\n\n⚠️ Peças ocas sem drenagem também podem **rachar ou explodir** durante a pós-cura pela pressão interna.\n\nQual resina e impressora você está usando?';
+    return 'Odor baixo não significa ausência de vapores ou risco. **Não use resina sem ventilação adequada**; melhore renovação/exaustão do ar e siga a FISPQ/SDS. Para menor percepção de odor, existem **LOW SMELL** e **POSEIDON**, mas isso não substitui ventilação, luvas e controle de exposição.\n\nO ambiente possui renovação de ar ou exaustão para fora?';
   }
 
   // Impressora genérica sem modelo
