@@ -372,6 +372,81 @@ router.get('/relatorio-semanal', auth, async (_req, res) => {
   }
 });
 
+// ── MIGRAÇÃO DE FOTOS DAS IMPRESSORAS ────────────────────────────────────────
+router.post('/migrar-fotos-impressoras', auth, async (_req, res) => {
+  const PRINTER_PHOTOS = {
+    "elegoo mars 4 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_4_Ultra.png",
+    "elegoo saturn 3 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3_Ultra.png",
+    "elegoo saturn 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3.png",
+    "elegoo mars 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_MARS_3.png",
+    "elegoo mars 5 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_5_Ultra.png",
+    "elegoo saturn 4 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Saturn_4_Ultra.png",
+    "elegoo jupiter": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Jupiter.png",
+    "anycubic photon mono m5s pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s_Pro.png",
+    "anycubic photon mono m5s": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s.png",
+    "anycubic photon m3 max": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3_Max.png",
+    "anycubic photon m3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3.png",
+    "anycubic photon mono m7": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_Anycubic_Photon_Mono_M7.png",
+    "anycubic photon mono x 6k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_X_6K.png",
+    "photon m3 max": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3_Max.png",
+    "photon m3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_M3.png",
+    "photon mono m5s pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s_Pro.png",
+    "photon mono m5s": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s.png",
+    "photon mono m7": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_Anycubic_Photon_Mono_M7.png",
+    "phrozen sonic mini 4k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_4K.png",
+    "phrozen sonic mini 8k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_8K.png",
+    "phrozen sonic mega 8k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mega_8K.png",
+    "phrozen sonic mighty 4k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_4K.png",
+    "phrozen sonic mighty 8k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_8K.png",
+    "sonic mini 4k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_4K.png",
+    "sonic mini 8k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_8K.png",
+    "sonic mega 8k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mega_8K.png",
+    "sonic mighty 4k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_4K.png",
+    "sonic mighty 8k": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mighty_8K.png",
+    "uniformation gktwo": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniformation_UniFormation_GKtwo.png",
+    "gktwo": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniformation_UniFormation_GKtwo.png",
+    "creality halot one pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-ONE_PRO.png",
+    "creality halot mage pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-MAGE_PRO.png",
+    "halot one pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-ONE_PRO.png",
+    "halot mage pro": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CREALITY_HALOT-MAGE_PRO.png",
+    "mars 4 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_4_Ultra.png",
+    "mars 5 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Mars_5_Ultra.png",
+    "saturn 3 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3_Ultra.png",
+    "saturn 4 ultra": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_Saturn_4_Ultra.png",
+    "saturn 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_SATURN_3.png",
+    "mars 3": "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_ELEGOO_MARS_3.png",
+  };
+
+  function buscarFoto(nomeImpressora) {
+    if (!nomeImpressora) return null;
+    const n = nomeImpressora.toLowerCase().trim();
+    if (PRINTER_PHOTOS[n]) return PRINTER_PHOTOS[n];
+    const porTamanho = Object.entries(PRINTER_PHOTOS).sort((a, b) => b[0].length - a[0].length);
+    for (const [k, v] of porTamanho) { if (n.includes(k)) return v; }
+    for (const [k, v] of porTamanho) { if (k.includes(n)) return v; }
+    return null;
+  }
+
+  try {
+    const todos = await Parametro.find({ fotoImpressora: { $in: [null, '', undefined] } });
+    let atualizados = 0;
+    const semMatch = [];
+    for (const p of todos) {
+      const foto = buscarFoto(p.impressora);
+      if (foto) {
+        await Parametro.updateOne({ _id: p._id }, { $set: { fotoImpressora: foto } });
+        atualizados++;
+      } else {
+        semMatch.push(p.impressora);
+      }
+    }
+    return res.json({ success: true, atualizados, semMatch, total: todos.length });
+  } catch (err) {
+    console.error('Erro em /admin/migrar-fotos-impressoras:', err);
+    return res.status(500).json({ success: false, error: 'Erro ao migrar fotos.' });
+  }
+});
+
 export default router;
 
 // ── LIMPEZA DE DADOS DE TESTE ─────────────────────────────────────────────────
