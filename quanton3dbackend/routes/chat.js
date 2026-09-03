@@ -24,6 +24,15 @@ function chatErrorResponse(error) {
     return { status: 500, error: 'Erro interno. Tente novamente.' };
 }
 
+function containsTechnicalQuantity(value = '') {
+    return /\b\d+(?:[.,]\d+)?(?:\s*[-–a]\s*\d+(?:[.,]\d+)?)?\s*(?:%|s(?:egundos?)?|min(?:utos?)?|mm|cm|°\s*c)\b/i.test(String(value));
+}
+
+function hasApprovedQuantitativeSource(sources = []) {
+    return ['parametros_oficiais', 'conversas_aprovadas', 'sugestoes_aprovadas']
+        .some(source => sources.includes(source));
+}
+
 const SYSTEM_PROMPT = `Voce e a IAQ3D, assistente tecnica especializada da Quanton3D — fabricante brasileira de resinas UV SLA/DLP de alta performance, fundada em abril de 2020 em Belo Horizonte, MG, pelos fundadores Ronei Fonseca e Gislene.
 
 IDENTIDADE E TOM:
@@ -145,7 +154,7 @@ router.post('/', async (req, res) => {
             2000,
             Math.max(600, Number.parseInt(process.env.BOT_MAX_TOKENS, 10) || 1200)
         );
-        const completion = await client().chat.completions.create(
+        let completion = await client().chat.completions.create(
             {
                 model,
                 thinking: { type: 'disabled' },
@@ -156,8 +165,38 @@ router.post('/', async (req, res) => {
             }
         );
 
-        const firstChoice = completion.choices?.[0];
-        const providerReply = firstChoice?.message?.content?.trim();
+        let firstChoice = completion.choices?.[0];
+        let providerReply = firstChoice?.message?.content?.trim();
+        let numericRewrite = false;
+
+        if (
+            providerReply
+            && !hasApprovedQuantitativeSource(rag.sources)
+            && containsTechnicalQuantity(providerReply)
+        ) {
+            numericRewrite = true;
+            const safeMessages = messages.map((item, index) => index === 0
+                ? {
+                    ...item,
+                    content: `${item.content}\n\n--- REVISAO NUMERICA OBRIGATORIA ---\nReescreva sem qualquer numero, faixa, unidade, porcentagem, tempo, temperatura ou dimensao. Nenhum valor quantitativo oficial foi recuperado. Preserve o diagnostico e indique apenas o ajuste qualitativo seguro.`,
+                }
+                : item);
+            completion = await client().chat.completions.create({
+                model,
+                thinking: { type: 'disabled' },
+                reasoning_effort: 'low',
+                temperature: 0.05,
+                max_tokens: maxTokens,
+                messages: safeMessages,
+            });
+            firstChoice = completion.choices?.[0];
+            providerReply = firstChoice?.message?.content?.trim();
+
+            if (!providerReply || containsTechnicalQuantity(providerReply)) {
+                providerReply = ruleBasedAnswer(text)
+                    || 'Encontrei orientacao tecnica sobre o sintoma, mas nao ha um valor quantitativo oficial para recomendar com seguranca. Informe a resina e o modelo exato da impressora para consultar o parametro correto.';
+            }
+        }
         console.log('[DEEPSEEK-INFO]', JSON.stringify({
             model,
             requestId: completion.id || null,
@@ -165,6 +204,7 @@ router.post('/', async (req, res) => {
             contentReturned: Boolean(providerReply),
             promptTokens: completion.usage?.prompt_tokens ?? null,
             completionTokens: completion.usage?.completion_tokens ?? null,
+            numericRewrite,
         }));
         const reply = providerReply
             || ruleBasedAnswer(text)
