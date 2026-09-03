@@ -10,26 +10,27 @@ const STOP_WORDS = new Set([
   'nao', 'muito', 'deixei', 'depois', 'depoi', 'posso', 'jogar',
   'quando', 'coloquei', 'apareceram', 'deixou', 'toda', 'todo', 'muda',
   'outro', 'outra', 'novo', 'nova', 'tirar', 'usar', 'serve', 'servir',
-  'direito', 'cheia', 'cheio',
+  'direito', 'cheia', 'cheio', 'sempre', 'mesmo', 'dia', 'dias', 'colocar',
 ]);
 
 const SYNONYM_GROUPS = [
-  ['aderir', 'adere', 'adesao', 'colar', 'cola', 'grudar', 'gruda', 'fixar', 'grudou', 'colou', 'fixou', 'prendeu', 'presa', 'preso'],
-  ['descolar', 'descola', 'soltar', 'solta', 'cair', 'cai', 'soltou', 'caiu', 'caindo', 'soltando', 'descolou', 'nao adere', 'nao cola', 'nao gruda'],
-  ['plataforma', 'mesa', 'buildplate', 'build plate', 'cama'],
-  ['trinca', 'trincar', 'trincando', 'racha', 'rachar', 'rachando', 'rachadura', 'delaminacao', 'separando', 'separou', 'abriu', 'rachou', 'trincou', 'quebrou'],
-  ['empenar', 'empenamento', 'deformar', 'deformacao', 'warping', 'empenou', 'deformou', 'torceu', 'torto', 'torta', 'entortou', 'curvou', 'curva', 'nao ficou reto', 'encurvou', 'encurvado', 'dobrou'],
-  ['filme', 'fep', 'pfa', 'acf', 'membrana', 'cuba'],
-  ['suporte', 'suportes', 'support', 'apoio', 'apoios'],
-  ['exposicao', 'exposure', 'cura', 'tempo de exposicao', 'tempo de cura'],
-  ['impressora', 'printer', 'maquina', 'equipamento'],
-  ['lavagem', 'lavar', 'limpeza', 'limpar', 'lavou', 'limpou'],
-  ['usar', 'uso', 'usa', 'utilizar', 'escolher', 'escolha', 'recomendar', 'recomendada', 'indicada', 'indica', 'qual resina', 'qual usar'],
-  ['pegajosa', 'grudenta', 'pegajoso', 'grudento', 'viscosa', 'pegando', 'gruda na mao', 'fica pegando'],
-  ['furo', 'furos', 'buraco', 'buracos', 'poro', 'poros', 'porosa', 'furinhos', 'bolhinhas', 'vazios'],
-  ['menor', 'menores', 'encolheu', 'encolheram', 'encolhendo', 'encolhimento', 'retracao', 'contracao', 'saiu menor', 'ficou menor', 'nao ficou no tamanho'],
-  ['dimensao', 'dimensoes', 'dimensional', 'medida', 'medidas', 'tamanho', 'escala', 'mm', 'milimetro'],
-  ['compensar', 'compensacao', 'corrigir', 'ajustar', 'offset', 'calibrar', 'calibracao'],
+  ['aderir', 'adere', 'adesao', 'colar', 'cola', 'grudar', 'gruda', 'fixar'],
+  ['descolar', 'descola', 'soltar', 'solta', 'cair', 'cai'],
+  ['plataforma', 'mesa', 'buildplate'],
+  ['trinca', 'trincar', 'trincando', 'racha', 'rachou', 'rachar', 'rachando', 'rachadura', 'delaminacao', 'separando'],
+  ['empenar', 'empenamento', 'deformar', 'deformacao', 'warping'],
+  ['filme', 'fep', 'pfa', 'acf'],
+  ['suporte', 'suportes', 'support'],
+  ['imprimir', 'imprime', 'imprimem', 'imprimiu', 'imprimiram', 'saiu', 'sairam'],
+  ['exposicao', 'exposure', 'cura'],
+  ['impressora', 'printer', 'maquina'],
+  ['lavagem', 'lavar', 'limpeza'],
+  ['usar', 'uso', 'usa', 'utilizar', 'escolher', 'escolha', 'recomendar', 'recomendada'],
+  ['pegajosa', 'grudenta', 'pegajoso', 'grudento'],
+  ['furo', 'furos', 'buraco', 'buracos', 'poro', 'poros', 'porosa'],
+  ['menor', 'menores', 'encolheu', 'encolheram', 'encolhendo', 'encolhimento', 'retracao', 'contracao'],
+  ['dimensao', 'dimensoes', 'dimensional', 'medida', 'medidas', 'tamanho', 'escala'],
+  ['compensar', 'compensacao', 'corrigir', 'ajustar', 'offset'],
   ['pigmento', 'pigmentos', 'pigmentada', 'pigmentado', 'corante', 'corantes'],
   ['carga', 'cargas', 'filler', 'fillers', 'mica', 'particula', 'particulas'],
   ['sedimentacao', 'sedimentar', 'sedimentando', 'decantacao', 'decantar', 'decantando', 'separacao', 'separada'],
@@ -40,7 +41,7 @@ const SYNONYM_GROUPS = [
   ['poscura', 'poscurar', 'pospolimerizacao', 'cabine'],
   ['conversao', 'polimerizacao', 'reticulacao', 'crosslink'],
   ['quebradica', 'quebradico', 'fragil', 'fragilidade', 'brittle'],
-  ['biocompativel', 'biocompatibilidade', 'intraoral', 'clinico'],
+  ['biocompativel', 'biocompatibilidade', 'intraoral', 'clinico', 'boca', 'paciente'],
   ['descarte', 'descartar', 'residuo', 'lixo', 'ralo', 'pia'],
   ['ventilacao', 'exaustao', 'voc', 'vapor', 'vapores', 'inalacao'],
   ['silica', 'silicas', 'fumed', 'pirogenica', 'pirogenico'],
@@ -57,27 +58,30 @@ const SYNONYM_GROUPS = [
   ['densidade', 'massaespecifica'],
   ['viscosidade', 'viscosa', 'viscoso', 'grossa', 'grosso', 'espessa', 'espesso'],
   ['pseudoplastico', 'pseudoplastica', 'afina', 'afinar', 'fluidifica'],
-  ['cisalhamento', 'mexer', 'mexo', 'mistura', 'movimento'],
+  ['cisalhamento', 'mexer', 'mexo', 'misturo', 'misturando', 'mistura', 'movimento'],
+  ['posicao', 'ponto', 'localizada', 'localizado'],
   ['turbidez', 'turva', 'turvo', 'haze', 'nevoa'],
   ['aumentar', 'aumentou', 'aumentando', 'elevar', 'elevou'],
   ['aquecer', 'aquecimento', 'aqueca', 'aquecida', 'aquecido'],
   ['liberar', 'liberacao', 'aprovar', 'aprovacao'],
-  ['mole', 'molenga', 'flacida', 'flacido', 'nao endureceu', 'nao curou', 'mal curada', 'mal curado', 'subexposicao', 'subexposta', 'subexposto'],
-  ['dura', 'duro', 'rigida', 'rigido', 'sobreexposicao', 'superexposicao', 'exposta demais'],
-  ['cor', 'colorida', 'colorido', 'amarelou', 'amarelada', 'amarelado', 'cor diferente', 'mudou de cor', 'ficou amarela'],
-  ['cheiro', 'odor', 'fede', 'fedendo', 'mal cheiro', 'cheiro forte', 'cheiro ruim'],
-  ['tempo', 'demora', 'demorou', 'demora muito', 'impressao lenta', 'muito tempo', 'rapido'],
-  ['nivelamento', 'nivelar', 'nivel', 'nao esta nivelado', 'desnivelado'],
-  ['parametro', 'parametros', 'config', 'configuracao', 'configurar', 'settings', 'setting'],
-  ['resina', 'resinas', 'material', 'produto'],
-  ['pos cura', 'poscura', 'cabine uv', 'curar depois', 'cura pos impressao', 'cura uv'],
-  ['drenagem', 'drenar', 'furo de drenagem', 'respiro', 'vazar', 'vazando', 'vazou'],
 ];
 
 const SYNONYM_MAP = new Map();
 for (const group of SYNONYM_GROUPS) {
   for (const term of group) SYNONYM_MAP.set(term, group);
 }
+
+const TECHNICAL_QUERY_TERMS = new Set([
+  'aderir', 'aglomerado', 'aquecer', 'arquivo', 'biocompativel', 'bolha', 'camada',
+  'carga', 'cisalhamento', 'comprimento', 'compensar', 'conversao', 'densidade',
+  'desaeracao', 'descarte', 'descolar', 'dimensao', 'dispersante', 'empenar',
+  'escoamento', 'exposicao', 'falha', 'filme', 'fotoiniciador', 'furo', 'homogeneizar',
+  'impressora', 'imprimir', 'irradiancia', 'lote', 'lavagem', 'menor', 'metalica',
+  'peca', 'pegajosa', 'pigmento', 'plaqueta', 'plataforma', 'poscura',
+  'pseudoplastico', 'quebradica', 'resina', 'sedimentacao', 'silica', 'suporte',
+  'tela', 'tixotropia', 'trinca', 'turbidez', 'ventilacao', 'viscosidade',
+  'dlp', 'fep', 'ipa', 'lcd', 'pfa', 'sla', 'uv', 'xy',
+]);
 
 export function normalizeText(value = '') {
   return String(value)
@@ -160,7 +164,13 @@ export function scoreDocument(query, document, options = {}) {
   return Math.min(1, (coverage * 0.72) + (titleCoverage * 0.18) + phraseBoost + entityBoost);
 }
 
+export function hasTechnicalAnchor(query, options = {}) {
+  if (normalizeText(options.entity || '')) return true;
+  return tokenize(query).some((token) => TECHNICAL_QUERY_TERMS.has(token));
+}
+
 export function rankDocuments(query, documents = [], options = {}) {
+  if (options.requireTechnicalAnchor && !hasTechnicalAnchor(query, options)) return [];
   const threshold = options.threshold ?? getRagMinRelevance();
   const limit = Math.max(1, options.limit || 3);
 
@@ -173,14 +183,13 @@ export function rankDocuments(query, documents = [], options = {}) {
     .sort((a, b) => b.relevance - a.relevance);
 
   if (!ranked.length) return [];
-  // Mantém documentos até 0.15 abaixo do melhor score (era 0.05 — muito restritivo)
-  const relativeFloor = Math.max(threshold, ranked[0].relevance - 0.15);
+  const relativeFloor = Math.max(threshold, ranked[0].relevance - 0.05);
   return ranked
     .filter((document) => document.relevance >= relativeFloor)
     .slice(0, limit);
 }
 
-function limitText(value, maxLength = 2400) {
+function limitText(value, maxLength = 1800) {
   const text = String(value || '').trim();
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength).trim()}...`;
