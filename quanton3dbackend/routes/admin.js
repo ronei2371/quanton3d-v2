@@ -256,6 +256,62 @@ Escreva uma resposta melhorada em português do Brasil. Seja técnico, direto e 
   }
 });
 
+// ── SUGERIR RESPOSTA PARA CHAMADO COM IA (DeepSeek) ──────────────────────────
+router.post('/sugerir-resposta-ticket', auth, async (req, res) => {
+  try {
+    const { nome, problema, descricao, resina, impressora, parametrosInformados } = req.body || {};
+    if (!problema) return res.status(400).json({ success: false, error: 'problema é obrigatório.' });
+
+    const partes = [];
+    if (resina) partes.push(`Resina: ${resina}`);
+    if (impressora) partes.push(`Impressora: ${impressora}`);
+    if (parametrosInformados) partes.push(`Parâmetros informados: ${parametrosInformados}`);
+    if (descricao) partes.push(`Descrição do cliente: ${descricao}`);
+    const contexto = partes.join('\n');
+
+    const promptIA = `Você é um especialista em impressão 3D de resina UV da Quanton3D.
+Um cliente abriu um chamado técnico com o seguinte problema. Escreva uma resposta técnica clara e útil para enviar ao cliente.
+
+CLIENTE: ${nome || 'Cliente'}
+PROBLEMA: ${problema}
+${contexto}
+
+Escreva a resposta em português do Brasil. Seja técnico, empático e direto. Use passos numerados quando aplicável.
+Inclua o que o cliente deve verificar primeiro, a causa mais provável e a solução recomendada.
+Não escreva "olá" genérico — use o nome do cliente se disponível. Não exceda 5 parágrafos.`;
+
+    const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
+    const model   = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash';
+
+    const resp = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: promptIA }],
+        max_tokens: 700,
+        temperature: 0.4,
+      }),
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      console.error('DeepSeek error (ticket):', errText);
+      return res.status(500).json({ success: false, error: 'Erro na API DeepSeek.' });
+    }
+
+    const data = await resp.json();
+    const sugestao = data.choices?.[0]?.message?.content?.trim() || '';
+    res.json({ success: true, sugestao });
+  } catch (err) {
+    console.error('Erro em /admin/sugerir-resposta-ticket:', err);
+    res.status(500).json({ success: false, error: 'Erro ao gerar resposta com IA.' });
+  }
+});
+
 export default router;
 
 // ── LIMPEZA DE DADOS DE TESTE ─────────────────────────────────────────────────
