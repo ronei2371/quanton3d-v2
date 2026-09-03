@@ -40,11 +40,20 @@ const cases = [
   ['posso usar vácuo e aquecer para tirar a espuma?', /Desaeração deve preservar/i],
   ['como liberar um lote novo da resina?', /Controle de lote/i],
   ['a carga mineral aumentou muito a viscosidade', /Maior carga sólida/i],
+  ['só os suportes imprimiram', /apenas raft e suportes/i],
+  ['falha sempre no mesmo ponto da tela', /Falha fixa em XY|Padrão XY|Filme desgastado/i],
+  ['peça oca rachou dias depois', /Resina presa em peça oca/i],
+  ['resina afina quando misturo', /Pseudoplasticidade/i],
+  ['serve para colocar na boca do paciente', /Biocompatibilidade depende/i],
 ];
 
 for (const [query, expectedTitle] of cases) {
   test(`recupera fonte externa para: ${query}`, () => {
-    const results = rankDocuments(query, EXTERNAL_KNOWLEDGE, { threshold: 0.55, limit: 3 });
+    const results = rankDocuments(query, EXTERNAL_KNOWLEDGE, {
+      threshold: 0.55,
+      limit: 3,
+      requireTechnicalAnchor: true,
+    });
     assert.ok(results.length >= 1);
     assert.match(results[0].title, expectedTitle);
     assert.ok(results[0].sourceUrl);
@@ -55,6 +64,16 @@ test('nao recupera corpus tecnico para assunto sem relacao', () => {
   const results = rankDocuments('qual restaurante serve pizza hoje', EXTERNAL_KNOWLEDGE, {
     threshold: 0.55,
     limit: 3,
+    requireTechnicalAnchor: true,
+  });
+  assert.deepEqual(results, []);
+});
+
+test('nao confunde previsao do tempo com tempo de cura', () => {
+  const results = rankDocuments('qual a previsao do tempo', EXTERNAL_KNOWLEDGE, {
+    threshold: 0.55,
+    limit: 3,
+    requireTechnicalAnchor: true,
   });
   assert.deepEqual(results, []);
 });
