@@ -64,6 +64,11 @@ export function ruleBasedAnswer(message) {
     return 'Para ambientes sem ventilação adequada, as resinas com menor odor são:\n- **LOW SMELL**: baixíssimo odor, ótima para uso doméstico\n- **POSEIDON**: lavável em água, baixo odor\n\nQual impressora você usa?';
   }
 
+  // Resina vazando/vasando da peça / peça com vazamento
+  if (/(peca|peça|peças).*(va[sz]ando|va[sz]a|vazamento|va[sz]ou|saindo liquido|resina saindo|resina va[sz]ando)|(va[sz]ando|vazamento|va[sz]a|va[sz]ou).*(peca|peça|resina|interior|dentro)|(resina).*(va[sz]ando|va[sz]a|vazamento|sai|saindo)/i.test(t)) {
+    return 'Resina vazando da peça após impressão:\n\n**Causa principal:** a peça é **oca** e não tem **furo de drenagem** — a resina líquida fica presa no interior e escoa depois de horas ou dias.\n\n**Solução:**\n1. **Adicione furos de drenagem** de 2-3 mm em pontos não visíveis (embaixo, atrás) no fatiador\n2. **Lave o interior** com álcool isopropílico — sacuda bem para o álcool entrar pelos furos\n3. **Pos-cura girando a peça** em vários ângulos para curar o interior por igual\n4. Se já estiver impresso sem furo: faça um furo com micro-broca (2-3 mm), esvazie, lave e cure novamente\n\n⚠️ Peças ocas sem drenagem também podem **rachar ou explodir** durante a pós-cura pela pressão interna.\n\nQual resina e impressora você está usando?';
+  }
+
   // Impressora genérica sem modelo
   if (/^elegoo\s*$/i.test(String(message).trim())) {
     return 'Qual modelo exato da Elegoo? Exemplo: Mars 3, Saturn 2, Saturn 3 Ultra.';
