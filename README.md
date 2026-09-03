@@ -45,3 +45,4 @@ Backend (`quanton3dbackend`):
 - `ALLOWED_ORIGINS`: dominios do frontend liberados no CORS, separados por virgula.
 - `ADMIN_USER`, `ADMIN_PASSWORD`, `ADMIN_JWT_SECRET`, `ADMIN_SECRET`: credenciais e segredos do painel admin.
 - `OPENAI_API_KEY`: chave usada por rotas que dependem da OpenAI.
+- `FOUNDER_PHONES`: telefones autorizados do fundador, separados por virgula; manter somente no ambiente seguro do Render.
