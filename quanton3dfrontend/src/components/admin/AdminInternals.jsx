@@ -380,6 +380,45 @@ export function AdminContent({ tokenAtendente }) {
 
   const [legendaCopiadaId, setLegendaCopiadaId] = useState("");
   const [filtroTickets, setFiltroTickets] = useState("todos");
+  const [filtroSugestoes, setFiltroSugestoes] = useState("pendente");
+  const [sugestaoEdit, setSugestaoEdit] = useState({});
+  const [sugestaoRejeicao, setSugestaoRejeicao] = useState({});
+  const [salvandoSugestao, setSalvandoSugestao] = useState("");
+  const [relatorioSemanal, setRelatorioSemanal] = useState(null);
+  const [carregandoRelatorio, setCarregandoRelatorio] = useState(false);
+
+  async function aprovarSugestao(id) {
+    try {
+      setSalvandoSugestao(id);
+      const conteudoEditado = sugestaoEdit[id];
+      const body = { status: "aprovado" };
+      if (conteudoEditado) body.conteudo = conteudoEditado;
+      await api.patch("/sugestoes-conhecimento/" + id + "/status", body, { headers: { Authorization: "Bearer " + token } });
+      const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+      setSugestoesIaq3d(r.data?.sugestoes || []);
+    } catch(e) { alert("Erro ao aprovar."); }
+    finally { setSalvandoSugestao(""); }
+  }
+
+  async function rejeitarSugestao(id) {
+    try {
+      setSalvandoSugestao(id);
+      const obs = sugestaoRejeicao[id] || "";
+      await api.patch("/sugestoes-conhecimento/" + id + "/status", { status: "rejeitado", observacaoAdmin: obs }, { headers: { Authorization: "Bearer " + token } });
+      const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+      setSugestoesIaq3d(r.data?.sugestoes || []);
+    } catch(e) { alert("Erro ao rejeitar."); }
+    finally { setSalvandoSugestao(""); }
+  }
+
+  async function carregarRelatorio() {
+    try {
+      setCarregandoRelatorio(true);
+      const res = await api.get("/admin/relatorio-semanal", { headers: { Authorization: "Bearer " + token } });
+      setRelatorioSemanal(res.data?.relatorio || null);
+    } catch(e) { alert("Erro ao gerar relatório."); }
+    finally { setCarregandoRelatorio(false); }
+  }
   const [observacaoTicket, setObservacaoTicket] = useState({});
   const [salvandoTicket, setSalvandoTicket] = useState("");
   const [sugerindoTicket, setSugerindoTicket] = useState("");
@@ -1170,6 +1209,64 @@ export function AdminContent({ tokenAtendente }) {
               </div>
             }
           </div>
+
+          {/* ── RELATÓRIO SEMANAL ── */}
+          <div style={{ background: "rgba(150,80,245,0.05)", border: "1px solid rgba(150,80,245,0.25)", borderRadius: "14px", padding: "16px", marginBottom: "14px" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: relatorioSemanal ? "14px" : 0, flexWrap:"wrap", gap:"8px" }}>
+              <p style={{ margin: 0, fontWeight: 800, color: "#9650f5", fontSize: "0.85rem" }}>📊 RELATÓRIO SEMANAL — últimos 7 dias</p>
+              <button type="button" onClick={carregarRelatorio} disabled={carregandoRelatorio}
+                style={{ padding:"7px 16px", borderRadius:"999px", border:"1px solid rgba(150,80,245,0.5)", background: carregandoRelatorio ? "rgba(150,80,245,0.05)" : "rgba(150,80,245,0.12)", color:"#9650f5", cursor: carregandoRelatorio ? "wait" : "pointer", fontSize:"0.8rem", fontWeight:800, fontFamily:"inherit" }}>
+                {carregandoRelatorio ? "⏳ Gerando…" : "🔄 Gerar relatório"}
+              </button>
+            </div>
+            {relatorioSemanal && (
+              <div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(110px,1fr))", gap:"10px", marginBottom:"14px" }}>
+                  {[
+                    { label:"Novos clientes", valor: relatorioSemanal.novosClientes, cor:"#0aff87", icon:"👥" },
+                    { label:"Conversas bot", valor: relatorioSemanal.totalConversas, cor:"#0092ff", icon:"💬" },
+                    { label:"Chamados abertos", valor: relatorioSemanal.novosTickets, cor:"#d73c3c", icon:"🔧" },
+                    { label:"Feedbacks negativos", valor: relatorioSemanal.feedbacksNegativos, cor:"#dc913c", icon:"👎" },
+                    { label:"Respostas aprovadas", valor: relatorioSemanal.conversasAprovadas, cor:"#9650f5", icon:"✅" },
+                  ].map(item => (
+                    <div key={item.label} style={{ background:"rgba(255,255,255,0.04)", borderRadius:"10px", padding:"12px", textAlign:"center", border:`1px solid ${item.cor}22` }}>
+                      <div style={{ fontSize:"1.2rem", marginBottom:"4px" }}>{item.icon}</div>
+                      <strong style={{ fontSize:"1.5rem", color:item.cor, display:"block", lineHeight:1 }}>{item.valor}</strong>
+                      <span style={{ fontSize:"0.65rem", color:"#9fb4c7", fontWeight:600 }}>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+                {relatorioSemanal.topPerguntas && relatorioSemanal.topPerguntas.length > 0 && (
+                  <div style={{ marginBottom:"12px" }}>
+                    <p style={{ fontSize:"0.75rem", fontWeight:800, color:"#9fb4c7", textTransform:"uppercase", margin:"0 0 7px" }}>🔝 Perguntas mais frequentes</p>
+                    {relatorioSemanal.topPerguntas.map((p, i) => (
+                      <div key={i} style={{ display:"flex", alignItems:"center", gap:"8px", padding:"5px 8px", borderRadius:"7px", background:"rgba(255,255,255,0.03)", marginBottom:"4px" }}>
+                        <span style={{ fontSize:"0.68rem", color:"#9650f5", fontWeight:800, minWidth:"18px" }}>#{i+1}</span>
+                        <span style={{ fontSize:"0.78rem", color:"#d3e4f8", flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.pergunta}</span>
+                        <span style={{ fontSize:"0.68rem", background:"rgba(150,80,245,0.15)", color:"#9650f5", padding:"1px 7px", borderRadius:"999px", fontWeight:800 }}>{p.total}x</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {relatorioSemanal.topResinas && relatorioSemanal.topResinas.length > 0 && (
+                  <div>
+                    <p style={{ fontSize:"0.75rem", fontWeight:800, color:"#9fb4c7", textTransform:"uppercase", margin:"0 0 7px" }}>🧪 Resinas mais perguntadas</p>
+                    <div style={{ display:"flex", gap:"7px", flexWrap:"wrap" }}>
+                      {relatorioSemanal.topResinas.map((r, i) => (
+                        <span key={i} style={{ padding:"4px 12px", borderRadius:"999px", background:"rgba(0,146,255,0.12)", color:"#0092ff", fontSize:"0.76rem", fontWeight:800, border:"1px solid rgba(0,146,255,0.25)" }}>
+                          {r.resina} ({r.total})
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p style={{ fontSize:"0.68rem", color:"#6b8aad", margin:"12px 0 0", textAlign:"right" }}>Gerado em {new Date().toLocaleString("pt-BR")}</p>
+              </div>
+            )}
+            {!relatorioSemanal && !carregandoRelatorio && (
+              <p style={{ color:"#8ba3be", fontSize:"0.78rem", margin:"10px 0 0" }}>Clique em "Gerar relatório" para ver o resumo dos últimos 7 dias.</p>
+            )}
+          </div>
         </div>
       )}
 
@@ -1814,6 +1911,57 @@ export function AdminContent({ tokenAtendente }) {
                               ✉️ Email
                             </a>
                           </div>
+
+                          {/* Histórico completo do cliente */}
+                          {(() => {
+                            const convs = dados.conversas.filter(cv => cv.clienteId && cv.clienteId === c._id);
+                            const tickets = dados.chamados.filter(t => (t.clienteId && t.clienteId === c._id) || (t.email && c.email && t.email.toLowerCase() === c.email.toLowerCase()));
+                            if (convs.length === 0 && tickets.length === 0) return null;
+                            return (
+                              <div style={{ marginTop:"12px" }}>
+                                {convs.length > 0 && (
+                                  <div style={{ marginBottom:"10px" }}>
+                                    <p style={{ fontSize:"0.72rem", fontWeight:800, color:"#0092ff", margin:"0 0 6px" }}>💬 CONVERSAS COM O BOT ({convs.length})</p>
+                                    <div style={{ display:"flex", flexDirection:"column", gap:"5px", maxHeight:"180px", overflowY:"auto" }}>
+                                      {convs.slice(-10).reverse().map(cv => (
+                                        <div key={cv._id} style={{ background:"rgba(0,146,255,0.05)", border:"1px solid rgba(0,146,255,0.15)", borderRadius:"8px", padding:"8px 10px" }}>
+                                          <div style={{ fontSize:"0.75rem", color:"#eaf3ff", marginBottom:"3px", fontWeight:600 }}>❓ {cv.pergunta}</div>
+                                          <div style={{ fontSize:"0.72rem", color:"#7a9bb5", lineHeight:1.4 }}>
+                                            {(cv.resposta||"").slice(0,120)}{(cv.resposta||"").length > 120 ? "…" : ""}
+                                          </div>
+                                          <div style={{ fontSize:"0.65rem", color:"#6b8aad", marginTop:"3px", display:"flex", gap:"8px" }}>
+                                            <span>{new Date(cv.createdAt).toLocaleString("pt-BR")}</span>
+                                            {cv.aprovado && <span style={{ color:"#0aff87" }}>✅ aprovada</span>}
+                                            {cv.feedback === "nao_satisfatoria" && <span style={{ color:"#d73c3c" }}>👎 neg</span>}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {tickets.length > 0 && (
+                                  <div>
+                                    <p style={{ fontSize:"0.72rem", fontWeight:800, color:"#d73c3c", margin:"0 0 6px" }}>🔧 CHAMADOS TÉCNICOS ({tickets.length})</p>
+                                    <div style={{ display:"flex", flexDirection:"column", gap:"5px" }}>
+                                      {tickets.map(t => {
+                                        const stCor = { novo:"#dc913c", em_analise:"#0092ff", respondido:"#0aff87", fechado:"#9fb4c7" };
+                                        return (
+                                          <div key={t._id} style={{ background:"rgba(215,60,60,0.05)", border:"1px solid rgba(215,60,60,0.18)", borderRadius:"8px", padding:"8px 10px" }}>
+                                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:"6px", flexWrap:"wrap" }}>
+                                              <span style={{ fontSize:"0.75rem", color:"#eaf3ff", fontWeight:600 }}>{t.problema}</span>
+                                              <span style={{ fontSize:"0.65rem", padding:"1px 7px", borderRadius:"999px", background:`${stCor[t.status]||"#9fb4c7"}20`, color:stCor[t.status]||"#9fb4c7", fontWeight:800 }}>{t.status||"novo"}</span>
+                                            </div>
+                                            {t.resina && <div style={{ fontSize:"0.68rem", color:"#9fb4c7", marginTop:"2px" }}>🧪 {t.resina} {t.impressora ? `· 🖨️ ${t.impressora}` : ""}</div>}
+                                            <div style={{ fontSize:"0.65rem", color:"#6b8aad", marginTop:"2px" }}>{new Date(t.createdAt).toLocaleString("pt-BR")}</div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </div>
                       )}
                     </div>
@@ -2406,13 +2554,33 @@ export function AdminContent({ tokenAtendente }) {
 
       {aba === "sugestoes_iaq3d" && (
         <div>
-          <p style={{ fontWeight: 900, color: "#0092ff", fontSize: "0.9rem", marginBottom: "14px" }}>💡 Sugestões de Conhecimento para a IAQ3D ({sugestoesIaq3d.length})</p>
-          {sugestoesIaq3d.length === 0 && <div className="gallery-empty">Nenhuma sugestão enviada pelos atendentes.</div>}
-          {sugestoesIaq3d.map(s => {
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
+            <p style={{ fontWeight: 900, color: "#0092ff", fontSize: "0.9rem", margin: 0 }}>💡 Sugestões de Conhecimento ({sugestoesIaq3d.length})</p>
+            <div style={{ display: "flex", gap: "6px" }}>
+              {["pendente", "aprovado", "rejeitado"].map(st => {
+                const cores = { pendente: "#dc913c", aprovado: "#0aff87", rejeitado: "#d73c3c" };
+                const icons = { pendente: "⏳", aprovado: "✅", rejeitado: "❌" };
+                const count = sugestoesIaq3d.filter(s => s.status === st).length;
+                return (
+                  <button key={st} type="button" onClick={() => setFiltroSugestoes(st)}
+                    style={{ padding: "5px 12px", borderRadius: "999px", border: `1px solid ${filtroSugestoes === st ? cores[st] : "rgba(113,159,219,0.2)"}`, background: filtroSugestoes === st ? `${cores[st]}18` : "transparent", color: filtroSugestoes === st ? cores[st] : "#9fb4c7", cursor: "pointer", fontSize: "0.76rem", fontWeight: 800, fontFamily: "inherit" }}>
+                    {icons[st]} {st.charAt(0).toUpperCase() + st.slice(1)} ({count})
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          {sugestoesIaq3d.filter(s => s.status === filtroSugestoes).length === 0 && (
+            <div className="gallery-empty">Nenhuma sugestão com status "{filtroSugestoes}".</div>
+          )}
+          {sugestoesIaq3d.filter(s => s.status === filtroSugestoes).map(s => {
             const cores = { pendente: "#dc913c", aprovado: "#0aff87", rejeitado: "#d73c3c" };
             const catIcons = { resina: "🧪", impressora: "🖨️", problema: "⚠️", dica: "💡", outro: "📝" };
+            const editado = sugestaoEdit[s._id];
+            const textoAtual = editado !== undefined ? editado : s.conteudo;
+            const rejeicaoTexto = sugestaoRejeicao[s._id] || "";
             return (
-              <div key={s._id} style={{ border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
+              <div key={s._id} style={{ border: `1px solid ${s.status === "pendente" ? "rgba(220,145,60,0.25)" : "rgba(113,159,219,0.15)"}`, borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
                   <div>
                     <strong style={{ color: "#eaf3ff", fontSize: "0.92rem" }}>{s.titulo}</strong>
@@ -2424,33 +2592,57 @@ export function AdminContent({ tokenAtendente }) {
                     {s.status === "pendente" ? "⏳ Pendente" : s.status === "aprovado" ? "✅ Aprovado" : "❌ Rejeitado"}
                   </span>
                 </div>
-                <p style={{ fontSize: "0.82rem", color: "#b8cfe8", margin: "0 0 10px", lineHeight: 1.6, background: "rgba(0,0,0,0.15)", padding: "10px 12px", borderRadius: "8px" }}>{s.conteudo}</p>
-                {s.status === "pendente" && (
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <button type="button" onClick={async () => {
-                      try {
-                        await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "aprovado" }, { headers: { Authorization: "Bearer " + token } });
-                        const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
-                        setSugestoesIaq3d(r.data?.sugestoes || []);
-                      } catch(e) { alert("Erro"); }
-                    }}
-                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.1)", color: "#0aff87", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
-                      ✅ Aprovar
-                    </button>
-                    <button type="button" onClick={async () => {
-                      const obs = prompt("Motivo da rejeição (opcional):");
-                      try {
-                        await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "rejeitado", observacaoAdmin: obs || "" }, { headers: { Authorization: "Bearer " + token } });
-                        const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
-                        setSugestoesIaq3d(r.data?.sugestoes || []);
-                      } catch(e) { alert("Erro"); }
-                    }}
-                      style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
-                      ❌ Rejeitar
-                    </button>
-                  </div>
+
+                {/* Conteúdo editável apenas para pendentes */}
+                {s.status === "pendente" ? (
+                  <textarea
+                    value={textoAtual}
+                    onChange={e => setSugestaoEdit(prev => ({ ...prev, [s._id]: e.target.value }))}
+                    rows={4}
+                    style={{ width: "100%", boxSizing: "border-box", fontSize: "0.82rem", color: "#b8cfe8", background: "rgba(0,0,0,0.2)", border: editado !== undefined ? "1px solid rgba(255,209,102,0.5)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "8px", padding: "10px 12px", lineHeight: 1.6, resize: "vertical", fontFamily: "inherit", marginBottom: "10px" }}
+                  />
+                ) : (
+                  <p style={{ fontSize: "0.82rem", color: "#b8cfe8", margin: "0 0 10px", lineHeight: 1.6, background: "rgba(0,0,0,0.15)", padding: "10px 12px", borderRadius: "8px" }}>{s.conteudo}</p>
                 )}
-                {s.observacaoAdmin && <p style={{ fontSize: "0.75rem", color: "#dc913c", margin: "8px 0 0", fontStyle: "italic" }}>Obs: {s.observacaoAdmin}</p>}
+
+                {s.status === "pendente" && (
+                  <>
+                    {/* Área de rejeição inline */}
+                    {sugestaoRejeicao[s._id] !== undefined && (
+                      <textarea
+                        value={rejeicaoTexto}
+                        onChange={e => setSugestaoRejeicao(prev => ({ ...prev, [s._id]: e.target.value }))}
+                        placeholder="Motivo da rejeição (opcional)…"
+                        rows={2}
+                        style={{ width: "100%", boxSizing: "border-box", fontSize: "0.79rem", color: "#d73c3c", background: "rgba(215,60,60,0.05)", border: "1px solid rgba(215,60,60,0.35)", borderRadius: "8px", padding: "8px 10px", resize: "vertical", fontFamily: "inherit", marginBottom: "8px" }}
+                      />
+                    )}
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      <button type="button" disabled={salvandoSugestao === s._id} onClick={() => aprovarSugestao(s._id)}
+                        style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.4)", background: "rgba(73,230,139,0.1)", color: "#0aff87", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit", opacity: salvandoSugestao === s._id ? 0.6 : 1 }}>
+                        {salvandoSugestao === s._id ? "⏳…" : "✅ Aprovar" + (editado !== undefined ? " com edição" : "")}
+                      </button>
+                      {sugestaoRejeicao[s._id] === undefined ? (
+                        <button type="button" onClick={() => setSugestaoRejeicao(prev => ({ ...prev, [s._id]: "" }))}
+                          style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.08)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                          ❌ Rejeitar
+                        </button>
+                      ) : (
+                        <>
+                          <button type="button" disabled={salvandoSugestao === s._id} onClick={() => rejeitarSugestao(s._id)}
+                            style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(255,107,107,0.6)", background: "rgba(255,107,107,0.15)", color: "#d73c3c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                            ❌ Confirmar rejeição
+                          </button>
+                          <button type="button" onClick={() => setSugestaoRejeicao(prev => { const n={...prev}; delete n[s._id]; return n; })}
+                            style={{ padding: "7px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.2)", background: "transparent", color: "#9fb4c7", cursor: "pointer", fontSize: "0.78rem", fontFamily: "inherit" }}>
+                            Cancelar
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+                {s.observacaoAdmin && <p style={{ fontSize: "0.75rem", color: "#dc913c", margin: "10px 0 0", fontStyle: "italic" }}>💬 Obs: {s.observacaoAdmin}</p>}
               </div>
             );
           })}
