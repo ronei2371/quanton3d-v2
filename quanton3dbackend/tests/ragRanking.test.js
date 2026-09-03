@@ -6,6 +6,7 @@ import {
   buildPriorityContext,
   formatParameter,
   getRagMinRelevance,
+  hasTechnicalAnchor,
   rankDocuments,
   splitKnowledgeBase,
   tokenize,
@@ -34,6 +35,12 @@ test('normaliza linguagem de reologia, dispersao e particulas decorativas', () =
   assert.ok(tokenize('mica dourada com grumos e espuma').includes('metalica'));
   assert.ok(tokenize('mica dourada com grumos e espuma').includes('aglomerado'));
   assert.ok(tokenize('mica dourada com grumos e espuma').includes('bolha'));
+});
+
+test('exige ancora tecnica somente quando solicitado', () => {
+  assert.equal(hasTechnicalAnchor('qual a previsao do tempo'), false);
+  assert.equal(hasTechnicalAnchor('minha peça ficou menor'), true);
+  assert.equal(hasTechnicalAnchor('qual parametro para a IRON', { entity: 'IRON' }), true);
 });
 
 test('relaciona peca menor com contracao e dimensao', () => {
