@@ -68,11 +68,14 @@ function escapeRegex(value) {
 }
 
 function queryWithHistory(message, history = []) {
-  if (tokenize(message).length >= 2) return message;
+  // Expande a query se tiver poucos tokens OU se for uma pergunta curta de continuação
+  const messageTokens = tokenize(message);
+  const isShortContinuation = messageTokens.length < 4;
+  if (!isShortContinuation) return message;
   const recentUserMessages = Array.isArray(history)
     ? history
       .filter((item) => item?.role === 'user' && item?.content)
-      .slice(-1)
+      .slice(-2)
       .map((item) => item.content)
     : [];
   return [...recentUserMessages, message].filter(Boolean).join(' ');
