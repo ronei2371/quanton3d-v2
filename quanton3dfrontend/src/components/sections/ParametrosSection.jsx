@@ -134,7 +134,6 @@ function ParametrosSection({ onAbrirExposicao }) {
               </button>
             )}
           </div>
-          </div>
 
           <span className={"q-badge " + (resultado.confianca === "estimado" ? "q-badge--warning" : "q-badge--success")} style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginBottom: "14px" }}>
             {resultado.confianca === "estimado" ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} />}
