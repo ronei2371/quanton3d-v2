@@ -44,6 +44,12 @@
   .mini-table { width: 100%; margin-top: 8px; font-size: 0.83rem; border-collapse: collapse; }
   .mini-table td { padding: 6px 0; border-top: 1px solid var(--border); }
   .mini-table td:last-child { text-align: right; font-weight: 700; color: var(--title); }
+  .calc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+  .calc-field { display: grid; gap: 6px; }
+  .calc-field label { color: var(--title); font-size: 0.8rem; font-weight: 700; }
+  .calc-field input { width: 100%; padding: 10px 11px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--title); font: inherit; }
+  .calc-field small { color: var(--muted); font-size: 0.72rem; }
+  @media (max-width: 680px) { .calc-grid, .result-grid { grid-template-columns: 1fr; } }
 </style>
   <link rel="stylesheet" href="/guias/guia-padrao.css">
   <script src="/guias/guia-padrao.js" defer></script>
@@ -60,6 +66,8 @@
       <a href="#estimativa">Como o fatiador estima</a>
       <a href="#calculadora">Calculadora</a>
       <a href="#checklist">Checklist</a>
+      <a href="#controle">Consumo real</a>
+      <a href="#fontes">Fontes</a>
     </div>
   </nav>
 
@@ -191,8 +199,8 @@
         <div class="issue-grid">
           <div class="issue"><b>Evite cantos muito agudos</b><span>Cantos vivos concentram tensão. Raios e transições suaves distribuem melhor o esforço.</span></div>
           <div class="issue"><b>Use ribs e gussets</b><span>Costelas e reforços triangulares podem aumentar rigidez usando menos material que uma parede grossa inteira.</span></div>
-          <div class="issue"><b>Cuidado abaixo de 0,5 mm</b><span>Furos muito pequenos são difíceis de reproduzir e podem fechar pela cura.</span></div>
-          <div class="issue"><b>A peça imprime invertida</b><span>Durante a impressão, o modelo fica suspenso e sofre gravidade, separação e vibração. Estrutura insuficiente é fatal.</span></div>
+          <div class="issue"><b>Furos e detalhes pequenos</b><span>O limite reproduzível depende de pixel, dose, orientação, resina e compensação. Confirme com corpo de prova, não por um número universal.</span></div>
+          <div class="issue"><b>A peça trabalha suspensa</b><span>Na impressão bottom-up, o conjunto sofre ciclos de separação e flexão. Estrutura insuficiente pode falhar antes de o modelo terminar.</span></div>
         </div>
       </section>
 
@@ -249,7 +257,7 @@
         </div>
         <div class="panel">
           <p><b>Use a estimativa como ferramenta de comparação:</b> o valor é especialmente útil para comparar duas versões do mesmo projeto — maciço × oco, escala original × reduzida, orientação A × orientação B.</p>
-          <div class="callout warn">A estimativa não inclui automaticamente toda perda operacional do mundo real, como resina deixada no tanque, resíduos em suportes, lavagem, respingos ou falhas.</div>
+          <div class="callout warn">A estimativa do fatiador não representa sozinha o custo industrial. Separe resina da peça, suportes/raft e perdas operacionais; mão de obra, solvente, energia, descarte e tempo de máquina pertencem à planilha de custo, não ao volume de resina.</div>
         </div>
       </section>
 
@@ -258,59 +266,38 @@
           <div class="topic-num">8</div>
           <div>
             <h2 id="calculadora">Calculadora de economia de resina</h2>
-            <p>Estimativa educacional para comparar uma versão original com uma versão otimizada.</p>
+            <p>Compare os volumes reais informados pelo fatiador e aplique somente perdas operacionais observadas no seu processo.</p>
           </div>
         </div>
 
         <div class="split-2">
           <div class="panel">
-            <div class="range-row">
-              <label for="solidMl">Consumo original informado pelo fatiador <output id="solidMlOut">220</output> mL</label>
-              <input type="range" id="solidMl" min="10" max="1000" step="5" value="220">
-              <small>Inclua modelo, suportes e raft da versão original.</small>
-            </div>
-            <div class="range-row">
-              <label for="priceL">Preço da resina por litro <output id="priceLOut">R$ 150</output></label>
-              <input type="range" id="priceL" min="50" max="500" step="5" value="150">
-              <small>Use o preço real da resina analisada.</small>
-            </div>
-            <div class="range-row">
-              <label for="scalePct">Escala linear da nova versão <output id="scalePctOut">100</output>%</label>
-              <input type="range" id="scalePct" min="40" max="100" step="1" value="100">
-              <small>100% mantém o tamanho. O volume varia aproximadamente com escala³.</small>
-            </div>
-            <div class="range-row">
-              <label for="hollowSave">Redução adicional pelo hollowing <output id="hollowSaveOut">30</output>%</label>
-              <input type="range" id="hollowSave" min="0" max="90" step="1" value="30">
-              <small>Use um valor comparado no fatiador, não chute para orçamento final.</small>
-            </div>
-            <div class="range-row">
-              <label for="supportSave">Redução de suportes e raft <output id="supportSaveOut">15</output>%</label>
-              <input type="range" id="supportSave" min="0" max="80" step="1" value="15">
-              <small>Aplicada após escala e hollowing.</small>
-            </div>
-            <div class="range-row" style="margin-bottom:0">
-              <label for="failurePct">Perda média por falhas/retrabalho <output id="failurePctOut">8</output>%</label>
-              <input type="range" id="failurePct" min="0" max="50" step="1" value="8">
-              <small>Mostra o impacto de reduzir falhas no consumo real.</small>
+            <div class="calc-grid">
+              <div class="calc-field"><label for="originalMl">Volume original fatiado (mL)</label><input type="number" id="originalMl" min="0" step="0.1" value="220" inputmode="decimal"><small>Modelo + suportes + raft da versão atual.</small></div>
+              <div class="calc-field"><label for="optimizedMl">Volume otimizado fatiado (mL)</label><input type="number" id="optimizedMl" min="0" step="0.1" value="135" inputmode="decimal"><small>Valor da nova versão, já refatiada.</small></div>
+              <div class="calc-field"><label for="priceL">Custo real da resina por litro (R$)</label><input type="number" id="priceL" min="0" step="0.01" value="150" inputmode="decimal"><small>Use custo ou preço conforme a finalidade da análise.</small></div>
+              <div class="calc-field"><label for="quantity">Quantidade planejada</label><input type="number" id="quantity" min="1" step="1" value="1" inputmode="numeric"><small>Número de impressões/peças equivalentes.</small></div>
+              <div class="calc-field"><label for="currentLossPct">Perda operacional atual (%)</label><input type="number" id="currentLossPct" min="0" step="0.1" value="8" inputmode="decimal"><small>Resíduo e retrabalho observados sobre o volume fatiado.</small></div>
+              <div class="calc-field"><label for="newLossPct">Perda operacional projetada (%)</label><input type="number" id="newLossPct" min="0" step="0.1" value="3" inputmode="decimal"><small>Informe a meta validada; a calculadora não inventa redução.</small></div>
             </div>
           </div>
 
           <div class="panel">
             <h3>Resultado</h3>
             <div class="result-grid">
-              <div class="result-card"><span>Consumo original com perdas</span><b id="origResult">—</b></div>
-              <div class="result-card"><span>Consumo otimizado com perdas</span><b id="newResult">—</b></div>
-              <div class="result-card"><span>Economia de resina</span><b id="saveMl">—</b></div>
-              <div class="result-card money"><span>Economia estimada</span><b id="saveMoney">—</b></div>
+              <div class="result-card"><span>Consumo total atual</span><b id="origResult">—</b></div>
+              <div class="result-card"><span>Consumo total otimizado</span><b id="newResult">—</b></div>
+              <div class="result-card"><span>Diferença de resina</span><b id="saveMl">—</b></div>
+              <div class="result-card money"><span>Diferença estimada</span><b id="saveMoney">—</b></div>
             </div>
             <table class="mini-table">
-              <tr><td>Fator de escala volumétrica</td><td id="scaleFactor">—</td></tr>
-              <tr><td>Redução total calculada</td><td id="totalReduction">—</td></tr>
+              <tr><td>Variação indicada no fatiador</td><td id="sliceReduction">—</td></tr>
+              <tr><td>Variação total com perdas</td><td id="totalReduction">—</td></tr>
+              <tr><td>Quantidade analisada</td><td id="quantityResult">—</td></tr>
               <tr><td>Custo original aproximado</td><td id="origCost">—</td></tr>
               <tr><td>Custo otimizado aproximado</td><td id="newCost">—</td></tr>
             </table>
-            <div class="callout" style="margin-top:12px"><b>Importante:</b> o cálculo é comparativo. Para custo comercial, confirme o volume no fatiador e use sua taxa real de perdas.</div>
+            <div class="callout" style="margin-top:12px"><b>Importante:</b> porcentagem de falhas não é automaticamente igual a porcentagem de resina perdida. Informe a perda operacional medida; para custo comercial, some máquina, mão de obra, lavagem, energia, descarte e impostos separadamente.</div>
           </div>
         </div>
       </section>
@@ -326,7 +313,7 @@
 
         <div class="panel">
           <div class="prog-bar"><span id="progFill"></span></div>
-          <div class="prog-label" id="progLabel">0 de 8 itens concluídos</div>
+          <div class="prog-label" id="progLabel">0 de 11 itens concluídos</div>
           <div class="check-list" id="checks">
             <label class="check-item"><input type="checkbox"><span>A peça pode ser oca sem perder função ou resistência?</span></label>
             <label class="check-item"><input type="checkbox"><span>A parede foi escolhida com base em teste e aplicação?</span></label>
@@ -336,6 +323,70 @@
             <label class="check-item"><input type="checkbox"><span>O preview foi revisado camada por camada nas regiões críticas?</span></label>
             <label class="check-item"><input type="checkbox"><span>O perfil de impressão está validado para essa resina e camada?</span></label>
             <label class="check-item"><input type="checkbox"><span>O consumo foi comparado no fatiador antes e depois?</span></label>
+            <label class="check-item"><input type="checkbox"><span>A lavagem e a pós-cura internas são possíveis na geometria oca?</span></label>
+            <label class="check-item"><input type="checkbox"><span>A perda operacional foi medida, sem confundir taxa de falha com volume perdido?</span></label>
+            <label class="check-item"><input type="checkbox"><span>O custo total considera também máquina, mão de obra, solvente, energia e descarte?</span></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="controle">
+        <div class="topic-head">
+          <div class="topic-num">10</div>
+          <div>
+            <h2 id="controle">Controle do consumo real</h2>
+            <p>O volume fatiado mede a peça planejada. O estoque explica quanto material realmente saiu da operação.</p>
+          </div>
+        </div>
+        <div class="split-2">
+          <div class="panel">
+            <h3>Meça por lote ou ordem de produção</h3>
+            <ul class="panel-list">
+              <li>Registre massa ou volume carregado, devolvido e descartado.</li>
+              <li>Separe peça aprovada, suportes/raft, falha, amostra e derramamento.</li>
+              <li>Controle lavagem contaminada e resíduo aderido às ferramentas.</li>
+              <li>Compare consumo real com o somatório do fatiador.</li>
+              <li>Use a diferença para melhorar o fator de perda do orçamento.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Resina remanescente não é automaticamente perda</h3>
+            <ul class="panel-list">
+              <li>Mantenha o tanque protegido de luz, poeira e mistura acidental.</li>
+              <li>Após falha, filtre antes de reutilizar para remover fragmentos curados.</li>
+              <li>Não misture cores, formulações ou lotes sem procedimento aprovado.</li>
+              <li>Só devolva material ao frasco quando a política técnica permitir e sem contaminar o estoque.</li>
+              <li>Respeite armazenamento, homogeneização e validade informados pela Quanton3D.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="fontes">
+        <div class="topic-head">
+          <div class="topic-num" aria-hidden="true">↗</div>
+          <div>
+            <h2 id="fontes">Fontes técnicas e limite de aplicação</h2>
+            <p>Referências para hollowing, drenagem e diagnóstico. A aplicação da peça e os dados Quanton3D prevalecem sobre exemplos genéricos.</p>
+          </div>
+        </div>
+        <div class="split-2">
+          <div class="panel">
+            <h3>Geometria oca</h3>
+            <ul class="panel-list">
+              <li><a href="https://help.prusa3d.com/article/hollowing_117285" target="_blank" rel="noopener noreferrer">Prusa Research — Hollowing e furos de drenagem</a></li>
+              <li><a href="https://help.prusa3d.com/glossary/hollowing_117439" target="_blank" rel="noopener noreferrer">Prusa Research — conceito de modelo oco</a></li>
+              <li><a href="https://help.prusa3d.com/article/print-detached-from-supports-sl1-sl1s_1791" target="_blank" rel="noopener noreferrer">Prusa Research — resina presa, sucção e falha</a></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Como aplicar</h3>
+            <ul class="panel-list">
+              <li>Use o fatiador para confirmar volume, parede e presença real dos furos.</li>
+              <li>Valide resistência e dimensão com corpos de prova da aplicação.</li>
+              <li>Não transporte espessuras, furos ou percentuais entre peças diferentes.</li>
+              <li>Economia calculada não substitui custo industrial completo.</li>
+            </ul>
           </div>
         </div>
       </section>
@@ -395,37 +446,39 @@
       targets.forEach(function (el) { obs.observe(el); });
     })();
 
-    // Calculadora — mesma fórmula do material original
+    // Calculadora comparativa baseada nos volumes reais do fatiador.
     (function () {
       var el = function (id) { return document.getElementById(id); };
-      if (!el('solidMl')) return;
+      if (!el('originalMl')) return;
       var brNum = function (n, d) { return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: d || 1, maximumFractionDigits: d || 1 }); };
       var brl = function (n) { return Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
-      var ids = ['solidMl', 'priceL', 'scalePct', 'hollowSave', 'supportSave', 'failurePct'];
+      var ids = ['originalMl', 'optimizedMl', 'priceL', 'quantity', 'currentLossPct', 'newLossPct'];
 
       function calc() {
-        ids.forEach(function (id) { el(id + 'Out').textContent = id === 'priceL' ? 'R$ ' + el(id).value : el(id).value; });
-
-        var base = Math.max(0, Number(el('solidMl').value));
+        var original = Math.max(0, Number(el('originalMl').value) || 0);
+        var optimized = Math.max(0, Number(el('optimizedMl').value) || 0);
         var price = Math.max(0, Number(el('priceL').value)) / 1000;
-        var scale = Math.max(0.01, Number(el('scalePct').value) / 100);
-        var hollow = Math.min(0.95, Math.max(0, Number(el('hollowSave').value) / 100));
-        var support = Math.min(0.9, Math.max(0, Number(el('supportSave').value) / 100));
-        var failure = Math.max(0, Number(el('failurePct').value) / 100);
+        var quantity = Math.max(1, Math.floor(Number(el('quantity').value) || 1));
+        var currentLoss = Math.max(0, Number(el('currentLossPct').value) || 0) / 100;
+        var newLoss = Math.max(0, Number(el('newLossPct').value) || 0) / 100;
 
-        var scaleVol = Math.pow(scale, 3);
-        var originalReal = base * (1 + failure);
-        var optimizedBase = base * scaleVol * (1 - hollow) * (1 - support);
-        var optimizedReal = optimizedBase * (1 + failure * 0.35);
-        var saved = Math.max(0, originalReal - optimizedReal);
+        var originalReal = original * quantity * (1 + currentLoss);
+        var optimizedReal = optimized * quantity * (1 + newLoss);
+        var saved = originalReal - optimizedReal;
         var reduction = originalReal > 0 ? saved / originalReal : 0;
+        var sliceReduction = original > 0 ? 1 - optimized / original : 0;
 
         el('origResult').textContent = brNum(originalReal) + ' mL';
         el('newResult').textContent = brNum(optimizedReal) + ' mL';
-        el('saveMl').textContent = brNum(saved) + ' mL';
-        el('saveMoney').textContent = brl(saved * price);
-        el('scaleFactor').textContent = brNum(scaleVol * 100, 1) + '%';
+        var direction = saved >= 0 ? 'economia: ' : 'acréscimo: ';
+        var tone = saved >= 0 ? 'var(--green)' : 'var(--red)';
+        el('saveMl').textContent = direction + brNum(Math.abs(saved)) + ' mL';
+        el('saveMoney').textContent = direction + brl(Math.abs(saved * price));
+        el('saveMl').style.color = tone;
+        el('saveMoney').style.color = tone;
+        el('sliceReduction').textContent = brNum(sliceReduction * 100, 1) + '%';
         el('totalReduction').textContent = brNum(reduction * 100, 1) + '%';
+        el('quantityResult').textContent = quantity.toLocaleString('pt-BR');
         el('origCost').textContent = brl(originalReal * price);
         el('newCost').textContent = brl(optimizedReal * price);
       }
