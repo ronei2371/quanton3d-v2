@@ -1,360 +1,259 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Send, ThumbsUp, ThumbsDown, Camera, ArrowRight, SkipForward } from "lucide-react";
-import api from "../../lib/api";
+import express from 'express';
+import OpenAI from 'openai';
+import mongoose from 'mongoose';
+import { ruleBasedAnswer } from '../services/aiRules.js';
+import Conversa from '../models/Conversa.js';
+import { retrieveRagContext } from '../services/rag.js';
 
-const RESINAS_BOT = [
-  "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "ATHOM DENTAL", "ATHOM ALINHADORES",
-  "ATHOM WASHABLE", "POSEIDON", "PYROBLAST", "VULCAN CAST", "SPIN", "SPARK", "LOW SMELL", "VELVET SKIN", "Não sei / Outra",
-];
+const router = express.Router();
 
-function escaparHtml(texto) {
-  const mapa = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
-  return texto.replace(/[&<>"']/g, (c) => mapa[c]);
-}
-function formatarMarkdown(texto) {
-  const seguro = escaparHtml(texto);
-  return seguro
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/`(.+?)`/g, "<code style=\"background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:0.88em\">$1</code>")
-    .replace(/\n{2,}/g, "</p><p style=\"margin:8px 0\">")
-    .replace(/\n/g, "<br/>");
+function client() {
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    const baseURL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
+    if (!apiKey) throw new Error('DEEPSEEK_API_KEY nao configurada');
+    return new OpenAI({ apiKey, baseURL, maxRetries: 0, timeout: 20000 });
 }
 
-const MODOS = [
-  { id: "parametros", label: "🔧 Parâmetros",       placeholder: "Ex: IRON na Mars 4 Ultra, camada 0.05mm..." },
-  { id: "tecnico",    label: "🤔 Dúvida Técnica",    placeholder: "Descreva o problema que está acontecendo..." },
-  { id: "resina",     label: "🧪 Indicar Resina",    placeholder: "Para que tipo de peça / uso você precisa?" },
-];
+function chatErrorResponse(error) {
+    const status = Number(error?.status || error?.response?.status || 500);
+    if (status === 401 || status === 403) return { status: 503, error: 'Assistente temporariamente indisponivel.' };
+    if (status === 402) return { status: 503, error: 'Limite de uso atingido. Entre em contato pelo WhatsApp (31) 3271-6935.' };
+    if (status === 429) return { status: 429, error: 'Muitas solicitacoes. Tente novamente em instantes.' };
+    if (status >= 500 || error?.code === 'ETIMEDOUT') return { status: 503, error: 'Nao consegui consultar o assistente agora. Tente novamente.' };
+    return { status: 500, error: 'Erro interno. Tente novamente.' };
+}
 
-const ChatInput = React.memo(function ChatInput({ onEnviar, pensando, modo, onModoChange }) {
-  const [valor, setValor] = useState("");
-  const modoAtual = MODOS.find((m) => m.id === modo);
-  const placeholder = modoAtual ? modoAtual.placeholder : "Tire sua dúvida técnica...";
+const SYSTEM_PROMPT = `Voce e a IAQ3D, assistente tecnica especializada da Quanton3D — fabricante brasileira de resinas UV SLA/DLP de alta performance, fundada em abril de 2020 em Belo Horizonte, MG, pelos fundadores Ronei Fonseca e Gislene.
 
-  function handleEnviar() {
-    if (!valor.trim() || pensando) return;
-    onEnviar(valor);
-    setValor("");
-  }
-  return (
-    <div style={{ borderTop: "1px solid var(--border-soft)", flexShrink: 0, width: "100%", minWidth: 0, boxSizing: "border-box" }}>
-      {/* Botões de modo */}
-      <div style={{ display: "flex", gap: "6px", padding: "8px 4px 0", flexWrap: "wrap" }}>
-        {MODOS.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            onClick={() => onModoChange(modo === m.id ? "" : m.id)}
-            style={{
-              fontSize: "0.72rem",
-              padding: "4px 10px",
-              borderRadius: "20px",
-              border: "1px solid " + (modo === m.id ? "var(--primary)" : "var(--border-soft)"),
-              background: modo === m.id ? "rgba(47,123,255,0.12)" : "var(--bg-raised)",
-              color: modo === m.id ? "var(--primary)" : "var(--text-secondary)",
-              cursor: "pointer",
-              fontWeight: modo === m.id ? 700 : 400,
-              transition: "all 0.15s",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
-      {/* Input + enviar */}
-      <div style={{ display: "flex", gap: "8px", padding: "8px 4px 4px" }}>
-        <input
-          className="q-input"
-          value={valor}
-          onChange={(e) => setValor(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
-          placeholder={placeholder}
-          style={{ flex: 1, minWidth: 0 }}
-        />
-        <button type="button" className="q-btn q-btn--primary" onClick={handleEnviar} disabled={pensando} style={{ flexShrink: 0 }}>
-          <Send size={15} />
-        </button>
-      </div>
-    </div>
-  );
+IDENTIDADE E TOM:
+- Seja objetivo, tecnico e preciso. Evite respostas genericas.
+- Respostas curtas e diretas. Maximo 3 paragrafos ou lista de 5 itens.
+- Nunca invente parametros ou informacoes que nao tem certeza.
+- Nunca sugira resinas de outras marcas. Sempre indique a equivalente Quanton3D.
+- Se nao souber, diga para contatar a equipe pelo WhatsApp (31) 3271-6935.
+
+ANALISE DE CONTEXTO (SCENE ANALYSIS):
+- SEMPRE inicie sua resposta com UMA frase curta de contextualizacao: "Entendi que voce [resumo do que o usuario quer]."
+- Seja breve — so uma linha. Depois va direto a resposta.
+- Exemplos: "Entendi que voce quer os parametros de exposicao para a IRON na Mars 4 Ultra."
+             "Entendi que voce esta com problema de aderencia na primeira camada."
+             "Entendi que voce precisa de uma resina para peca funcional resistente ao calor."
+- Nao use o scene analysis quando a mensagem for uma resposta simples ou confirmacao.
+
+COMO RESPONDER (regra de ouro):
+- Quando o cliente descreve um problema, DE A SOLUCAO PRINCIPAL IMEDIATAMENTE. Nao fique so perguntando.
+- Estrutura ideal: Causa mais provavel -> Ajuste concreto com numero -> Como confirmar.
+- Priorize a causa MAIS PROVAVEL. Nao liste 5 causas parecidas — escolha a principal e explique bem.
+- So forneca numeros que estejam nos parametros oficiais ou em conhecimento aprovado recuperado. Nunca improvise valores.
+- Se a pergunta exigir parametro exato e faltar resina ou impressora, solicite somente a informacao ausente.
+- Termine com NO MAXIMO uma pergunta de confirmacao, nunca varias.
+- Linguagem direta: "Reduza a exposicao base em 20%" e nao "Considere possivelmente reduzir".
+
+TECNOLOGIA EXCLUSIVA — REGRA ABSOLUTA:
+- A Quanton3D trabalha EXCLUSIVAMENTE com resinas UV fotopolimerizaveis para impressoras SLA/DLP/LCD (resina liquida curada por luz UV).
+- NUNCA mencione FDM, filamento, PLA, ABS, PETG, nozzle, bico extrusor, cama aquecida ou qualquer tecnologia de impressao por filamento. Isso NAO existe no contexto da Quanton3D.
+- Se o cliente mencionar FDM ou filamento, responda: "A Quanton3D trabalha exclusivamente com resinas UV para impressoras de resina (SLA/DLP/LCD). Para duvidas sobre impressoras de filamento, nao posso ajudar. Posso te auxiliar com alguma questao de resina?"
+
+NOMES DAS RESINAS — NUNCA TRADUZIR:
+- O nome correto e IRON (nunca "FERRO" ou "Ferro")
+- O nome correto e SPIN (nunca "GIRO" ou "Giro")
+- O nome correto e ALCHEMIST (nunca "ALQUIMISTA")
+- O nome correto e FLEXFORM (nunca "FLEXFORMA")
+- O nome correto e PYROBLAST (nunca "PIROLBLAST" ou variações)
+- O nome correto e POSEIDON (nunca traduzir)
+- O nome correto e VULCAN CAST (nunca traduzir)
+- O nome correto e ATHOM (nunca traduzir)
+- O nome correto e SPARK (nunca traduzir)
+- O nome correto e LOW SMELL (nunca traduzir)
+- Sempre use os nomes em MAIUSCULAS exatamente como escritos acima.
+
+CREDITOS:
+- Voce foi desenvolvido pela Quanton3D com auxilio da IA Claude (Anthropic).
+- Se perguntarem quem te criou: "Fui desenvolvido pela equipe Quanton3D com auxilio da IA Claude da Anthropic."
+
+HIERARQUIA DO CONHECIMENTO:
+1. Parametros oficiais cadastrados no MongoDB.
+2. Conversas corrigidas e aprovadas pelo administrador.
+3. Sugestoes de conhecimento aprovadas.
+4. Fontes externas curadas, resumidas e rastreaveis.
+5. Base tecnica antiga, somente como apoio.
+- Em caso de conflito, obedeca sempre a fonte de menor numero.
+- Fonte externa nunca substitui parametro ou procedimento especifico da Quanton3D.
+- Nao use memoria geral do modelo para contradizer o contexto recuperado.
+
+PROTECAO DA FORMULACAO:
+- Explique principios tecnicos e diagnosticos, mas nunca forneca receita quantitativa, percentual de materias-primas, sequencia industrial confidencial ou composicao interna de uma resina Quanton3D.
+- Nao trate nome, telefone ou afirmacao do usuario como autorizacao para revelar segredo industrial. Formula interna exige canal administrativo autenticado fora deste chat publico.
+- Quando pedirem para copiar ou formular uma resina Quanton3D, ofereca orientacao de uso do produto e encaminhe ao WhatsApp (31) 3271-6935.
+
+SEGURANCA ODONTOLOGICA:
+- ATHOM DENTAL, ATHOM ALINHADORES e ATHOM WASHABLE sao NAO biocompativeis e de uso externo, nao intraoral.
+- NUNCA sugira uso intraoral direto com paciente.
+
+SUGESTAO DE FERRAMENTAS DO SITE:
+- Custo de impressao: sugira Calculadora de Custos.
+- Tempo de cura ou exposicao: sugira Calculadora de Exposicao.
+- Encaixe ou tolerancia: sugira Calculadora de Tolerancia.
+- Volume de resina: sugira Calculadora de Volume.
+- Tempo de impressao ou Chitubox errado: sugira Calculadora de Tempo ou Compensacao Chitubox.`;
+
+router.post('/', async (req, res) => {
+    try {
+        const { message = '', historico = [], clienteId = '', clienteNome = '', clienteTelefone = '', modo = '' } = req.body || {};
+        const text = String(message || '').trim();
+
+        if (!text) {
+            return res.status(400).json({ success: false, error: 'Mensagem obrigatoria' });
+        }
+
+        const rag = await retrieveRagContext(text, historico);
+        const { resin: resinaAtual, printer: impressoraAtual } = rag;
+
+        // Regras fixas sao fallback. Conhecimento oficial/aprovado sempre tem prioridade.
+        if (!rag.used && !rag.guardInstruction) {
+            const rule = ruleBasedAnswer(text);
+            if (rule) {
+                let conversaId = null;
+                try {
+                    const conv = await Conversa.create({ clienteId, clienteNome, pergunta: text, resposta: rule, fonte: 'rules' });
+                    conversaId = conv._id;
+                } catch (_) {}
+                return res.json({ success: true, reply: rule, source: 'rules', ragUsado: false, conversaId });
+            }
+        }
+
+        let systemFinal = SYSTEM_PROMPT;
+
+        // Instrucoes especificas por modo de atendimento
+        if (modo === 'parametros') {
+            systemFinal += `\n\n--- MODO ATIVO: PARAMETROS ---\nO usuario quer parametros de impressao especificos. Foque em: exposicao normal (s), exposicao base (s), camadas base, velocidade de lift (mm/s). Se faltar resina ou impressora, solicite somente o que falta. Apresente os parametros em lista clara e objetiva. Se os valores nao estiverem no banco de dados validado, informe isso explicitamente antes de sugerir uma faixa estimada.`;
+        } else if (modo === 'tecnico') {
+            systemFinal += `\n\n--- MODO ATIVO: DUVIDA TECNICA ---\nO usuario tem um problema tecnico ou falha de impressao. Use SEMPRE esta estrutura: 1) Causa mais provavel -> 2) Ajuste concreto com numero -> 3) Como confirmar o resultado. Seja direto. Uma causa, um ajuste, uma confirmacao.`;
+        } else if (modo === 'resina') {
+            systemFinal += `\n\n--- MODO ATIVO: INDICACAO DE RESINA ---\nO usuario quer saber qual resina Quanton3D usar para um caso especifico. Se o uso final nao estiver claro, pergunte primeiro (prototipo, peca funcional, fundicao, dental, flexivel, etc). Apresente no maximo 2 opcoes Quanton3D com justificativa curta para cada. Nunca indique resinas de outras marcas.`;
+        }
+
+        if (rag.context) {
+            systemFinal += `\n\n--- RAG QUANTON3D ---\n${rag.context}\n---\nResponda somente com informacoes compativeis com a hierarquia acima.`;
+        } else if (!rag.guardInstruction) {
+            // Sem dados validados no banco — exige transparencia
+            systemFinal += `\n\n--- AVISO DE TRANSPARENCIA ---\nNao ha parametros ou conhecimento validado no banco para esta consulta especifica. Se precisar fornecer valores numericos, deixe CLARO que sao estimativas tecnicas gerais, NAO perfis validados pela Quanton3D. Use a formula: "Nao tenho perfil validado para esta combinacao. Como ponto de partida tecnico, voce pode tentar [valor], mas confirme com a equipe pelo WhatsApp (31) 3271-6935."`;
+        }
+        if (rag.guardInstruction) {
+            systemFinal += `\n\n--- CONTROLE DE SEGURANCA DOS PARAMETROS ---\n${rag.guardInstruction}`;
+        }
+
+        const nomeNormalizado = (clienteNome || '').toLowerCase().trim();
+        const telefoneNormalizado = (clienteTelefone || '').replace(/\D/g, '');
+        const TELEFONES_FUNDADOR = ['31983340053', '31983340055'];
+        const ehFundadorPorTelefone = TELEFONES_FUNDADOR.some(t => telefoneNormalizado.endsWith(t.slice(-9)));
+        const ehFundadorPorNome = nomeNormalizado.includes('ronei') && nomeNormalizado.includes('fonseca');
+        const ehFundador = ehFundadorPorTelefone || ehFundadorPorNome;
+        if (ehFundador) {
+            systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVoce esta falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir voce (a IAQ3D) junto com a IA Claude. Reconheca isso de forma natural quando fizer sentido. Trate-o com mais informalidade e proximidade tecnica.`;
+        }
+
+        const mensagensHistorico = Array.isArray(historico)
+            ? historico.slice(-8).filter(m => m.role && m.content)
+            : [];
+
+        const messages = [
+            { role: 'system', content: systemFinal },
+            ...mensagensHistorico.slice(0, -1),
+            { role: 'user', content: text }
+        ];
+
+        const model = process.env.DEEPSEEK_CHAT_MODEL || 'deepseek-v4-flash';
+        const maxTokens = Math.min(
+            2000,
+            Math.max(600, Number.parseInt(process.env.BOT_MAX_TOKENS, 10) || 1200)
+        );
+        const completion = await client().chat.completions.create(
+            {
+                model,
+                thinking: { type: 'disabled' },
+                reasoning_effort: 'low',
+                temperature: rag.used || rag.guardInstruction ? 0.05 : 0.1,
+                max_tokens: maxTokens,
+                messages,
+            }
+        );
+
+        const firstChoice = completion.choices?.[0];
+        const providerReply = firstChoice?.message?.content?.trim();
+        console.log('[DEEPSEEK-INFO]', JSON.stringify({
+            model,
+            requestId: completion.id || null,
+            finishReason: firstChoice?.finish_reason || null,
+            contentReturned: Boolean(providerReply),
+            promptTokens: completion.usage?.prompt_tokens ?? null,
+            completionTokens: completion.usage?.completion_tokens ?? null,
+        }));
+        const reply = providerReply
+            || ruleBasedAnswer(text)
+            || 'Nao consegui gerar uma resposta segura agora. Informe a resina, o modelo da impressora e descreva o sintoma; se preferir, chame a equipe pelo WhatsApp (31) 3271-6935.';
+
+        let conversaId = null;
+        try {
+            const conv = await Conversa.create({
+                clienteId,
+                clienteNome,
+                pergunta: text,
+                resposta: reply,
+                resinaDetectada: resinaAtual || '',
+                impressoraDetectada: impressoraAtual || '',
+                ragUsado: rag.used,
+                fonte: rag.used ? 'rag+deepseek' : 'deepseek',
+            });
+            conversaId = conv._id;
+        } catch (err) {
+            console.error('[SALVAR CONVERSA]', err.message);
+        }
+
+        res.json({
+            success: true,
+            reply,
+            source: rag.used ? 'rag+deepseek' : 'deepseek',
+            ragUsado: rag.used,
+            ragFontes: rag.sources,
+            conversaId,
+        });
+
+    } catch (e) {
+        console.error('[CHAT ERROR]', e);
+        const { status, error } = chatErrorResponse(e);
+        res.status(status).json({ success: false, error });
+    }
 });
 
-function BotChat({ cliente }) {
-  const [etapa, setEtapa] = useState("contexto");
-  const [ctx, setCtx] = useState({ resina: "", impressora: "", altura: "0.05" });
-  const [mensagens, setMensagens] = useState([]);
-  const [carregandoHistorico, setCarregandoHistorico] = useState(false);
-  const [pensando, setPensando] = useState(false);
-  const [impressorasBot, setImpressorasBot] = useState([]);
-  const [modo, setModo] = useState("");
-  const [feedbackAberto, setFeedbackAberto] = useState(null);
-  const [fotoFeedback, setFotoFeedback] = useState(null);
-  const [enviandoFeedback, setEnviandoFeedback] = useState(false);
-  const [erroFeedback, setErroFeedback] = useState("");
-  const [paramsFeedback, setParamsFeedback] = useState({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" });
-  const scrollRef = useRef(null);
-
-  useEffect(() => {
-    const clienteId = cliente?._id || cliente?.id;
-    if (!clienteId) return;
-
-    let ativo = true;
-    setCarregandoHistorico(true);
-    api.get(`/chat/historico/${encodeURIComponent(clienteId)}`)
-      .then((res) => {
-        if (!ativo) return;
-        const conversas = Array.isArray(res.data?.conversas) ? res.data.conversas : [];
-        if (!conversas.length) return;
-
-        const restauradas = conversas.flatMap((conversa) => [
-          { text: conversa.pergunta, isBot: false },
-          { text: conversa.resposta, isBot: true, conversaId: conversa._id },
-        ]).filter((mensagem) => mensagem.text);
-        const ultima = conversas[conversas.length - 1];
-        setCtx((atual) => ({
-          ...atual,
-          resina: atual.resina || ultima.resinaDetectada || "",
-          impressora: atual.impressora || ultima.impressoraDetectada || "",
-        }));
-        setMensagens([
-          { text: `Bem-vindo de volta, ${cliente?.nome || ""}! Aqui está seu histórico com a IAQ3D. Pode continuar de onde parou.`, isBot: true },
-          ...restauradas,
-        ]);
-        setEtapa("chat");
-      })
-      .catch(() => {})
-      .finally(() => { if (ativo) setCarregandoHistorico(false); });
-
-    return () => { ativo = false; };
-  }, [cliente?._id, cliente?.id, cliente?.nome]);
-
-  useEffect(() => {
-    if (!scrollRef.current) return;
-    const el = scrollRef.current;
-    requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
-  }, [mensagens]);
-
-  useEffect(() => {
-    api.get("/parametros/impressoras").then((res) => {
-      const lista = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
-      setImpressorasBot(lista.filter(Boolean).sort());
-    }).catch(() => {});
-  }, []);
-
-  function iniciarChat() {
-    const resina = ctx.resina || "não informada";
-    const impressora = ctx.impressora.trim() || "não informada";
-    const altura = ctx.altura || "0.05";
-    const ctxTexto = resina !== "não informada" || impressora !== "não informada"
-      ? `Estou usando a resina **${resina}**, impressora **${impressora}**, altura de camada **${altura}mm**.`
-      : "";
-    const boasVindas = `Olá ${cliente?.nome || ""}! Sou a **IAQ3D**, assistente técnica da Quanton3D.${ctxTexto ? `\n\nContexto registrado: ${ctxTexto}` : ""}\n\nComo posso te ajudar hoje?`;
-    setMensagens((atuais) => atuais.length
-      ? [...atuais, { text: `Contexto atualizado. ${ctxTexto || "Pode continuar de onde parou."}`, isBot: true }]
-      : [{ text: boasVindas, isBot: true }]);
-    setEtapa("chat");
-  }
-
-  async function enviar(userMsg) {
-    if (!userMsg?.trim() || pensando) return;
-    const novasMensagens = [...mensagens, { text: userMsg, isBot: false }];
-    setMensagens(novasMensagens);
-    setPensando(true);
+router.get('/historico/:clienteId', async (req, res) => {
     try {
-      const ctxMsg = ctx.resina || ctx.impressora
-        ? [{ role: "user", content: `Contexto: resina ${ctx.resina || "não informada"}, impressora ${ctx.impressora || "não informada"}, altura camada ${ctx.altura || "0.05"}mm` },
-           { role: "assistant", content: "Contexto registrado. Pode me contar o problema." }]
-        : [];
-      const historico = [
-        ...ctxMsg,
-        ...novasMensagens.slice(-8).filter((m) => m.text).map((m) => ({ role: m.isBot ? "assistant" : "user", content: m.text })),
-      ];
-      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "", modo });
-      const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
-      const conversaId = res.data.data?.conversaId || res.data.conversaId || null;
-      setMensagens((prev) => [...prev, { text: reply, isBot: true, conversaId }]);
-    } catch (err) {
-      console.error("Erro ao conversar com bot:", err);
-      setMensagens((prev) => [...prev, { text: "Desculpe, tive um problema técnico. Pode repetir?", isBot: true }]);
-    } finally { setPensando(false); }
-  }
+        const { clienteId } = req.params;
 
-  function fotoParaBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
+        /* Aceita tanto ObjectId quanto string pura no campo clienteId */
+        const isObjectId = mongoose.Types.ObjectId.isValid(clienteId) && clienteId.length === 24;
+        const query = isObjectId
+            ? { $or: [{ clienteId: clienteId }, { clienteId: new mongoose.Types.ObjectId(clienteId) }] }
+            : { clienteId: clienteId };
 
-  async function enviarFeedback(conversaId, indice, satisfatoria) {
-    if (!conversaId) return;
-    if (satisfatoria) {
-      try {
-        await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "satisfatoria" });
-        setMensagens((prev) => prev.map((m, i) => (i === indice ? { ...m, feedbackEnviado: "satisfatoria" } : m)));
-      } catch { /* O feedback é opcional e não deve interromper o chat. */ }
-      return;
+        const conversas = await Conversa.find(query)
+        .sort({ createdAt: 1 })
+        .limit(20)
+        .lean();
+
+        res.json({
+            success: true,
+            conversas: conversas.map(c => ({
+                _id: c._id,
+                pergunta: c.pergunta,
+                resposta: c.respostaMelhorada || c.resposta,
+                resinaDetectada: c.resinaDetectada || '',
+                impressoraDetectada: c.impressoraDetectada || ''
+            }))
+        });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
     }
-    setFeedbackAberto(indice);
-  }
+});
 
-  async function confirmarFeedbackNegativo(conversaId, indice) {
-    setEnviandoFeedback(true);
-    setErroFeedback("");
-    try {
-      let foto = "";
-      if (fotoFeedback) foto = await fotoParaBase64(fotoFeedback);
-      const partesConfig = [
-        `Resina: ${ctx.resina || "não informada"}`,
-        `Impressora: ${ctx.impressora || "não informada"}`,
-        `Altura de camada: ${paramsFeedback.alturaCamada || ctx.altura || "0.05"}mm`,
-        paramsFeedback.exposicaoNormal && `Exposição normal: ${paramsFeedback.exposicaoNormal}s`,
-        paramsFeedback.exposicaoBase && `Exposição base: ${paramsFeedback.exposicaoBase}s`,
-        paramsFeedback.camadasBase && `Camadas base: ${paramsFeedback.camadasBase}`,
-      ].filter(Boolean);
-      await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "nao_satisfatoria", foto, configuracaoCliente: partesConfig.join(" | ") });
-      setMensagens((prev) => prev.map((m, i) => (i === indice ? { ...m, feedbackEnviado: "nao_satisfatoria" } : m)));
-      setFeedbackAberto(null);
-      setFotoFeedback(null);
-      setParamsFeedback({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" });
-    } catch {
-      setErroFeedback("Não consegui enviar seu feedback agora. Tente novamente.");
-    } finally { setEnviandoFeedback(false); }
-  }
-
-  if (carregandoHistorico) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "var(--text-muted)", fontSize: "0.86rem" }}>
-      Carregando seu histórico...
-    </div>
-  );
-
-  if (etapa === "contexto") return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, overflowY: "auto", padding: "4px" }}>
-      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "18px" }}>
-        Para respostas precisas, informe sua configuração antes de começar. É rápido — ou pule direto pro chat.
-      </p>
-
-      <div style={{ display: "grid", gap: "14px" }}>
-        <label className="q-field">
-          <span>Resina Quanton3D</span>
-          <select className="q-select" value={ctx.resina} onChange={(e) => setCtx((c) => ({ ...c, resina: e.target.value }))}>
-            <option value="">Selecione a resina (opcional)</option>
-            {RESINAS_BOT.map((r) => <option key={r} value={r}>{r}</option>)}
-          </select>
-        </label>
-
-        <label className="q-field">
-          <span>Impressora</span>
-          {impressorasBot.length > 0 ? (
-            <select className="q-select" value={ctx.impressora} onChange={(e) => setCtx((c) => ({ ...c, impressora: e.target.value }))}>
-              <option value="">Selecione a impressora (opcional)</option>
-              {impressorasBot.map((i) => <option key={i} value={i}>{i}</option>)}
-              <option value="Não sei / Outra">Não sei / Outra</option>
-            </select>
-          ) : (
-            <input className="q-input" value={ctx.impressora} onChange={(e) => setCtx((c) => ({ ...c, impressora: e.target.value }))} placeholder="Ex: Elegoo Mars 4 Ultra, Anycubic Photon M3..." />
-          )}
-        </label>
-
-        <label className="q-field">
-          <span>Altura de camada que está usando</span>
-          <select className="q-select" value={ctx.altura} onChange={(e) => setCtx((c) => ({ ...c, altura: e.target.value }))}>
-            <option value="0.01">0.01mm — máxima resolução</option>
-            <option value="0.02">0.02mm — alta resolução</option>
-            <option value="0.03">0.03mm — alta resolução</option>
-            <option value="0.04">0.04mm — resolução média-alta</option>
-            <option value="0.05">0.05mm — padrão recomendado</option>
-            <option value="0.06">0.06mm — padrão</option>
-            <option value="0.08">0.08mm — rápido</option>
-            <option value="0.10">0.10mm — máxima velocidade</option>
-          </select>
-        </label>
-      </div>
-
-      <button type="button" className="q-btn q-btn--primary q-btn--block" style={{ marginTop: "20px" }} onClick={iniciarChat}>
-        Iniciar atendimento com a IAQ3D <ArrowRight size={15} />
-      </button>
-      <button type="button" className="q-btn q-btn--ghost q-btn--block" style={{ marginTop: "8px" }} onClick={iniciarChat}>
-        <SkipForward size={14} /> Pular e começar sem informar configuração
-      </button>
-    </div>
-  );
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, minWidth: 0, width: "100%", overflow: "hidden" }}>
-      {(ctx.resina || ctx.impressora) && (
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", padding: "8px 4px", borderBottom: "1px solid var(--border-soft)", fontSize: "0.76rem", color: "var(--text-muted)" }}>
-          {ctx.resina && <span>{ctx.resina}</span>}
-          {ctx.impressora && <span>{ctx.impressora}</span>}
-          {ctx.altura && <span>{ctx.altura}mm</span>}
-          <button type="button" onClick={() => setEtapa("contexto")} style={{ marginLeft: "auto", color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontSize: "0.76rem", fontWeight: 700 }}>Alterar</button>
-        </div>
-      )}
-
-      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", overflowX: "hidden", width: "100%", minWidth: 0, boxSizing: "border-box", padding: "14px 6px", display: "flex", flexDirection: "column", gap: "12px" }}>
-        {mensagens.map((m, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", width: "100%", minWidth: 0, boxSizing: "border-box" }}>
-            <div
-              style={{ padding: "10px 14px", borderRadius: "var(--r-md)", background: m.isBot ? "var(--bg-raised)" : "rgba(47,123,255,0.12)", border: "1px solid " + (m.isBot ? "var(--border-soft)" : "rgba(47,123,255,0.3)"), color: "var(--text-primary)", fontSize: "0.9rem", lineHeight: 1.55, maxWidth: "min(88%, 640px)", boxSizing: "border-box", overflowWrap: "anywhere", wordBreak: "normal" }}
-              dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
-            />
-
-            {m.isBot && m.conversaId && !m.feedbackEnviado && feedbackAberto !== i && (
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px", padding: "0 2px" }}>
-                <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Essa resposta ajudou?</span>
-                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, true)} className="q-btn q-btn--sm q-btn--success">
-                  <ThumbsUp size={12} />
-                </button>
-                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, false)} className="q-btn q-btn--sm q-btn--danger">
-                  <ThumbsDown size={12} />
-                </button>
-              </div>
-            )}
-
-            {m.isBot && feedbackAberto === i && (
-              <div style={{ marginTop: "8px", padding: "12px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", border: "1px solid var(--border-soft)", width: "100%", maxWidth: "360px" }}>
-                <p style={{ margin: "0 0 10px", fontSize: "0.78rem", color: "var(--text-secondary)" }}>
-                  Confirma as configurações que está usando (o que souber) e manda uma foto do problema:
-                </p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "8px" }}>
-                  <input className="q-input" value={paramsFeedback.alturaCamada} onChange={(e) => setParamsFeedback((p) => ({ ...p, alturaCamada: e.target.value }))} placeholder={ctx.altura ? ctx.altura + "mm" : "Altura de camada"} style={{ fontSize: "0.78rem", padding: "7px 9px" }} />
-                  <input className="q-input" value={paramsFeedback.camadasBase} onChange={(e) => setParamsFeedback((p) => ({ ...p, camadasBase: e.target.value }))} placeholder="Camadas base" style={{ fontSize: "0.78rem", padding: "7px 9px" }} />
-                  <input className="q-input" value={paramsFeedback.exposicaoNormal} onChange={(e) => setParamsFeedback((p) => ({ ...p, exposicaoNormal: e.target.value }))} placeholder="Exposição normal (s)" style={{ fontSize: "0.78rem", padding: "7px 9px" }} />
-                  <input className="q-input" value={paramsFeedback.exposicaoBase} onChange={(e) => setParamsFeedback((p) => ({ ...p, exposicaoBase: e.target.value }))} placeholder="Exposição base (s)" style={{ fontSize: "0.78rem", padding: "7px 9px" }} />
-                </div>
-                <label style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px", borderRadius: "var(--r-sm)", border: "1px dashed var(--border-soft)", cursor: "pointer", marginBottom: "8px", fontSize: "0.76rem", color: fotoFeedback ? "var(--q-verde)" : "var(--text-muted)" }}>
-                  <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => setFotoFeedback(e.target.files?.[0] || null)} />
-                  <Camera size={13} /> {fotoFeedback ? fotoFeedback.name : "Anexar foto (opcional)"}
-                </label>
-                {erroFeedback && <div className="q-alert q-alert--error" style={{ marginBottom: "8px", fontSize: "0.76rem", padding: "8px 11px" }}>{erroFeedback}</div>}
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <button type="button" className="q-btn q-btn--primary q-btn--sm" onClick={() => confirmarFeedbackNegativo(m.conversaId, i)} disabled={enviandoFeedback} style={{ flex: 1 }}>
-                    {enviandoFeedback ? "Enviando..." : "Enviar para análise"}
-                  </button>
-                  <button type="button" className="q-btn q-btn--ghost q-btn--sm" onClick={() => { setFeedbackAberto(null); setFotoFeedback(null); setParamsFeedback({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" }); }}>
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {m.isBot && m.feedbackEnviado && (
-              <span style={{ marginTop: "6px", fontSize: "0.72rem", color: m.feedbackEnviado === "satisfatoria" ? "var(--q-verde)" : "var(--q-laranja)" }}>
-                {m.feedbackEnviado === "satisfatoria" ? "Obrigado pelo retorno!" : "Enviado para a equipe analisar. Obrigado!"}
-              </span>
-            )}
-          </div>
-        ))}
-        {pensando && <div style={{ alignSelf: "flex-start", padding: "10px 14px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", border: "1px solid var(--border-soft)", color: "var(--text-muted)", fontSize: "0.86rem" }}>Analisando base técnica...</div>}
-      </div>
-
-      <ChatInput onEnviar={enviar} pensando={pensando} modo={modo} onModoChange={setModo} />
-    </div>
-  );
-}
-
-export default BotChat;
+export default router;
