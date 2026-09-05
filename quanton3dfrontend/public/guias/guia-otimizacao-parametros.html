@@ -1,603 +1,170 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia de Otimização e Pós-Processamento - Quanton3D</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Guia técnico Quanton3D para lavagem, secagem, remoção de suportes, pós-cura, acabamento e controle de qualidade de peças impressas em resina." />
+    <title>Pós-processamento de Resina | Quanton3D</title>
+    <link rel="stylesheet" href="base-guia.css" />
+    <link rel="stylesheet" href="/guias/guia-padrao.css" />
+    <script src="/guias/guia-padrao.js" defer></script>
     <style>
-    :root {
-        --bg:#060e1e; --surface:#0a1425; --card:#0f1e35;
-        --border:rgba(79,209,255,0.15); --cyan:#4fd1ff; --purple:#b89cff;
-        --green:#49e68b; --yellow:#ffd166; --red:#ff6b8a;
-        --text:#c5d8e8; --title:#eaf7ff;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding:20px; }
-    .container { max-width:960px; margin:0 auto; background:var(--surface); border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5); }
-    .header { background:linear-gradient(135deg,rgba(21,101,192,0.4),rgba(123,31,162,0.3)); border-bottom:1px solid var(--border); padding:40px 36px 32px; text-align:center; position:relative; }
-    .header::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(79,209,255,0.07) 0%,transparent 70%); pointer-events:none; }
-    .logo { display:inline-block; padding:4px 16px; border-radius:999px; background:rgba(79,209,255,0.1); border:1px solid rgba(79,209,255,0.3); color:var(--cyan); font-size:0.75rem; font-weight:700; letter-spacing:0.1em; margin-bottom:14px; }
-    .header h1 { font-size:clamp(1.4rem,3.5vw,2rem); font-weight:900; background:linear-gradient(135deg,#4fd1ff,#b89cff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
-    .header p { font-size:0.9rem; color:#9fb4c7; }
-    .content { padding:32px 36px 40px; }
-    .intro { background:rgba(79,209,255,0.05); border:1px solid var(--border); border-radius:12px; padding:22px 26px; margin-bottom:24px; }
-    .intro h2 { font-size:1rem; color:var(--cyan); font-weight:800; margin-bottom:10px; }
-    .intro p { font-size:0.88rem; }
-    .step { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:26px; margin:18px 0; transition:border-color 0.2s; }
-    .step:hover { border-color:rgba(79,209,255,0.3); }
-    .step-number { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#1565c0,#7c3aed); color:#fff; font-size:1.1rem; font-weight:900; margin-bottom:14px; box-shadow:0 4px 14px rgba(79,209,255,0.2); }
-    .step h3 { font-size:1rem; font-weight:800; color:var(--title); margin-bottom:14px; }
-    .step-image { width:100%; max-width:720px; height:auto; border-radius:10px; margin:16px auto; display:block; border:1px solid var(--border); box-shadow:0 8px 28px rgba(0,0,0,0.4); object-fit:cover; }
-    .step-description { font-size:0.88rem; margin-bottom:12px; }
-    .step-list { list-style:none; margin:12px 0; display:grid; gap:7px; }
-    .step-list li { background:rgba(255,255,255,0.02); border:1px solid rgba(79,209,255,0.07); border-left:3px solid var(--cyan); border-radius:7px; padding:10px 14px; font-size:0.865rem; }
-    .step-list li strong { color:var(--cyan); }
-    .tip-box { background:rgba(73,230,139,0.05); border:1px solid rgba(73,230,139,0.18); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .tip-box h3,.tip-box h4 { color:var(--green); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .tip-box p,.tip-box ul { font-size:0.84rem; color:#9fcfad; line-height:1.65; }
-    .warning-box { background:rgba(255,209,102,0.05); border:1px solid rgba(255,209,102,0.2); border-left:3px solid var(--yellow); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .warning-box h3,.warning-box h4 { color:var(--yellow); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .warning-box p { font-size:0.84rem; color:#c9a84c; line-height:1.65; }
-    .error-box { background:rgba(255,107,138,0.05); border:1px solid rgba(255,107,138,0.18); border-left:3px solid var(--red); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .error-box h3,.error-box h4 { color:var(--red); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .error-box p { font-size:0.84rem; color:#c49aab; line-height:1.65; }
-    .info-box { background:rgba(184,156,255,0.05); border:1px solid rgba(184,156,255,0.2); border-left:3px solid var(--purple); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .info-box h3,.info-box h4 { color:var(--purple); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .info-box p { font-size:0.84rem; color:#b8a8d4; line-height:1.65; }
-    .materials { background:rgba(73,230,139,0.04); border:1px solid rgba(73,230,139,0.18); border-radius:12px; padding:22px 26px; margin:24px 0; }
-    .materials h3 { color:var(--green); font-size:1rem; font-weight:800; margin-bottom:14px; }
-    .materials ul { list-style:none; }
-    .materials li { padding:8px 0; border-bottom:1px solid rgba(73,230,139,0.08); font-size:0.875rem; display:flex; align-items:center; gap:10px; }
-    .materials li:last-child { border-bottom:none; }
-    .materials li:before { content:'✓'; color:var(--green); font-weight:900; flex-shrink:0; }
-    .problem-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
-    .problem-card { background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:10px; padding:16px; }
-    .problem-card h4 { color:var(--cyan); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .problem-card p { font-size:0.82rem; }
-    .footer { background:rgba(0,0,0,0.25); border-top:1px solid var(--border); padding:28px 36px; text-align:center; }
-    .footer h3 { color:var(--cyan); font-size:1rem; margin-bottom:12px; font-weight:800; }
-    .footer p { font-size:0.84rem; color:#9fb4c7; margin:6px 0; }
-    .footer a { color:var(--cyan); text-decoration:none; font-weight:700; }
-    .footer a:hover { text-decoration:underline; }
-    p { font-size:0.88rem; margin:8px 0; }
-    ul:not(.step-list):not(.materials ul) { padding-left:20px; margin:8px 0; }
-    ul:not(.step-list) li { font-size:0.88rem; margin:4px 0; }
-    @media(max-width:640px) { body{padding:10px;} .content{padding:20px 16px 32px;} .header{padding:28px 16px 22px;} .step{padding:18px 14px;} .problem-grid{grid-template-columns:1fr;} }
-</style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🎨 Guia de Otimização e Pós-Processamento Avançado</h1>
-            <p>Transforme suas impressões em peças profissionais de alta qualidade</p>
-        </header>
+      .flow,.process-grid,.failure-grid{display:grid;gap:12px}.flow{grid-template-columns:repeat(6,minmax(0,1fr))}.process-grid,.failure-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .flow article,.process-card,.failure-card{padding:15px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025)}
+      .flow b,.process-card b,.failure-card b{display:block;margin-bottom:6px;color:var(--cyan)}
+      .flow span,.process-card span,.failure-card span{color:var(--muted);font-size:.83rem}
+      .process-card ul,.failure-card ul{margin:9px 0 0;padding-left:19px;color:var(--muted);font-size:.84rem}.process-card li+li,.failure-card li+li{margin-top:5px}
+      .matrix{width:100%;border-collapse:collapse;font-size:.82rem}.matrix th,.matrix td{padding:11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}.matrix th{color:var(--cyan);font-size:.71rem;letter-spacing:.04em;text-transform:uppercase}.matrix tr:last-child td{border-bottom:0}
+      .advisor select{width:100%;margin:7px 0 14px;padding:11px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--title)}.advisor label{color:var(--title);font-size:.86rem;font-weight:700}.advisor-result{min-height:280px;border-left:3px solid var(--cyan-strong)}.advisor-result ol{margin:10px 0 0;padding-left:20px}.advisor-result li{margin:7px 0;color:var(--muted);font-size:.86rem}
+      .tag{display:inline-flex;margin-bottom:9px;padding:3px 9px;border:1px solid rgba(79,209,255,.25);border-radius:999px;color:var(--cyan);font-size:.69rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+      @media(max-width:900px){.flow{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.flow,.process-grid,.failure-grid{grid-template-columns:1fr}.matrix{min-width:650px}.table-scroll{overflow-x:auto}}
+    </style>
+  </head>
+  <body>
+    <nav class="guidenav" aria-label="Seções deste guia"><div class="guidenav-track"><a href="#fluxo">Fluxo</a><a href="#seguranca">Segurança</a><a href="#lavagem">Lavagem</a><a href="#secagem">Secagem</a><a href="#suportes">Suportes</a><a href="#cura">Pós-cura</a><a href="#aplicacoes">Aplicações</a><a href="#acabamento">Acabamento</a><a href="#falhas">Falhas</a><a href="#assistente">Assistente</a><a href="#controle">Controle</a><a href="#fontes">Fontes</a></div></nav>
+    <div class="page">
+      <header class="hero">
+        <div class="eyebrow">Guia técnico Quanton3D</div>
+        <h1>Pós-processamento de peças em resina</h1>
+        <p>Transforme a peça verde em componente final com lavagem, secagem, pós-cura e acabamento compatíveis com a resina e sua aplicação.</p>
+        <div class="hero-meta" aria-label="O que este guia cobre"><span>Lavagem controlada</span><span>Secagem completa</span><span>Pós-cura validada</span><span>Inspeção final</span></div>
+      </header>
+      <main>
+        <figure class="evidence"><img src="images/cura-uv-processo.jpg" alt="Peças de resina organizadas para pós-cura uniforme" /><figcaption>Pós-processamento não é cosmético: ele altera conversão, propriedades mecânicas, estabilidade dimensional, superfície e segurança de uso.</figcaption></figure>
+        <section class="summary" aria-labelledby="resumo">
+          <div class="summary-card"><h2 id="resumo">Regra central</h2><p>Resina, solvente e equipamento formam um processo validado. Não copie tempo de lavagem, temperatura ou dose de pós-cura de outro material.</p></div>
+          <aside class="attention"><h2>Peça “seca” não significa limpa</h2><p>Solvente contaminado pode evaporar e deixar resina dissolvida na superfície. Pegajosidade pede diagnóstico da lavagem antes de mais UV.</p></aside>
+        </section>
 
-        <div class="content">
-            <div class="intro">
-                <h2>Do Bruto ao Perfeito</h2>
-                <p>Este guia completo ensina técnicas profissionais de pós-processamento para transformar suas impressões 3D em peças com acabamento de nível industrial. Aprenda cura UV otimizada, lixamento profissional, polimento, pintura e acabamentos especiais!</p>
-            </div>
+        <section class="topic" aria-labelledby="fluxo">
+          <div class="topic-head"><div class="topic-num">1</div><div><h2 id="fluxo">Fluxo completo e rastreável</h2><p>A ordem reduz contaminação cruzada e impede que resina superficial seja curada sobre a peça.</p></div></div>
+          <div class="flow">
+            <article><b>1 · Drenar</b><span>Deixe o excesso retornar sem expor a peça à luz ambiente.</span></article>
+            <article><b>2 · Lavar</b><span>Remova resina líquida com solvente e método compatíveis.</span></article>
+            <article><b>3 · Secar</b><span>Elimine solvente de superfícies, furos e cavidades.</span></article>
+            <article><b>4 · Preparar</b><span>Remova suportes na etapa indicada e proteja áreas funcionais.</span></article>
+            <article><b>5 · Curar</b><span>Aplique o ciclo validado, com acesso uniforme de luz e calor.</span></article>
+            <article><b>6 · Inspecionar</b><span>Verifique dimensão, superfície, limpeza e função antes de liberar.</span></article>
+          </div>
+          <div class="callout warn" style="margin-top:13px"><b>Ordem crítica:</b> lavar e secar completamente antes da pós-cura. Curar solvente ou resina residual pode gerar manchas, pegajosidade, fissuras e perda dimensional.</div>
+        </section>
 
-            <!-- SEÇÃO 1: CURA UV OTIMIZADA -->
-            <div class="section-card">
-                <h2>
-                    <div class="section-icon">☀️</div>
-                    1. Cura UV Otimizada
-                </h2>
-                <p><strong>Objetivo:</strong> Completar a polimerização da resina para máxima resistência e estabilidade dimensional.</p>
+        <section class="topic" aria-labelledby="seguranca">
+          <div class="topic-head"><div class="topic-num">2</div><div><h2 id="seguranca">Segurança química, UV e mecânica</h2><p>A peça recém-impressa continua coberta de material não curado e deve ser tratada como parte do sistema químico.</p></div></div>
+          <div class="process-grid">
+            <article class="process-card"><span class="tag">EPI</span><b>Evite contato e respingo</b><ul><li>Consulte a FISPQ/SDS da resina e do solvente.</li><li>Use luvas químicas compatíveis, proteção ocular e roupa de trabalho.</li><li>Não lave pele com IPA ou outro solvente; use água e sabão.</li><li>Troque luvas contaminadas e não toque maçanetas, telefone ou teclado.</li></ul></article>
+            <article class="process-card"><span class="tag">Ambiente</span><b>Controle vapor, fogo e luz</b><ul><li>Use ventilação adequada ao produto e ao volume processado.</li><li>Mantenha solventes inflamáveis fechados e longe de ignição.</li><li>Não observe LEDs UV ativos sem proteção e enclausuramento apropriados.</li><li>Guarde peças verdes e resíduos fora da luz solar.</li></ul></article>
+          </div>
+          <div class="callout danger" style="margin-top:13px"><b>Lavável em água não significa descartável na pia:</b> a água de lavagem contém resina não curada. Gerencie-a como resíduo contaminado conforme FISPQ/SDS e legislação local.</div>
+        </section>
 
-                <img src="images/cura-uv-processo.jpg" alt="Processo de cura UV" class="section-image">
+        <section class="topic" aria-labelledby="lavagem">
+          <div class="topic-head"><div class="topic-num">3</div><div><h2 id="lavagem">Lavagem: remover sem saturar ou degradar</h2><p>Eficiência depende de compatibilidade, limpeza do banho, agitação, acesso geométrico e limite de contato do material.</p></div></div>
+          <div class="process-grid">
+            <article class="process-card"><b>Escolha do meio de lavagem</b><ul><li>Use apenas solvente ou água autorizados na ficha técnica da resina.</li><li>Confirme concentração quando ela fizer parte do processo validado.</li><li>Não misture produtos desconhecidos nem suponha que “mais forte” limpa melhor.</li><li>Materiais especiais podem trincar, inchar ou perder superfície por contato excessivo.</li></ul></article>
+            <article class="process-card"><b>Estratégia de dois estágios</b><ul><li>Quando compatível, use primeiro banho para retirar a maior carga de resina.</li><li>Use segundo banho mais limpo para acabamento da superfície.</li><li>Mantenha peças separadas para o fluido alcançar detalhes.</li><li>Monitore a condição do banho; aparência transparente não garante baixa saturação.</li></ul></article>
+            <article class="process-card"><b>Geometrias críticas</b><ul><li>Oriente furos para permitir entrada e saída do fluido.</li><li>Lave cavidades por dentro, sem aprisionar bolsões de resina/solvente.</li><li>Use agitação compatível com peças delicadas e suportes finos.</li><li>Não sele cavidade antes de confirmar limpeza e drenagem internas.</li></ul></article>
+            <article class="process-card"><b>Ponto de parada</b><ul><li>A superfície deve sair sem filme oleoso ou regiões brilhantes de resina.</li><li>Se continuar pegajosa após secar, repita com banho limpo e reveja saturação.</li><li>Não prolongue indefinidamente: sobrelavagem pode afetar algumas resinas.</li><li>Registre banho, condição, método e resultado — não apenas o tempo.</li></ul></article>
+          </div>
+        </section>
 
-                <div class="step-by-step">
-                    <h3>📋 Passo a Passo da Cura UV</h3>
+        <section class="topic" aria-labelledby="secagem">
+          <div class="topic-head"><div class="topic-num">4</div><div><h2 id="secagem">Secagem e inspeção antes da luz</h2><p>Solvente retido é uma variável de defeito. Cavidades, texturas e paredes finas precisam de atenção especial.</p></div></div>
+          <div class="split-2">
+            <div class="panel"><h3>Critérios de peça pronta para curar</h3><ul class="panel-list"><li>Superfície visualmente uniforme, sem brilho de líquido.</li><li>Odor e massa estabilizados conforme o processo interno, quando monitorados.</li><li>Furos e cavidades drenados, sem gota ao reposicionar.</li><li>Ausência de regiões pegajosas após evaporação completa.</li><li>Ar comprimido, quando permitido, limpo, seco e com pressão que não danifique a peça.</li></ul></div>
+            <div class="panel"><h3>Se a superfície continua pegajosa</h3><ul class="panel-list"><li>Não tente “selar” imediatamente com mais UV.</li><li>Verifique banho saturado, acesso insuficiente e resina residual.</li><li>Compare área exposta com região entre suportes ou dentro de cavidade.</li><li>Repita a limpeza com meio compatível e mais limpo.</li><li>Se persistir após lavagem correta, investigue impressão, mistura e material.</li></ul></div>
+          </div>
+        </section>
 
-                    <div class="step">
-                        <strong>Passo 1: Limpeza Completa</strong>
-                        Lave a peça em IPA 99% por 3-5 minutos, agitando suavemente. Remova toda resina não curada.
-                    </div>
+        <section class="topic" aria-labelledby="suportes">
+          <div class="topic-head"><div class="topic-num">5</div><div><h2 id="suportes">Remoção de suportes e proteção dimensional</h2><p>Remover antes ou depois da pós-cura muda força necessária, marca e risco de deformação. A decisão depende do material e da geometria.</p></div></div>
+          <div class="process-grid">
+            <article class="process-card"><b>Remoção no estado verde</b><span>Normalmente exige menos força e pode reduzir lascamento, mas a peça ainda está mais flexível e vulnerável a deformação. Apoie a geometria e use ferramenta controlada.</span></article>
+            <article class="process-card"><b>Remoção após pós-cura</b><span>Pode preservar geometrias que precisam do suporte durante a cura, porém contatos ficam mais rígidos e podem marcar ou fraturar. Use quando o fluxo validado exigir.</span></article>
+            <article class="process-card"><b>Áreas funcionais</b><span>Não coloque alicate sobre margem odontológica, encaixe, rosca, vedação ou superfície calibrada. Corte o tronco e aproxime o acabamento em etapas.</span></article>
+            <article class="process-card"><b>Controle de empenamento</b><span>Peças finas precisam de apoio uniforme durante secagem e cura. Não force a peça quente ou verde para “corrigir” medida sem processo validado.</span></article>
+          </div>
+        </section>
 
-                    <div class="step">
-                        <strong>Passo 2: Secagem</strong>
-                        Deixe secar completamente ao ar livre por 10-15 minutos. Não cure peças molhadas!
-                    </div>
+        <section class="topic" aria-labelledby="cura">
+          <div class="topic-head"><div class="topic-num">6</div><div><h2 id="cura">Pós-cura: dose, temperatura e geometria</h2><p>Tempo sozinho não define cura. Irradiância, espectro, distância, temperatura, rotação, acesso à luz e espessura alteram o resultado.</p></div></div>
+          <div class="split-2">
+            <figure class="evidence" style="margin:0"><img src="images/cura-uv-processo.jpg" alt="Câmara de pós-cura iluminando peças de resina em múltiplas direções" /><figcaption>Use o ciclo Quanton3D validado para a resina, aplicação e equipamento de cura.</figcaption></figure>
+            <div class="panel"><h3>Antes de iniciar</h3><ul class="panel-list"><li>Confirme peça lavada e totalmente seca.</li><li>Selecione o ciclo da resina e da versão/lote aplicável.</li><li>Distribua peças sem sombrear superfícies críticas.</li><li>Verifique rotação, refletores, LEDs e temperatura real do equipamento.</li><li>Para cavidades, assegure acesso de luz interna quando o processo exigir.</li></ul></div>
+          </div>
+          <div class="failure-grid" style="margin-top:14px">
+            <article class="failure-card"><b>Cura insuficiente</b><span>Pode deixar conversão e propriedades abaixo do especificado. Superfície, rigidez e cor isoladas não comprovam cura completa.</span></article>
+            <article class="failure-card"><b>Cura desigual</b><span>Sombreamento e gradiente térmico podem induzir diferença de propriedades, empenamento e desvio dimensional.</span></article>
+            <article class="failure-card"><b>Cura excessiva ou ciclo inadequado</b><span>Pode alterar cor, tenacidade e dimensão. “Mais tempo” não é garantia de melhor desempenho.</span></article>
+            <article class="failure-card"><b>Cura submersa em água</b><span>Não é regra universal. Só aplique quando a ficha técnica e a validação do material determinarem recipiente, água e ciclo compatíveis.</span></article>
+          </div>
+        </section>
 
-                    <div class="step">
-                        <strong>Passo 3: Pré-Cura em Água (Opcional)</strong>
-                        Submerja a peça em água limpa dentro da câmara UV. Isso reduz amarelamento e melhora transparência.
-                    </div>
+        <section class="topic" aria-labelledby="aplicacoes">
+          <div class="topic-head"><div class="topic-num">7</div><div><h2 id="aplicacoes">Aplicações que exigem fluxo próprio</h2><p>O uso final define quais etapas podem ou não ser modificadas.</p></div></div>
+          <div class="process-grid">
+            <article class="process-card"><span class="tag">Odontologia</span><b>Biocompatibilidade depende do processo completo</b><ul><li>Use combinação validada de impressora, resina, lavagem e pós-cura.</li><li>Não troque solvente, tempo, temperatura ou equipamento por conveniência.</li><li>Proteja margens, superfícies de assentamento e canais.</li><li>Execute inspeção, limpeza e documentação exigidas pela indicação.</li></ul></article>
+            <article class="process-card"><span class="tag">Calcinável</span><b>Resíduo superficial vira defeito de fundição</b><ul><li>Garanta drenagem e limpeza de detalhes antes da cura.</li><li>Evite pasta de polimento ou revestimento incompatíveis com queima.</li><li>Siga o ciclo de pós-cura e burnout da resina/revestimento.</li><li>Registre massa, geometria e orientação quando houver variação.</li></ul></article>
+            <article class="process-card"><span class="tag">Flexível</span><b>Solvente e cura alteram resposta mecânica</b><ul><li>Evite sobrelavagem, deformação ao remover suportes e cura improvisada.</li><li>Compare dobra, recuperação e pegajosidade somente após ciclo completo.</li><li>Não julgue a flexibilidade final no estado verde.</li></ul></article>
+            <article class="process-card"><span class="tag">Translúcida</span><b>Clareza exige superfície e cura homogêneas</b><ul><li>Remova toda resina residual antes de polir ou revestir.</li><li>Controle riscos, índice do revestimento, oxigênio e amarelamento.</li><li>Não prometa transparência por cura em água sem validação.</li></ul></article>
+          </div>
+        </section>
 
-                    <div class="step">
-                        <strong>Passo 4: Cura UV Principal</strong>
-                        Cure por 5-10 minutos, virando a peça a cada 2 minutos para exposição uniforme.
-                    </div>
+        <section class="topic" aria-labelledby="acabamento">
+          <div class="topic-head"><div class="topic-num">8</div><div><h2 id="acabamento">Lixamento, polimento e pintura</h2><p>Finalize somente depois de atingir a condição de cura indicada, salvo procedimento específico do material.</p></div></div>
+          <div class="split-2">
+            <figure class="evidence" style="margin:0"><img src="images/lixamento-profissional.jpg" alt="Lixamento controlado de uma peça de resina já lavada e curada" /><figcaption>Remova material aos poucos e preserve cotas, encaixes, margens e superfícies de contato.</figcaption></figure>
+            <div class="panel"><h3>Acabamento seguro e controlado</h3><ul class="panel-list"><li>Use proteção ocular e controle de poeira adequado.</li><li>Escolha abrasivo e progressão conforme a superfície inicial e o acabamento desejado.</li><li>Lixamento úmido só deve usar líquido compatível com a peça e o destino.</li><li>Evite aquecimento localizado durante lixa, fresa ou polimento.</li><li>Não use pasta, primer ou tinta em aplicações funcionais sem compatibilidade.</li><li>Meça novamente depois de remover suporte e acabamento.</li></ul></div>
+          </div>
+        </section>
 
-                    <div class="step">
-                        <strong>Passo 5: Resfriamento</strong>
-                        Deixe esfriar naturalmente. Não exponha a mudanças bruscas de temperatura.
-                    </div>
-                </div>
+        <section class="topic" aria-labelledby="falhas">
+          <div class="topic-head"><div class="topic-num">9</div><div><h2 id="falhas">Diagnóstico por evidência</h2><p>Relacione o defeito à etapa em que apareceu antes de repetir todo o processo.</p></div></div>
+          <div class="panel table-scroll"><table class="matrix"><thead><tr><th>Sintoma</th><th>Hipóteses prioritárias</th><th>Teste discriminante</th></tr></thead><tbody>
+            <tr><td>Pegajosa após secar</td><td>Banho saturado, acesso ruim, resina residual ou lavagem incompatível</td><td>Repetir com banho limpo e comparar áreas abertas/cavidades</td></tr>
+            <tr><td>Mancha branca ou opaca</td><td>Resíduo, água/solvente retido, secagem inadequada ou microfissura</td><td>Observar quando surge: lavagem, secagem ou cura</td></tr>
+            <tr><td>Trinca depois da cura</td><td>Solvente preso, ciclo térmico, parede fina, tensão ou material incompatível</td><td>Comparar peça totalmente seca e geometria de controle</td></tr>
+            <tr><td>Empenamento</td><td>Apoio desigual, cura unilateral, calor, remoção precoce ou geometria fina</td><td>Curar apoiada e com iluminação uniforme, mantendo o mesmo lote</td></tr>
+            <tr><td>Perda de encaixe</td><td>Impressão, absorção de solvente, contração de cura ou acabamento excessivo</td><td>Medir após cada etapa para localizar quando a dimensão mudou</td></tr>
+            <tr><td>Amarelamento</td><td>Ciclo, espectro, calor, oxidação, lavagem ou envelhecimento do material</td><td>Comparar corpos de prova com ciclo e espessura controlados</td></tr>
+          </tbody></table></div>
+        </section>
 
-                <div class="highlight-box">
-                    <h3>⏱️ Tempos de Cura Recomendados</h3>
-                    <table>
-                        <tr>
-                            <th>Tipo de Resina</th>
-                            <th>Tempo de Cura</th>
-                            <th>Temperatura</th>
-                        </tr>
-                        <tr>
-                            <td>Resina Standard (Spin+)</td>
-                            <td>5-8 minutos</td>
-                            <td>40-60°C</td>
-                        </tr>
-                        <tr>
-                            <td>Resina Tough/ABS-Like</td>
-                            <td>8-12 minutos</td>
-                            <td>50-70°C</td>
-                        </tr>
-                        <tr>
-                            <td>Resina Flexível</td>
-                            <td>3-5 minutos</td>
-                            <td>30-40°C</td>
-                        </tr>
-                        <tr>
-                            <td>Resina Dental</td>
-                            <td>10-15 minutos</td>
-                            <td>60-80°C</td>
-                        </tr>
-                        <tr>
-                            <td>Resina Transparente</td>
-                            <td>5-8 minutos (em água)</td>
-                            <td>40-50°C</td>
-                        </tr>
-                    </table>
-                </div>
+        <section class="topic" aria-labelledby="assistente">
+          <div class="topic-head"><div class="topic-num">10</div><div><h2 id="assistente">Assistente de pós-processamento</h2><p>Escolha o sintoma e a etapa em que apareceu para receber a primeira rota de verificação.</p></div></div>
+          <div class="split-2">
+            <div class="panel advisor"><label for="symptom">Sintoma principal</label><select id="symptom"><option value="tacky">Superfície pegajosa</option><option value="crack">Trinca ou microfissura</option><option value="warp">Empenamento</option><option value="fit">Perda de dimensão ou encaixe</option><option value="yellow">Amarelamento ou mudança de cor</option></select><label for="stage">Quando apareceu?</label><select id="stage"><option value="wash">Durante/depois da lavagem</option><option value="dry">Durante a secagem</option><option value="cure">Durante/depois da pós-cura</option><option value="finish">Durante acabamento ou uso</option></select></div>
+            <div class="panel advisor-result" id="advisorResult" aria-live="polite"></div>
+          </div>
+        </section>
 
-                <div class="tip-box">
-                    <strong>💡 Dica Profissional - Cura em Água:</strong>
-                    Para peças transparentes ou translúcidas, cure sempre submerso em água! Isso reduz drasticamente o amarelamento causado pelo oxigênio e melhora a claridade óptica em até 80%.
-                </div>
+        <section class="topic" aria-labelledby="controle">
+          <div class="topic-head"><div class="topic-num">11</div><div><h2 id="controle">Registro e liberação da peça</h2><p>A rastreabilidade permite separar variação do material, equipamento, operador e geometria.</p></div></div>
+          <div class="split-2">
+            <div class="panel"><h3>Registre</h3><ul class="panel-list"><li>Resina, cor, lote, impressora e data de fabricação.</li><li>Meio de lavagem, identificação dos banhos e condição/saturação.</li><li>Método de agitação, ciclo e geometria de posicionamento.</li><li>Tempo real de secagem e inspeção de cavidades.</li><li>Câmara, programa, temperatura, irradiância disponível e posição.</li><li>Momento de remoção dos suportes e acabamento aplicado.</li></ul></div>
+            <div class="panel"><h3>Libere somente após</h3><ul class="panel-list"><li>Superfície limpa, seca e sem resina não curada.</li><li>Cavidades drenadas e processadas internamente.</li><li>Pós-cura correspondente à ficha técnica concluída.</li><li>Dimensões e encaixes críticos verificados.</li><li>Ausência de trinca, empenamento e delaminação.</li><li>Requisitos específicos da aplicação atendidos e documentados.</li></ul></div>
+          </div>
+        </section>
 
-                <div class="warning-box">
-                    <strong>⚠️ Cuidado com Super-Cura:</strong>
-                    Excesso de cura UV causa amarelamento, fragilidade e perda de detalhes. Siga os tempos recomendados e não deixe a peça "esquecida" na câmara UV!
-                </div>
-            </div>
-
-            <!-- SEÇÃO 2: LIXAMENTO PROFISSIONAL -->
-            <div class="section-card">
-                <h2>
-                    <div class="section-icon">📐</div>
-                    2. Lixamento Profissional
-                </h2>
-                <p><strong>Objetivo:</strong> Remover marcas de camadas, suportes e imperfeições para criar superfície lisa e uniforme.</p>
-
-                <img src="images/lixamento-profissional.jpg" alt="Técnicas de lixamento" class="section-image">
-
-                <div class="highlight-box">
-                    <h3>🔢 Progressão de Grãos de Lixa</h3>
-                    <p>O segredo do lixamento profissional está na progressão gradual dos grãos:</p>
-                    <table>
-                        <tr>
-                            <th>Grão</th>
-                            <th>Uso</th>
-                            <th>Quando Usar</th>
-                        </tr>
-                        <tr>
-                            <td>180-220</td>
-                            <td>Desbaste inicial</td>
-                            <td>Remover marcas de suportes, layer lines grossas</td>
-                        </tr>
-                        <tr>
-                            <td>320-400</td>
-                            <td>Lixamento médio</td>
-                            <td>Suavizar superfície após desbaste</td>
-                        </tr>
-                        <tr>
-                            <td>600-800</td>
-                            <td>Lixamento fino</td>
-                            <td>Preparar para polimento ou pintura</td>
-                        </tr>
-                        <tr>
-                            <td>1000-1500</td>
-                            <td>Lixamento extra-fino</td>
-                            <td>Pré-polimento, acabamento fosco</td>
-                        </tr>
-                        <tr>
-                            <td>2000-3000</td>
-                            <td>Polimento inicial</td>
-                            <td>Preparar para polimento espelhado</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="step-by-step">
-                    <h3>📋 Técnica de Lixamento Correto</h3>
-
-                    <div class="step">
-                        <strong>1. Wet Sanding (Lixamento Úmido)</strong>
-                        Sempre lixe com água! Isso evita poeira tóxica, reduz atrito e melhora o acabamento. Use água corrente ou bacia com água limpa.
-                    </div>
-
-                    <div class="step">
-                        <strong>2. Movimentos Circulares</strong>
-                        Faça movimentos circulares suaves e constantes. Não pressione demais! Deixe a lixa fazer o trabalho.
-                    </div>
-
-                    <div class="step">
-                        <strong>3. Troque de Direção</strong>
-                        Alterne entre movimentos horizontais, verticais e circulares para evitar marcas direcionais.
-                    </div>
-
-                    <div class="step">
-                        <strong>4. Limpe Entre Grãos</strong>
-                        Lave e seque a peça completamente antes de mudar para o próximo grão de lixa.
-                    </div>
-
-                    <div class="step">
-                        <strong>5. Verifique Constantemente</strong>
-                        Seque a peça e inspecione contra a luz para identificar imperfeições restantes.
-                    </div>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Dica Profissional - Lixadeira Rotativa:</strong>
-                    Para peças grandes, use lixadeira orbital com velocidade baixa (3000-5000 RPM). Para detalhes finos, sempre use lixamento manual para controle total.
-                </div>
-
-                <div class="warning-box">
-                    <strong>⚠️ Nunca Pule Grãos:</strong>
-                    Pular grãos de lixa deixa arranhões profundos que não saem nos grãos seguintes. Sempre siga a progressão: 220 → 400 → 600 → 800 → 1000 → 1500 → 2000.
-                </div>
-            </div>
-
-            <!-- SEÇÃO 3: POLIMENTO -->
-            <div class="section-card">
-                <h2>
-                    <div class="section-icon">✨</div>
-                    3. Polimento para Acabamento Espelhado
-                </h2>
-                <p><strong>Objetivo:</strong> Criar superfície brilhante e reflexiva de nível profissional.</p>
-
-                <img src="images/antes-depois-polimento.jpg" alt="Antes e depois do polimento" class="section-image">
-
-                <div class="step-by-step">
-                    <h3>📋 Processo de Polimento</h3>
-
-                    <div class="step">
-                        <strong>Etapa 1: Polimento Grosso</strong>
-                        Use pasta de polir grossa (verde) com roda de algodão. Remove arranhões finos do lixamento 2000-3000.
-                    </div>
-
-                    <div class="step">
-                        <strong>Etapa 2: Polimento Médio</strong>
-                        Use pasta de polir média (marrom/vermelha) com roda de flanela. Aumenta o brilho gradualmente.
-                    </div>
-
-                    <div class="step">
-                        <strong>Etapa 3: Polimento Fino</strong>
-                        Use pasta de polir fina (branca/azul) com roda de feltro. Cria brilho intenso.
-                    </div>
-
-                    <div class="step">
-                        <strong>Etapa 4: Polimento Espelhado</strong>
-                        Use pasta de polir espelhado (rosa/diamante) com roda de microfibra. Acabamento final reflexivo.
-                    </div>
-
-                    <div class="step">
-                        <strong>Etapa 5: Limpeza Final</strong>
-                        Lave com água e sabão neutro para remover resíduos de pasta. Seque com pano microfibra.
-                    </div>
-                </div>
-
-                <div class="tools-grid">
-                    <div class="tool-card">
-                        <h4>🔧 Ferramentas Necessárias</h4>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>✓ Politriz rotativa (1500-3000 RPM)</li>
-                            <li>✓ Rodas de polimento (algodão, flanela, feltro)</li>
-                            <li>✓ Pastas de polir (4 grãos)</li>
-                            <li>✓ Panos de microfibra</li>
-                        </ul>
-                    </div>
-
-                    <div class="tool-card">
-                        <h4>🧪 Materiais Alternativos</h4>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>✓ Creme dental (polimento leve)</li>
-                            <li>✓ Brasso (polimento de metais)</li>
-                            <li>✓ Novus Plastic Polish (específico para plásticos)</li>
-                            <li>✓ Polywatch (polimento de acrílicos)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Dica Profissional - Polimento Manual:</strong>
-                    Para peças pequenas ou delicadas, polimento manual com creme dental e pano microfibra funciona muito bem! Faça movimentos circulares por 5-10 minutos.
-                </div>
-
-                <div class="highlight-box">
-                    <h3>🎯 Acabamento Espelhado vs Fosco</h3>
-                    <p><strong>Espelhado:</strong> Lixe até 3000 + polimento completo = superfície reflexiva</p>
-                    <p><strong>Fosco Premium:</strong> Pare no lixamento 1500 = acabamento fosco uniforme e profissional</p>
-                    <p><strong>Semi-Brilho:</strong> Lixe até 2000 + polimento leve = brilho suave sem reflexo</p>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 4: PINTURA -->
-            <div class="section-card">
-                <h2>
-                    <div class="section-icon">🎨</div>
-                    4. Pintura Profissional
-                </h2>
-                <p><strong>Objetivo:</strong> Aplicar cor e acabamento de qualidade profissional com durabilidade.</p>
-
-                <img src="images/pintura-acabamento.jpg" alt="Processo de pintura" class="section-image">
-
-                <div class="step-by-step">
-                    <h3>📋 Processo Completo de Pintura</h3>
-
-                    <div class="step">
-                        <strong>Passo 1: Preparação da Superfície</strong>
-                        Lixe com grão 600-800 para criar textura de ancoragem. Lave com água e sabão. Seque completamente.
-                    </div>
-
-                    <div class="step">
-                        <strong>Passo 2: Aplicação de Primer</strong>
-                        Aplique 2-3 camadas finas de primer para plásticos. Espere 30 minutos entre camadas. Lixe levemente com 1000 após secar.
-                    </div>
-
-                    <div class="step">
-                        <strong>Passo 3: Pintura Base</strong>
-                        Aplique 3-4 camadas finas de tinta. Camadas finas evitam escorrimento! Espere 15-20 minutos entre camadas.
-                    </div>
-
-                    <div class="step">
-                        <strong>Passo 4: Detalhes e Weathering (Opcional)</strong>
-                        Use pincéis finos para detalhes. Aplique wash (tinta diluída) para destacar relevos.
-                    </div>
-
-                    <div class="step">
-                        <strong>Passo 5: Verniz de Proteção</strong>
-                        Aplique 2-3 camadas de verniz (brilhante, fosco ou acetinado). Protege a pintura e unifica o acabamento.
-                    </div>
-                </div>
-
-                <div class="highlight-box">
-                    <h3>🎨 Tipos de Tinta e Aplicações</h3>
-                    <table>
-                        <tr>
-                            <th>Tipo de Tinta</th>
-                            <th>Vantagens</th>
-                            <th>Melhor Para</th>
-                        </tr>
-                        <tr>
-                            <td>Acrílica (pincel)</td>
-                            <td>Fácil de usar, à base de água, sem cheiro</td>
-                            <td>Miniaturas, detalhes, iniciantes</td>
-                        </tr>
-                        <tr>
-                            <td>Spray (lata)</td>
-                            <td>Cobertura uniforme, rápida, sem marcas</td>
-                            <td>Peças grandes, acabamento liso</td>
-                        </tr>
-                        <tr>
-                            <td>Aerógrafo</td>
-                            <td>Controle total, gradientes, profissional</td>
-                            <td>Trabalhos profissionais, efeitos especiais</td>
-                        </tr>
-                        <tr>
-                            <td>Esmalte sintético</td>
-                            <td>Muito durável, brilho intenso</td>
-                            <td>Peças funcionais, uso externo</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Dica Profissional - Técnica de Spray:</strong>
-                    Mantenha distância de 20-30cm. Faça movimentos contínuos horizontais. Não pare o movimento sobre a peça! Sobreponha 50% entre passadas para cobertura uniforme.
-                </div>
-
-                <div class="warning-box">
-                    <strong>⚠️ Evite Camadas Grossas:</strong>
-                    Camadas grossas de tinta escorrem, criam bolhas e perdem detalhes. Sempre prefira 5 camadas finas do que 2 grossas!
-                </div>
-
-                <div class="tools-grid">
-                    <div class="tool-card">
-                        <h4>🖌️ Kit Básico de Pintura</h4>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>✓ Primer cinza para plásticos</li>
-                            <li>✓ Tintas acrílicas (cores básicas)</li>
-                            <li>✓ Pincéis variados (00, 0, 2, 4)</li>
-                            <li>✓ Verniz spray (fosco/brilhante)</li>
-                            <li>✓ Fita crepe para máscaras</li>
-                            <li>✓ Paleta e recipientes para água</li>
-                        </ul>
-                    </div>
-
-                    <div class="tool-card">
-                        <h4>🎨 Kit Avançado</h4>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>✓ Aerógrafo + compressor</li>
-                            <li>✓ Cabine de pintura</li>
-                            <li>✓ Tintas para aerógrafo</li>
-                            <li>✓ Máscaras líquidas</li>
-                            <li>✓ Pigmentos e pós metálicos</li>
-                            <li>✓ Thinner e diluentes</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 5: ACABAMENTOS ESPECIAIS -->
-            <div class="section-card">
-                <h2>
-                    <div class="section-icon">⚡</div>
-                    5. Acabamentos Especiais
-                </h2>
-                <p><strong>Objetivo:</strong> Aplicar efeitos avançados para resultados únicos e impressionantes.</p>
-
-                <div class="highlight-box">
-                    <h3>🌟 Técnicas de Acabamento Especial</h3>
-
-                    <h4 style="color: #667eea; margin-top: 20px;">1. Metalização</h4>
-                    <p><strong>Efeito:</strong> Acabamento metálico realista (ouro, prata, cobre, bronze)</p>
-                    <p><strong>Técnica:</strong></p>
-                    <ul>
-                        <li>Lixe até 1500 para superfície lisa</li>
-                        <li>Aplique primer preto fosco</li>
-                        <li>Aplique tinta metálica (spray ou aerógrafo)</li>
-                        <li>Polimento leve com palha de aço 0000</li>
-                        <li>Verniz brilhante para proteção</li>
-                    </ul>
-
-                    <h4 style="color: #667eea; margin-top: 20px;">2. Weathering (Envelhecimento)</h4>
-                    <p><strong>Efeito:</strong> Aparência desgastada, usada, realista</p>
-                    <p><strong>Técnica:</strong></p>
-                    <ul>
-                        <li>Pinte a base normalmente</li>
-                        <li>Aplique wash (tinta diluída 1:10) nos relevos</li>
-                        <li>Dry brush (pincel seco) com cor clara nos cantos</li>
-                        <li>Pigmentos de ferrugem/poeira em áreas desgastadas</li>
-                        <li>Verniz fosco para fixar</li>
-                    </ul>
-
-                    <h4 style="color: #667eea; margin-top: 20px;">3. Efeito Cromado</h4>
-                    <p><strong>Efeito:</strong> Acabamento espelhado cromado</p>
-                    <p><strong>Técnica:</strong></p>
-                    <ul>
-                        <li>Polimento espelhado completo (até 3000)</li>
-                        <li>Primer preto brilhante</li>
-                        <li>Tinta cromada especial (Alclad, Molotow)</li>
-                        <li>NÃO aplicar verniz (perde o efeito)</li>
-                    </ul>
-
-                    <h4 style="color: #667eea; margin-top: 20px;">4. Transparência Cristalina</h4>
-                    <p><strong>Efeito:</strong> Acabamento transparente como vidro</p>
-                    <p><strong>Técnica:</strong></p>
-                    <ul>
-                        <li>Use resina transparente de alta qualidade</li>
-                        <li>Cure em água para evitar amarelamento</li>
-                        <li>Lixamento úmido progressivo até 3000</li>
-                        <li>Polimento completo com pasta diamante</li>
-                        <li>Opcional: aplicar resina epóxi líquida para acabamento vítreo</li>
-                    </ul>
-
-                    <h4 style="color: #667eea; margin-top: 20px;">5. Efeito Mármore</h4>
-                    <p><strong>Efeito:</strong> Aparência de pedra mármore</p>
-                    <p><strong>Técnica:</strong></p>
-                    <ul>
-                        <li>Base branca ou cinza clara</li>
-                        <li>Veias com pincel fino (preto/cinza escuro)</li>
-                        <li>Esfumaçar com pincel seco ou esponja</li>
-                        <li>Verniz acetinado para acabamento natural</li>
-                    </ul>
-
-                    <h4 style="color: #667eea; margin-top: 20px;">6. Efeito Madeira</h4>
-                    <p><strong>Efeito:</strong> Textura de madeira realista</p>
-                    <p><strong>Técnica:</strong></p>
-                    <ul>
-                        <li>Base marrom claro/bege</li>
-                        <li>Veios com pincel de cerdas separadas (marrom escuro)</li>
-                        <li>Wash marrom para profundidade</li>
-                        <li>Dry brush com bege claro nos altos</li>
-                        <li>Verniz fosco ou acetinado</li>
-                    </ul>
-                </div>
-
-                <div class="tip-box">
-                    <strong>💡 Dica Profissional - Teste Antes:</strong>
-                    Sempre teste técnicas novas em peças de teste ou áreas não visíveis! Cada resina reage diferente a tintas e produtos químicos.
-                </div>
-            </div>
-
-            <!-- SEÇÃO 6: CHECKLIST E MATERIAIS -->
-            <div class="highlight-box">
-                <h3>🛠️ Checklist de Materiais Completo</h3>
-
-                <table>
-                    <tr>
-                        <th>Categoria</th>
-                        <th>Itens Essenciais</th>
-                        <th>Itens Avançados</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Cura UV</strong></td>
-                        <td>Câmara UV, IPA 99%, recipiente para água</td>
-                        <td>Câmara UV com rotação, termômetro, timer</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Lixamento</strong></td>
-                        <td>Lixas 220-3000, bacia, água</td>
-                        <td>Lixadeira orbital, esponjas abrasivas, blocos de lixa</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Polimento</strong></td>
-                        <td>Pastas de polir, panos microfibra</td>
-                        <td>Politriz rotativa, rodas variadas, pasta diamante</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Pintura</strong></td>
-                        <td>Primer, tintas acrílicas, pincéis, verniz</td>
-                        <td>Aerógrafo, compressor, cabine, máscaras líquidas</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Acabamentos</strong></td>
-                        <td>Tintas metálicas, pigmentos básicos</td>
-                        <td>Tintas cromadas, folhas metálicas, resina epóxi</td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- ERROS COMUNS -->
-            <div class="warning-box">
-                <strong>⚠️ 10 Erros Comuns em Pós-Processamento</strong>
-                <ul style="margin-top: 10px;">
-                    <li>❌ Não lavar bem antes da cura UV (resina não curada gruda)</li>
-                    <li>❌ Curar peça molhada (manchas brancas)</li>
-                    <li>❌ Pular grãos de lixa (arranhões profundos)</li>
-                    <li>❌ Lixar a seco (poeira tóxica + acabamento ruim)</li>
-                    <li>❌ Pressionar demais na lixa (marcas profundas)</li>
-                    <li>❌ Não limpar entre grãos (contamina lixa fina)</li>
-                    <li>❌ Polir sem lixar até 2000+ (não fica espelhado)</li>
-                    <li>❌ Pintar sem primer (tinta descasca)</li>
-                    <li>❌ Camadas grossas de tinta (escorrimento)</li>
-                    <li>❌ Não usar verniz final (pintura desgasta rápido)</li>
-                </ul>
-            </div>
-
-            <!-- DICAS FINAIS -->
-            <div class="highlight-box">
-                <h3>🎯 Dicas Finais para Resultados Profissionais</h3>
-                <ul style="list-style: none; padding-left: 0;">
-                    <li style="margin-bottom: 10px;">🔹 <strong>Paciência é fundamental:</strong> Pós-processamento leva mais tempo que a impressão!</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Invista em ferramentas:</strong> Boas ferramentas fazem diferença enorme</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Pratique em peças de teste:</strong> Não aprenda em peças importantes</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Documente seu processo:</strong> Anote o que funciona para cada tipo de peça</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Use EPI:</strong> Luvas, máscara e óculos sempre!</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Trabalhe em ambiente ventilado:</strong> IPA e tintas liberam vapores</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Organize seu espaço:</strong> Área limpa = melhores resultados</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Aprenda com a comunidade:</strong> Compartilhe e aprenda técnicas novas</li>
-                </ul>
-            </div>
-
-            <!-- CONTATO -->
-            <div class="tip-box">
-                <strong>💬 Precisa de Ajuda?</strong>
-                <p style="margin-top: 10px;">A equipe Quanton3D está pronta para ajudar com dúvidas sobre pós-processamento!</p>
-                <p style="margin-top: 10px;"><strong>Contato:</strong></p>
-                <p>📱 WhatsApp: (31) 3271-6935</p>
-                <p>📧 Email: suporte@quanton3d.com.br</p>
-            </div>
-        </div>
-
-        <footer>
-            <p><strong>Quanton3D</strong> - Resinas UV SLA de Alta Performance</p>
-            <p>Do bruto ao perfeito - Transforme suas impressões!</p>
-        </footer>
+        <section class="topic" aria-labelledby="fontes">
+          <div class="topic-head"><div class="topic-num" aria-hidden="true">↗</div><div><h2 id="fontes">Fontes técnicas e limite de aplicação</h2><p>Referências para mecanismo e segurança. A ficha técnica Quanton3D da resina utilizada prevalece para o ciclo operacional.</p></div></div>
+          <div class="split-2">
+            <div class="panel"><h3>Lavagem e secagem</h3><ul class="panel-list"><li><a href="https://formlabs.com/support/SLA-basic-finishing/" target="_blank" rel="noopener noreferrer">Formlabs — SLA basic finishing</a></li><li><a href="https://formlabs.com/support/Washing-Prints/" target="_blank" rel="noopener noreferrer">Formlabs — best practices for washing</a></li><li><a href="https://formlabs.com/support/Choosing-the-right-wash-solvent/" target="_blank" rel="noopener noreferrer">Formlabs — choosing a wash solvent</a></li></ul></div>
+            <div class="panel"><h3>Pós-cura e segurança</h3><ul class="panel-list"><li><a href="https://formlabs.com/support/Introduction-to-Post-Curing-Prints/" target="_blank" rel="noopener noreferrer">Formlabs — introduction to post-curing</a></li><li><a href="https://formlabs.com/support/Cleaning-and-Maintaining-Form-Cure/" target="_blank" rel="noopener noreferrer">Formlabs — wash and dry before curing</a></li><li><a href="https://www.cdc.gov/niosh/bulletin/2024/safe-3d-printing.html" target="_blank" rel="noopener noreferrer">NIOSH/CDC — Safe 3D Printing</a></li></ul></div>
+          </div>
+          <div class="callout" style="margin-top:13px"><b>Diretriz Quanton3D:</b> para peças odontológicas, biocompatíveis ou reguladas, nenhuma adaptação informal substitui o fluxo validado da indicação de uso.</div>
+        </section>
+      </main>
+      <footer><strong>Quanton3D · Resinas UV de alta performance</strong><p>Suporte técnico: <a href="https://wa.me/553132716935">(31) 3271-6935</a> · <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p><p style="margin-top:12px;font-size:.79rem;opacity:.75">Ao pedir suporte, envie resina/lote, impressora, lavagem, secagem, câmara de cura, geometria e fotos de cada etapa.</p></footer>
     </div>
-</body>
+    <script>
+      (function(){var symptom=document.getElementById("symptom"),stage=document.getElementById("stage"),result=document.getElementById("advisorResult");if(!symptom||!stage||!result)return;var routes={
+        tacky:{title:"Comece pela remoção de resina superficial",steps:["Confirme evaporação completa antes de avaliar.","Verifique saturação do banho e acesso às regiões pegajosas.","Repita com meio compatível e mais limpo.","Só investigue cura depois de eliminar resina residual."]},
+        crack:{title:"Separe solvente retido de tensão de cura",steps:["Localize se a trinca nasce em cavidade, suporte ou mudança de espessura.","Confirme secagem completa e limite de contato com o solvente.","Revise temperatura, apoio e uniformidade da pós-cura.","Compare com corpo de prova do mesmo lote e ciclo."]},
+        warp:{title:"Procure assimetria de apoio, luz e calor",steps:["Meça a peça antes e depois de cada etapa.","Verifique remoção de suportes e flexão no estado verde.","Distribua luz e temperatura sem sombreamento.","Use gabarito apenas quando fizer parte do processo validado."]},
+        fit:{title:"Descubra em qual etapa a dimensão mudou",steps:["Meça após impressão, lavagem/secagem, pós-cura e acabamento.","Proteja superfícies de assentamento e contatos de suporte.","Revise absorção de solvente e contração do ciclo.","Não compense no fatiador antes de localizar a etapa responsável."]},
+        yellow:{title:"Controle ciclo, calor e condição superficial",steps:["Compare espessura e orientação das regiões alteradas.","Verifique resina residual, banho e secagem.","Confirme espectro, temperatura e ciclo da câmara.","Não adote cura em água sem validação específica."]}
+      };function analyze(){var route=routes[symptom.value],extra;if(stage.value==="wash")extra="Como surgiu na lavagem, priorize compatibilidade, saturação, agitação e tempo de contato.";else if(stage.value==="dry")extra="Como surgiu na secagem, procure solvente/resina retidos e fluxo de ar desigual.";else if(stage.value==="cure")extra="Como surgiu na pós-cura, compare acesso à luz, temperatura, apoio e ciclo aplicado.";else extra="Como surgiu no acabamento ou uso, verifique remoção de material, calor, carga e cura final.";result.innerHTML="<h3>"+route.title+"</h3><ol>"+route.steps.concat([extra]).map(function(item){return "<li>"+item+"</li>"}).join("")+'</ol><div class="callout" style="margin-top:12px"><b>Confirmação:</b> repita com um corpo de prova e altere uma variável por vez.</div>'}symptom.addEventListener("change",analyze);stage.addEventListener("change",analyze);analyze()})();
+    </script>
+  </body>
 </html>
