@@ -410,6 +410,8 @@ router.post('/migrar-fotos-impressoras', auth, async (_req, res) => {
     "photon m3":           BASE + "AnyCubic_AnyCubic_Photon_M3.png",
     "photon m3 4k":        BASE + "AnyCubic_AnyCubic_Photon_M3.png",
     "photon m3 max":       BASE + "AnyCubic_AnyCubic_Photon_M3_Max.png",
+    "anycubic m3 max":    BASE + "AnyCubic_AnyCubic_Photon_M3_Max.png",
+    "m3 max":              BASE + "AnyCubic_AnyCubic_Photon_M3_Max.png",
     "photon m3 plus":      BASE + "AnyCubic_AnyCubic_Photon_M3_Plus.png",
     "photon m3 premium":   BASE + "AnyCubic_AnyCubic_Photon_M3_Premium.png",
     "photon mono":         BASE + "AnyCubic_AnyCubic_Photon_Mono.png",
@@ -451,6 +453,7 @@ router.post('/migrar-fotos-impressoras', auth, async (_req, res) => {
     "halot r6":            BASE + "CREALITY_HALOT-R6.png",
     "halot ray":           BASE + "CREALITY_HALOT-RAY.png",
     "halot x1":            BASE + "CREALITY_HALOT-X1.png",
+    "halot sky":           BASE + "CREALITY_HALOT-ONE.png",
     // ── Epax ────────────────────────────────────────────────────────────────
     "epax x1":             BASE + "Epax_EPAX_X1.png",
     "epax x1 4k":          BASE + "Epax_EPAX_X1-4K.png",
