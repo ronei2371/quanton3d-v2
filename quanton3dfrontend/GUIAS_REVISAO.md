@@ -13,10 +13,10 @@ Este arquivo evita retrabalho e registra a sequência oficial. Cada guia só mud
 - [x] Contato de Suporte e Acabamento
 - [x] Diagnóstico de Falhas
 - [x] Bottom Curling — revisão técnica final em 2026-09-05
+- [x] Manutenção de Impressora — revisão técnica final em 2026-09-05
 
 ## Próximos, nesta ordem
 
-- [ ] Manutenção de Impressora
 - [ ] Pós-processamento de Resina
 - [ ] Economia Inteligente de Resina
 - [ ] Intensidade de Luz e Precisão
