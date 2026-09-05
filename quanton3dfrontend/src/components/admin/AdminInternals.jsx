@@ -87,6 +87,8 @@ export function AdminContent({ tokenAtendente }) {
     "photon m3":           _B + "AnyCubic_AnyCubic_Photon_M3.png",
     "photon m3 4k":        _B + "AnyCubic_AnyCubic_Photon_M3.png",
     "photon m3 max":       _B + "AnyCubic_AnyCubic_Photon_M3_Max.png",
+    "anycubic m3 max":    _B + "AnyCubic_AnyCubic_Photon_M3_Max.png",
+    "m3 max":              _B + "AnyCubic_AnyCubic_Photon_M3_Max.png",
     "photon m3 plus":      _B + "AnyCubic_AnyCubic_Photon_M3_Plus.png",
     "photon m3 premium":   _B + "AnyCubic_AnyCubic_Photon_M3_Premium.png",
     "photon mono":         _B + "AnyCubic_AnyCubic_Photon_Mono.png",
@@ -128,6 +130,7 @@ export function AdminContent({ tokenAtendente }) {
     "halot r6":            _B + "CREALITY_HALOT-R6.png",
     "halot ray":           _B + "CREALITY_HALOT-RAY.png",
     "halot x1":            _B + "CREALITY_HALOT-X1.png",
+    "halot sky":           _B + "CREALITY_HALOT-ONE.png",
     // ── Epax ────────────────────────────────────────────────────────────────
     "epax x1":             _B + "Epax_EPAX_X1.png",
     "epax x1 4k":          _B + "Epax_EPAX_X1-4K.png",
