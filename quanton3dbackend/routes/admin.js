@@ -9,8 +9,140 @@ import BotTicket from '../models/BotTicket.js';
 import Visita from '../models/Visita.js';
 import ContactMessage from '../models/ContactMessage.js';
 import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
+import ImpressoraCatalogo from '../models/ImpressoraCatalogo.js';
 
 const router = express.Router();
+
+// ── CATÁLOGO PHOTOCURA (127 impressoras) ──────────────────────────────────────
+const CATALOGO_PHOTOCURA = [
+  { nome: "ANYCUBIC Photon", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon.png" },
+  { nome: "ANYCUBIC Photon Mono", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono.png" },
+  { nome: "ANYCUBIC Photon Mono 2", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_2.png" },
+  { nome: "ANYCUBIC Photon Mono 4K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_4K.png" },
+  { nome: "ANYCUBIC Photon Mono M3", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M3.png" },
+  { nome: "ANYCUBIC Photon Mono M3 Max", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M3_Max.png" },
+  { nome: "ANYCUBIC Photon Mono M3 Plus", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M3_Plus.png" },
+  { nome: "ANYCUBIC Photon Mono M3 Premium", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M3_Premium.png" },
+  { nome: "ANYCUBIC Photon Mono M5", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5.png" },
+  { nome: "ANYCUBIC Photon Mono M5s", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s.png" },
+  { nome: "ANYCUBIC Photon Mono M5s Pro", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M5s_Pro.png" },
+  { nome: "ANYCUBIC Photon Mono M7", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M7.png" },
+  { nome: "ANYCUBIC Photon Mono M7 Max", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M7_Max.png" },
+  { nome: "ANYCUBIC Photon Mono M7 Pro", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_M7_Pro.png" },
+  { nome: "ANYCUBIC Photon Mono SQ", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_SQ.png" },
+  { nome: "ANYCUBIC Photon Mono X", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_X.png" },
+  { nome: "ANYCUBIC Photon Mono X 6K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_X_6K.png" },
+  { nome: "ANYCUBIC Photon Mono X2", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Mono_X2.png" },
+  { nome: "ANYCUBIC Photon S", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_S.png" },
+  { nome: "ANYCUBIC Photon Ultra", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Ultra.png" },
+  { nome: "ANYCUBIC Photon X", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_X.png" },
+  { nome: "ANYCUBIC Photon Zero", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/AnyCubic_AnyCubic_Photon_Zero.png" },
+  { nome: "CHITUBOX Validation Matrix 12K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CHITUBOX_CHITUBOX_Validation_Matrix_12K.png" },
+  { nome: "CHITUBOX Validation Matrix 8K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/CHITUBOX_CHITUBOX_Validation_Matrix_8K.png" },
+  { nome: "CREALITY Halot Lite", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Lite.png" },
+  { nome: "CREALITY Halot Max", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Max.png" },
+  { nome: "CREALITY Halot Mage", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Mage.png" },
+  { nome: "CREALITY Halot Mage Pro", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Mage_Pro.png" },
+  { nome: "CREALITY Halot Mage S", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Mage_S.png" },
+  { nome: "CREALITY Halot One", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_One.png" },
+  { nome: "CREALITY Halot One Plus", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_One_Plus.png" },
+  { nome: "CREALITY Halot One Pro", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_One_Pro.png" },
+  { nome: "CREALITY Halot Plant", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Plant.png" },
+  { nome: "CREALITY Halot Ray", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Ray.png" },
+  { nome: "CREALITY Halot Ray Ultra", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Ray_Ultra.png" },
+  { nome: "CREALITY Halot Sky", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Sky.png" },
+  { nome: "CREALITY Halot Sky Plus", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Sky_Plus.png" },
+  { nome: "CREALITY Halot Ultra", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Creality_Creality_Halot_Ultra.png" },
+  { nome: "ELEGOO Jupiter", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Jupiter.png" },
+  { nome: "ELEGOO Jupiter 4K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Jupiter_4K.png" },
+  { nome: "ELEGOO Jupiter SE", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Jupiter_SE.png" },
+  { nome: "ELEGOO Mars", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars.png" },
+  { nome: "ELEGOO Mars 2", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_2.png" },
+  { nome: "ELEGOO Mars 2 Pro", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_2_Pro.png" },
+  { nome: "ELEGOO Mars 3", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_3.png" },
+  { nome: "ELEGOO Mars 3 Pro", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_3_Pro.png" },
+  { nome: "ELEGOO Mars 4", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_4.png" },
+  { nome: "ELEGOO Mars 4 DLP", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_4_DLP.png" },
+  { nome: "ELEGOO Mars 4 Max", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_4_Max.png" },
+  { nome: "ELEGOO Mars 4 Ultra", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_4_Ultra.png" },
+  { nome: "ELEGOO Mars 5 Ultra", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_5_Ultra.png" },
+  { nome: "ELEGOO Mars Pro", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Mars_Pro.png" },
+  { nome: "ELEGOO Neptune 8", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Neptune_8.png" },
+  { nome: "ELEGOO Saturn", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Saturn.png" },
+  { nome: "ELEGOO Saturn 2", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Saturn_2.png" },
+  { nome: "ELEGOO Saturn 3 Ultra", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Saturn_3_Ultra.png" },
+  { nome: "ELEGOO Saturn 4", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Saturn_4.png" },
+  { nome: "ELEGOO Saturn 4 Ultra", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Saturn_4_Ultra.png" },
+  { nome: "ELEGOO Saturn 8K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Saturn_8K.png" },
+  { nome: "ELEGOO Saturn S", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Elegoo_Elegoo_Saturn_S.png" },
+  { nome: "FLASHFORGE Explorer Max", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Explorer_Max.png" },
+  { nome: "FLASHFORGE Focus", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Focus.png" },
+  { nome: "FLASHFORGE Focus 8K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Focus_8K.png" },
+  { nome: "FLASHFORGE Foto 13.3", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Foto_13.3.png" },
+  { nome: "FLASHFORGE Foto 6", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Foto_6.png" },
+  { nome: "FLASHFORGE Foto 8.9", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Foto_8.9.png" },
+  { nome: "FLASHFORGE Foto 8.9 S", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Foto_8.9_S.png" },
+  { nome: "FLASHFORGE Foto 9 UV", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Flashforge_Flashforge_Foto_9_UV.png" },
+  { nome: "LONGER 3D Orange10", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Longer_3D_Longer_3D_Orange10.png" },
+  { nome: "LONGER 3D Orange30", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Longer_3D_Longer_3D_Orange30.png" },
+  { nome: "LONGER 3D Orange4K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Longer_3D_Longer_3D_Orange4K.png" },
+  { nome: "LONGER 3D Orange30 SE", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Longer_3D_Longer_3D_Orange30_SE.png" },
+  { nome: "MOYUN Monkey 6K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Moyun_Moyun_Monkey_6K.png" },
+  { nome: "MOYUN Resin Printer 8K Mono LCD", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Moyun_Moyun_Resin_Printer_8K_Mono_LCD.png" },
+  { nome: "NEWBIE BOX CHOCO X", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Newbie_Box_Newbie_Box_CHOCO_X.png" },
+  { nome: "NEWBIE BOX CHOCO X M", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Newbie_Box_Newbie_Box_CHOCO_X_M.png" },
+  { nome: "PHROZEN Mega", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Mega.png" },
+  { nome: "PHROZEN Mega 8K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Mega_8K.png" },
+  { nome: "PHROZEN Mighty 12K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Mighty_12K.png" },
+  { nome: "PHROZEN Mighty 4K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Mighty_4K.png" },
+  { nome: "PHROZEN Mighty 8K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Mighty_8K.png" },
+  { nome: "PHROZEN Mighty 8KS", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Mighty_8KS.png" },
+  { nome: "PHROZEN Mighty Revo 16K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Mighty_Revo_16K.png" },
+  { nome: "PHROZEN Sonic", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic.png" },
+  { nome: "PHROZEN Sonic 2F", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_2F.png" },
+  { nome: "PHROZEN Sonic 4K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_4K.png" },
+  { nome: "PHROZEN Sonic Mega", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mega.png" },
+  { nome: "PHROZEN Sonic Mega 8K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mega_8K.png" },
+  { nome: "PHROZEN Sonic Mega 8KS", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mega_8KS.png" },
+  { nome: "PHROZEN Sonic Mini", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini.png" },
+  { nome: "PHROZEN Sonic Mini 2F", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_2F.png" },
+  { nome: "PHROZEN Sonic Mini 4K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_4K.png" },
+  { nome: "PHROZEN Sonic Mini 8K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_8K.png" },
+  { nome: "PHROZEN Sonic Mini 8KS", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_8KS.png" },
+  { nome: "PHROZEN Sonic Mini 8K S", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Mini_8K_S.png" },
+  { nome: "PHROZEN Sonic Revo 130", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Revo_130.png" },
+  { nome: "PHROZEN Sonic Revo 16K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Sonic_Revo_16K.png" },
+  { nome: "PHROZEN Transform", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Phrozen_Phrozen_Transform.png" },
+  { nome: "PEOPOLY Phenom", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Peopoly_Peopoly_Phenom.png" },
+  { nome: "PEOPOLY Phenom Forge", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Peopoly_Peopoly_Phenom_Forge.png" },
+  { nome: "PEOPOLY Phenom L", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Peopoly_Peopoly_Phenom_L.png" },
+  { nome: "PEOPOLY Phenom Noir", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Peopoly_Peopoly_Phenom_Noir.png" },
+  { nome: "PEOPOLY Phenom Rogue", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Peopoly_Peopoly_Phenom_Rogue.png" },
+  { nome: "PEOPOLY Phenom XXL", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Peopoly_Peopoly_Phenom_XXL.png" },
+  { nome: "PRUSA SL1", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Prusa_Prusa_SL1.png" },
+  { nome: "PRUSA SL1S", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Prusa_Prusa_SL1S.png" },
+  { nome: "PRUSA SL1S Speed", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Prusa_Prusa_SL1S_Speed.png" },
+  { nome: "RAISE3D DF2", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Raise3D_Raise3D_DF2.png" },
+  { nome: "RAISE3D DF2 Plus", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Raise3D_Raise3D_DF2_Plus.png" },
+  { nome: "SPARKMAKER FHD", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/SparkMaker_SparkMaker_FHD.png" },
+  { nome: "SPARKMAKER SLA", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/SparkMaker_SparkMaker_SLA.png" },
+  { nome: "UNIFORMATION GKone", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniformation_Uniformation_GKone.png" },
+  { nome: "UNIFORMATION GKtwo", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniformation_Uniformation_GKtwo.png" },
+  { nome: "UNIZ UDP", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniz_Uniz_UDP.png" },
+  { nome: "UNIZ SLASH", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniz_Uniz_SLASH.png" },
+  { nome: "UNIZ SLASH Plus", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniz_Uniz_SLASH_Plus.png" },
+  { nome: "UNIZ SLASH 2", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Uniz_Uniz_SLASH_2.png" },
+  { nome: "VOXELAB Proxima", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Voxelab_Voxelab_Proxima.png" },
+  { nome: "VOXELAB Proxima 4K", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Voxelab_Voxelab_Proxima_4K.png" },
+  { nome: "VOXELAB Proxima 6", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Voxelab_Voxelab_Proxima_6.png" },
+  { nome: "WANHAO Duplicator 7", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Wanhao_Wanhao_Duplicator_7.png" },
+  { nome: "WANHAO Duplicator 7 Plus", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Wanhao_Wanhao_Duplicator_7_Plus.png" },
+  { nome: "WANHAO Duplicator 8", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Wanhao_Wanhao_Duplicator_8.png" },
+  { nome: "XYZPRINTING Nobel 1.0", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/XYZprinting_XYZprinting_Nobel_1.0.png" },
+  { nome: "XYZPRINTING Nobel 1.0A", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/XYZprinting_XYZprinting_Nobel_1.0A.png" },
+  { nome: "XYZPRINTING Nobel Superfine", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/XYZprinting_XYZprinting_Nobel_Superfine.png" },
+  { nome: "ZORTRAX Inkspire", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/ZORTRAX_ZORTRAX_Inkspire.png" },
+];
 
 function auth(req, res, next) {
   const h = req.headers.authorization || '';
@@ -603,6 +735,34 @@ router.post('/migrar-fotos-impressoras', auth, async (_req, res) => {
   } catch (err) {
     console.error('Erro em /admin/migrar-fotos-impressoras:', err);
     return res.status(500).json({ success: false, error: 'Erro ao migrar fotos.' });
+  }
+});
+
+// ── IMPORTAÇÃO DO CATÁLOGO PHOTOCURA ─────────────────────────────────────────
+router.post('/importar-catalogo-impressoras', auth, async (_req, res) => {
+  try {
+    const existentes = await ImpressoraCatalogo.find({}, 'nome').lean();
+    const setExistentes = new Set(existentes.map(e => e.nome.trim().toLowerCase()));
+
+    const novas = CATALOGO_PHOTOCURA.filter(p => !setExistentes.has(p.nome.trim().toLowerCase()));
+
+    if (novas.length === 0) {
+      return res.json({ success: true, inseridas: 0, mensagem: 'Nenhuma impressora nova para importar. Catálogo já está atualizado.' });
+    }
+
+    const docs = novas.map(p => ({ nome: p.nome, fotoImpressora: p.fotoImpressora, origem: 'photocura' }));
+    await ImpressoraCatalogo.insertMany(docs, { ordered: false });
+
+    res.json({
+      success: true,
+      inseridas: novas.length,
+      ignoradas: CATALOGO_PHOTOCURA.length - novas.length,
+      mensagem: `${novas.length} impressoras importadas do catálogo Photocura com sucesso!`,
+      lista: novas.map(p => p.nome),
+    });
+  } catch (err) {
+    console.error('[IMPORTAR CATÁLOGO]', err);
+    res.status(500).json({ success: false, error: 'Erro ao importar catálogo: ' + err.message });
   }
 });
 
