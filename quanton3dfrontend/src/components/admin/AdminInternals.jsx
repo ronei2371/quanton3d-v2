@@ -600,6 +600,8 @@ export function AdminContent({ tokenAtendente }) {
   const [carregandoRelatorio, setCarregandoRelatorio] = useState(false);
   const [migrandoFotos, setMigrandoFotos] = useState(false);
   const [resultadoMigracao, setResultadoMigracao] = useState(null);
+  const [importandoCatalogo, setImportandoCatalogo] = useState(false);
+  const [resultadoCatalogo, setResultadoCatalogo] = useState(null);
 
   async function migrarFotosImpressoras() {
     if (!window.confirm("Isso vai preencher automaticamente as fotos de todas as impressoras cadastradas sem foto. Continuar?")) return;
@@ -613,6 +615,20 @@ export function AdminContent({ tokenAtendente }) {
       alert("Erro ao migrar fotos: " + (err?.response?.data?.error || err.message));
     } finally {
       setMigrandoFotos(false);
+    }
+  }
+
+  async function importarCatalogoPhotocura() {
+    if (!window.confirm("Importar catálogo de impressoras do Photocura? Apenas as novas serão inseridas (sem duplicar).")) return;
+    setImportandoCatalogo(true);
+    setResultadoCatalogo(null);
+    try {
+      const res = await api.post("/admin/importar-catalogo-impressoras", {}, { headers: { Authorization: "Bearer " + token } });
+      setResultadoCatalogo(res.data);
+    } catch (err) {
+      setResultadoCatalogo({ success: false, error: err?.response?.data?.error || "Erro ao importar catálogo." });
+    } finally {
+      setImportandoCatalogo(false);
     }
   }
 
@@ -1829,6 +1845,21 @@ export function AdminContent({ tokenAtendente }) {
               <span style={{ fontSize: "0.78rem", color: "#9fb4c7" }}>
                 ✅ {resultadoMigracao.atualizados} atualizadas
                 {resultadoMigracao.semMatch?.length > 0 && ` · ⚠️ sem foto: ${resultadoMigracao.semMatch.join(", ")}`}
+              </span>
+            )}
+          </div>
+
+          {/* Botão importar catálogo Photocura */}
+          <div style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <button type="button" onClick={importarCatalogoPhotocura} disabled={importandoCatalogo}
+              style={{ padding: "9px 18px", borderRadius: "999px", border: "1px solid rgba(79,209,255,0.5)", background: importandoCatalogo ? "rgba(79,209,255,0.05)" : "rgba(79,209,255,0.12)", color: "#4fd1ff", cursor: importandoCatalogo ? "wait" : "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
+              {importandoCatalogo ? "⏳ Importando…" : "📦 Importar Impressoras do Photocura"}
+            </button>
+            {resultadoCatalogo && (
+              <span style={{ fontSize: "0.78rem", color: resultadoCatalogo.success ? "#0aff87" : "#d73c3c" }}>
+                {resultadoCatalogo.success
+                  ? `✅ ${resultadoCatalogo.mensagem}${resultadoCatalogo.ignoradas > 0 ? ` · ${resultadoCatalogo.ignoradas} já existiam` : ""}`
+                  : `❌ ${resultadoCatalogo.error}`}
               </span>
             )}
           </div>
