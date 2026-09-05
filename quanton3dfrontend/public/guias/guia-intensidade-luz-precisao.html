@@ -119,6 +119,11 @@ tr:last-child td{border-bottom:0}
 .resultPanel{background:linear-gradient(145deg,#0c1824,#071018)}
 .resultBig{font-size:42px;font-weight:900;color:#fff;margin:6px 0}
 .resultSub{color:var(--muted)}
+.formula{padding:22px;text-align:center;font-size:clamp(21px,3vw,32px);font-weight:900;color:#dff7ff}
+.formula small{display:block;margin-top:8px;font-size:13px;font-weight:500;color:var(--muted)}
+.sourceList{display:grid;gap:12px;margin-top:18px}
+.sourceList a{display:block;padding:15px 17px;border:1px solid #274058;border-radius:14px;background:#09131d;text-decoration:none;color:#dff4ff}
+.sourceList a:hover{border-color:var(--cyan)}
 .diagItem{padding:15px;border-radius:14px;background:#0a111a;border:1px solid #263a4d;margin-top:11px}
 .diagItem b{color:var(--cyan)}
 .errors{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
@@ -172,10 +177,11 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
     <div class="brand"><span class="atom"></span>QUANTON <b>3D</b> ACADEMY</div>
     <div class="links">
       <a href="#voxel">Voxel</a>
-      <a href="#luz">Luz</a>
-      <a href="#antialias">Antialiasing</a>
+      <a href="#dose">Dose</a>
+      <a href="#uniformidade">Uniformidade</a>
+      <a href="#diagnostico">Diagnóstico</a>
       <a href="#calculadora">Calculadora</a>
-      <a href="#checklist">Checklist</a>
+      <a href="#fontes">Fontes</a>
     </div>
     <button class="btn" id="printBtn" type="button">Imprimir / salvar PDF</button>
   </div>
@@ -189,7 +195,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <p class="lead">Entenda como pixel, altura de camada, exposição, escala de cinza, espalhamento de luz e antialiasing influenciam dimensão, detalhe, borda e encaixe em impressoras de resina MSLA, LCD e DLP.</p>
       <div class="badges">
         <span class="badge"><strong>✓</strong> Voxel e pixel XY</span>
-        <span class="badge"><strong>✓</strong> Cura por intensidade</span>
+        <span class="badge"><strong>✓</strong> Dose UV e curva de trabalho</span>
         <span class="badge"><strong>✓</strong> Escala de cinza</span>
         <span class="badge"><strong>✓</strong> Assistente de ajuste</span>
       </div>
@@ -198,7 +204,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <svg viewBox="0 0 700 560" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="hbg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10263a"/><stop offset="1" stop-color="#02070c"/></linearGradient>
-          <linearGradient id="voxel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcecff"/><stop offset=".6" stop-color="#6f8aa2"/><stop offset="1" stop-color="#2d4054"/></linearGradient>
+          <linearGradient id="curedVoxel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcecff"/><stop offset=".6" stop-color="#6f8aa2"/><stop offset="1" stop-color="#2d4054"/></linearGradient>
           <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
         <rect width="700" height="560" fill="url(#hbg)"/>
@@ -226,7 +232,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
           <path d="M0 250L80 0L160 250Z" fill="#30d9ff" opacity=".12" stroke="#30d9ff" stroke-width="3"/>
           <circle cx="80" cy="32" r="24" fill="#9f74ff" opacity=".65" filter="url(#glow)"/>
           <g transform="translate(32 218)">
-            <rect x="0" y="0" width="96" height="58" rx="12" fill="url(#voxel)" stroke="#e8f4ff" stroke-width="3"/>
+            <rect x="0" y="0" width="96" height="58" rx="12" fill="url(#curedVoxel)" stroke="#e8f4ff" stroke-width="3"/>
             <path d="M10 18Q48 2 86 18" stroke="#fff" stroke-width="4" fill="none" opacity=".55"/>
           </g>
           <text x="80" y="306" fill="#a7b6c7" font-family="Arial" font-size="14" text-anchor="middle">energia vira volume curado</text>
@@ -238,7 +244,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
           <rect x="285" y="0" width="175" height="18" rx="9" fill="#43d17b"/>
           <text x="0" y="42" fill="#ffb3bf" font-family="Arial" font-size="13">subcura</text>
           <text x="190" y="42" fill="#ffdf8a" font-family="Arial" font-size="13">janela útil</text>
-          <text x="355" y="42" fill="#a8f7c7" font-family="Arial" font-size="13">sobrecurva</text>
+          <text x="355" y="42" fill="#a8f7c7" font-family="Arial" font-size="13">sobrecura</text>
         </g>
       </svg>
       <div class="heroNote"><b>Princípio central:</b> precisão não depende só do tamanho do pixel. A quantidade de energia que chega à resina define quanto cada pixel realmente cresce.</div>
@@ -249,7 +255,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 <main>
 <section id="voxel">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">1</div><div><h2>Pixel, camada e voxel</h2><p>O voxel é a menor unidade prática de volume formada pela combinação entre a resolução XY da tela/projetor e a altura de camada usada no fatiamento.</p></div></div>
+    <div class="sectionHead"><div class="num">1</div><div><h2>Pixel, camada e volume curado</h2><p>Passo de pixel em X/Y e altura de camada definem a amostragem nominal do arquivo. O chamado “voxel curado” não é um bloco perfeito: sua forma real depende da óptica e da fotopolimerização.</p></div></div>
     <div class="bigGrid">
       <article class="panel visual">
         <svg viewBox="0 0 720 430">
@@ -276,14 +282,14 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       </article>
       <aside class="panel sideText">
         <div class="parts">
-          <div class="part"><b>Tamanho do pixel XY</b><span>Define a grade mínima de projeção no plano horizontal. Uma peça não é desenhada em uma linha contínua perfeita, e sim em pixels.</span></div>
+          <div class="part"><b>Passo de pixel XY</b><span>Define a amostragem nominal da imagem no plano horizontal. Não equivale, sozinho, ao menor detalhe reproduzível.</span></div>
           <div class="part"><b>Altura de camada Z</b><span>Define a espessura de cada fatia. Camadas mais finas aumentam a resolução vertical, mas não alteram a grade XY.</span></div>
-          <div class="part"><b>Energia real recebida</b><span>Exposição, potência, transmissividade da tela, filme, resina e temperatura determinam quanto o voxel cresce de verdade.</span></div>
+          <div class="part"><b>Dose radiante recebida</b><span>Irradiância, tempo, espectro, transmissividade da tela e óptica determinam a energia que chega à resina.</span></div>
           <div class="part"><b>Precisão prática</b><span>Não é só “pixel menor”. É controle de energia, compensação, antialiasing, calibração e repetibilidade.</span></div>
         </div>
       </aside>
     </div>
-    <div class="callout"><b>Resumo:</b> uma impressora com pixel pequeno pode perder precisão se a exposição estiver exagerada. Uma impressora com pixel maior pode entregar bons encaixes quando o perfil de cura está bem calibrado.</div>
+    <div class="callout"><b>Resumo:</b> pixel pequeno melhora a capacidade de amostragem, mas a resolução útil também depende de foco, espalhamento óptico, limiar de cura, tamanho da geometria e processo. “Pixel de 20 µm” não promete automaticamente detalhe real de 20 µm.</div>
   </div>
 </section>
 
@@ -307,21 +313,40 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
         <span class="tag">Energia excessiva</span>
         <h3>Sobrecurva</h3>
         <svg viewBox="0 0 260 170"><rect x="50" y="110" width="160" height="22" rx="9" fill="#657b8e"/><path d="M72 92Q130 50 188 92Q205 108 188 124H72Q55 108 72 92Z" fill="#dcecff" stroke="#ffc247" stroke-width="4"/><path d="M130 25V70" stroke="#ffc247" stroke-width="10" opacity=".9"/></svg>
-        <p>Engrossamento, fechamento de folgas, perda de detalhe, borda inchada e encaixes apertados.</p>
+        <p>Engrossamento de positivos, fechamento de vazios, perda de detalhe, borda inchada e encaixes apertados.</p>
       </article>
     </div>
-    <div class="callout warning"><b>Importante:</b> intensidade e tempo de exposição se somam como energia entregue, mas não são intercambiáveis de forma perfeita. A resposta muda com resina, pigmentação, espessura da camada, temperatura e óptica da máquina.</div>
+    <div class="callout warning"><b>Importante:</b> para irradiância aproximadamente constante, a dose radiante é o produto da irradiância pelo tempo, não a soma dos dois. Mesmo com a mesma dose nominal, mudar potência e tempo pode alterar o resultado por cinética, aquecimento, espectro, oxigênio, tamanho da geometria e comportamento do equipamento.</div>
+  </div>
+</section>
+
+<section id="dose">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">3</div><div><h2>Dose UV e curva de trabalho</h2><p>A calibração deixa de ser palpite quando tempo, irradiância e profundidade de cura são tratados como grandezas diferentes.</p></div></div>
+    <div class="grid2">
+      <article class="panel card">
+        <span class="tag">Dose radiante</span>
+        <div class="formula">H = E<sub>e</sub> × t<small>H em mJ/cm², irradiância E<sub>e</sub> em mW/cm² e tempo t em segundos, quando a irradiância é estável.</small></div>
+        <p>O controle de potência da impressora não é um radiômetro. Um valor de 70% ou 255 PWM não informa sozinho quantos mW/cm² chegam ao tanque e não pode ser comparado diretamente entre máquinas.</p>
+      </article>
+      <article class="panel card">
+        <span class="tag">Curva de trabalho</span>
+        <div class="formula">C<sub>d</sub> = D<sub>p</sub> ln(H/H<sub>c</sub>)<small>Modelo de Jacobs: profundidade de cura C<sub>d</sub>, profundidade de penetração D<sub>p</sub> e dose crítica H<sub>c</sub>.</small></div>
+        <p>É um modelo de primeira ordem para caracterizar uma resina e uma fonte óptica. Não autoriza copiar exposição entre resinas, comprimentos de onda, pigmentações, máquinas ou tamanhos de detalhe diferentes.</p>
+      </article>
+    </div>
+    <div class="callout danger"><b>Não transforme dose em número mágico:</b> a camada precisa curar além da espessura programada o suficiente para união entre camadas, sem expansão lateral destrutiva. A margem correta deve ser determinada por corpo de prova e, em desenvolvimento de resina, por curva de trabalho medida no mesmo sistema óptico.</div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="sectionHead"><div class="num">3</div><div><h2>Escala de cinza e “meio voxel”</h2><p>O pixel branco tende a receber energia máxima, o preto tende a bloquear a cura e os tons de cinza entregam energia parcial. Isso permite suavizar bordas e controlar transições, mas não cria detalhe infinito.</p></div></div>
+    <div class="sectionHead"><div class="num">4</div><div><h2>Escala de cinza não é “meio voxel”</h2><p>Branco, preto e tons intermediários comandam diferentes níveis de transmissão ou exposição da imagem. A resposta curada não precisa ser linear e varia com arquivo, firmware, tela, óptica e limiar da resina.</p></div></div>
     <div class="pixelDemo">
       <article class="panel pixelCard">
         <span class="tag">Preto</span>
         <svg viewBox="0 0 220 170"><rect x="70" y="32" width="80" height="80" rx="8" fill="#05070a" stroke="#5d7084"/><rect x="60" y="124" width="100" height="16" rx="8" fill="#607789"/></svg>
-        <p>Energia abaixo do limiar. A resina não deveria formar volume útil naquele ponto.</p>
+        <p>Comando de bloqueio máximo. Vazamento óptico e reflexões ainda podem entregar alguma energia à resina.</p>
       </article>
       <article class="panel pixelCard">
         <span class="tag">Cinza baixo</span>
@@ -331,21 +356,21 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <article class="panel pixelCard">
         <span class="tag">Cinza alto</span>
         <svg viewBox="0 0 220 170"><rect x="70" y="32" width="80" height="80" rx="8" fill="#b5b5b5"/><rect x="60" y="124" width="100" height="16" rx="8" fill="#607789"/><path d="M78 112Q110 86 142 112Q152 124 142 136H78Q68 124 78 112Z" fill="#bcd1e0" stroke="#30d9ff" stroke-width="3"/></svg>
-        <p>Forma volume mais próximo do voxel inteiro e ajuda a suavizar uma borda.</p>
+        <p>Maior transmissão nominal na borda; pode formar volume mais largo ou resistente, conforme o limiar de cura.</p>
       </article>
       <article class="panel pixelCard">
         <span class="tag">Branco</span>
         <svg viewBox="0 0 220 170"><rect x="70" y="32" width="80" height="80" rx="8" fill="#fff"/><rect x="60" y="124" width="100" height="16" rx="8" fill="#607789"/><rect x="80" y="86" width="60" height="44" rx="10" fill="#dcecff" stroke="#43d17b" stroke-width="4"/></svg>
-        <p>Energia cheia dentro do perfil. Tende a formar o voxel planejado.</p>
+        <p>Comando máximo do arquivo. O volume real ainda depende da dose, óptica, geometria e resina.</p>
       </article>
     </div>
-    <div class="callout"><b>Leitura prática:</b> escala de cinza é útil para bordas, serrilhado e compensação fina, mas precisa de calibração. Muito cinza pode arredondar demais; pouco cinza pode manter serrilhado e falhas em borda.</div>
+    <div class="callout"><b>Leitura prática:</b> escala de cinza é útil para suavização, mas não garante fração geométrica proporcional. Cinza 128 não significa automaticamente “50% do voxel”. Confirme a combinação de fatiador, formato de arquivo e firmware em um teste de borda.</div>
   </div>
 </section>
 
 <section id="antialias">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">4</div><div><h2>Antialiasing, nível de cinza e desfoque de imagem</h2><p>Esses recursos tentam controlar como a borda do pixel se transforma em borda curada na peça. O objetivo é reduzir degraus sem perder dimensão.</p></div></div>
+    <div class="sectionHead"><div class="num">5</div><div><h2>Antialiasing, nível de cinza e desfoque de imagem</h2><p>Esses recursos tentam controlar como a borda do pixel se transforma em borda curada na peça. O objetivo é reduzir degraus sem perder dimensão.</p></div></div>
     <div class="bigGrid">
       <article class="panel visual">
         <svg viewBox="0 0 720 430">
@@ -377,48 +402,64 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       </article>
       <aside class="panel sideText">
         <div class="parts">
-          <div class="part"><b>Antialiasing</b><span>Suaviza a transição de bordas por variação de intensidade em pixels próximos à linha do modelo.</span></div>
+          <div class="part"><b>Antialiasing</b><span>Modifica pixels de borda para suavizar a transição. O método exato depende do fatiador, formato de arquivo e suporte do firmware.</span></div>
           <div class="part"><b>Nível de cinza</b><span>Controla quanta energia parcial será entregue em pixels de borda.</span></div>
           <div class="part"><b>Desfoque de imagem</b><span>Espalha a transição entre pixels. Pode reduzir degraus, mas também pode engrossar ou amolecer detalhes.</span></div>
-          <div class="part"><b>Compensação dimensional</b><span>Corrige crescimento ou perda de dimensão causado por energia, óptica e comportamento da resina.</span></div>
+          <div class="part"><b>Compensação dimensional</b><span>Altera o contorno fatiado para corrigir erro sistemático medido. Não corrige instabilidade, folga mecânica nem falta de uniformidade da luz.</span></div>
         </div>
       </aside>
     </div>
+    <div class="callout warning"><b>Atenção ao software:</b> no CHITUBOX, escala de cinza, desfoque e o antialiasing legado não significam a mesma operação. Os controles disponíveis e sua interpretação mudam conforme o formato de arquivo; copie o resultado validado, não apenas o número exibido.</div>
   </div>
 </section>
 
-<section>
+<section id="uniformidade">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">5</div><div><h2>O que ajustar quando a dimensão não fecha</h2><p>A resposta correta depende do tipo de erro observado. Não ajuste antialiasing, exposição e escala ao mesmo tempo.</p></div></div>
+    <div class="sectionHead"><div class="num">6</div><div><h2>Uniformidade da luz no volume de impressão</h2><p>Uma exposição média correta não garante que centro, cantos e bordas recebam a mesma irradiância.</p></div></div>
+    <div class="grid3">
+      <article class="panel card"><span class="tag">Evidência</span><h3>Repita o mesmo corpo de prova</h3><p>Distribua geometrias idênticas no centro e nos quatro quadrantes, mantendo orientação e suporte. Diferença por posição aponta para máquina, filme, tela, óptica ou temperatura local.</p></article>
+      <article class="panel card"><span class="tag">Medição</span><h3>Mapeie com instrumento adequado</h3><p>Quando houver radiômetro compatível com o comprimento de onda e a geometria da máquina, registre mW/cm² em uma matriz de posições. Não olhe diretamente para a fonte UV.</p></article>
+      <article class="panel card"><span class="tag">Correção</span><h3>Não compense no escuro</h3><p>Limpeza, integridade da tela, filme, LED e óptica vêm antes. Use máscara de uniformidade apenas quando a função for suportada e a correção estiver baseada em medição.</p></article>
+    </div>
+    <div class="callout danger"><b>Segurança:</b> não desmonte a fonte UV, não burle sensores ou tampa e não exponha olhos ou pele para “ver se está forte”. Siga o procedimento do fabricante do equipamento e a proteção adequada ao comprimento de onda.</div>
+  </div>
+</section>
+
+<section id="diagnostico">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">7</div><div><h2>O que ajustar quando a dimensão não fecha</h2><p>A resposta correta depende de ser uma geometria positiva, um vazio interno, uma alteração global de escala ou um erro localizado. Não ajuste antialiasing, exposição e compensação ao mesmo tempo.</p></div></div>
     <div class="tableWrap">
       <table>
         <thead><tr><th>Sintoma</th><th>Causa provável</th><th>Ajuste inicial</th><th>Risco de exagerar</th></tr></thead>
         <tbody>
-          <tr><td>Furos fechando ou encaixe apertado</td><td>Sobrecurva, sangramento de luz ou compensação insuficiente.</td><td>Reduzir exposição normal em pequenos passos ou aplicar compensação XY negativa.</td><td>Subcura, suportes fracos e perda de resistência verde.</td></tr>
-          <tr><td>Pino ou parede saindo fino</td><td>Energia insuficiente, borda cinza fraca ou compensação excessiva.</td><td>Aumentar exposição com cautela ou reduzir compensação negativa.</td><td>Engrossamento e perda de detalhe em regiões próximas.</td></tr>
+          <tr><td>Furos menores, canais fechando ou encaixe apertado</td><td>Expansão do contorno curado, sobre-exposição, espalhamento óptico ou compensação interna inadequada.</td><td>Primeiro confirme a exposição funcional; depois ajuste a compensação de contorno interno conforme a direção definida pelo fatiador.</td><td>Enfraquecer positivos próximos ou ampliar demais os vazios.</td></tr>
+          <tr><td>Pino, relevo ou parede positiva saindo menor/fino</td><td>Dose insuficiente, detalhe abaixo da capacidade do processo, cinza fraco ou compensação externa inadequada.</td><td>Confirme cura e sustentação do detalhe; compare positivo e vazio antes de alterar exposição ou contorno externo.</td><td>Fechar furos e engrossar outras regiões.</td></tr>
+          <tr><td>Peça inteira menor após lavagem ou pós-cura</td><td>Contração do material, pós-cura, temperatura, medição ou escala do arquivo; não é prova isolada de baixa exposição.</td><td>Meça verde, lavada e pós-curada; valide escala X/Y/Z e processo antes de alterar exposição.</td><td>Mascarar contração com sobre-exposição e destruir tolerâncias locais.</td></tr>
           <tr><td>Borda serrilhada visível</td><td>Grade de pixels aparente ou suavização insuficiente.</td><td>Ajustar antialiasing ou nível de cinza em teste controlado.</td><td>Borda arredondada e detalhes moles.</td></tr>
           <tr><td>Letras e texturas borradas</td><td>Desfoque alto, exposição alta ou espalhamento óptico.</td><td>Reduzir desfoque/energia e validar foco, tela e filme.</td><td>Retorno do serrilhado ou falha de detalhes finos.</td></tr>
-          <tr><td>Dimensão diferente em X e Y</td><td>Calibração mecânica, pixel aspect, escala, tensão do filme ou orientação.</td><td>Medir e corrigir separadamente X/Y antes de mexer no cinza.</td><td>Compensar o problema errado.</td></tr>
+          <tr><td>Dimensão diferente em X e Y</td><td>Escala por eixo, calibração, óptica/projeção, orientação ou deformação durante o peel.</td><td>Medir e corrigir separadamente X/Y antes de mexer no cinza.</td><td>Compensar o problema errado.</td></tr>
+          <tr><td>Mesmo corpo de prova muda conforme a posição</td><td>Não uniformidade da fonte, tela/filme danificado, contaminação ou variação térmica.</td><td>Mapear centro e quadrantes; inspecionar o conjunto óptico antes de criar compensação.</td><td>Descalibrar regiões que estavam corretas.</td></tr>
           <tr><td>Peça boa em um modelo e ruim em outro</td><td>Geometria, área por camada, orientação e suporte mudaram.</td><td>Rever orientação e área crítica antes de alterar perfil global.</td><td>Descalibrar um perfil que já estava correto.</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="callout warning"><b>Procedimento seguro:</b> faça teste de exposição, depois teste dimensional, depois antialiasing. Alterar três variáveis ao mesmo tempo impede saber o que realmente melhorou.</div>
+    <div class="callout warning"><b>Procedimento seguro:</b> faça teste de cura, depois teste dimensional com positivos e vazios, depois compensação e, por último, antialiasing. Alterar várias variáveis ao mesmo tempo impede identificar a causa.</div>
   </div>
 </section>
 
 <section id="calculadora">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">6</div><div><h2>Assistente de voxel e ajuste de luz</h2><p>Use para estimar a unidade mínima prática e receber uma orientação inicial conforme o sintoma dimensional.</p></div></div>
+    <div class="sectionHead"><div class="num">8</div><div><h2>Assistente de amostragem e dose UV</h2><p>Calcula a célula geométrica nominal e, somente quando houver irradiância medida, a dose radiante aproximada. O resultado não prevê sozinho a dimensão curada.</p></div></div>
     <div class="calculator">
       <article class="panel formPanel">
         <div class="inputGrid">
-          <div class="field"><label for="pixel">Tamanho do pixel XY (µm)</label><input id="pixel" type="number" value="50" min="10" step="1"></div>
+          <div class="field"><label for="pixelX">Passo de pixel X (µm)</label><input id="pixelX" type="number" value="50" min="1" step="1"></div>
+          <div class="field"><label for="pixelY">Passo de pixel Y (µm)</label><input id="pixelY" type="number" value="50" min="1" step="1"></div>
           <div class="field"><label for="layer">Altura de camada (µm)</label><input id="layer" type="number" value="50" min="10" step="5"></div>
           <div class="field"><label for="exposure">Exposição normal (s)</label><input id="exposure" type="number" value="2.5" min=".1" step=".1"></div>
-          <div class="field"><label for="power">Intensidade relativa (%)</label><input id="power" type="number" value="100" min="10" step="5"></div>
+          <div class="field"><label for="irradiance">Irradiância medida (mW/cm²)</label><input id="irradiance" type="number" value="0" min="0" step=".1"><small>Use 0 quando não houver radiômetro compatível. O percentual da máquina não substitui esta medição.</small></div>
           <div class="field"><label for="gray">Uso de cinza na borda</label><select id="gray"><option value="low">Baixo</option><option value="mid" selected>Moderado</option><option value="high">Alto</option></select></div>
-          <div class="field"><label for="symptom">Sintoma principal</label><select id="symptom"><option value="tight">Furos fecham / encaixe apertado</option><option value="loose">Parede ou pino fino</option><option value="stair">Serrilhado de pixel</option><option value="blur">Detalhe borrado</option><option value="ok" selected>Sem sintoma, quero validar</option></select></div>
+          <div class="field"><label for="symptom">Sintoma principal</label><select id="symptom"><option value="tight">Furos fecham / encaixe apertado</option><option value="thin">Pino, relevo ou parede fina</option><option value="shrink">Peça inteira menor após o processo</option><option value="position">Resultado muda conforme a posição</option><option value="stair">Serrilhado de pixel</option><option value="blur">Detalhe borrado</option><option value="ok" selected>Sem sintoma, quero validar</option></select></div>
         </div>
         <button class="btn" id="calcBtn" type="button">Gerar orientação</button>
       </article>
@@ -434,7 +475,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 
 <section>
   <div class="wrap">
-    <div class="sectionHead"><div class="num">7</div><div><h2>Fluxo de validação recomendado</h2><p>Precisão vem de processo controlado. O ajuste fino de luz só funciona depois que exposição base, adesão e mecânica estão estáveis.</p></div></div>
+    <div class="sectionHead"><div class="num">9</div><div><h2>Fluxo de validação recomendado</h2><p>Precisão vem de processo controlado. O ajuste fino de luz só funciona depois que exposição base, adesão e mecânica estão estáveis.</p></div></div>
     <div class="workflow">
       <article class="panel flowStep"><div class="stepNo">1</div><h3>Temperatura</h3><p>Estabilize resina, ambiente e máquina.</p></article>
       <article class="panel flowStep"><div class="stepNo">2</div><h3>Exposição</h3><p>Valide cura normal com corpo de prova.</p></article>
@@ -447,7 +488,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 
 <section>
   <div class="wrap">
-    <div class="sectionHead"><div class="num">8</div><div><h2>Erros comuns ao mexer em intensidade e antialiasing</h2><p>O ajuste fino é poderoso, mas pode piorar a peça quando usado para esconder problema de exposição ou mecânica.</p></div></div>
+    <div class="sectionHead"><div class="num">10</div><div><h2>Erros comuns ao mexer em intensidade e antialiasing</h2><p>O ajuste fino é poderoso, mas pode piorar a peça quando usado para esconder problema de exposição ou mecânica.</p></div></div>
     <div class="errors">
       <article class="panel error"><div class="errorIcon">×</div><div><h3>Usar cinza para corrigir subcura</h3><p>Se a exposição básica está fraca, a borda suavizada também ficará fraca.</p></div></article>
       <article class="panel error"><div class="errorIcon">☀</div><div><h3>Aumentar potência sem medir</h3><p>Mais luz pode fechar furos, engrossar paredes e alterar encaixes.</p></div></article>
@@ -455,13 +496,15 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <article class="panel error"><div class="errorIcon">◫</div><div><h3>Ignorar pixel e camada</h3><p>Antialiasing não elimina a grade física; ele apenas controla a transição de energia.</p></div></article>
       <article class="panel error"><div class="errorIcon">↔</div><div><h3>Compensar X/Y sem separar eixos</h3><p>Erro em apenas um eixo não deve ser corrigido como se fosse crescimento uniforme.</p></div></article>
       <article class="panel error"><div class="errorIcon">⌁</div><div><h3>Testar em peça complexa</h3><p>Primeiro calibre em corpo de prova simples; depois confirme no modelo real.</p></div></article>
+      <article class="panel error"><div class="errorIcon">%</div><div><h3>Tratar PWM como irradiância</h3><p>O percentual configurado é relativo ao equipamento; sem medição, não representa mW/cm² nem permite comparar máquinas.</p></div></article>
+      <article class="panel error"><div class="errorIcon">▦</div><div><h3>Medir só o centro</h3><p>Uma leitura central não revela cantos fracos, faixas, falha de LED ou não uniformidade do conjunto óptico.</p></div></article>
     </div>
   </div>
 </section>
 
 <section id="checklist">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">9</div><div><h2>Checklist antes de liberar o perfil</h2><p>Use este controle para evitar que um ajuste bonito em uma peça gere problema em outra.</p></div></div>
+    <div class="sectionHead"><div class="num">11</div><div><h2>Checklist antes de liberar o perfil</h2><p>Use este controle para evitar que um ajuste bonito em uma peça gere problema em outra.</p></div></div>
     <div class="checklist">
       <div class="panel checkItem"><span class="tick">✓</span><p>Pixel XY e altura de camada foram considerados separadamente.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>Exposição normal foi validada antes do antialiasing.</p></div>
@@ -472,6 +515,9 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <div class="panel checkItem"><span class="tick">✓</span><p>Compensação dimensional foi registrada no perfil.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>O mesmo ajuste foi confirmado em peça real.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>Lote, temperatura, resina e máquina foram anotados.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Positivos e vazios internos foram avaliados separadamente.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Centro e quadrantes foram comparados com geometrias idênticas.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Dose em mJ/cm² só foi registrada quando a irradiância foi realmente medida.</p></div>
     </div>
   </div>
 </section>
@@ -482,20 +528,35 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <article class="panel conclusion">
         <h2>Conclusão</h2>
         <ol>
-          <li>A precisão não depende apenas do pixel; depende do voxel real curado.</li>
-          <li>Intensidade de luz e tempo de exposição definem quanto a resina cresce em torno do pixel.</li>
-          <li>Escala de cinza pode suavizar bordas e controlar transições, mas exige calibração.</li>
+          <li>Passo de pixel é amostragem nominal, não promessa isolada de resolução útil.</li>
+          <li>Dose radiante é irradiância multiplicada pelo tempo quando a fonte permanece estável.</li>
+          <li>O volume curado depende da dose, espectro, óptica, geometria e resposta da resina.</li>
+          <li>Escala de cinza pode suavizar bordas, mas não forma uma fração geométrica linear do pixel.</li>
           <li>Antialiasing melhora aparência de borda quando a exposição já está correta.</li>
           <li>Desfoque de imagem pode ajudar no serrilhado, mas em excesso apaga detalhes.</li>
-          <li>Compensação XY deve ser medida e aplicada com critério, não por palpite.</li>
+          <li>Compensação interna, externa e de camadas de base deve seguir o erro medido e a convenção do fatiador.</li>
         </ol>
         <div class="callout warning"><b>Sincericídio técnico:</b> pixel pequeno não salva perfil mal calibrado. Se a energia está errada, a peça pode sair bonita no preview e fora de medida na bancada.</div>
       </article>
       <aside class="panel directive">
         <h2>Diretriz técnica Quanton3D</h2>
-        <p style="color:var(--muted)">Ajuste fino de luz deve ser tratado como calibração dimensional, não como efeito visual. Primeiro cure corretamente, depois suavize bordas, depois compense dimensão.</p>
-        <div class="callout goodbox"><b>Regra de ouro:</b> exposição define a base; escala de cinza refina a borda; compensação corrige medida. Misturar tudo ao mesmo tempo esconde a causa real.</div>
+        <p style="color:var(--muted)">Ajuste fino de luz deve ser tratado como calibração dimensional, não como efeito visual. Primeiro estabilize o processo, depois valide cura, meça geometria e posição, compense o erro sistemático e só então refine bordas.</p>
+        <div class="callout goodbox"><b>Regra de ouro:</b> não conclua “peça menor = baixa exposição” sem separar positivo, vazio, eixo, posição e etapa da medição. Contração global e perda de um detalhe fino são diagnósticos diferentes.</div>
       </aside>
+    </div>
+  </div>
+</section>
+
+<section id="fontes">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">↗</div><div><h2>Base técnica e documentação</h2><p>Fontes primárias e documentação oficial usadas para conferir dose, curva de trabalho, uniformidade, antialiasing e compensação.</p></div></div>
+    <div class="panel card">
+      <div class="sourceList">
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10986335/" target="_blank" rel="noopener noreferrer"><b>NIST / estudo interlaboratorial:</b> curva de trabalho em fotopolimerização em cuba.</a>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9890382/" target="_blank" rel="noopener noreferrer"><b>NIST:</b> uniformidade do motor de luz e efeito na impressão LCD.</a>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11459444/" target="_blank" rel="noopener noreferrer"><b>NIST:</b> influência da largura espectral sobre a curva de trabalho.</a>
+        <a href="https://docs.chitubox.com/en-US/chitubox/latest/configure-print-settings" target="_blank" rel="noopener noreferrer"><b>CHITUBOX:</b> antialiasing, escala de cinza, desfoque, máscara e compensação dimensional.</a>
+      </div>
     </div>
   </div>
 </section>
@@ -511,40 +572,49 @@ $('printBtn').addEventListener('click',()=>window.print());
 function round(n,d=2){return Number(n).toFixed(d).replace('.',',');}
 
 function analyze(){
-  const pixel=parseFloat($('pixel').value)||50;
-  const layer=parseFloat($('layer').value)||50;
-  const exposure=parseFloat($('exposure').value)||0;
-  const power=parseFloat($('power').value)||100;
+  const pixelX=parseFloat($('pixelX').value);
+  const pixelY=parseFloat($('pixelY').value);
+  const layer=parseFloat($('layer').value);
+  const exposure=parseFloat($('exposure').value);
+  const irradiance=parseFloat($('irradiance').value);
   const gray=$('gray').value;
   const symptom=$('symptom').value;
 
-  const voxelVolume=(pixel*pixel*layer)/1000000000;
-  const relativeEnergy=exposure*(power/100);
-  $('voxelResult').textContent=`${round(pixel,0)} × ${round(pixel,0)} × ${round(layer,0)} µm`;
-  $('voxelSub').textContent=`Voxel teórico: ${round(voxelVolume,4)} mm³ • energia relativa: ${round(relativeEnergy,2)} s equivalentes`;
+  const valid=[pixelX,pixelY,layer,exposure,irradiance].every(Number.isFinite)&&pixelX>0&&pixelY>0&&layer>0&&exposure>0&&irradiance>=0;
+  if(!valid){
+    $('voxelResult').textContent='Dados inválidos';
+    $('voxelSub').textContent='Informe valores positivos; irradiância pode ser 0 quando não foi medida.';
+    $('diag').innerHTML='';
+    return;
+  }
+
+  const samplingVolume=(pixelX*pixelY*layer)/1000000000;
+  const dose=irradiance>0?irradiance*exposure:null;
+  $('voxelResult').textContent=`${round(pixelX,0)} × ${round(pixelY,0)} × ${round(layer,0)} µm`;
+  $('voxelSub').textContent=`Célula geométrica nominal: ${round(samplingVolume,5)} mm³ • ${dose===null?'dose não calculada':`dose aproximada: ${round(dose,2)} mJ/cm²`}`;
 
   const notes=[];
-  notes.push(['Unidade mínima teórica',`A grade XY é de aproximadamente ${round(pixel,0)} µm e a fatia Z é de ${round(layer,0)} µm. A cura real pode crescer além disso conforme energia e resina.`]);
+  notes.push(['Amostragem, não voxel curado',`A imagem nominal usa passos de ${round(pixelX,0)} µm em X e ${round(pixelY,0)} µm em Y, com fatia de ${round(layer,0)} µm. Óptica e resina determinam o volume realmente polimerizado.`]);
 
-  if(pixel>=75) notes.push(['Pixel maior','Dê mais atenção a antialiasing, orientação e compensação XY para reduzir serrilhado visível.']);
-  if(pixel<=35) notes.push(['Pixel pequeno','Boa base para detalhes finos, mas exposição excessiva ainda pode fechar folgas.']);
-  if(layer<=30) notes.push(['Camada fina','Melhora resolução vertical, porém aumenta tempo e sensibilidade a perfil de exposição.']);
-  if(layer>=80) notes.push(['Camada alta','Aumenta produtividade, mas pode exigir mais energia e deixar degraus em Z.']);
+  if(dose===null){
+    notes.push(['Dose física indisponível','Sem irradiância medida em mW/cm², o tempo e o percentual da máquina não permitem calcular uma dose real nem comparar este perfil com outra impressora.']);
+  }else{
+    notes.push(['Dose aproximada',`${round(irradiance,2)} mW/cm² × ${round(exposure,2)} s = ${round(dose,2)} mJ/cm². Compare o valor apenas com medições feitas pelo mesmo método, faixa espectral e posição.`]);
+  }
 
-  if(relativeEnergy<1.5) notes.push(['Energia baixa','Confirme se suportes, paredes e detalhes pequenos não ficam fracos.']);
-  if(relativeEnergy>4.5) notes.push(['Energia alta','Observe crescimento lateral, fechamento de furos e perda de encaixe.']);
+  if(gray==='low') notes.push(['Cinza baixo','Pode preservar uma transição mais abrupta, porém o resultado depende de arquivo, firmware, tela e limiar da resina.']);
+  if(gray==='mid') notes.push(['Cinza moderado','Pode suavizar a borda; confirme dimensão de positivos e vazios porque a resposta não é necessariamente linear.']);
+  if(gray==='high') notes.push(['Cinza alto','Pode ampliar a região parcialmente exposta. Verifique arredondamento, dimensão e perda de microdetalhe.']);
 
-  if(gray==='low') notes.push(['Cinza baixo','Mantém borda mais firme, mas pode deixar serrilhado de pixel mais visível.']);
-  if(gray==='mid') notes.push(['Cinza moderado','Bom ponto de partida para suavizar bordas sem borrar detalhes demais.']);
-  if(gray==='high') notes.push(['Cinza alto','Pode suavizar bastante, mas verifique arredondamento e perda de microdetalhe.']);
-
-  if(symptom==='tight') notes.push(['Ação sugerida','Reduza exposição em pequenos passos ou teste compensação XY negativa. Meça furos e encaixes antes e depois.']);
-  if(symptom==='loose') notes.push(['Ação sugerida','Aumente exposição com cautela ou reduza compensação negativa. Verifique se a borda cinza não está fraca demais.']);
+  if(symptom==='tight') notes.push(['Ação sugerida','Confirme primeiro a cura funcional. Depois meça o erro dos vazios e ajuste a compensação interna na direção documentada pelo seu fatiador; não presuma que “negativo” sempre aumenta o furo.']);
+  if(symptom==='thin') notes.push(['Ação sugerida','Um positivo fino pode indicar cura insuficiente, limite óptico/geométrico, sustentação ruim ou compensação externa. Compare positivos e vazios no mesmo corpo de prova.']);
+  if(symptom==='shrink') notes.push(['Ação sugerida','Peça inteira menor não prova baixa exposição. Meça após impressão, lavagem e pós-cura; verifique contração, escala X/Y/Z, temperatura e repetibilidade antes de alterar a dose.']);
+  if(symptom==='position') notes.push(['Ação sugerida','Repita geometrias idênticas no centro e nos quadrantes. Inspecione filme, tela e óptica; se possível, mapeie irradiância com instrumento compatível.']);
   if(symptom==='stair') notes.push(['Ação sugerida','Teste antialiasing ou cinza moderado em corpo de prova com borda inclinada.']);
-  if(symptom==='blur') notes.push(['Ação sugerida','Reduza desfoque, cinza excessivo ou energia alta. Confirme foco óptico e limpeza da tela/filme.']);
-  if(symptom==='ok') notes.push(['Validação sugerida','Imprima corpo de prova com furo, pino, parede fina, texto pequeno e borda inclinada. Registre medidas X/Y.']);
+  if(symptom==='blur') notes.push(['Ação sugerida','Reduza desfoque ou cinza excessivo e confirme se há expansão do contorno. Inspecione foco, limpeza, filme e uniformidade antes de reduzir cura funcional.']);
+  if(symptom==='ok') notes.push(['Validação sugerida','Imprima corpo de prova com positivos, vazios, parede, texto e borda inclinada no centro e nos quadrantes. Registre medidas X/Y e etapa do processo.']);
 
-  notes.push(['Procedimento','Altere uma variável por vez: exposição, depois compensação, depois cinza/desfoque.']);
+  notes.push(['Procedimento','Altere uma variável por vez: cura normal, compensação interna/externa e, por último, cinza/desfoque. Preserve o arquivo de referência e registre lote, temperatura, máquina e posição.']);
   $('diag').innerHTML=notes.map(([t,d])=>`<div class="diagItem"><b>${t}</b><br>${d}</div>`).join('');
 }
 
