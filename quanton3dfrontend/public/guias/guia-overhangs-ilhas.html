@@ -41,7 +41,7 @@ h2{font-size:clamp(27px,3vw,42px);line-height:1.1;margin:0 0 10px;letter-spacing
 .heroVisual{position:relative;min-height:540px;border-radius:30px;border:1px solid #25394d;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(26,115,232,.22),transparent 34%),linear-gradient(145deg,#07111c,#02070c 72%);box-shadow:var(--shadow)}
 .heroVisual svg{width:100%;height:100%;display:block}
 .heroNote{position:absolute;left:22px;right:22px;bottom:20px;padding:13px 16px;border-radius:15px;background:rgba(5,10,16,.87);border:1px solid rgba(48,217,255,.32);font-size:13px;color:#dcecff;backdrop-filter:blur(8px)}
-section{padding:42px 0}.sectionHead{display:flex;gap:18px;align-items:flex-start;margin-bottom:24px}
+section{padding:42px 0;scroll-margin-top:86px}.sectionHead{display:flex;gap:18px;align-items:flex-start;margin-bottom:24px}
 .num{flex:none;width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),#14385d);font-weight:900;font-size:19px;box-shadow:0 10px 30px rgba(26,115,232,.22)}
 .sectionHead p{margin:0;color:var(--muted);max-width:920px}
 .panel{background:linear-gradient(145deg,rgba(16,27,40,.96),rgba(8,14,22,.96));border:1px solid #203142;border-radius:var(--radius);box-shadow:var(--shadow)}
@@ -56,7 +56,8 @@ section{padding:42px 0}.sectionHead{display:flex;gap:18px;align-items:flex-start
 .risks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.risk{padding:22px}.riskIcon{width:58px;height:58px;border-radius:17px;background:#102134;display:grid;place-items:center;font-size:29px;margin-bottom:13px}.risk p{color:var(--muted);font-size:14px}
 .methods{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.method{padding:24px}.method svg{width:100%;height:210px;display:block}.method p{color:var(--muted)}
 .tableWrap{overflow:auto;border-radius:18px;border:1px solid #203142}table{width:100%;border-collapse:collapse;min-width:780px;background:#08111a}th,td{padding:15px 16px;border-bottom:1px solid #1d2d3d;text-align:left;vertical-align:top}th{background:#101c29;color:#dff4ff}td{color:#c4d1dc}tr:last-child td{border-bottom:0}
-.diagnostic{display:grid;grid-template-columns:.92fr 1.08fr;gap:20px}.formPanel,.resultPanel{padding:26px}.field{margin-bottom:15px}.field label{display:block;font-weight:800;margin-bottom:7px}.field small{display:block;color:var(--muted);margin-top:5px}.field select,.field input{width:100%;border:1px solid #2a4055;background:#071018;color:#fff;border-radius:12px;padding:12px 13px}.inputGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.resultPanel{background:linear-gradient(145deg,#0c1824,#071018)}.riskScore{font-size:42px;font-weight:900;color:#fff;margin:6px 0}.resultSub{color:var(--muted)}.diagItem{padding:15px;border-radius:14px;background:#0a111a;border:1px solid #263a4d;margin-top:11px}.diagItem b{color:var(--cyan)}
+.diagnostic{display:grid;grid-template-columns:.92fr 1.08fr;gap:20px}.formPanel,.resultPanel{padding:26px}.field{margin-bottom:15px}.field label{display:block;font-weight:800;margin-bottom:7px}.field small{display:block;color:var(--muted);margin-top:5px}.field select,.field input{width:100%;border:1px solid #2a4055;background:#071018;color:#fff;border-radius:12px;padding:12px 13px}.inputGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.resultPanel{background:linear-gradient(145deg,#0c1824,#071018)}.riskScore{font-size:clamp(27px,4vw,42px);line-height:1.12;font-weight:900;color:#fff;margin:8px 0 12px;overflow-wrap:anywhere}.resultSub{color:var(--muted)}.diagItem{padding:15px;border-radius:14px;background:#0a111a;border:1px solid #263a4d;margin-top:11px}.diagItem b{color:var(--cyan)}
+.sourceList{display:grid;gap:12px;margin-top:18px}.sourceList a{display:block;padding:15px 17px;border:1px solid #274058;border-radius:14px;background:#09131d;text-decoration:none;color:#dff4ff}.sourceList a:hover{border-color:var(--cyan)}
 .errors{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.error{padding:21px;display:grid;grid-template-columns:54px 1fr;gap:14px}.errorIcon{width:54px;height:54px;border-radius:15px;background:rgba(255,95,120,.11);display:grid;place-items:center;color:var(--red);font-size:25px}.error h3{margin:2px 0 6px}.error p{color:var(--muted);font-size:14px;margin:0}
 .checklist{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.checkItem{padding:18px;display:flex;gap:12px}.tick{color:var(--green);font-size:22px;font-weight:900}.checkItem p{margin:0;color:var(--muted)}
 .finalGrid{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}.conclusion,.directive{padding:28px}.conclusion li{margin-bottom:10px;color:#c9d5df}
@@ -88,9 +89,10 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
     <div class="links">
       <a href="#conceito">Conceito</a>
       <a href="#preview">Preview</a>
-      <a href="#riscos">Riscos</a>
+      <a href="#mecanica">Mecânica</a>
       <a href="#correcao">Correção</a>
       <a href="#diagnostico">Diagnóstico</a>
+      <a href="#fontes">Fontes</a>
     </div>
     <button class="btn" id="printBtn" type="button">Imprimir / salvar PDF</button>
   </div>
@@ -106,7 +108,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
         <span class="badge"><strong>✓</strong> Overhang × ilha</span>
         <span class="badge"><strong>✓</strong> Preview camada a camada</span>
         <span class="badge"><strong>✓</strong> Orientação e suporte</span>
-        <span class="badge"><strong>✓</strong> Índice de risco</span>
+        <span class="badge"><strong>✓</strong> Triagem por evidência</span>
       </div>
     </div>
     <div class="heroVisual" role="img" aria-label="Modelo em resina com ilha detectada no preview e região de overhang em vermelho">
@@ -141,7 +143,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
         </g>
         <text x="78" y="75" fill="#dcecff" font-family="Arial" font-size="18" font-weight="700">DETALHE SEM APOIO REAL</text>
       </svg>
-      <div class="heroNote"><b>Princípio central:</b> uma ilha não é apenas uma região “vermelha” no software. É uma camada tentando nascer sem caminho mecânico até a plataforma.</div>
+      <div class="heroNote"><b>Princípio central:</b> uma ilha verdadeira é uma região exposta sem continuidade curada capaz de levá-la até a plataforma ou a uma estrutura já estável.</div>
     </div>
   </div>
 </header>
@@ -153,7 +155,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
     <div class="compare">
       <article class="panel compareCard">
         <span class="tag">Overhang</span>
-        <h3>Geometria projetada sem apoio suficiente</h3>
+        <h3>Geometria que avança além da camada anterior</h3>
         <svg viewBox="0 0 520 250">
           <rect x="55" y="205" width="410" height="18" rx="8" fill="#607789"/>
           <path d="M130 205L285 70L410 205Z" fill="#91a7ba" stroke="#e8f3fc" stroke-width="4"/>
@@ -161,7 +163,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
           <path d="M292 205V245" stroke="#ffc247" stroke-width="5" stroke-dasharray="8 7"/>
           <text x="290" y="42" fill="#dcecff" font-family="Arial" font-weight="700" font-size="16" text-anchor="middle">região inclinada ou projetada</text>
         </svg>
-        <p>É uma parte da geometria que avança para fora do apoio anterior. Quanto mais próxima da horizontal e quanto mais longa, maior o risco de deformar, cair ou exigir suporte.</p>
+        <p>É uma região cuja projeção cresce para fora da camada anterior. Pode ser autossustentável quando existe sobreposição e rigidez suficientes; ângulo sozinho não determina o resultado.</p>
       </article>
       <article class="panel compareCard">
         <span class="tag">Ilha</span>
@@ -174,10 +176,10 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
           <path d="M256 122V172" stroke="#ffc247" stroke-width="5" stroke-dasharray="8 7"/>
           <text x="260" y="230" fill="#a7b6c7" font-family="Arial" font-size="14" text-anchor="middle">sem conexão com a camada anterior</text>
         </svg>
-        <p>É uma área da camada atual que não está conectada a pixels da camada anterior. Na prática, ela curaria sobre a película sem estar ligada à peça.</p>
+        <p>É um componente conectado da fatia atual sem continuidade curada com as camadas anteriores. Em impressoras invertidas, ele tende a curar sobre a película sem acompanhar a peça.</p>
       </article>
     </div>
-    <div class="callout"><b>Resumo técnico:</b> todo overhang merece análise, mas uma ilha é mais crítica porque precisa de um caminho mecânico imediato. Sem isso, pode grudar na película, flutuar no tanque ou virar defeito oculto.</div>
+    <div class="callout"><b>Resumo técnico:</b> overhang exige avaliar sobreposição, rigidez e peel. Ilha verdadeira exige correção: ela pode ficar aderida ao filme, destacar como detrito ou produzir falta de material. Um alerta do software só pode ser ignorado depois de demonstrado que é falso positivo, não por ser pequeno.</div>
   </div>
 </section>
 
@@ -198,26 +200,38 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       </article>
       <aside class="panel previewText">
         <div class="parts">
-          <div class="part"><b>Primeiro pixel da região</b><span>Procure onde cada detalhe começa. O primeiro contato de uma ilha é o ponto que mais precisa de suporte.</span></div>
-          <div class="part"><b>Camada anterior</b><span>Compare a fatia atual com a anterior. Se não há sobreposição suficiente, a região está sem caminho de carga.</span></div>
+          <div class="part"><b>Primeira região imprimível</b><span>Localize a primeira fatia efetiva do detalhe. O suporte deve existir antes dela e interceptar uma área capaz de formar contato, não apenas um pixel teórico.</span></div>
+          <div class="part"><b>Continuidade entre camadas</b><span>Compare várias fatias anteriores, não apenas duas imagens. Sobreposição mínima ou diagonal pode existir no arquivo e ainda não fornecer rigidez prática.</span></div>
           <div class="part"><b>Área crescente</b><span>Uma pequena ilha pode virar uma área grande algumas camadas depois. Apoie o início e estabilize a expansão.</span></div>
           <div class="part"><b>Estrutura flexível</b><span>Mesmo conectada, uma haste longa pode dobrar no peel. Nem todo suporte é só para ilha; alguns servem para estabilizar.</span></div>
         </div>
       </aside>
     </div>
-    <div class="callout warning"><b>Importante:</b> uma mancha isolada no preview 2D não deve ser julgada sozinha. Verifique o que vem antes, o que vem depois, o tamanho da área, a direção de crescimento e a resistência da resina.</div>
+    <div class="callout warning"><b>Importante:</b> detector automático não é sentença final. Sensibilidade, resolução do arquivo, antialiasing e regra de conectividade podem gerar falso positivo ou deixar uma ilha passar. Confirme no preview fatiado, avance e recue camadas e verifique o caminho mecânico em 3D.</div>
+  </div>
+</section>
+
+<section id="mecanica">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">3</div><div><h2>Caminho de carga e separação da película</h2><p>Na impressão invertida, cada camada curada precisa separar da interface do tanque e permanecer ligada à peça. É esse ciclo que o suporte deve resistir.</p></div></div>
+    <div class="grid3">
+      <article class="panel card"><span class="tag">Continuidade</span><h3>Do detalhe até a plataforma</h3><p>Modelo, contato, ponta, haste, travamentos e base formam um sistema. Um suporte forte embaixo não resolve uma ponta mal posicionada nem uma haste longa sem estabilidade lateral.</p></article>
+      <article class="panel card"><span class="tag">Peel</span><h3>Área, contorno e movimento</h3><p>Área exposta, formato do contorno, velocidade/aceleração, filme e viscosidade influenciam a separação. Não reduza o problema a “peso da peça”.</p></article>
+      <article class="panel card"><span class="tag">Alavanca</span><h3>Rigidez verde e distância</h3><p>Abas, hastes e paredes finas podem flexionar mesmo conectadas. Quanto maior o vão entre a região solicitada e o apoio efetivo, maior a necessidade de estabilização.</p></article>
+    </div>
+    <div class="callout danger"><b>Cavidades voltadas para o filme:</b> podem aprisionar resina/ar e criar efeito de ventosa, elevando a solicitação durante a separação. Corrija orientação e drenagem; adicionar suportes sem resolver a cavidade pode apenas transferir a falha.</div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="sectionHead"><div class="num">3</div><div><h2>Fluxo profissional de detecção</h2><p>O objetivo não é caçar pontos vermelhos aleatórios, e sim entender a mecânica da peça antes de salvar o arquivo.</p></div></div>
+    <div class="sectionHead"><div class="num">4</div><div><h2>Fluxo profissional de detecção</h2><p>O objetivo não é caçar pontos vermelhos aleatórios, e sim entender a mecânica da peça antes de salvar o arquivo.</p></div></div>
     <div class="workflow">
       <article class="panel flowStep"><div class="stepNo">1</div><svg viewBox="0 0 140 95"><path d="M30 75L108 32" stroke="#9bb0c3" stroke-width="20"/><path d="M22 84H122" stroke="#30d9ff" stroke-width="5"/></svg><h3>Orientar</h3><p>Reduza ilhas e área crítica por camada.</p></article>
       <article class="panel flowStep"><div class="stepNo">2</div><svg viewBox="0 0 140 95"><rect x="18" y="16" width="104" height="66" rx="10" fill="#071018" stroke="#63839e"/><path d="M34 66Q60 38 84 48Q100 55 110 32" fill="none" stroke="#30d9ff" stroke-width="6"/></svg><h3>Pré-visualizar</h3><p>Avance desde a base, não apenas no ponto final.</p></article>
       <article class="panel flowStep"><div class="stepNo">3</div><svg viewBox="0 0 140 95"><circle cx="70" cy="42" r="17" fill="#ff5f78"/><path d="M70 60V84" stroke="#ffc247" stroke-width="6" stroke-dasharray="7 6"/></svg><h3>Marcar ilhas</h3><p>Identifique a primeira camada de cada região.</p></article>
-      <article class="panel flowStep"><div class="stepNo">4</div><svg viewBox="0 0 140 95"><path d="M35 78L70 24L105 78" fill="none" stroke="#dcecff" stroke-width="14"/><path d="M70 24V86" stroke="#30d9ff" stroke-width="6"/></svg><h3>Decidir</h3><p>Reorientar, apoiar, redesenhar ou tolerar.</p></article>
-      <article class="panel flowStep"><div class="stepNo">5</div><svg viewBox="0 0 140 95"><g stroke="#849daf" stroke-width="9"><path d="M35 82L52 30"/><path d="M70 82L72 22"/><path d="M105 82L94 34"/></g><path d="M45 55H96" stroke="#30d9ff" stroke-width="5"/></svg><h3>Suportar</h3><p>Coloque o contato no início da ilha.</p></article>
+      <article class="panel flowStep"><div class="stepNo">4</div><svg viewBox="0 0 140 95"><path d="M35 78L70 24L105 78" fill="none" stroke="#dcecff" stroke-width="14"/><path d="M70 24V86" stroke="#30d9ff" stroke-width="6"/></svg><h3>Decidir</h3><p>Reorientar, apoiar, redesenhar ou confirmar falso positivo.</p></article>
+      <article class="panel flowStep"><div class="stepNo">5</div><svg viewBox="0 0 140 95"><g stroke="#849daf" stroke-width="9"><path d="M35 82L52 30"/><path d="M70 82L72 22"/><path d="M105 82L94 34"/></g><path d="M45 55H96" stroke="#30d9ff" stroke-width="5"/></svg><h3>Suportar</h3><p>Faça a ponta alcançar a primeira área imprimível.</p></article>
       <article class="panel flowStep"><div class="stepNo">6</div><svg viewBox="0 0 140 95"><path d="M35 48L58 70L108 20" fill="none" stroke="#43d17b" stroke-width="9" stroke-linecap="round"/></svg><h3>Validar</h3><p>Revise novamente o preview completo.</p></article>
     </div>
   </div>
@@ -225,28 +239,28 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 
 <section id="riscos">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">4</div><div><h2>O que acontece quando uma ilha passa despercebida</h2><p>A falha pode aparecer como defeito local, separação de camadas ou perda total da impressão.</p></div></div>
+    <div class="sectionHead"><div class="num">5</div><div><h2>O que acontece quando uma ilha passa despercebida</h2><p>A falha pode aparecer como defeito local, separação de camadas ou perda total da impressão.</p></div></div>
     <div class="risks">
       <article class="panel risk"><div class="riskIcon">⌁</div><h3>Deformação</h3><p>Overhangs sem rigidez podem ceder, dobrar ou engrossar durante a sequência de peel, prejudicando superfície e dimensão.</p></article>
       <article class="panel risk"><div class="riskIcon">⧉</div><h3>Separação de camadas</h3><p>A região curada pode não acompanhar a peça e deixar uma falta, degrau, lâmina solta ou cicatriz visível.</p></article>
-      <article class="panel risk"><div class="riskIcon">×</div><h3>Falha total</h3><p>Uma ilha presa na película pode gerar esforço extra nas camadas seguintes, riscar o filme ou iniciar um bloco de falha no tanque.</p></article>
+      <article class="panel risk"><div class="riskIcon">×</div><h3>Detrito e dano secundário</h3><p>Material curado preso ao filme ou solto no tanque pode interferir nas camadas seguintes. Antes de reiniciar, inspecione plataforma, tanque e película conforme o procedimento seguro da máquina.</p></article>
     </div>
   </div>
 </section>
 
 <section id="correcao">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">5</div><div><h2>Quatro formas de resolver overhangs e ilhas</h2><p>Suporte é a solução mais comum, mas nem sempre é a primeira. Muitas ilhas desaparecem com orientação melhor.</p></div></div>
+    <div class="sectionHead"><div class="num">6</div><div><h2>Quatro formas de resolver alertas de ilha</h2><p>Suporte é uma opção, mas orientação e projeto podem eliminar a causa antes de aumentar contatos e marcas.</p></div></div>
     <div class="methods">
       <article class="panel method">
         <span class="tag">1. Reorientar</span><h3>Mude como a peça cresce</h3>
         <svg viewBox="0 0 520 230"><rect x="55" y="184" width="410" height="18" rx="8" fill="#607789"/><path d="M118 160L230 80L400 160" fill="none" stroke="#ff5f78" stroke-width="20" stroke-linecap="round"/><path d="M110 178H410" stroke="#30d9ff" stroke-width="4"/><path d="M410 72L355 105" stroke="#43d17b" stroke-width="10" stroke-linecap="round"/><text x="260" y="38" fill="#dcecff" font-family="Arial" font-weight="700" font-size="16" text-anchor="middle">gire para reduzir ilhas e área crítica</text></svg>
-        <p>Procure uma posição onde detalhes nasçam apoiados por camadas anteriores e massas pesadas fiquem mais próximas da plataforma.</p>
+        <p>Procure uma posição onde detalhes nasçam com continuidade, a área por camada cresça de modo progressivo e as superfícies críticas permaneçam protegidas.</p>
       </article>
       <article class="panel method">
         <span class="tag">2. Apoiar</span><h3>Crie caminho mecânico</h3>
         <svg viewBox="0 0 520 230"><rect x="70" y="184" width="380" height="18" rx="8" fill="#607789"/><path d="M140 165Q250 70 380 165" fill="none" stroke="#91a7ba" stroke-width="24" stroke-linecap="round"/><g stroke="#718ca2" stroke-width="10"><path d="M190 158V184"/><path d="M260 128V184"/><path d="M330 150V184"/></g><g fill="#dcecff"><circle cx="190" cy="158" r="9"/><circle cx="260" cy="128" r="9"/><circle cx="330" cy="150" r="9"/></g></svg>
-        <p>O contato deve ficar no primeiro ponto da ilha ou na borda onde a região começa a crescer. Depois estabilize a expansão.</p>
+        <p>A ponta deve interceptar a primeira região imprimível da ilha e já estar ligada a uma estrutura estável. Depois estabilize a expansão e o vão contra flexão.</p>
       </article>
       <article class="panel method">
         <span class="tag">3. Redesenhar</span><h3>Projete com printabilidade</h3>
@@ -254,27 +268,29 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
         <p>Chanfros, filetes, divisão em partes e mudanças no detalhe podem eliminar regiões que nascem suspensas.</p>
       </article>
       <article class="panel method">
-        <span class="tag">4. Tolerar</span><h3>Só quando o risco for realmente baixo</h3>
-        <svg viewBox="0 0 520 230"><rect x="70" y="184" width="380" height="18" rx="8" fill="#607789"/><circle cx="260" cy="128" r="18" fill="#ffc247"/><path d="M260 150V184" stroke="#43d17b" stroke-width="6" stroke-dasharray="8 7"/><text x="260" y="65" fill="#dcecff" font-family="Arial" font-weight="700" font-size="16" text-anchor="middle">ilha muito pequena, cercada por estrutura forte</text></svg>
-        <p>Ignorar só faz sentido quando a região é muito pequena, pouco crítica, cercada por material próximo e validada por teste.</p>
+        <span class="tag">4. Confirmar</span><h3>Diferencie ilha de falso positivo</h3>
+        <svg viewBox="0 0 520 230"><rect x="70" y="184" width="380" height="18" rx="8" fill="#607789"/><circle cx="260" cy="128" r="18" fill="#ffc247"/><path d="M260 150V184" stroke="#43d17b" stroke-width="6" stroke-dasharray="8 7"/><text x="260" y="65" fill="#dcecff" font-family="Arial" font-weight="700" font-size="16" text-anchor="middle">confirme nas fatias vizinhas e no caminho 3D</text></svg>
+        <p>Um alerta pode ser artefato do detector, uma fatia subpixel ou uma região já conectada por caminho válido. Confirme no arquivo fatiado; se a desconexão for real, elimine-a ou suporte-a.</p>
       </article>
     </div>
+    <div class="callout danger"><b>Regra sem atalho:</b> não exporte uma ilha verdadeira conhecida só porque ela é pequena. O que pode ser descartado é o falso positivo demonstrado, não a descontinuidade real.</div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="sectionHead"><div class="num">6</div><div><h2>Ângulo, comprimento e contexto</h2><p>Não existe ângulo mágico universal. O comportamento muda com resina, espessura, altura de camada, exposição, temperatura e máquina.</p></div></div>
+    <div class="sectionHead"><div class="num">7</div><div><h2>Ângulo, vão e contexto</h2><p>Não existe ângulo mágico universal. O comportamento muda com sobreposição entre camadas, rigidez verde, geometria, altura de camada, exposição, temperatura, filme e movimento.</p></div></div>
     <div class="tableWrap">
       <table>
         <thead><tr><th>Condição</th><th>Risco provável</th><th>Ação recomendada</th><th>Observação</th></tr></thead>
         <tbody>
-          <tr><td>Quase horizontal e longo</td><td>Alto</td><td>Reorientar ou adicionar apoios intermediários.</td><td>Mesmo com boa exposição, o peel pode dobrar a região.</td></tr>
-          <tr><td>Inclinado e curto</td><td>Baixo a médio</td><td>Validar no preview e decidir conforme acabamento.</td><td>Pode ser autossustentável dependendo do material.</td></tr>
-          <tr><td>Primeira camada isolada</td><td>Alto</td><td>Apoiar no primeiro pixel ou mudar orientação.</td><td>É o caso clássico de ilha crítica.</td></tr>
-          <tr><td>Detalhe fino conectado</td><td>Médio</td><td>Adicionar suporte de estabilização.</td><td>Não é ilha, mas pode vibrar e deslocar.</td></tr>
-          <tr><td>Ilha minúscula em área não estética</td><td>Baixo a médio</td><td>Testar antes de ignorar.</td><td>O risco depende da evolução nas camadas seguintes.</td></tr>
-          <tr><td>Peça grande com ilha inicial</td><td>Muito alto</td><td>Reorientar, usar suporte médio/pesado e revisar raft.</td><td>Massa e área aumentam solicitação sobre o contato.</td></tr>
+          <tr><td>Quase horizontal com vão longo</td><td>Flexão e crescimento brusco de área</td><td>Reorientar ou distribuir estabilização ao longo do vão.</td><td>Mesmo sem ilha, o peel pode deformar a região.</td></tr>
+          <tr><td>Inclinado, curto e com sobreposição contínua</td><td>Possível autossustentação</td><td>Validar no preview e em corpo de prova da combinação real.</td><td>O ângulo isolado não garante sucesso.</td></tr>
+          <tr><td>Primeira fatia realmente isolada</td><td>Ilha verdadeira</td><td>Fazer o suporte alcançar a primeira área imprimível ou mudar orientação.</td><td>Exige ação antes de exportar.</td></tr>
+          <tr><td>Detalhe fino conectado</td><td>Flexão ou deslocamento</td><td>Adicionar estabilização conforme o caminho de carga.</td><td>Não é ilha, mas pode falhar mecanicamente.</td></tr>
+          <tr><td>Alerta minúsculo do detector</td><td>Ilha real ou falso positivo</td><td>Revisar as fatias vizinhas e a conectividade.</td><td>Tamanho pequeno não prova segurança.</td></tr>
+          <tr><td>Seção cresce abruptamente após contato pequeno</td><td>Sobrecarga do contato</td><td>Reorientar, antecipar apoios e estabilizar a progressão.</td><td>Área e braço de alavanca importam mais que “peso”.</td></tr>
+          <tr><td>Cavidade fechada voltada ao filme</td><td>Ventosa e drenagem deficiente</td><td>Reorientar e criar drenagem/ventilação funcional.</td><td>Mais suporte não elimina a pressão da cavidade.</td></tr>
         </tbody>
       </table>
     </div>
@@ -283,21 +299,23 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 
 <section id="diagnostico">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">7</div><div><h2>Assistente interativo de risco</h2><p>Use como triagem técnica antes de decidir se vai reorientar, suportar, redesenhar ou tolerar.</p></div></div>
+    <div class="sectionHead"><div class="num">8</div><div><h2>Assistente de decisão técnica</h2><p>Use para organizar evidências antes de reorientar, apoiar ou redesenhar. O resultado é qualitativo: não existe porcentagem universal de risco.</p></div></div>
     <div class="diagnostic">
       <article class="panel formPanel">
         <div class="inputGrid">
-          <div class="field"><label for="angle">Inclinação da região</label><select id="angle"><option value="low">Quase horizontal</option><option value="mid" selected>Inclinada moderada</option><option value="high">Próxima da vertical</option></select></div>
-          <div class="field"><label for="length">Comprimento do overhang</label><select id="length"><option value="short">Curto</option><option value="medium" selected>Médio</option><option value="long">Longo</option></select></div>
-          <div class="field"><label for="connection">Conexão com camada anterior</label><select id="connection"><option value="none">Sem conexão: ilha real</option><option value="partial" selected>Conexão parcial</option><option value="good">Boa conexão</option></select></div>
-          <div class="field"><label for="mass">Massa/área que nasce depois</label><select id="mass"><option value="small">Pequena</option><option value="medium" selected>Média</option><option value="large">Grande</option></select></div>
+          <div class="field"><label for="angle">Projeção em relação ao crescimento</label><select id="angle"><option value="low">Quase horizontal</option><option value="mid" selected>Inclinada moderada</option><option value="high">Próxima da vertical</option></select></div>
+          <div class="field"><label for="length">Vão até o apoio efetivo</label><select id="length"><option value="short">Curto</option><option value="medium" selected>Intermediário</option><option value="long">Longo</option></select></div>
+          <div class="field"><label for="connection">Continuidade nas fatias anteriores</label><select id="connection"><option value="none">Nenhuma: ilha verdadeira</option><option value="partial" selected>Parcial ou duvidosa</option><option value="good">Contínua e verificável</option></select></div>
+          <div class="field"><label for="growth">Evolução da seção nas camadas seguintes</label><select id="growth"><option value="stable">Pequena e progressiva</option><option value="medium" selected>Crescimento moderado</option><option value="abrupt">Grande ou abrupta</option></select></div>
           <div class="field"><label for="surface">Superfície afetada</label><select id="surface"><option value="hidden">Oculta ou lixável</option><option value="normal" selected>Normal</option><option value="critical">Estética ou funcional crítica</option></select></div>
-          <div class="field"><label for="resin">Comportamento da resina</label><select id="resin"><option value="tough">Tenaz/equilibrada</option><option value="rigid" selected>Rígida comum</option><option value="flex">Flexível ou muito viscosa</option></select></div>
+          <div class="field"><label for="cavity">Cavidade voltada para a película</label><select id="cavity"><option value="open" selected>Não há ou está bem ventilada</option><option value="unknown">Não verificada</option><option value="closed">Fechada / efeito de ventosa</option></select></div>
+          <div class="field"><label for="green">Rigidez verde do trecho</label><select id="green"><option value="verified">Validada para esta geometria</option><option value="unknown" selected>Não verificada</option><option value="weak">Baixa ou trecho muito flexível</option></select></div>
+          <div class="field"><label for="review">Como a ilha foi verificada</label><select id="review"><option value="auto">Somente detector automático</option><option value="layers" selected>Preview e fatias vizinhas</option><option value="path">Caminho mecânico confirmado em 3D</option></select></div>
         </div>
         <button class="btn" id="analyzeBtn" type="button">Gerar diagnóstico</button>
       </article>
       <aside class="panel resultPanel">
-        <h3>Resultado</h3>
+        <h3>Prioridade técnica</h3>
         <div class="riskScore" id="riskScore">--</div>
         <div class="resultSub" id="riskText">Preencha os campos e clique em gerar diagnóstico.</div>
         <div id="diagnosis"></div>
@@ -308,31 +326,36 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 
 <section id="erros">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">8</div><div><h2>Erros comuns na leitura de ilhas</h2><p>A maior parte das falhas vem de olhar o modelo inteiro e esquecer que a impressora enxerga camada por camada.</p></div></div>
+    <div class="sectionHead"><div class="num">9</div><div><h2>Erros comuns na leitura de ilhas</h2><p>A maior parte das falhas vem de olhar o modelo inteiro e esquecer que a impressora enxerga camada por camada.</p></div></div>
     <div class="errors">
       <article class="panel error"><div class="errorIcon">×</div><div><h3>Apoiar só o final da ilha</h3><p>O suporte precisa atender o início da região. Apoiar tarde demais não impede que a primeira parte falhe.</p></div></article>
       <article class="panel error"><div class="errorIcon">↻</div><div><h3>Gerar automático e não revisar</h3><p>Suporte automático é ponto de partida. Preview camada a camada continua obrigatório.</p></div></article>
       <article class="panel error"><div class="errorIcon">▱</div><div><h3>Confundir peça baixa com peça fácil</h3><p>Uma orientação mais baixa pode criar grandes áreas horizontais e aumentar peel.</p></div></article>
-      <article class="panel error"><div class="errorIcon">◉</div><div><h3>Ignorar ponto pequeno que cresce</h3><p>Uma ilha minúscula pode virar uma massa grande nas camadas seguintes.</p></div></article>
+      <article class="panel error"><div class="errorIcon">◉</div><div><h3>Ignorar ponto pequeno que cresce</h3><p>Uma ilha minúscula pode se transformar em grande área de seção nas camadas seguintes.</p></div></article>
       <article class="panel error"><div class="errorIcon">⌁</div><div><h3>Não estabilizar hastes conectadas</h3><p>Nem toda falha vem de ilha. Peças finas podem estar conectadas e ainda assim dobrar.</p></div></article>
       <article class="panel error"><div class="errorIcon">!</div><div><h3>Suporte excessivo em face estética</h3><p>Resolver a ilha às custas da superfície crítica pode criar retrabalho desnecessário.</p></div></article>
+      <article class="panel error"><div class="errorIcon">%</div><div><h3>Confiar em percentual inventado</h3><p>Risco depende do sistema completo. Um placar numérico sem ensaio cria falsa segurança.</p></div></article>
+      <article class="panel error"><div class="errorIcon">◌</div><div><h3>Ignorar cavidade fechada</h3><p>Suportes podem resistir à ilha e ainda falhar por sucção se a orientação e a drenagem continuarem erradas.</p></div></article>
     </div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="sectionHead"><div class="num">9</div><div><h2>Checklist antes de fatiar</h2><p>Uma revisão rápida evita falhas longas, gasto de resina e retrabalho no acabamento.</p></div></div>
+    <div class="sectionHead"><div class="num">10</div><div><h2>Checklist antes de fatiar</h2><p>Uma revisão rápida evita falhas longas, gasto de resina e retrabalho no acabamento.</p></div></div>
     <div class="checklist">
       <div class="panel checkItem"><span class="tick">✓</span><p>O modelo foi orientado pensando na ordem real de crescimento.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>O preview foi analisado desde a plataforma.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>Todas as ilhas iniciais foram marcadas.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>O primeiro ponto de cada ilha recebeu apoio ou foi eliminado por orientação.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>A primeira região imprimível de cada ilha recebeu apoio prévio ou foi eliminada por orientação.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>Pontes longas receberam apoio intermediário.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>Detalhes finos foram estabilizados lateralmente.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>Superfícies estéticas foram protegidas dos contatos principais.</p></div>
       <div class="panel checkItem"><span class="tick">✓</span><p>A área crítica por camada não ficou excessiva.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>A decisão de ignorar qualquer ilha foi validada por critério técnico.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Alertas descartados foram demonstrados como falsos positivos; nenhuma ilha verdadeira foi ignorada.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Cavidades voltadas ao filme possuem drenagem e ventilação funcionais.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Pontas, hastes, travamentos e base formam um caminho de carga contínuo.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>O arquivo foi refatiado e revisado depois da última mudança de orientação ou suporte.</p></div>
     </div>
   </div>
 </section>
@@ -343,20 +366,34 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <article class="panel conclusion">
         <h2>Conclusão</h2>
         <ol>
-          <li>Overhang indica geometria projetada; ilha indica camada que nasce sem conexão adequada.</li>
-          <li>A primeira camada de uma ilha é o ponto mais importante para suporte.</li>
+          <li>Overhang indica projeção além da camada anterior; ilha verdadeira indica ausência de continuidade curada.</li>
+          <li>O suporte precisa existir antes da ilha e alcançar sua primeira região realmente imprimível.</li>
           <li>Reorientar o modelo pode eliminar várias ilhas antes de adicionar suportes.</li>
-          <li>Suportes devem criar caminho mecânico até a plataforma, não apenas “encostar” na peça.</li>
+          <li>Suportes devem criar caminho mecânico contínuo, não apenas “encostar” na peça.</li>
           <li>Filetes, chanfros e divisão do modelo podem resolver o problema já no design.</li>
-          <li>Ignorar ilhas só é aceitável quando o risco é pequeno, não crítico e validado.</li>
+          <li>Somente falsos positivos comprovados podem ser descartados; ilha verdadeira precisa ser corrigida.</li>
         </ol>
-        <div class="callout warning"><b>Sincericídio técnico:</b> ilha ignorada não perdoa pressa. Ela pode virar apenas uma mancha pequena, mas também pode virar falha total, peça incompleta e película danificada.</div>
+        <div class="callout warning"><b>Sincericídio técnico:</b> detector automático ajuda, mas não assina o laudo. Se não houver continuidade curada e o arquivo for exportado assim, o processo está contando com sorte.</div>
       </article>
       <aside class="panel directive">
         <h2>Diretriz técnica Quanton3D</h2>
-        <p style="color:var(--muted)">Antes de perguntar “quantos suportes devo colocar?”, pergunte “como essa região nasce camada por camada?”. Essa mudança de raciocínio melhora muito a taxa de sucesso.</p>
-        <div class="callout goodbox"><b>Regra de ouro:</b> resolva primeiro por orientação, depois por suporte, depois por design. Suporte é ferramenta de engenharia, não enfeite automático do fatiador.</div>
+        <p style="color:var(--muted)">Antes de perguntar “quantos suportes devo colocar?”, pergunte “como essa região nasce, cresce e transmite a força de separação?”. Essa leitura une preview, geometria e mecânica.</p>
+        <div class="callout goodbox"><b>Regra de ouro:</b> elimine a ilha por orientação ou design quando possível; quando apoiar, construa continuidade e estabilidade. Quantidade de suportes sem caminho de carga não é engenharia.</div>
       </aside>
+    </div>
+  </div>
+</section>
+
+<section id="fontes">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">↗</div><div><h2>Base técnica e documentação</h2><p>Documentação oficial e estudo primário usados para conferir detecção, preview, suportes e separação da película.</p></div></div>
+    <div class="panel card">
+      <div class="sourceList">
+        <a href="https://docs.chitubox.com/en-US/academy/all-you-need-to-know-about-failed-printing" target="_blank" rel="noopener noreferrer"><b>CHITUBOX Academy:</b> ilhas, overhangs, suportes insuficientes e falhas de impressão.</a>
+        <a href="https://docs.mango3d.io/doc/resin-documentation/resin-preferences/configuration-algorithms/" target="_blank" rel="noopener noreferrer"><b>Lychee Slicer:</b> níveis de precisão e configurações do detector de ilhas.</a>
+        <a href="https://docs.mango3d.io/doc/resin-documentation/resin-export/slice/" target="_blank" rel="noopener noreferrer"><b>Lychee Slicer:</b> inspeção do arquivo no preview camada a camada.</a>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10049864/" target="_blank" rel="noopener noreferrer"><b>Hu, Cheng e Feng:</b> estudo do processo e das forças de separação em estereolitografia de superfície restringida.</a>
+      </div>
     </div>
   </div>
 </section>
@@ -369,56 +406,63 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 const $=id=>document.getElementById(id);
 $('printBtn').addEventListener('click',()=>window.print());
 
-function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
-
 function analyze(){
   const angle=$('angle').value;
   const length=$('length').value;
   const connection=$('connection').value;
-  const mass=$('mass').value;
+  const growth=$('growth').value;
   const surface=$('surface').value;
-  const resin=$('resin').value;
+  const cavity=$('cavity').value;
+  const green=$('green').value;
+  const review=$('review').value;
 
-  let score=20;
   const notes=[];
 
-  if(angle==='low'){score+=24;notes.push(['Ângulo crítico','Região quase horizontal tende a precisar de apoio ou reorientação.']);}
-  if(angle==='mid'){score+=12;notes.push(['Ângulo moderado','Pode funcionar, mas depende do comprimento, material e evolução nas camadas seguintes.']);}
-  if(angle==='high'){score+=3;notes.push(['Região inclinada','Maior chance de autossuporte, desde que não seja longa nem frágil.']);}
+  if(angle==='low') notes.push(['Projeção extensa','Região quase horizontal exige atenção à sobreposição, ao vão e ao crescimento de área; o ângulo sozinho não define um limite seguro.']);
+  if(angle==='mid') notes.push(['Projeção moderada','Pode ser autossustentável, mas depende de continuidade, rigidez e evolução nas fatias seguintes.']);
+  if(angle==='high') notes.push(['Próxima da vertical','Tende a manter maior sobreposição entre fatias, desde que a seção não nasça isolada nem seja frágil.']);
 
-  if(length==='long'){score+=22;notes.push(['Comprimento longo','Pontes e abas longas têm maior risco de flexão e deformação.']);}
-  if(length==='medium'){score+=10;notes.push(['Comprimento médio','Avalie se a área cresce rápido nas próximas camadas.']);}
+  if(length==='long') notes.push(['Vão longo','Aumenta a possibilidade de flexão e alavanca. Distribua estabilização ou reoriente.']);
+  if(length==='medium') notes.push(['Vão intermediário','Confira rigidez verde e se o apoio acompanha o crescimento da região.']);
 
-  if(connection==='none'){score+=30;notes.push(['Ilha real','A região nasce sem conexão adequada. Priorize reorientar ou apoiar no primeiro ponto.']);}
-  if(connection==='partial'){score+=14;notes.push(['Conexão parcial','Pode haver apoio insuficiente. Verifique sobreposição com a camada anterior.']);}
-  if(connection==='good'){score-=6;notes.push(['Boa conexão','O risco diminui, mas estruturas finas ainda podem precisar de estabilização.']);}
+  if(connection==='none') notes.push(['Ilha verdadeira','A região nasce sem continuidade curada. Reoriente, redesenhe ou faça um suporte já existente alcançar a primeira área imprimível.']);
+  if(connection==='partial') notes.push(['Continuidade duvidosa','Revise várias fatias e o caminho em 3D. Conexão de poucos pixels pode existir no arquivo sem oferecer rigidez prática.']);
+  if(connection==='good') notes.push(['Continuidade verificada','Não há ilha neste ponto, mas ainda pode existir risco de flexão, peel ou cavidade.']);
 
-  if(mass==='large'){score+=18;notes.push(['Massa posterior grande','Uma pequena ilha pode virar uma região pesada poucas camadas depois.']);}
-  if(mass==='medium') score+=8;
+  if(growth==='abrupt') notes.push(['Seção cresce abruptamente','Antecipe contatos e distribua carga; uma ligação pequena pode ser solicitada por grande área nas camadas seguintes.']);
+  if(growth==='medium') notes.push(['Crescimento moderado','Acompanhe as fatias seguintes e estabilize onde o braço de alavanca aumenta.']);
 
-  if(surface==='critical'){score+=8;notes.push(['Superfície crítica','Tente reorientar antes de encher a face importante de contatos.']);}
-  if(surface==='hidden'){score-=4;notes.push(['Área oculta','Você tem mais liberdade para usar contatos mais robustos.']);}
+  if(surface==='critical') notes.push(['Superfície crítica','Tente reorientar ou mover contatos para áreas ocultas antes de marcar uma superfície funcional ou estética.']);
+  if(surface==='hidden') notes.push(['Área oculta','Há mais liberdade de contato, mas diâmetro e profundidade ainda devem ser validados para não danificar a peça.']);
 
-  if(resin==='flex'){score+=8;notes.push(['Resina flexível/viscosa','Pode deformar mais entre contatos e exigir estabilização adicional.']);}
-  if(resin==='rigid') score+=4;
+  if(cavity==='closed') notes.push(['Efeito de ventosa','Corrija orientação e drenagem/ventilação antes de confiar apenas em suportes.']);
+  if(cavity==='unknown') notes.push(['Cavidade não verificada','Inspecione o volume interno e o caminho de entrada e saída da resina e do ar.']);
 
-  score=clamp(score,0,100);
-  let label='Baixo risco';
-  if(score>=35) label='Risco moderado';
-  if(score>=65) label='Alto risco';
-  if(score>=82) label='Risco crítico';
+  if(green==='weak') notes.push(['Baixa rigidez verde','Reduza o vão, estabilize lateralmente ou reoriente para limitar a deformação durante a separação.']);
+  if(green==='unknown') notes.push(['Rigidez não validada','Confirme a combinação de resina, exposição, temperatura, geometria e espaçamento dos apoios.']);
+
+  if(review==='auto') notes.push(['Verificação insuficiente','Detector automático é triagem. Confirme a ocorrência nas fatias vizinhas e no caminho mecânico em 3D.']);
+  if(review==='layers') notes.push(['Preview revisado','Boa evidência inicial; finalize verificando a continuidade até uma estrutura estável.']);
+
+  let label='Validar no arquivo final';
+  if(angle==='low'||length==='long'||growth==='abrupt'||green==='weak'||review==='auto') label='Estabilização necessária';
+  if(connection==='partial') label='Revisão obrigatória';
+  if(cavity==='closed') label='Corrigir cavidade primeiro';
+  if(connection==='none') label='Corrigir ilha antes de exportar';
 
   const action=[];
-  if(connection==='none') action.push(['Ação principal','Apoie o primeiro ponto da ilha ou mude a orientação até ela deixar de nascer isolada.']);
-  else if(angle==='low'||length==='long') action.push(['Ação principal','Reoriente para reduzir a projeção horizontal ou adicione apoios distribuídos ao longo do vão.']);
-  else action.push(['Ação principal','Revise no preview e use suporte apenas onde houver instabilidade real.']);
+  if(connection==='none') action.push(['Ação principal','Não exporte ainda. Elimine a ilha por orientação/design ou faça uma ponta já sustentada alcançar sua primeira região imprimível.']);
+  else if(cavity==='closed') action.push(['Ação principal','Abra caminho funcional de drenagem e ventilação ou mude a orientação antes de dimensionar suportes.']);
+  else if(connection==='partial') action.push(['Ação principal','Determine se a conexão é apenas gráfica ou mecanicamente suficiente; se houver dúvida, reoriente ou estabilize.']);
+  else if(angle==='low'||length==='long'||growth==='abrupt'||green==='weak') action.push(['Ação principal','Reduza projeção/vão ou distribua estabilização acompanhando o crescimento da seção.']);
+  else action.push(['Ação principal','O risco aparente é menor, mas confirme o arquivo final e a geometria real antes de imprimir em lote.']);
 
   if(surface==='critical') action.push(['Acabamento','Mova contatos para regiões ocultas, base, traseira ou áreas lixáveis.']);
-  if(mass==='large') action.push(['Carga','Use suporte médio/pesado nas primeiras regiões de massa e estabilize a expansão.']);
-  action.push(['Validação','Volte ao preview depois de aplicar suporte e confirme que nenhuma ilha nova foi criada.']);
+  if(growth==='abrupt') action.push(['Carga','Faça vários contatos assumirem progressivamente a solicitação; não concentre toda a seção em uma única ponta.']);
+  action.push(['Validação','Refatie depois de qualquer mudança e revise novamente ilhas, overhangs, cavidades e continuidade dos próprios suportes.']);
 
-  $('riskScore').textContent=score+'%';
-  $('riskText').textContent=label;
+  $('riskScore').textContent=label;
+  $('riskText').textContent='Triagem qualitativa — confirme no preview e no processo real.';
   $('diagnosis').innerHTML=notes.concat(action).map(([t,d])=>`<div class="diagItem"><b>${t}</b><br>${d}</div>`).join('');
 }
 $('analyzeBtn').addEventListener('click',analyze);
