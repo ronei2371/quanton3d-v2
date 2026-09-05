@@ -1,475 +1,167 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia de Manutenção de Impressora 3D de Resina - Quanton3D</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Guia técnico Quanton3D para manutenção segura de impressoras 3D de resina: tanque, filme, tela, eixo Z, plataforma e registro preventivo." />
+    <title>Manutenção de Impressora 3D de Resina | Quanton3D</title>
+    <link rel="stylesheet" href="base-guia.css" />
+    <link rel="stylesheet" href="/guias/guia-padrao.css" />
+    <script src="/guias/guia-padrao.js" defer></script>
     <style>
-    :root {
-        --bg:#060e1e; --surface:#0a1425; --card:#0f1e35;
-        --border:rgba(79,209,255,0.15); --cyan:#4fd1ff; --purple:#b89cff;
-        --green:#49e68b; --yellow:#ffd166; --red:#ff6b8a;
-        --text:#c5d8e8; --title:#eaf7ff;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding:20px; }
-    .container { max-width:960px; margin:0 auto; background:var(--surface); border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5); }
-    .header { background:linear-gradient(135deg,rgba(21,101,192,0.4),rgba(123,31,162,0.3)); border-bottom:1px solid var(--border); padding:40px 36px 32px; text-align:center; position:relative; }
-    .header::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(79,209,255,0.07) 0%,transparent 70%); pointer-events:none; }
-    .logo { display:inline-block; padding:4px 16px; border-radius:999px; background:rgba(79,209,255,0.1); border:1px solid rgba(79,209,255,0.3); color:var(--cyan); font-size:0.75rem; font-weight:700; letter-spacing:0.1em; margin-bottom:14px; }
-    .header h1 { font-size:clamp(1.4rem,3.5vw,2rem); font-weight:900; background:linear-gradient(135deg,#4fd1ff,#b89cff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
-    .header p { font-size:0.9rem; color:#9fb4c7; }
-    .content { padding:32px 36px 40px; }
-    .intro { background:rgba(79,209,255,0.05); border:1px solid var(--border); border-radius:12px; padding:22px 26px; margin-bottom:24px; }
-    .intro h2 { font-size:1rem; color:var(--cyan); font-weight:800; margin-bottom:10px; }
-    .intro p { font-size:0.88rem; }
-    .step { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:26px; margin:18px 0; transition:border-color 0.2s; }
-    .step:hover { border-color:rgba(79,209,255,0.3); }
-    .step-number { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#1565c0,#7c3aed); color:#fff; font-size:1.1rem; font-weight:900; margin-bottom:14px; box-shadow:0 4px 14px rgba(79,209,255,0.2); }
-    .step h3 { font-size:1rem; font-weight:800; color:var(--title); margin-bottom:14px; }
-    .step-image { width:100%; max-width:720px; height:auto; border-radius:10px; margin:16px auto; display:block; border:1px solid var(--border); box-shadow:0 8px 28px rgba(0,0,0,0.4); object-fit:cover; }
-    .step-description { font-size:0.88rem; margin-bottom:12px; }
-    .step-list { list-style:none; margin:12px 0; display:grid; gap:7px; }
-    .step-list li { background:rgba(255,255,255,0.02); border:1px solid rgba(79,209,255,0.07); border-left:3px solid var(--cyan); border-radius:7px; padding:10px 14px; font-size:0.865rem; }
-    .step-list li strong { color:var(--cyan); }
-    .tip-box { background:rgba(73,230,139,0.05); border:1px solid rgba(73,230,139,0.18); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .tip-box h3,.tip-box h4 { color:var(--green); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .tip-box p,.tip-box ul { font-size:0.84rem; color:#9fcfad; line-height:1.65; }
-    .warning-box { background:rgba(255,209,102,0.05); border:1px solid rgba(255,209,102,0.2); border-left:3px solid var(--yellow); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .warning-box h3,.warning-box h4 { color:var(--yellow); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .warning-box p { font-size:0.84rem; color:#c9a84c; line-height:1.65; }
-    .error-box { background:rgba(255,107,138,0.05); border:1px solid rgba(255,107,138,0.18); border-left:3px solid var(--red); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .error-box h3,.error-box h4 { color:var(--red); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .error-box p { font-size:0.84rem; color:#c49aab; line-height:1.65; }
-    .info-box { background:rgba(184,156,255,0.05); border:1px solid rgba(184,156,255,0.2); border-left:3px solid var(--purple); border-radius:10px; padding:14px 18px; margin:14px 0; }
-    .info-box h3,.info-box h4 { color:var(--purple); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .info-box p { font-size:0.84rem; color:#b8a8d4; line-height:1.65; }
-    .materials { background:rgba(73,230,139,0.04); border:1px solid rgba(73,230,139,0.18); border-radius:12px; padding:22px 26px; margin:24px 0; }
-    .materials h3 { color:var(--green); font-size:1rem; font-weight:800; margin-bottom:14px; }
-    .materials ul { list-style:none; }
-    .materials li { padding:8px 0; border-bottom:1px solid rgba(73,230,139,0.08); font-size:0.875rem; display:flex; align-items:center; gap:10px; }
-    .materials li:last-child { border-bottom:none; }
-    .materials li:before { content:'✓'; color:var(--green); font-weight:900; flex-shrink:0; }
-    .problem-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
-    .problem-card { background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:10px; padding:16px; }
-    .problem-card h4 { color:var(--cyan); font-size:0.85rem; font-weight:800; margin-bottom:8px; }
-    .problem-card p { font-size:0.82rem; }
-    .footer { background:rgba(0,0,0,0.25); border-top:1px solid var(--border); padding:28px 36px; text-align:center; }
-    .footer h3 { color:var(--cyan); font-size:1rem; margin-bottom:12px; font-weight:800; }
-    .footer p { font-size:0.84rem; color:#9fb4c7; margin:6px 0; }
-    .footer a { color:var(--cyan); text-decoration:none; font-weight:700; }
-    .footer a:hover { text-decoration:underline; }
-    p { font-size:0.88rem; margin:8px 0; }
-    ul:not(.step-list):not(.materials ul) { padding-left:20px; margin:8px 0; }
-    ul:not(.step-list) li { font-size:0.88rem; margin:4px 0; }
-    @media(max-width:640px) { body{padding:10px;} .content{padding:20px 16px 32px;} .header{padding:28px 16px 22px;} .step{padding:18px 14px;} .problem-grid{grid-template-columns:1fr;} }
-</style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🔧 Guia de Manutenção de Impressora 3D de Resina</h1>
-            <p>Mantenha sua impressora sempre em perfeito estado</p>
-        </header>
+      .maintenance-grid,.signal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+      .maintenance-card,.signal-card{padding:16px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025)}
+      .maintenance-card b,.signal-card b{display:block;margin-bottom:6px;color:var(--cyan)}
+      .maintenance-card span,.signal-card span{color:var(--muted);font-size:.84rem}
+      .maintenance-card ul,.signal-card ul{margin:9px 0 0;padding-left:19px;color:var(--muted);font-size:.84rem}
+      .maintenance-card li+li,.signal-card li+li{margin-top:5px}
+      .matrix{width:100%;border-collapse:collapse;font-size:.82rem}
+      .matrix th,.matrix td{padding:11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+      .matrix th{color:var(--cyan);font-size:.71rem;letter-spacing:.04em;text-transform:uppercase}
+      .matrix tr:last-child td{border-bottom:0}
+      .triage select{width:100%;margin:7px 0 14px;padding:11px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--title)}
+      .triage label{color:var(--title);font-size:.86rem;font-weight:700}
+      .triage-result{min-height:260px;border-left:3px solid var(--cyan-strong)}
+      .triage-result ol{margin:10px 0 0;padding-left:20px}
+      .triage-result li{margin:7px 0;color:var(--muted);font-size:.86rem}
+      .status{display:inline-flex;margin-bottom:9px;padding:3px 9px;border:1px solid rgba(79,209,255,.25);border-radius:999px;color:var(--cyan);font-size:.69rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+      @media(max-width:760px){.maintenance-grid,.signal-grid{grid-template-columns:1fr}.matrix{min-width:650px}.table-scroll{overflow-x:auto}}
+    </style>
+  </head>
+  <body>
+    <nav class="guidenav" aria-label="Seções deste guia">
+      <div class="guidenav-track">
+        <a href="#seguranca">Segurança</a><a href="#rotina">Rotina</a><a href="#tanque">Tanque e filme</a><a href="#optica">Tela e óptica</a><a href="#z">Eixo Z</a><a href="#plataforma">Plataforma</a><a href="#vazamento">Vazamento</a><a href="#assistente">Assistente</a><a href="#registro">Registro</a><a href="#fontes">Fontes</a>
+      </div>
+    </nav>
+    <div class="page">
+      <header class="hero">
+        <div class="eyebrow">Guia técnico Quanton3D</div>
+        <h1>Manutenção segura de impressora 3D de resina</h1>
+        <p>Inspecione por condição, proteja o caminho óptico e intervenha somente com o procedimento compatível com o modelo da máquina.</p>
+        <div class="hero-meta" aria-label="O que este guia cobre"><span>Inspeção preventiva</span><span>Tanque e filme</span><span>Eixo Z e plataforma</span><span>Triagem de anomalias</span></div>
+      </header>
+      <main>
+        <figure class="evidence">
+          <img src="images/manutencao-preventiva.jpg" alt="Impressora 3D de resina preparada para inspeção preventiva" />
+          <figcaption>Manutenção preventiva começa com observação e registro. Trocar ou lubrificar sem evidência pode introduzir uma falha que não existia.</figcaption>
+        </figure>
+        <section class="summary" aria-labelledby="resumo">
+          <div class="summary-card"><h2 id="resumo">Regra central</h2><p>O manual da impressora define produto, sequência, torque, folga e intervalo. Este guia organiza a inspeção, mas não substitui o procedimento específico do fabricante.</p></div>
+          <aside class="attention"><h2>Antes de tocar na máquina</h2><p>Retire peças e tanque sem gotejar, proteja a área óptica, desligue e desconecte a energia quando o procedimento exigir acesso mecânico ou elétrico.</p></aside>
+        </section>
 
-        <div class="content">
-            <div class="intro">
-                <h2>Por que a Manutenção é Importante?</h2>
-                <p>A manutenção regular garante impressões de qualidade, prolonga a vida útil da sua impressora e evita problemas inesperados. Com cuidados simples e periódicos, você terá resultados consistentes e profissionais!</p>
+        <section class="topic" aria-labelledby="seguranca">
+          <div class="topic-head"><div class="topic-num">1</div><div><h2 id="seguranca">Segurança e preparação da bancada</h2><p>Limpeza e manutenção também expõem o operador à resina líquida, solvente, partes móveis e componentes ópticos delicados.</p></div></div>
+          <div class="maintenance-grid">
+            <article class="maintenance-card"><span class="status">Proteção pessoal</span><b>Trate resina não curada como produto químico</b><ul><li>Consulte a FISPQ/SDS da resina e do solvente.</li><li>Use luvas químicas compatíveis e proteção ocular.</li><li>Trabalhe em área ventilada e protegida de luz UV.</li><li>Se houver contato com a pele, lave com água e sabão; não use solvente.</li></ul></article>
+            <article class="maintenance-card"><span class="status">Preparação</span><b>Controle gotejamento, energia e contaminação</b><ul><li>Cubra a bancada com material compatível e sem fiapos.</li><li>Separe ferramentas limpas para óptica e para peças sujas.</li><li>Remova a plataforma antes que ela pingue sobre tela ou carenagem.</li><li>Nunca abra painéis com a impressora energizada.</li></ul></article>
+          </div>
+          <div class="callout danger" style="margin-top:13px"><b>IPA e outros solventes são inflamáveis:</b> mantenha recipientes fechados, longe de ignição e calor. Descarte resina, solvente, filme e panos contaminados conforme a FISPQ/SDS e a regra ambiental local.</div>
+        </section>
+
+        <section class="topic" aria-labelledby="rotina">
+          <div class="topic-head"><div class="topic-num">2</div><div><h2 id="rotina">Rotina baseada em evento e condição</h2><p>“Todo mês” ou “a cada tantas horas” não serve para todas as máquinas. Combine o plano do fabricante com sinais observáveis.</p></div></div>
+          <div class="panel table-scroll"><table class="matrix"><thead><tr><th>Momento</th><th>Inspeção</th><th>Ação somente se necessário</th></tr></thead><tbody>
+            <tr><td>Antes de cada impressão</td><td>Filme, tanque, plataforma, resíduos curados, fixação e volume de resina</td><td>Remover fragmentos, corrigir montagem ou interromper se houver dano/vazamento</td></tr>
+            <tr><td>Depois de uma falha</td><td>Tanque contra luz difusa, filme por ambos os lados e região correspondente na tela</td><td>Filtrar a resina e remover todo resíduo antes do próximo ciclo</td></tr>
+            <tr><td>Ao trocar material/cor</td><td>Compatibilidade química e necessidade real de limpeza completa</td><td>Usar o método indicado para tanque, filme e resina específicos</td></tr>
+            <tr><td>Quando surgir ruído ou banda em Z</td><td>Fuso/guia, acoplamento, folga, sujeira e repetição na mesma altura</td><td>Limpar, ajustar ou lubrificar conforme o manual; não mascarar com parâmetro</td></tr>
+            <tr><td>No intervalo do fabricante</td><td>Ventoinhas, filtros, fixadores, firmware e itens de desgaste</td><td>Executar a manutenção prevista e registrar peça, lote e data</td></tr>
+          </tbody></table></div>
+        </section>
+
+        <section class="topic" aria-labelledby="tanque">
+          <div class="topic-head"><div class="topic-num">3</div><div><h2 id="tanque">Tanque e filme de liberação</h2><p>FEP, PFA/nFEP e ACF têm montagem e comportamento diferentes. Use o filme correto para o tanque e para o procedimento do fabricante.</p></div></div>
+          <div class="split-2">
+            <div class="panel"><h3>Inspecione antes de limpar</h3><ul class="panel-list"><li>Procure perfuração, corte, vinco, deformação, opacidade e resíduo aderido.</li><li>Verifique vazamento nas bordas e fixação uniforme do quadro.</li><li>Não raspe o filme com metal nem pressione fragmentos contra a tela.</li><li>Não use papel abrasivo ou produto químico sem compatibilidade confirmada.</li><li>Se houver dúvida de perfuração, esvazie o tanque e faça a inspeção fora da máquina.</li></ul></div>
+            <figure class="evidence" style="margin:0"><img src="images/limpeza-fep-neutro.jpg" alt="Inspeção cuidadosa do tanque e do filme de liberação" /><figcaption>Segure o tanque pelas áreas previstas. Evite tocar a face óptica ou apoiar o filme sobre resíduos.</figcaption></figure>
+          </div>
+          <div class="signal-grid" style="margin-top:14px">
+            <article class="signal-card"><b>Resíduo curado no tanque</b><span>Preserve a posição da falha, drene/filtre a resina e use o método de remoção indicado pela máquina. Não force com espátula metálica.</span></article>
+            <article class="signal-card"><b>Filme marcado, mas sem perfuração</b><span>Compare a marca com a região de falha. Troque se houver dano que altere separação, transparência ou vedação; aparência sozinha não define vida útil universal.</span></article>
+            <article class="signal-card"><b>Troca do filme</b><span>Respeite lado, espaçador/gabarito, sequência de aperto e conjunto de parafusos do modelo. Não use frequência sonora como especificação genérica.</span></article>
+            <article class="signal-card"><b>Lubrificante no filme</b><span>Não aplique óleo ou PTFE como rotina. Só use produto no filme quando o fabricante do equipamento e do filme determinar expressamente.</span></article>
+          </div>
+          <div class="callout warn" style="margin-top:13px"><b>Depois de trocar o filme:</b> confirme vedação e montagem fora da impressora antes de adicionar resina. Um erro pequeno pode se tornar vazamento sobre a tela.</div>
+        </section>
+
+        <section class="topic" aria-labelledby="optica">
+          <div class="topic-head"><div class="topic-num">4</div><div><h2 id="optica">Tela, vidro e caminho óptico</h2><p>A camada superior visível pode ser LCD, vidro, película ou outro conjunto. Identifique a peça antes de escolher ferramenta ou solvente.</p></div></div>
+          <div class="maintenance-grid">
+            <article class="maintenance-card"><span class="status">Inspeção</span><b>Olhe em luz rasante, sem pressionar</b><ul><li>Procure resina líquida, resíduo curado, risco, bolha e trinca.</li><li>Compare qualquer marca com a posição XY da falha de impressão.</li><li>Confirme se existe protetor instalado e se é aprovado para o modelo.</li><li>Não confunda defeito no protetor com defeito no LCD.</li></ul></article>
+            <article class="maintenance-card"><span class="status">Limpeza</span><b>Use o método do fabricante da superfície</b><ul><li>Primeiro remova líquido sem espalhá-lo para frestas.</li><li>Use pano/lenço não abrasivo e de baixo desprendimento de fibras.</li><li>Aplique solvente no pano, quando permitido; não inunde a máquina.</li><li>Deixe secar totalmente antes de reinstalar o tanque.</li></ul></article>
+          </div>
+          <div class="callout danger" style="margin-top:13px"><b>Resina curada sobre LCD ou vidro:</b> não improvise lâmina, aquecimento ou força. Consulte o procedimento exato do fabricante; uma tentativa agressiva pode remover polarizador ou quebrar o painel.</div>
+        </section>
+
+        <section class="topic" aria-labelledby="z">
+          <div class="topic-head"><div class="topic-num">5</div><div><h2 id="z">Eixo Z, fuso, guias e acoplamento</h2><p>Ruído é sintoma, não diagnóstico. Sujeira, desalinhamento, fixação, acoplamento e lubrificação podem produzir efeitos parecidos.</p></div></div>
+          <div class="split-2">
+            <figure class="evidence" style="margin:0"><img src="images/eixo-z-neutro .webp" alt="Fuso e guia do eixo Z de uma impressora 3D de resina" /><figcaption>Observe se o defeito aparece na mesma altura Z antes de concluir que o problema está no fuso.</figcaption></figure>
+            <div class="panel"><h3>Sequência segura de verificação</h3><ul class="panel-list"><li>Remova tanque e plataforma conforme o manual.</li><li>Procure resina, pó, pasta escurecida, cavaco e pontos secos.</li><li>Confira fixadores, acoplamento e folgas sem alterar regulagens de fábrica.</li><li>Use somente o lubrificante e a quantidade especificados pelo fabricante.</li><li>Distribua pelo movimento comandado no painel, quando previsto; não force manualmente.</li><li>Interrompa se houver travamento, estalo, vibração ou resistência irregular.</li></ul></div>
+          </div>
+          <div class="callout warn" style="margin-top:13px"><b>Não existe “óleo de máquina universal”:</b> produtos penetrantes, graxa incompatível ou excesso podem remover lubrificação adequada, reter contaminantes ou atingir o caminho óptico.</div>
+        </section>
+
+        <section class="topic" aria-labelledby="plataforma">
+          <div class="topic-head"><div class="topic-num">6</div><div><h2 id="plataforma">Plataforma, fixação e nivelamento</h2><p>Limpeza, planicidade, aperto e paralelismo devem ser avaliados separadamente para não mascarar defeitos mecânicos.</p></div></div>
+          <div class="maintenance-grid">
+            <article class="maintenance-card"><b>Superfície</b><ul><li>Remova a peça sem criar rebarba ou amassado.</li><li>Inspecione resíduo curado, gordura, risco profundo e empenamento.</li><li>Use produto compatível e seque antes da impressão.</li><li>Não lixe superfície texturizada ou revestida sem autorização do fabricante.</li></ul></article>
+            <article class="maintenance-card"><b>Fixação e geometria</b><ul><li>Verifique se alavancas, manípulos e parafusos assentam por completo.</li><li>Não use força extra como substituto de montagem correta.</li><li>Renivele após intervenção que altere a plataforma ou quando houver evidência.</li><li>Registre o procedimento e não mude zero Z durante outro diagnóstico.</li></ul></article>
+          </div>
+        </section>
+
+        <section class="topic" aria-labelledby="vazamento">
+          <div class="topic-head"><div class="topic-num">7</div><div><h2 id="vazamento">Falha de impressão, vazamento e parada segura</h2><p>A prioridade é impedir que resina ou fragmentos avancem para frestas, tela, mecanismo e componentes elétricos.</p></div></div>
+          <div class="panel"><ol class="panel-list"><li>Interrompa o equipamento pelo procedimento normal, quando seguro.</li><li>Use EPI, retire a plataforma sem cruzar sobre áreas limpas e tampe o tanque.</li><li>Desenergize antes de remover tampas ou acessar o interior.</li><li>Contenha o líquido por absorção; não empurre resina para juntas e ventilação.</li><li>Inspecione filme, tanque, tela/protetor e cavidade antes de reutilizar.</li><li>Se a resina entrou no equipamento, siga o procedimento oficial ou acione assistência.</li><li>Documente o ponto de origem e substitua o componente que perdeu vedação.</li></ol></div>
+          <div class="callout danger" style="margin-top:13px"><b>Não religue para “ver se funciona”:</b> resina dentro da carenagem exige inspeção adequada. Energia, movimento e luz UV podem ampliar o dano.</div>
+        </section>
+
+        <section class="topic" aria-labelledby="assistente">
+          <div class="topic-head"><div class="topic-num">8</div><div><h2 id="assistente">Assistente de triagem de manutenção</h2><p>Escolha o sinal principal. O resultado organiza a inspeção; não autoriza desmontagem fora do manual.</p></div></div>
+          <div class="split-2">
+            <div class="panel triage">
+              <label for="signal">Qual sinal apareceu?</label><select id="signal"><option value="film">Marca, resíduo ou vazamento no tanque</option><option value="z">Ruído, vibração ou banda na mesma altura Z</option><option value="xy">Falha sempre na mesma posição XY</option><option value="plate">Base desigual ou adesão diferente entre lados</option><option value="spill">Resina atingiu tela ou interior da máquina</option></select>
+              <label for="event">Quando começou?</label><select id="event"><option value="failure">Depois de uma falha de impressão</option><option value="service">Depois de limpeza, troca ou ajuste</option><option value="gradual">Apareceu gradualmente</option><option value="sudden">Apareceu de repente, sem intervenção</option></select>
             </div>
+            <div class="panel triage-result" id="triageResult" aria-live="polite"></div>
+          </div>
+        </section>
 
-            <!-- SEÇÃO 1: LUBRIFICAÇÃO DO EIXO Z -->
-            <div class="section">
-                <div class="section-title">
-                    <div class="section-number">1</div>
-                    <h2>Lubrificação do Eixo Z</h2>
-                </div>
-                <div class="section-content">
-                    <p>O eixo Z é responsável pelo movimento vertical da plataforma de impressão. A lubrificação adequada garante movimentos suaves e precisos, evitando desgaste prematuro e problemas de impressão.</p>
+        <section class="topic" aria-labelledby="registro">
+          <div class="topic-head"><div class="topic-num">9</div><div><h2 id="registro">Registro preventivo e critérios de liberação</h2><p>Uma máquina só volta à produção quando o item afetado foi inspecionado e o teste confirma funcionamento sem vazamento ou anomalia.</p></div></div>
+          <div class="split-2">
+            <div class="panel"><h3>Registre em cada intervenção</h3><ul class="panel-list"><li>Data, operador, impressora, firmware e horas/contagem disponível.</li><li>Sintoma, posição XY, altura Z e fotos antes da limpeza.</li><li>Peça substituída, fabricante, lote e orientação de montagem.</li><li>Produto aplicado, quantidade e local de aplicação.</li><li>Teste realizado e resultado observado.</li></ul></div>
+            <div class="panel"><h3>Antes de liberar</h3><ul class="panel-list"><li>Tanque íntegro, seco por fora e corretamente assentado.</li><li>Tela/protetor limpo, sem líquido ou fragmento.</li><li>Plataforma fixa, limpa e nivelada quando necessário.</li><li>Eixo com curso livre e sem ruído anormal.</li><li>Teste de tela/exposição executado conforme o fabricante.</li><li>Impressão curta de controle aprovada antes da produção.</li></ul></div>
+          </div>
+        </section>
 
-                    <img src="images/eixo-z-neutro .webp" alt="Eixo Z com Fuso" class="section-image">
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">📋 Quando Lubrificar:</h3>
-                    <ul class="step-list">
-                        <li><strong>A cada 100 horas de impressão</strong> ou mensalmente (o que ocorrer primeiro)</li>
-                        <li><strong>Quando ouvir ruídos</strong> durante o movimento do eixo Z</li>
-                        <li><strong>Se notar movimentos irregulares</strong> ou travamentos</li>
-                        <li><strong>Após limpeza profunda</strong> da impressora</li>
-                    </ul>
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">🛠️ Como Lubrificar:</h3>
-                    <ol class="step-list">
-                        <li><strong>Desligue a impressora</strong> e remova o tanque de resina</li>
-                        <li><strong>Limpe o eixo Z</strong> com papel higiênico ou pano de microfibra limpo e seco para remover resíduos (não use estopa, pois solta fiapos!)</li>
-                        <li><strong>Aplique lubrificante</strong> apropriado (óleo de máquina ou graxa para impressoras 3D)</li>
-                        <li><strong>Movimente o eixo manualmente</strong> para cima e para baixo para distribuir o lubrificante</li>
-                        <li><strong>Remova o excesso</strong> com um pano limpo</li>
-                        <li><strong>Teste o movimento</strong> ligando a impressora e verificando se está suave</li>
-                    </ol>
-
-                    <div class="tip-box">
-                        <strong>💡 Dica Profissional:</strong>
-                        Use lubrificantes específicos para impressoras 3D ou óleo de máquina de boa qualidade. Evite WD-40 ou lubrificantes à base de silicone, pois podem atrair poeira e causar problemas.
-                    </div>
-
-                    <div class="warning-box">
-                        <strong>⚠️ Atenção:</strong>
-                        Não aplique lubrificante em excesso! O excesso pode escorrer e contaminar a tela LCD ou o filme FEP, causando falhas de impressão.
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 2: TROCA DO FEP -->
-            <div class="section">
-                <div class="section-title">
-                    <div class="section-number">2</div>
-                    <h2>Troca do Filme FEP</h2>
-                </div>
-                <div class="section-content">
-                    <p>O filme FEP (Fluorinated Ethylene Propylene) é a película transparente no fundo do tanque de resina. Ele permite que a luz UV passe e cure a resina, mas precisa ser trocado periodicamente.</p>
-
-                    <!-- Imagem removida para evitar problemas de direitos autorais -->
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">🔍 Sinais de que o FEP está Ruim:</h3>
-                    <ul class="step-list">
-                        <li><strong>Arranhões visíveis</strong> ou marcas profundas na superfície</li>
-                        <li><strong>Opacidade ou manchas</strong> que não saem com limpeza</li>
-                        <li><strong>Perda de transparência</strong> - o FEP deve ser cristalino</li>
-                        <li><strong>Deformações ou ondulações</strong> permanentes</li>
-                        <li><strong>Furos ou rasgos</strong> (mesmo pequenos)</li>
-                        <li><strong>Resina curada grudada</strong> que não se remove facilmente</li>
-                        <li><strong>Falhas de impressão frequentes</strong> na primeira camada</li>
-                    </ul>
-
-                    <img src="images/limpeza-fep-neutro.jpg" alt="Limpeza e Manutenção do FEP" class="section-image">
-
-                    <div class="highlight-box">
-                        <h3>🎯 Dicas para Instalação Perfeita do FEP</h3>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li style="margin-bottom: 10px;">🔹 <strong>Tensão correta:</strong> O FEP deve soar como um tambor afinado quando você bate levemente</li>
-                            <li style="margin-bottom: 10px;">🔹 <strong>Aperto em cruz:</strong> Sempre aperte parafusos opostos alternadamente</li>
-                            <li style="margin-bottom: 10px;">🔹 <strong>Várias etapas:</strong> Aperte gradualmente em 3-4 rodadas, não de uma vez</li>
-                            <li style="margin-bottom: 10px;">🔹 <strong>Sem ondulações:</strong> O FEP deve ficar completamente liso e plano</li>
-                            <li style="margin-bottom: 10px;">🔹 <strong>Teste antes:</strong> Faça um teste de impressão pequeno antes de projetos grandes</li>
-                        </ul>
-                    </div>
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">🛠️ Passo a Passo para Trocar o FEP:</h3>
-                    <ol class="step-list">
-                        <li><strong>Remova o tanque</strong> da impressora e esvazie completamente a resina</li>
-                        <li><strong>Limpe o tanque</strong> com álcool isopropílico e deixe secar</li>
-                        <li><strong>Desparafuse o anel de fixação</strong> do fundo do tanque (geralmente 8-12 parafusos)</li>
-                        <li><strong>Remova o FEP antigo</strong> com cuidado</li>
-                        <li><strong>Limpe a superfície</strong> onde o FEP será instalado</li>
-                        <li><strong>Corte o FEP novo</strong> no tamanho adequado (deixe sobra nas bordas)</li>
-                        <li><strong>Posicione o FEP</strong> sobre o tanque, centralizando bem</li>
-                        <li><strong>Coloque o anel de fixação</strong> e aperte os parafusos em cruz (opostos)</li>
-                        <li><strong>Aperte gradualmente</strong> em várias etapas para tensionar uniformemente</li>
-                        <li><strong>Teste a tensão</strong> batendo levemente - deve soar como um tambor</li>
-                        <li><strong>Corte o excesso</strong> de FEP nas bordas com cuidado</li>
-                        <li><strong>Aplique óleo de PTFE</strong> (algumas gotas) e espalhe suavemente</li>
-                        <li><strong>Limpe bem o excesso</strong> de óleo sem deixar resíduo</li>
-                    </ol>
-
-                    <img src="images/fep-instalacao.jpg" alt="Instalação do FEP" class="section-image">
-
-                    <div class="tip-box">
-                        <strong>💡 Dica do Óleo de PTFE:</strong>
-                        Após instalar o FEP novo, aplique algumas gotas de óleo de PTFE e espalhe com um pano macio. Isso reduz a adesão da resina e facilita a remoção das peças. IMPORTANTE: Limpe bem o excesso para não deixar resíduo!
-                    </div>
-
-                    <div class="warning-box">
-                        <strong>⚠️ Atenção:</strong>
-                        A tensão do FEP é crítica! Muito frouxo causa impressões deformadas. Muito apertado pode rasgar. O som deve ser como um tambor afinado.
-                    </div>
-
-                    <div class="highlight-box">
-                        <h3>📊 Vida Útil do FEP</h3>
-                        <table>
-                            <tr>
-                                <th>Uso</th>
-                                <th>Vida Útil Estimada</th>
-                            </tr>
-                            <tr>
-                                <td>Uso doméstico (poucas impressões)</td>
-                                <td>6-12 meses</td>
-                            </tr>
-                            <tr>
-                                <td>Uso regular (várias impressões/semana)</td>
-                                <td>3-6 meses</td>
-                            </tr>
-                            <tr>
-                                <td>Uso profissional (diário)</td>
-                                <td>1-3 meses</td>
-                            </tr>
-                        </table>
-                        <p style="margin-top: 15px;"><strong>Nota:</strong> Troque sempre que notar sinais de desgaste, independentemente do tempo de uso!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 3: LIMPEZA DO TANQUE -->
-            <div class="section">
-                <div class="section-title">
-                    <div class="section-number">3</div>
-                    <h2>Limpeza do Tanque de Resina</h2>
-                </div>
-                <div class="section-content">
-                    <p>O tanque de resina deve ser mantido limpo para garantir impressões de qualidade. Resíduos e resina curada podem causar falhas.</p>
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">🧼 Como Limpar:</h3>
-                    <ol class="step-list">
-                        <li><strong>Filtre a resina</strong> de volta para o frasco usando um filtro</li>
-                        <li><strong>Remova resíduos sólidos</strong> com uma espátula plástica (nunca metal!)</li>
-                        <li><strong>Limpe o FEP</strong> com papel toalha ou pano macio embebido em resina</li>
-                        <li><strong>Remova resina curada</strong> com cuidado usando espátula plástica</li>
-                        <li><strong>Seque com papel higiênico ou pano de microfibra</strong> limpo e macio (evite materiais que soltem fiapos)</li>
-                    </ol>
-
-                    <div class="warning-box">
-                        <strong>⚠️ IMPORTANTE - NÃO Use Álcool!</strong>
-                        NÃO limpe o tanque com álcool isopropílico no uso regular! O álcool pode danificar o FEP e o tanque. Use álcool APENAS quando for trocar de cor de resina ou fazer limpeza profunda.
-                    </div>
-
-                    <div class="tip-box">
-                        <strong>💡 Dica de Limpeza:</strong>
-                        Para limpeza diária, use a própria resina! Ela dissolve resíduos e não danifica o FEP. Depois, seque bem com papel toalha.
-                    </div>
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">🔄 Quando Limpar:</h3>
-                    <ul class="step-list">
-                        <li><strong>Após cada impressão</strong> - remoção de resíduos básicos</li>
-                        <li><strong>Antes de trocar de resina</strong> - limpeza completa</li>
-                        <li><strong>Se notar partículas</strong> flutuando na resina</li>
-                        <li><strong>Após falhas de impressão</strong> que deixaram resina curada</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 4: LIMPEZA DA TELA LCD -->
-            <div class="section">
-                <div class="section-title">
-                    <div class="section-number">4</div>
-                    <h2>Limpeza da Tela LCD</h2>
-                </div>
-                <div class="section-content">
-                    <p>A tela LCD é o componente mais delicado e caro da impressora. Mantenha-a sempre limpa e protegida. <strong>DICA IMPORTANTE:</strong> Instale uma película protetora para evitar danos em caso de vazamento de resina!</p>
-
-                    <div class="tip-box">
-                        <strong>💡 Dica de Película Protetora:</strong>
-                        Instale uma película protetora na tela LCD! Se o FEP furar e vazar resina, a película protege o LCD de danos permanentes. É um investimento pequeno que pode salvar o componente mais caro da impressora!
-                    </div>
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">🧽 Como Limpar:</h3>
-                    <ol class="step-list">
-                        <li><strong>Desligue a impressora</strong> e aguarde esfriar</li>
-                        <li><strong>Remova o tanque</strong> com cuidado</li>
-                        <li><strong>Use papel higiênico ou pano de microfibra</strong> limpo e seco (nunca use estopa ou materiais que soltem fiapos!)</li>
-                        <li><strong>Limpe suavemente</strong> em movimentos circulares</li>
-                        <li><strong>Para manchas difíceis</strong>, use álcool isopropílico em pequena quantidade</li>
-                        <li><strong>Seque completamente</strong> antes de usar</li>
-                    </ol>
-
-                    <div class="warning-box">
-                        <strong>⚠️ Cuidado Extremo:</strong>
-                        NUNCA pressione com força na tela LCD! Ela é extremamente delicada e pode quebrar facilmente. Use apenas panos macios e movimentos suaves.
-                    </div>
-
-                    <div class="tip-box">
-                        <strong>💡 Película Protetora no LCD:</strong>
-                        Instale uma película protetora transparente na tela LCD! É como uma película de celular. Se o FEP furar e vazar resina, você só precisa trocar a película (barata) em vez da tela LCD inteira (cara). Essa simples proteção pode economizar centenas de reais!
-                    </div>
-
-                    <div class="warning-box">
-                        <strong>⚠️ Prevenção:</strong>
-                        Use sempre o tanque de resina corretamente instalado para evitar vazamentos sobre a tela. Vazamentos de resina são a principal causa de danos à tela LCD.
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 5: VERIFICAÇÃO DE PARAFUSOS -->
-            <div class="section">
-                <div class="section-title">
-                    <div class="section-number">5</div>
-                    <h2>Verificação de Parafusos e Conexões</h2>
-                </div>
-                <div class="section-content">
-                    <p>Com o uso, parafusos podem afrouxar devido às vibrações. Verifique periodicamente para manter a precisão.</p>
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">🔩 O que Verificar:</h3>
-                    <ul class="step-list">
-                        <li><strong>Parafusos da plataforma de impressão</strong> - críticos para nivelamento</li>
-                        <li><strong>Parafusos do eixo Z</strong> - afetam movimento vertical</li>
-                        <li><strong>Parafusos do tanque</strong> - evitam vazamentos</li>
-                        <li><strong>Conexões elétricas</strong> - garantem funcionamento correto</li>
-                        <li><strong>Parafusos da estrutura</strong> - mantêm rigidez</li>
-                    </ul>
-
-                    <h3 style="color: #667eea; margin: 25px 0 15px 0;">📅 Frequência:</h3>
-                    <ul class="step-list">
-                        <li><strong>Mensal</strong> - verificação visual e aperto leve</li>
-                        <li><strong>Após transporte</strong> - verificação completa</li>
-                        <li><strong>Se notar problemas</strong> - verificação imediata</li>
-                    </ul>
-
-                    <div class="warning-box">
-                        <strong>⚠️ Não Aperte Demais:</strong>
-                        Aperte os parafusos firmemente, mas sem exagero. Apertar demais pode danificar roscas e componentes plásticos.
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 6: CRONOGRAMA DE MANUTENÇÃO -->
-            <div class="section">
-                <div class="section-title">
-                    <div class="section-number">6</div>
-                    <h2>Cronograma de Manutenção Preventiva</h2>
-                </div>
-                <div class="section-content">
-                    <img src="images/manutencao-preventiva.jpg" alt="Manutenção Preventiva" class="section-image">
-
-                    <div class="highlight-box">
-                        <h3>📅 Cronograma Recomendado</h3>
-                        <table>
-                            <tr>
-                                <th>Frequência</th>
-                                <th>Manutenção</th>
-                            </tr>
-                            <tr>
-                                <td><strong>Após cada impressão</strong></td>
-                                <td>
-                                    • Limpar tanque de resina<br>
-                                    • Filtrar resina<br>
-                                    • Limpar plataforma de impressão
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Semanal</strong></td>
-                                <td>
-                                    • Limpar tela LCD<br>
-                                    • Verificar nível de resina<br>
-                                    • Inspeção visual geral
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Mensal</strong></td>
-                                <td>
-                                    • Lubrificar eixo Z<br>
-                                    • Verificar parafusos<br>
-                                    • Verificar estado do FEP<br>
-                                    • Calibrar nivelamento
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Trimestral</strong></td>
-                                <td>
-                                    • Limpeza profunda completa<br>
-                                    • Verificar conexões elétricas<br>
-                                    • Atualizar firmware (se disponível)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Conforme necessário</strong></td>
-                                <td>
-                                    • Trocar FEP (sinais de desgaste)<br>
-                                    • Trocar tela LCD (se danificada)<br>
-                                    • Substituir filtro de ar (se houver)
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 7: PROBLEMAS COMUNS -->
-            <div class="section">
-                <div class="section-title">
-                    <div class="section-number">7</div>
-                    <h2>Problemas Comuns e Soluções</h2>
-                </div>
-                <div class="section-content">
-                    <table>
-                        <tr>
-                            <th>Problema</th>
-                            <th>Causa Provável</th>
-                            <th>Solução</th>
-                        </tr>
-                        <tr>
-                            <td>Peça não adere à plataforma</td>
-                            <td>Plataforma mal nivelada ou FEP sujo</td>
-                            <td>Renivelar plataforma e limpar FEP</td>
-                        </tr>
-                        <tr>
-                            <td>Linhas horizontais na impressão</td>
-                            <td>Eixo Z com atrito ou mal lubrificado</td>
-                            <td>Lubrificar eixo Z adequadamente</td>
-                        </tr>
-                        <tr>
-                            <td>Peça gruda no FEP</td>
-                            <td>FEP desgastado ou tempo de exposição alto</td>
-                            <td>Trocar FEP ou reduzir exposição</td>
-                        </tr>
-                        <tr>
-                            <td>Impressão deformada</td>
-                            <td>FEP mal tensionado ou danificado</td>
-                            <td>Retensionar ou trocar FEP</td>
-                        </tr>
-                        <tr>
-                            <td>Ruídos no eixo Z</td>
-                            <td>Falta de lubrificação ou parafusos soltos</td>
-                            <td>Lubrificar eixo e apertar parafusos</td>
-                        </tr>
-                        <tr>
-                            <td>Manchas nas impressões</td>
-                            <td>Tela LCD suja ou resina contaminada</td>
-                            <td>Limpar tela e filtrar resina</td>
-                        </tr>
-                        <tr>
-                            <td>Vazamento de resina</td>
-                            <td>FEP rasgado ou tanque mal instalado</td>
-                            <td>Trocar FEP e verificar instalação</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <!-- CHECKLIST FINAL -->
-            <div class="checklist">
-                <h3>✅ Checklist de Manutenção Mensal</h3>
-                <ul>
-                    <li>Lubrificar eixo Z</li>
-                    <li>Verificar estado do FEP (arranhões, opacidade)</li>
-                    <li>Limpar tela LCD</li>
-                    <li>Verificar e apertar parafusos</li>
-                    <li>Verificar nivelamento da plataforma</li>
-                    <li>Limpar tanque profundamente</li>
-                    <li>Filtrar toda a resina</li>
-                    <li>Verificar conexões elétricas</li>
-                    <li>Limpar exterior da impressora</li>
-                    <li>Documentar horas de uso e manutenções realizadas</li>
-                </ul>
-            </div>
-
-            <!-- DICAS FINAIS -->
-            <div class="highlight-box">
-                <h3>🎯 Dicas Finais para Prolongar a Vida da Impressora</h3>
-                <ul style="list-style: none; padding-left: 0;">
-                    <li style="margin-bottom: 10px;">🔹 <strong>Mantenha o ambiente limpo</strong> - Poeira é inimiga da impressora</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Use resinas de qualidade</strong> - Resinas ruins danificam componentes</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Não deixe resina no tanque</strong> por longos períodos sem uso</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Proteja da luz solar</strong> - UV ambiental pode curar resina acidentalmente</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Mantenha temperatura estável</strong> - Evite ambientes muito frios ou quentes</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Documente suas manutenções</strong> - Ajuda a identificar padrões</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Tenha peças de reposição</strong> - FEP e lubrificante sempre à mão</li>
-                    <li style="margin-bottom: 10px;">🔹 <strong>Siga o manual do fabricante</strong> - Cada modelo tem especificidades</li>
-                </ul>
-            </div>
-        </div>
-
-        <footer>
-            <p><strong>Quanton3D</strong> - Resinas UV SLA de Alta Performance</p>
-            <p>Manutenção adequada = Impressões perfeitas!</p>
-        </footer>
+        <section class="topic" aria-labelledby="fontes">
+          <div class="topic-head"><div class="topic-num" aria-hidden="true">↗</div><div><h2 id="fontes">Fontes técnicas e limite de aplicação</h2><p>Referências para segurança e método. O manual e o suporte do modelo específico prevalecem para desmontagem e manutenção.</p></div></div>
+          <div class="split-2">
+            <div class="panel"><h3>Segurança e resina</h3><ul class="panel-list"><li><a href="https://www.cdc.gov/niosh/bulletin/2024/safe-3d-printing.html" target="_blank" rel="noopener noreferrer">NIOSH/CDC — Safe 3D Printing</a></li><li><a href="https://formlabs.com/support/Resin-Care/" target="_blank" rel="noopener noreferrer">Formlabs — Resin Care</a></li><li><a href="https://formlabs.com/support/Safety-Formlabs-SLA-printers/" target="_blank" rel="noopener noreferrer">Formlabs — Safety with SLA products</a></li></ul></div>
+            <div class="panel"><h3>Equipamento e filme</h3><ul class="panel-list"><li><a href="https://support.formlabs.com/s/article/Cleaning-after-an-extensive-resin-spill-Form-3-Form-3B?language=en_US" target="_blank" rel="noopener noreferrer">Formlabs — limpeza após vazamento</a></li><li><a href="https://wiki.elegoo.com/saturn/release-film-replacement" target="_blank" rel="noopener noreferrer">ELEGOO — substituição do filme</a></li><li><a href="https://store.anycubic.com/blogs/3d-printing-guides/how-to-replace-fep-film" target="_blank" rel="noopener noreferrer">Anycubic — manutenção e troca de FEP</a></li></ul></div>
+          </div>
+          <div class="callout" style="margin-top:13px"><b>Diretriz Quanton3D:</b> use estas referências para entender risco e sequência. Não transplante torque, lubrificante, película, solvente ou intervalo de uma máquina para outra.</div>
+        </section>
+      </main>
+      <footer><strong>Quanton3D · Resinas UV de alta performance</strong><p>Suporte técnico: <a href="https://wa.me/553132716935">(31) 3271-6935</a> · <a href="mailto:atendimento@quanton3d.com.br">atendimento@quanton3d.com.br</a></p><p style="margin-top:12px;font-size:.79rem;opacity:.75">Ao pedir suporte, envie modelo da máquina, fotos antes da limpeza, sintoma, posição da falha e intervenção já realizada.</p></footer>
     </div>
-</body>
+    <script>
+      (function(){
+        var signal=document.getElementById("signal"),event=document.getElementById("event"),result=document.getElementById("triageResult");
+        if(!signal||!event||!result)return;
+        var routes={
+          film:{title:"Isole tanque, filme e resíduos",steps:["Não inicie outra impressão antes de localizar e remover fragmentos.","Drene e filtre a resina quando houver falha ou suspeita de resíduo.","Inspecione filme, bordas, quadro e parte externa do tanque.","Troque o filme se perdeu vedação, integridade ou comportamento de separação."]},
+          z:{title:"Correlacione o sintoma com a altura Z",steps:["Anote a altura e verifique se o desvio repete no mesmo ponto.","Inspecione sujeira, fixação, guia, fuso e acoplamento.","Use apenas limpeza e lubrificante previstos pelo fabricante.","Interrompa se houver travamento ou resistência irregular."]},
+          xy:{title:"Falha fixa em XY aponta para caminho físico",steps:["Compare a posição no filme, na tela/protetor e na plataforma.","Mova um corpo de prova conhecido para outra região.","Execute o teste de exposição recomendado pelo fabricante.","Não troque o LCD sem confirmar que a falha acompanha a região física."]},
+          plate:{title:"Separe superfície, fixação e paralelismo",steps:["Compare a base impressa nos cantos e preserve a evidência.","Confirme limpeza, assentamento e aperto da plataforma.","Verifique dano, rebarba e planicidade antes de renivelar.","Não aumente exposição para compensar um erro mecânico."]},
+          spill:{title:"Parada segura por vazamento",steps:["Desenergize antes de acessar a parte interna.","Contenha o líquido sem empurrá-lo para frestas e ventilação.","Siga o procedimento oficial do modelo ou acione assistência.","Só religue depois de inspeção, limpeza e secagem completas."]}
+        };
+        function analyze(){var route=routes[signal.value],extra;if(event.value==="service")extra="Como começou após intervenção, confira montagem, peça, produto e passo alterado antes de procurar outra causa.";else if(event.value==="failure")extra="Como começou após falha, priorize fragmentos curados, dano no filme e correspondência entre peça, tanque e tela.";else if(event.value==="gradual")extra="Como foi gradual, compare registros de desgaste, folga, ruído e qualidade ao longo do tempo.";else extra="Como foi súbito, interrompa e procure vazamento, fixador solto, dano ou contaminação antes de repetir.";result.innerHTML="<h3>"+route.title+"</h3><ol>"+route.steps.concat([extra]).map(function(step){return "<li>"+step+"</li>"}).join("")+'</ol><div class="callout" style="margin-top:12px"><b>Liberação:</b> teste curto, sem vazamento, ruído ou repetição do defeito.</div>'}
+        signal.addEventListener("change",analyze);event.addEventListener("change",analyze);analyze();
+      })();
+    </script>
+  </body>
 </html>
