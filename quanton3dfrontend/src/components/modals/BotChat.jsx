@@ -21,26 +21,62 @@ function formatarMarkdown(texto) {
     .replace(/\n/g, "<br/>");
 }
 
-const ChatInput = React.memo(function ChatInput({ onEnviar, pensando }) {
+const MODOS = [
+  { id: "parametros", label: "🔧 Parâmetros",       placeholder: "Ex: IRON na Mars 4 Ultra, camada 0.05mm..." },
+  { id: "tecnico",    label: "🤔 Dúvida Técnica",    placeholder: "Descreva o problema que está acontecendo..." },
+  { id: "resina",     label: "🧪 Indicar Resina",    placeholder: "Para que tipo de peça / uso você precisa?" },
+];
+
+const ChatInput = React.memo(function ChatInput({ onEnviar, pensando, modo, onModoChange }) {
   const [valor, setValor] = useState("");
+  const modoAtual = MODOS.find((m) => m.id === modo);
+  const placeholder = modoAtual ? modoAtual.placeholder : "Tire sua dúvida técnica...";
+
   function handleEnviar() {
     if (!valor.trim() || pensando) return;
     onEnviar(valor);
     setValor("");
   }
   return (
-    <div style={{ display: "flex", gap: "8px", padding: "12px 4px 4px", borderTop: "1px solid var(--border-soft)", flexShrink: 0, width: "100%", minWidth: 0, boxSizing: "border-box" }}>
-      <input
-        className="q-input"
-        value={valor}
-        onChange={(e) => setValor(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
-        placeholder="Tire sua dúvida técnica..."
-        style={{ flex: 1, minWidth: 0 }}
-      />
-      <button type="button" className="q-btn q-btn--primary" onClick={handleEnviar} disabled={pensando} style={{ flexShrink: 0 }}>
-        <Send size={15} />
-      </button>
+    <div style={{ borderTop: "1px solid var(--border-soft)", flexShrink: 0, width: "100%", minWidth: 0, boxSizing: "border-box" }}>
+      {/* Botões de modo */}
+      <div style={{ display: "flex", gap: "6px", padding: "8px 4px 0", flexWrap: "wrap" }}>
+        {MODOS.map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            onClick={() => onModoChange(modo === m.id ? "" : m.id)}
+            style={{
+              fontSize: "0.72rem",
+              padding: "4px 10px",
+              borderRadius: "20px",
+              border: "1px solid " + (modo === m.id ? "var(--primary)" : "var(--border-soft)"),
+              background: modo === m.id ? "rgba(47,123,255,0.12)" : "var(--bg-raised)",
+              color: modo === m.id ? "var(--primary)" : "var(--text-secondary)",
+              cursor: "pointer",
+              fontWeight: modo === m.id ? 700 : 400,
+              transition: "all 0.15s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+      {/* Input + enviar */}
+      <div style={{ display: "flex", gap: "8px", padding: "8px 4px 4px" }}>
+        <input
+          className="q-input"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
+          placeholder={placeholder}
+          style={{ flex: 1, minWidth: 0 }}
+        />
+        <button type="button" className="q-btn q-btn--primary" onClick={handleEnviar} disabled={pensando} style={{ flexShrink: 0 }}>
+          <Send size={15} />
+        </button>
+      </div>
     </div>
   );
 });
@@ -52,6 +88,7 @@ function BotChat({ cliente }) {
   const [carregandoHistorico, setCarregandoHistorico] = useState(false);
   const [pensando, setPensando] = useState(false);
   const [impressorasBot, setImpressorasBot] = useState([]);
+  const [modo, setModo] = useState("");
   const [feedbackAberto, setFeedbackAberto] = useState(null);
   const [fotoFeedback, setFotoFeedback] = useState(null);
   const [enviandoFeedback, setEnviandoFeedback] = useState(false);
@@ -134,7 +171,7 @@ function BotChat({ cliente }) {
         ...ctxMsg,
         ...novasMensagens.slice(-8).filter((m) => m.text).map((m) => ({ role: m.isBot ? "assistant" : "user", content: m.text })),
       ];
-      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "" });
+      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "", modo });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
       const conversaId = res.data.data?.conversaId || res.data.conversaId || null;
       setMensagens((prev) => [...prev, { text: reply, isBot: true, conversaId }]);
@@ -315,7 +352,7 @@ function BotChat({ cliente }) {
         {pensando && <div style={{ alignSelf: "flex-start", padding: "10px 14px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", border: "1px solid var(--border-soft)", color: "var(--text-muted)", fontSize: "0.86rem" }}>Analisando base técnica...</div>}
       </div>
 
-      <ChatInput onEnviar={enviar} pensando={pensando} />
+      <ChatInput onEnviar={enviar} pensando={pensando} modo={modo} onModoChange={setModo} />
     </div>
   );
 }
