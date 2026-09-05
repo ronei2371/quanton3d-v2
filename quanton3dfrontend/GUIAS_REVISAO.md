@@ -15,10 +15,10 @@ Este arquivo evita retrabalho e registra a sequência oficial. Cada guia só mud
 - [x] Bottom Curling — revisão técnica final em 2026-09-05
 - [x] Manutenção de Impressora — revisão técnica final em 2026-09-05
 - [x] Pós-processamento de Resina — revisão técnica final em 2026-09-05
+- [x] Economia Inteligente de Resina — revisão técnica final em 2026-09-05
 
 ## Próximos, nesta ordem
 
-- [ ] Economia Inteligente de Resina
 - [ ] Intensidade de Luz e Precisão
 - [ ] Overhangs e Ilhas
 - [ ] Velocidade de Impressão
