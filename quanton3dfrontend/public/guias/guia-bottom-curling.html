@@ -594,11 +594,13 @@
       <a href="#causas">Causas</a>
       <a href="#plataforma">Plataforma</a>
       <a href="#sintomas">Sintomas</a>
+      <a href="#dose">Dose e transição</a>
       <a href="#protocolo">Protocolo</a>
       <a href="#ajustes">Direção dos ajustes</a>
       <a href="#estimador">Estimador de risco</a>
       <a href="#diagnostico">Diagnóstico</a>
       <a href="#checklist">Checklist</a>
+      <a href="#fontes">Fontes</a>
     </div>
   </nav>
 
@@ -609,7 +611,7 @@
       <p>Reconheça a borda levantando, entenda por que o contato diminui a cada ciclo e corrija a causa sem mascarar o problema com superexposição.</p>
       <div class="hero-meta" aria-label="O que este guia cobre">
         <span>Leitura visual da falha</span>
-        <span>Causas mecânicas e térmicas</span>
+        <span>Dose inferior × transição</span>
         <span>Protocolo de correção</span>
       </div>
     </header>
@@ -618,7 +620,7 @@
       <section class="summary" aria-labelledby="resumo">
         <div class="summary-card">
           <h2 id="resumo">O processo em uma frase</h2>
-          <p>A borda da base levanta, a área de contato encolhe, a força de separação passa a atuar sobre menos superfície e a falha avança sozinha a cada camada.</p>
+          <p>A borda da base levanta por tensão ou contato insuficiente; a área aderida diminui e a separação seguinte amplia a falha. A direção do ajuste depende da evidência — aumentar dose inferior nem sempre é a resposta.</p>
         </div>
         <aside class="attention">
           <h2>Antes de mexer em parâmetros</h2>
@@ -643,7 +645,7 @@
         <div class="split-2">
           <div class="panel">
             <p>Em uma falha leve, a impressora continua trabalhando sobre uma base já deformada. O modelo pode terminar, mas fica inclinado, dimensionalmente incorreto ou com camadas comprimidas de maneira desigual.</p>
-            <p>O defeito nasce da combinação entre <b>tensão térmica</b>, <b>aderência insuficiente</b>, <b>estado da plataforma</b> e <b>forças mecânicas de separação</b>.</p>
+            <p>O defeito nasce da combinação entre <b>tensão de cura e gradiente térmico</b>, <b>aderência insuficiente</b>, <b>estado da plataforma</b> e <b>forças mecânicas de separação</b>.</p>
             <div class="callout"><b>Diagnóstico importante:</b> bottom curling não é apenas “a peça não grudou”. A borda pode aderir no início, curvar aos poucos e perder contato a cada ciclo de separação.</div>
           </div>
 
@@ -744,8 +746,8 @@
             <img src="images/curling-causa-contracao.jpg" alt="Base de resina encurvada por contração">
             <div class="cause-body">
               <span class="cause-tag">Causa 1</span>
-              <h3>Tensão térmica</h3>
-              <p>A fotopolimerização libera calor. Se a temperatura ficar desigual, regiões da peça tentam expandir ou contrair de maneiras diferentes e a borda pode empenar.</p>
+              <h3>Tensão de cura e gradiente térmico</h3>
+              <p>A fotopolimerização gera calor e contração. Diferenças de dose, temperatura ou restrição entre centro e borda podem acumular tensão suficiente para curvar a base.</p>
             </div>
           </article>
           <article class="cause">
@@ -781,8 +783,15 @@
           <article class="cause">
             <div class="cause-body">
               <span class="cause-tag">Complementar</span>
-              <h3>Primeiras camadas pouco robustas</h3>
-              <p>Exposição, número de camadas de base e transição precisam formar uma fundação coerente. Ajuste após confirmar limpeza e nivelamento.</p>
+              <h3>Dose inferior inadequada</h3>
+              <p>Dose insuficiente forma uma base fraca; dose excessiva pode aumentar crescimento dimensional, rigidez local e tensão de contração. Decida pela aparência e pelo ponto em que a falha começa, não por tentativa cega.</p>
+            </div>
+          </article>
+          <article class="cause">
+            <div class="cause-body">
+              <span class="cause-tag">Complementar</span>
+              <h3>Transição inferior brusca</h3>
+              <p>Uma queda abrupta entre a dose das camadas inferiores e a dose normal cria uma mudança de conversão e rigidez. Se a falha nasce perto do fim da fundação, revise as camadas de transição.</p>
             </div>
           </article>
           <article class="cause">
@@ -900,7 +909,7 @@
           <article class="symptom">
             <div class="sym-icon" aria-hidden="true">▱</div>
             <h3>Base completa, mas cantos curvados</h3>
-            <p>Considere tensão térmica, contração, base extensa, transição brusca de espessura e resfriamento desigual.</p>
+            <p>Considere tensão de cura, dose inferior excessiva, transição abrupta, base extensa, mudança brusca de espessura e temperatura desigual.</p>
           </article>
           <article class="symptom is-danger">
             <div class="sym-icon" aria-hidden="true" style="color:var(--red); border-color:rgba(255,122,127,0.28); background:rgba(255,122,127,0.1)">⬆</div>
@@ -910,9 +919,64 @@
         </div>
       </section>
 
-      <section class="topic" aria-labelledby="protocolo">
+      <section class="topic" aria-labelledby="dose">
         <div class="topic-head">
           <div class="topic-num">6</div>
+          <div>
+            <h2 id="dose">Dose inferior, dose normal e transição</h2>
+            <p>O mesmo sintoma pode exigir direções opostas. Use a evidência da base para decidir o que testar.</p>
+          </div>
+        </div>
+
+        <div class="dir-grid">
+          <div class="panel">
+            <span class="dir-when">Base fina, mole ou incompleta</span>
+            <h3>Possível dose inferior insuficiente</h3>
+            <ul class="panel-list">
+              <li>Confirme nivelamento, Z inicial, altura de camada e limpeza.</li>
+              <li>Verifique se parte da fundação ficou no filme.</li>
+              <li>Compare com o parâmetro oficial da combinação resina × impressora.</li>
+              <li>Se a evidência persistir, fortaleça a fundação em pequenos passos controlados.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">Base segura, grossa e com cantos curvos</span>
+            <h3>Possível excesso de dose ou tensão</h3>
+            <ul class="panel-list">
+              <li>Não continue aumentando a exposição inferior.</li>
+              <li>Observe crescimento lateral, pé de elefante e remoção excessivamente difícil.</li>
+              <li>Revise dose, quantidade de camadas inferiores e massa do raft separadamente.</li>
+              <li>Confirme se a curvatura acompanha a geometria, e não uma posição fixa da plataforma.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">Falha perto do fim da fundação</span>
+            <h3>Transição pode estar abrupta</h3>
+            <ul class="panel-list">
+              <li>Localize no preview a altura exata em que a borda começa a abrir.</li>
+              <li>Compare essa altura com o fim das camadas inferiores e de transição.</li>
+              <li>Use transição gradual compatível com o formato e o firmware da máquina.</li>
+              <li>Não confunda transição de exposição com transição geométrica do modelo.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="dir-when">A base fica e descola quando a área cresce</span>
+            <h3>Priorize a mecânica de separação</h3>
+            <ul class="panel-list">
+              <li>Revise área transversal, cavidades fechadas e drenagem.</li>
+              <li>Confirme condição e tensão do filme FEP, PFA ou ACF.</li>
+              <li>Avalie velocidade, aceleração, estágios e distância de elevação.</li>
+              <li>Não use exposição para esconder força de separação excessiva.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout warn"><b>Teste decisivo:</b> anote a camada em que o curling começa. Se coincide com uma mudança de dose, seção ou fechamento de cavidade, existe uma hipótese verificável. Sem essa correlação, mexer em parâmetros ainda é chute.</div>
+      </section>
+
+      <section class="topic" aria-labelledby="protocolo">
+        <div class="topic-head">
+          <div class="topic-num">7</div>
           <div>
             <h2 id="protocolo">Protocolo de correção na ordem certa</h2>
             <p>Mude uma família de variáveis por vez. Ajustar tudo simultaneamente impede descobrir o que realmente resolveu.</p>
@@ -932,12 +996,12 @@
           <article class="proto">
             <img src="images/curling-passo-fundacao.jpg" alt="Exposição UV formando as camadas inferiores">
             <h3>Validar a fundação</h3>
-            <p>Revise exposição, número de camadas inferiores e transição sem transformar a peça em um bloco supercurado.</p>
+            <p>Separe base fraca de base supercurada. Revise dose inferior, quantidade de camadas e transição em uma única direção por rodada.</p>
           </article>
           <article class="proto">
             <img src="images/curling-passo-lift.jpg" alt="Movimento de elevação mais controlado na plataforma">
             <h3>Reduzir agressividade</h3>
-            <p>Diminua lift speed ou use estágios mais suaves. Ajuste rest time quando aplicável e teste novamente.</p>
+            <p>Quando a evidência aponta para separação agressiva, reduza velocidade ou aceleração inicial e use estágios mais suaves. Confirme distância suficiente para o filme liberar totalmente.</p>
           </article>
           <article class="proto">
             <h3>Rever geometria e ambiente</h3>
@@ -948,7 +1012,7 @@
 
       <section class="topic" aria-labelledby="ajustes">
         <div class="topic-head">
-          <div class="topic-num">7</div>
+          <div class="topic-num">8</div>
           <div>
             <h2 id="ajustes">Direção dos ajustes</h2>
             <p>Estes são caminhos de diagnóstico, não receitas universais. Registre cada alteração e valide com uma impressão curta.</p>
@@ -961,7 +1025,8 @@
             <h3>Camadas inferiores</h3>
             <ul class="panel-list">
               <li>Confirme primeiro limpeza e nivelamento.</li>
-              <li>Aumente a robustez em pequenos passos.</li>
+              <li>Se houver evidência de subcura, fortaleça a fundação em pequenos passos.</li>
+              <li>Se a base já está grossa e muito presa, não aumente a dose.</li>
               <li>Observe pé de elefante, fragilidade e dificuldade de remoção.</li>
               <li>Use transição coerente para não criar degrau abrupto.</li>
             </ul>
@@ -970,9 +1035,9 @@
             <span class="dir-when">Se a peça solta durante o peel</span>
             <h3>Movimento</h3>
             <ul class="panel-list">
-              <li>Reduza lift speed inferior.</li>
+              <li>Reduza a agressividade do início do lift quando a falha coincide com o peel.</li>
               <li>Considere movimento em dois estágios.</li>
-              <li>Aumente lift distance apenas quando necessário para separação completa.</li>
+              <li>Ajuste lift distance apenas quando houver evidência de separação incompleta do filme.</li>
               <li>Evite velocidades altas copiadas de outra máquina.</li>
             </ul>
           </div>
@@ -1021,10 +1086,10 @@
 
       <section class="topic" aria-labelledby="estimador">
         <div class="topic-head">
-          <div class="topic-num">8</div>
+          <div class="topic-num">9</div>
           <div>
             <h2 id="estimador">Estimador de risco</h2>
-            <p>Movimente os controles conforme a condição observada. O resultado organiza prioridades; não calcula probabilidade real de falha.</p>
+            <p>Movimente os controles conforme a condição observada. O índice apenas ordena prioridades de inspeção; não é medição física, probabilidade nem parâmetro de impressão.</p>
           </div>
         </div>
 
@@ -1060,14 +1125,14 @@
             <div class="risk-bar"><span id="riskBar"></span></div>
             <h3 id="riskTitle">Risco moderado</h3>
             <p id="riskText" style="font-size:0.88rem">Comece confirmando limpeza e nivelamento; depois reduza a agressividade do lift e observe a geometria da base.</p>
-            <div class="callout"><b>Regra de ouro:</b> quanto pior a aderência, menor a margem para suportar tensão térmica e força de separação.</div>
+            <div class="callout"><b>Regra de ouro:</b> quanto pior a aderência, menor a margem para suportar tensão de cura e força de separação.</div>
           </div>
         </div>
       </section>
 
       <section class="topic" aria-labelledby="diagnostico">
         <div class="topic-head">
-          <div class="topic-num">9</div>
+          <div class="topic-num">10</div>
           <div>
             <h2 id="diagnostico">Diagnóstico por sintomas</h2>
             <p>Marque o que aparece na impressão para receber uma ordem de verificação.</p>
@@ -1097,7 +1162,7 @@
 
       <section class="topic" aria-labelledby="checklist">
         <div class="topic-head">
-          <div class="topic-num">10</div>
+          <div class="topic-num">11</div>
           <div>
             <h2 id="checklist">Checklist antes de repetir a impressão</h2>
             <p>Não desperdice outra cuba de resina repetindo exatamente o mesmo cenário.</p>
@@ -1109,14 +1174,45 @@
           <ul class="check-grid">
             <li>Plataforma sem gordura, digitais, resíduos ou partículas</li>
             <li>Nivelamento e Z inicial conferidos pelo procedimento da máquina</li>
-            <li>Filme e tela sem resíduos curados ou dano aparente</li>
-            <li>Camadas inferiores e transição registradas, sem alterações aleatórias</li>
-            <li>Lift speed inferior reduzido se a falha surgiu durante a separação</li>
-            <li>Rest time ajustado somente quando fizer sentido para a máquina</li>
+            <li>Filme FEP, PFA ou ACF e tela sem resíduos curados ou dano aparente</li>
+            <li>Dose inferior, dose normal, quantidade de camadas e transição registradas</li>
+            <li>Direção da dose escolhida pela evidência: base fraca ou base supercurada</li>
+            <li>Movimento inferior revisado se a falha coincide com a separação</li>
+            <li>Espera após retração revisada quando houver dificuldade de reenchimento ou estabilização</li>
             <li>Base e raft não maiores nem mais maciços que o necessário</li>
             <li>Temperatura da resina e do ambiente estável durante o teste</li>
             <li>Somente uma família de variáveis alterada por rodada</li>
           </ul>
+        </div>
+      </section>
+
+      <section class="topic" aria-labelledby="fontes">
+        <div class="topic-head">
+          <div class="topic-num" aria-hidden="true">↗</div>
+          <div>
+            <h2 id="fontes">Fontes técnicas e limite de aplicação</h2>
+            <p>Referências usadas para estruturar o diagnóstico. O parâmetro oficial da resina Quanton3D e o manual da impressora prevalecem sobre exemplos genéricos.</p>
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="panel">
+            <h3>Documentação consultada</h3>
+            <ul class="panel-list">
+              <li><a href="https://docs.chitubox.com/en-US/academy/bottom-curling-and-detachment" target="_blank" rel="noopener noreferrer">CHITUBOX — Bottom Curling and Detachment</a></li>
+              <li><a href="https://docs.chitubox.com/en-US/chitubox/latest/configure-print-settings" target="_blank" rel="noopener noreferrer">CHITUBOX — exposição, transição, espera e movimento</a></li>
+              <li><a href="https://docs.chitubox.com/en-US/academy/all-you-need-to-know-about-failed-printing" target="_blank" rel="noopener noreferrer">CHITUBOX — diagnóstico geral de falhas</a></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Como usar corretamente</h3>
+            <ul class="panel-list">
+              <li>Use as fontes externas para entender mecanismo e sequência de inspeção.</li>
+              <li>Não copie tempos, velocidades ou temperaturas de exemplos de outra máquina.</li>
+              <li>Confirme nomes e comportamento dos campos no firmware e no fatiador utilizados.</li>
+              <li>Valide a correção com corpo de prova e repetição controlada.</li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -1133,9 +1229,10 @@
           <div class="panel">
             <ul class="panel-list">
               <li>Bottom curling é o levantamento progressivo da borda da base, não apenas uma ausência instantânea de adesão.</li>
-              <li>Tensão térmica pode iniciar o empenamento; contato insuficiente permite que a força de separação amplie a falha.</li>
+              <li>Tensão de cura pode iniciar o empenamento; contato insuficiente permite que a força de separação amplie a falha.</li>
               <li>Plataforma suja, desnivelada ou danificada precisa ser resolvida antes de qualquer ajuste fino de exposição.</li>
               <li>Lift speed alto aumenta a carga dinâmica e pode acelerar o descolamento.</li>
+              <li>Base fraca pode pedir mais dose; base grossa, presa e curvada pode pedir menos tensão e uma transição melhor.</li>
               <li>Resfriamento externo agressivo pode reduzir a temperatura da resina e introduzir contaminantes; use com cautela.</li>
               <li>Menor contração pode ajudar, mas a seleção da resina não substitui uma máquina bem nivelada e um processo controlado.</li>
             </ul>
@@ -1233,9 +1330,9 @@
       var mapa = {
         c1: ['Nivelamento e Z inicial', 'Raft inclinado aponta primeiro para paralelismo da plataforma e compressão inicial desigual.'],
         c2: ['Contato localizado e tensão', 'Limpe e inspecione a região, verifique dano da placa e compare a orientação térmica da peça.'],
-        c3: ['Peel e crescimento de área', 'Reduza lift speed inferior, revise seção transversal e confirme robustez das camadas de base e transição.'],
+        c3: ['Peel e crescimento de área', 'Revise seção transversal, sucção, filme e agressividade do lift; só altere a dose se a base também mostrar subcura.'],
         c4: ['Contaminação ou variável instável', 'Padronize a limpeza, filtre a resina e verifique partículas, filme e temperatura.'],
-        c5: ['Tensão térmica e geometria', 'Revise base extensa, massa, contração, transições de espessura e estabilidade térmica.']
+        c5: ['Tensão de cura e geometria', 'Revise base extensa, massa, contração, transições de espessura e estabilidade térmica.']
       };
       btn.addEventListener('click', function () {
         var out = [];
