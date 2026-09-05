@@ -24,24 +24,32 @@ function ParamItem({ label, value }) {
 
 function ParametrosSection({ onAbrirExposicao }) {
   const [parametros, setParametros] = useState([]);
+  const [todasImpressoras, setTodasImpressoras] = useState([]); // lista mesclada (parametros + catálogo)
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
   const [resinaSelecionada, setResinaSelecionada] = useState("");
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
   const [resultado, setResultado] = useState(null);
+  const [semParametros, setSemParametros] = useState(false);
   const [copiado, setCopiado] = useState(false);
 
   async function carregarParametros() {
     try {
       setCarregando(true); setErro("");
-      const res = await api.get("/parametros");
-      const lista = res.data?.data || res.data?.parametros || [];
+      const [resParametros, resImpressoras] = await Promise.all([
+        api.get("/parametros"),
+        api.get("/parametros/impressoras"),
+      ]);
+      const lista = resParametros.data?.data || resParametros.data?.parametros || [];
       setParametros(lista.map((item) => ({
         ...item,
         resina: corrigirNomeResina(item.resina),
         impressora: limparTexto(item.impressora),
         marca: limparTexto(item.marca),
       })));
+      // endpoint retorna { success, data: string[] } ou { success, impressoras: string[] }
+      const listaImpressoras = resImpressoras.data?.data || resImpressoras.data?.impressoras || [];
+      setTodasImpressoras(listaImpressoras.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
     } catch (err) {
       console.error("Erro ao carregar parâmetros:", err);
       setErro("Não foi possível carregar os parâmetros técnicos.");
@@ -51,15 +59,24 @@ function ParametrosSection({ onAbrirExposicao }) {
   useEffect(() => { const t = setTimeout(carregarParametros, 0); return () => clearTimeout(t); }, []);
 
   const resinas = Array.from(new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))).sort((a, b) => a.localeCompare(b));
-  const impressoras = Array.from(new Set(parametros.filter((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora).map((item) => item.marca ? `${item.marca} - ${item.impressora}` : item.impressora))).sort((a, b) => a.localeCompare(b));
 
-  function selecionarResina(nome) { setResinaSelecionada(nome); setImpressoraSelecionada(""); setResultado(null); }
+  // Impressoras disponíveis: todas do catálogo mesclado (não filtra por resina)
+  // Isso permite que printers do Photocura apareçam mesmo sem parâmetros cadastrados
+  const impressoras = todasImpressoras;
+
+  function selecionarResina(nome) { setResinaSelecionada(nome); setImpressoraSelecionada(""); setResultado(null); setSemParametros(false); }
   function selecionarImpressora(valor) {
     setImpressoraSelecionada(valor);
+    if (!valor) { setResultado(null); setSemParametros(false); return; }
     const nomeModelo = valor.includes(" - ") ? valor.split(" - ").slice(1).join(" - ") : valor;
     const marcaModelo = valor.includes(" - ") ? valor.split(" - ")[0] : "";
-    const p = parametros.find((item) => chaveResina(item.resina) === chaveResina(resinaSelecionada) && item.impressora === nomeModelo && (!marcaModelo || item.marca === marcaModelo));
-    setResultado(p || null);
+    const p = parametros.find((item) =>
+      chaveResina(item.resina) === chaveResina(resinaSelecionada) &&
+      limparTexto(item.impressora).toLowerCase() === nomeModelo.toLowerCase() &&
+      (!marcaModelo || limparTexto(item.marca).toLowerCase() === marcaModelo.toLowerCase())
+    );
+    if (p) { setResultado(p); setSemParametros(false); }
+    else { setResultado(null); setSemParametros(true); }
   }
 
   const perfilChituboxTeste = chaveResina(resultado?.resina) === "SPIN+"
@@ -107,10 +124,22 @@ function ParametrosSection({ onAbrirExposicao }) {
         </label>
       </div>
 
-      {!resultado && (
+      {!resultado && !semParametros && (
         <div className="q-empty">
           <h3>Selecione resina e impressora</h3>
           <p>A configuração inicial recomendada aparecerá aqui automaticamente.</p>
+        </div>
+      )}
+
+      {semParametros && (
+        <div className="q-empty" style={{ borderColor: "rgba(255,165,0,0.3)", background: "rgba(255,165,0,0.05)" }}>
+          <AlertTriangle size={28} style={{ color: "orange", marginBottom: 8 }} />
+          <h3 style={{ color: "var(--text-primary)" }}>Parâmetros ainda não disponíveis</h3>
+          <p>
+            Ainda não temos parâmetros validados para <strong>{impressoraSelecionada}</strong> com a resina <strong>{resinaSelecionada}</strong>.
+            <br />
+            Conhece essa combinação? Ajude a comunidade!
+          </p>
         </div>
       )}
 
