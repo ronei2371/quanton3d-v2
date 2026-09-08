@@ -20,10 +20,10 @@ Este arquivo evita retrabalho e registra a sequência oficial. Cada guia só mud
 - [x] Overhangs e Ilhas — revisão técnica final em 2026-09-05
 - [x] Velocidade de Impressão — revisão técnica final em 2026-09-08
 - [x] Resistência de Peças em Resina — revisão técnica final em 2026-09-08
+- [x] Correções de Modelo no Blender — revisão técnica final em 2026-09-08
 
 ## Próximos, nesta ordem
 
-- [ ] Correções de Modelo no Blender
 - [ ] Peças Ocas: Riscos e Prevenção
 - [ ] Altura de Camada
 - [ ] Tensão Térmica e Deformação
