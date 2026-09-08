@@ -18,10 +18,10 @@ Este arquivo evita retrabalho e registra a sequência oficial. Cada guia só mud
 - [x] Economia Inteligente de Resina — revisão técnica final em 2026-09-05
 - [x] Intensidade de Luz e Precisão — revisão técnica final em 2026-09-05
 - [x] Overhangs e Ilhas — revisão técnica final em 2026-09-05
+- [x] Velocidade de Impressão — revisão técnica final em 2026-09-08
 
 ## Próximos, nesta ordem
 
-- [ ] Velocidade de Impressão
 - [ ] Resistência de Peças em Resina
 - [ ] Correções de Modelo no Blender
 - [ ] Peças Ocas: Riscos e Prevenção
