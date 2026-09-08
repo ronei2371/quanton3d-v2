@@ -30,6 +30,7 @@ function ParametrosSection({ onAbrirExposicao }) {
   const [erro, setErro] = useState("");
   const [resinaSelecionada, setResinaSelecionada] = useState("");
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
+  const [buscaImpressora, setBuscaImpressora] = useState("");
   const [resultado, setResultado] = useState(null);
   const [semParametros, setSemParametros] = useState(false);
   const [copiado, setCopiado] = useState(false);
@@ -70,21 +71,33 @@ function ParametrosSection({ onAbrirExposicao }) {
 
   const resinas = Array.from(new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean))).sort((a, b) => a.localeCompare(b));
 
-  // Impressoras disponíveis: todas do catálogo mesclado (não filtra por resina)
-  // Isso permite que printers do Photocura apareçam mesmo sem parâmetros cadastrados
-  const impressoras = todasImpressoras;
+  // Impressoras disponíveis: todas do catálogo mesclado, filtradas pela busca
+  const impressoras = buscaImpressora && !impressoraSelecionada
+    ? todasImpressoras.filter(i => i.toLowerCase().includes(buscaImpressora.toLowerCase()))
+    : todasImpressoras;
 
-  function selecionarResina(nome) { setResinaSelecionada(nome); setImpressoraSelecionada(""); setResultado(null); setSemParametros(false); }
+  function selecionarResina(nome) { setResinaSelecionada(nome); setImpressoraSelecionada(""); setBuscaImpressora(""); setResultado(null); setSemParametros(false); }
   function selecionarImpressora(valor) {
     setImpressoraSelecionada(valor);
+    setBuscaImpressora(valor);
     if (!valor) { setResultado(null); setSemParametros(false); return; }
-    const nomeModelo = valor.includes(" - ") ? valor.split(" - ").slice(1).join(" - ") : valor;
-    const marcaModelo = valor.includes(" - ") ? valor.split(" - ")[0] : "";
-    const p = parametros.find((item) =>
-      chaveResina(item.resina) === chaveResina(resinaSelecionada) &&
-      limparTexto(item.impressora).toLowerCase() === nomeModelo.toLowerCase() &&
-      (!marcaModelo || limparTexto(item.marca).toLowerCase() === marcaModelo.toLowerCase())
-    );
+    const chaveR = chaveResina(resinaSelecionada);
+    const valorLower = valor.trim().toLowerCase();
+    // Tenta match: 1) impressora exata, 2) catálogo tem "Marca Modelo" e parametro tem só "Modelo"
+    const p = parametros.find((item) => {
+      if (chaveResina(item.resina) !== chaveR) return false;
+      const imp = limparTexto(item.impressora).toLowerCase();
+      const marca = limparTexto(item.marca).toLowerCase();
+      // Match exato nome do catálogo com impressora
+      if (imp === valorLower) return true;
+      // Catálogo: "ELEGOO Mars 2 Pro" → item.impressora: "Mars 2 Pro", item.marca: "ELEGOO"
+      if (valorLower === `${marca} ${imp}`) return true;
+      // Catálogo nome contém o nome da impressora e começa com a marca
+      if (marca && valorLower.startsWith(marca) && valorLower.includes(imp)) return true;
+      // fallback: catálogo nome termina com o nome da impressora
+      if (valorLower.endsWith(imp)) return true;
+      return false;
+    });
     if (p) { setResultado(p); setSemParametros(false); }
     else { setResultado(null); setSemParametros(true); }
   }
@@ -134,10 +147,30 @@ function ParametrosSection({ onAbrirExposicao }) {
         </label>
         <label className="q-field">
           <span>2. Selecione a Impressora</span>
-          <select className="q-select" value={impressoraSelecionada} onChange={(e) => selecionarImpressora(e.target.value)} disabled={!resinaSelecionada || impressoras.length === 0}>
-            <option value="">{resinaSelecionada ? "Selecione a impressora" : "Escolha uma resina primeiro"}</option>
-            {impressoras.map((i) => <option key={i} value={i}>{i}</option>)}
-          </select>
+          <input
+            className="q-select"
+            type="text"
+            placeholder={resinaSelecionada ? (impressoraSelecionada || "Digite para buscar...") : "Escolha uma resina primeiro"}
+            value={buscaImpressora}
+            disabled={!resinaSelecionada}
+            onChange={(e) => { setBuscaImpressora(e.target.value); setImpressoraSelecionada(""); setResultado(null); setSemParametros(false); }}
+            style={{ marginBottom: impressoras.length > 0 && buscaImpressora && !impressoraSelecionada ? "0" : undefined }}
+          />
+          {impressoras.length > 0 && buscaImpressora && !impressoraSelecionada && (
+            <div style={{ position: "relative" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 99, background: "var(--surface-2, #1a1a2e)", border: "1px solid var(--border-soft)", borderTop: "none", borderRadius: "0 0 10px 10px", maxHeight: "200px", overflowY: "auto" }}>
+                {impressoras.slice(0, 50).map((i) => (
+                  <div key={i} onClick={() => selecionarImpressora(i)}
+                    style={{ padding: "9px 14px", cursor: "pointer", fontSize: "0.85rem", color: "var(--text-primary)", borderBottom: "1px solid var(--border-soft)" }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(79,209,255,0.1)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                    {i}
+                  </div>
+                ))}
+                {impressoras.length > 50 && <div style={{ padding: "8px 14px", fontSize: "0.75rem", color: "var(--text-muted)" }}>+{impressoras.length - 50} resultados — refine a busca</div>}
+              </div>
+            </div>
+          )}
         </label>
       </div>
 
@@ -150,7 +183,7 @@ function ParametrosSection({ onAbrirExposicao }) {
 
       {semParametros && (
         <div className="q-empty" style={{ borderColor: "rgba(255,165,0,0.3)", background: "rgba(255,165,0,0.05)" }}>
-          {(() => { const foto = getFotoImpressora(impressoraSelecionada.includes(' - ') ? impressoraSelecionada.split(' - ').slice(1).join(' - ') : impressoraSelecionada); return foto ? <img src={foto} alt={impressoraSelecionada} onError={e => e.target.style.display='none'} style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', marginBottom: '10px' }} /> : null; })()}
+          {(() => { const foto = getFotoImpressora(impressoraSelecionada); return foto ? <img src={foto} alt={impressoraSelecionada} onError={e => e.target.style.display='none'} style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', marginBottom: '10px' }} /> : null; })()}
           <AlertTriangle size={28} style={{ color: "orange", marginBottom: 8 }} />
           <h3 style={{ color: "var(--text-primary)" }}>Parâmetros ainda não disponíveis</h3>
           <p>
