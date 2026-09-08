@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Guia técnico Quanton3D Academy sobre os fatores que afetam a velocidade de impressão em resina SLA, DLP e LCD.">
+<meta name="description" content="Guia técnico Quanton3D sobre tempo de ciclo, base, transição, TSMC, repousos e validação da velocidade em impressão 3D de resina.">
 <meta name="theme-color" content="#05090e">
-<title>Quanton3D Academy | Fatores que afetam a velocidade de impressão em resina</title>
+<title>Quanton3D Academy | Velocidade de impressão em resina</title>
 <style>
 :root{
   --bg:#05090e;--panel:#0b121b;--panel2:#101b28;--line:#233447;--text:#f4f8fc;--muted:#a7b6c7;
@@ -143,10 +143,12 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
     <div class="brand"><span class="atom"></span>QUANTON <b>3D</b> ACADEMY</div>
     <div class="links">
       <a href="#ciclo">Ciclo</a>
-      <a href="#fatores">Fatores</a>
-      <a href="#calculadora">Calculadora</a>
-      <a href="#erros">Erros</a>
+      <a href="#perfil">Perfil</a>
+      <a href="#mecanica">Movimento</a>
+      <a href="#estimador">Estimador</a>
+      <a href="#validacao">Validação</a>
       <a href="#checklist">Checklist</a>
+      <a href="#fontes">Fontes</a>
     </div>
     <button class="btn" id="printBtn" type="button">Imprimir / salvar PDF</button>
   </div>
@@ -156,13 +158,13 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
   <div class="wrap heroGrid">
     <div>
       <span class="eyebrow">Guia técnico completo</span>
-      <h1>Fatores que afetam a <span class="grad">velocidade de impressão</span> em resina</h1>
-      <p class="lead">Em SLA, DLP e LCD, velocidade não é apenas aumentar o número de milímetros por minuto. O tempo final nasce da soma entre quantidade de camadas, exposição, movimento do eixo Z, separação da película, espera, material e geometria.</p>
+      <h1>Velocidade de impressão em resina: <span class="grad">tempo, movimento e validação</span></h1>
+      <p class="lead">Em SLA, DLP e LCD, “imprimir mais rápido” não é elevar um único número. O tempo final nasce da quantidade de camadas e do ciclo completo de cada uma — exposição, repousos, separação, retorno e atrasos próprios da máquina.</p>
       <div class="badges">
         <span class="badge"><strong>✓</strong> Ciclo por camada</span>
-        <span class="badge"><strong>✓</strong> Exposição × movimento Z</span>
-        <span class="badge"><strong>✓</strong> Material e geometria</span>
-        <span class="badge"><strong>✓</strong> Calculadora interativa</span>
+        <span class="badge"><strong>✓</strong> Base, transição e normal</span>
+        <span class="badge"><strong>✓</strong> TSMC e repousos</span>
+        <span class="badge"><strong>✓</strong> Estimador sem perfil universal</span>
       </div>
     </div>
     <div class="heroVisual" role="img" aria-label="Impressora de resina com linha do tempo de camadas, exposição UV e movimento de elevação">
@@ -199,7 +201,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
         <path d="M612 195V322" stroke="#ff5f78" stroke-width="5" marker-end="url(#arrow)"/>
         <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ff5f78"/></marker></defs>
       </svg>
-      <div class="heroNote"><b>Princípio central:</b> imprimir rápido não é reduzir um único número. É equilibrar ciclo por camada, separação segura e cura suficiente para não perder precisão nem aumentar falhas.</div>
+      <div class="heroNote"><b>Princípio central:</b> velocidade útil é produção aprovada por hora. Uma impressão curta que falha ou sai fora da tolerância é mais lenta que um ciclo estável concluído na primeira tentativa.</div>
     </div>
   </div>
 </header>
@@ -207,7 +209,7 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
 <main>
 <section id="ciclo">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">1</div><div><h2>Velocidade real é ciclo por camada</h2><p>Em resina, o tempo total é a repetição de um ciclo: expor, separar a camada da película, subir, retornar, esperar estabilizar e repetir.</p></div></div>
+    <div class="sectionHead"><div class="num">1</div><div><h2>O relógio corre por camada, não por volume</h2><p>Em sistemas que projetam uma camada inteira, preencher mais área em XY pode não aumentar diretamente o tempo de exposição; porém muda a carga de separação. A altura em Z determina quantos ciclos serão repetidos.</p></div></div>
     <div class="cycle">
       <article class="panel cycleVisual">
         <svg viewBox="0 0 760 430">
@@ -218,10 +220,10 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
             <rect x="138" y="0" width="142" height="58" rx="16" fill="#3b2c10" stroke="#ffc247"/>
             <rect x="298" y="0" width="142" height="58" rx="16" fill="#103147" stroke="#30d9ff"/>
             <rect x="458" y="0" width="120" height="58" rx="16" fill="#10321d" stroke="#43d17b"/>
-            <text x="60" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Exposição</text>
-            <text x="209" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Elevação</text>
-            <text x="369" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Retorno</text>
-            <text x="518" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Espera</text>
+            <text x="60" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Expor</text>
+            <text x="209" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Separar</text>
+            <text x="369" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Retornar</text>
+            <text x="518" y="36" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">Estabilizar</text>
           </g>
           <path d="M92 252H645" stroke="#30d9ff" stroke-width="5" opacity=".65"/>
           <g fill="#30d9ff"><circle cx="92" cy="252" r="9"/><circle cx="230" cy="252" r="9"/><circle cx="390" cy="252" r="9"/><circle cx="550" cy="252" r="9"/><circle cx="645" cy="252" r="9"/></g>
@@ -230,148 +232,172 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       </article>
       <aside class="panel cycleText">
         <div class="parts">
-          <div class="part"><b>Tempo de exposição</b><span>Energia UV necessária para formar uma camada com resistência suficiente.</span></div>
-          <div class="part"><b>Tempo mecânico</b><span>Elevação, retorno, aceleração, desaceleração e distância percorrida pelo eixo Z.</span></div>
-          <div class="part"><b>Tempo de separação</b><span>Esforço para destacar a camada da película ou da interface de cura.</span></div>
-          <div class="part"><b>Tempo de espera</b><span>Intervalo para a resina fluir, bolhas dissiparem e a superfície estabilizar.</span></div>
+          <div class="part"><b>Exposição</b><span>O tempo validado para formar a camada com cura e dimensões adequadas ao processo.</span></div>
+          <div class="part"><b>Repousos</b><span>Podem existir antes da elevação, depois da elevação e após o retorno. Os nomes variam por fatiador e firmware.</span></div>
+          <div class="part"><b>Separação e elevação</b><span>A placa ou o tanque se move para liberar a camada da interface. Distância, velocidade, aceleração, filme e área projetada influenciam essa fase.</span></div>
+          <div class="part"><b>Retorno e estabilização</b><span>A máquina volta à posição de impressão e permite o reescoamento e o assentamento mecânico antes da próxima exposição.</span></div>
         </div>
-        <div class="callout"><b>Resumo:</b> o melhor ganho de velocidade quase sempre vem de reduzir etapas sem segurança, e sim de otimizar exposição, altura de camada, orientação e movimento com validação.</div>
+        <div class="callout"><b>Atenção ao nome do campo:</b> “light-off delay” pode ser calculado de forma diferente entre formatos e máquinas. Quando disponível e compatível, o modo de repousos separados torna o ciclo mais transparente.</div>
       </aside>
     </div>
-    <div class="formula">Tempo aproximado = camadas de base × ciclo de base + camadas normais × ciclo normal</div>
+    <div class="formula">T<sub>total</sub> ≈ N<sub>base</sub>·T<sub>base</sub> + N<sub>transição</sub>·T<sub>transição</sub> + N<sub>normal</sub>·T<sub>normal</sub> + atrasos fixos</div>
+    <div class="callout warning"><b>É uma estimativa:</b> aceleração, desaceleração, inclinação do tanque, carregamento da imagem, compressão do arquivo, firmware e rotinas de início/fim podem não aparecer integralmente nos campos do perfil.</div>
   </div>
 </section>
 
-<section id="fatores">
+<section id="perfil">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">2</div><div><h2>Os principais fatores que controlam o tempo</h2><p>Não existe um único botão mágico. Cada ganho de velocidade pode cobrar preço em adesão, precisão, acabamento ou taxa de falha.</p></div></div>
+    <div class="sectionHead"><div class="num">2</div><div><h2>Leia o perfil como três ciclos diferentes</h2><p>Camadas de base, transição e normais não têm a mesma função. Misturá-las em uma única média esconde riscos e produz estimativas ruins.</p></div></div>
     <div class="factors">
       <article class="panel factor">
         <svg viewBox="0 0 260 150"><path d="M48 110Q88 42 130 110T212 110" fill="none" stroke="#9f74ff" stroke-width="14"/><path d="M40 124H220" stroke="#30d9ff" stroke-width="4"/></svg>
-        <span class="tag">Tecnologia</span><h3>SLA, DLP e LCD</h3><p>Sistemas por área curam uma camada inteira de uma vez; sistemas por varredura dependem do caminho da luz. Mesmo assim, velocidade final também depende de mecânica, potência, firmware e material.</p>
+        <span class="tag">Base</span><h3>Adesão inicial</h3><p>Usa exposição e, muitas vezes, movimento próprios. A função é estabelecer adesão à plataforma; não deve ser usada como referência para o restante da peça.</p>
       </article>
       <article class="panel factor">
         <svg viewBox="0 0 260 150"><rect x="45" y="98" width="170" height="20" rx="8" fill="#dcecff"/><path d="M130 38V98" stroke="#30d9ff" stroke-width="10"/><path d="M105 65L130 38L155 65" fill="none" stroke="#43d17b" stroke-width="8"/></svg>
-        <span class="tag">Eixo Z</span><h3>Lift, retract e espera</h3><p>Distância de elevação, velocidade, aceleração, retorno e espera podem representar grande parte do tempo, principalmente em camadas muito rápidas.</p>
+        <span class="tag">Transição</span><h3>Mudança gradual</h3><p>Interpola a exposição entre base e normal quando o perfil e o formato suportam esse recurso. O algoritmo e o movimento aplicado precisam ser confirmados no fatiador.</p>
       </article>
       <article class="panel factor">
         <svg viewBox="0 0 260 150"><circle cx="130" cy="75" r="33" fill="#9f74ff" opacity=".35"/><g stroke="#9f74ff" stroke-width="5"><path d="M130 16V36M130 114V134M71 75H91M169 75H189"/></g><rect x="80" y="94" width="100" height="12" rx="6" fill="#dcecff"/></svg>
-        <span class="tag">Luz</span><h3>Potência e exposição</h3><p>Mais potência pode reduzir exposição, mas excesso de energia aumenta sangramento de luz, perda de detalhe, cura além do necessário e tensão interna.</p>
+        <span class="tag">Normal</span><h3>Maior parte da peça</h3><p>Como se repete centenas ou milhares de vezes, pequenas mudanças no ciclo normal têm grande impacto — desde que a cura, os suportes e a separação permaneçam estáveis.</p>
       </article>
       <article class="panel factor">
         <svg viewBox="0 0 260 150"><g stroke="#30d9ff" stroke-width="4"><path d="M55 35H205M55 60H205M55 85H205M55 110H205"/></g><path d="M210 35V110" stroke="#ff5f78" stroke-width="5"/><path d="M55 126H205" stroke="#dcecff" stroke-width="12"/></svg>
-        <span class="tag">Camada</span><h3>Altura de camada</h3><p>Camadas mais finas aumentam a quantidade total de ciclos. Melhoram acabamento em Z, mas elevam tempo, arquivo e exigência de estabilidade.</p>
+        <span class="tag">Camada</span><h3>Altura em Z</h3><p>Camadas mais finas aumentam o número de ciclos. Podem reduzir degraus em superfícies inclinadas, mas o benefício depende também do pixel XY, óptica, exposição, geometria e precisão mecânica.</p>
       </article>
       <article class="panel factor">
         <svg viewBox="0 0 260 150"><path d="M80 120Q130 20 180 120" fill="none" stroke="#ffc247" stroke-width="12"/><path d="M50 120H210" stroke="#dcecff" stroke-width="8"/></svg>
-        <span class="tag">Material</span><h3>Resina e temperatura</h3><p>Viscosidade, fotoiniciadores, pigmentação, carga mineral e temperatura alteram cura, fluxo, separação e tempo de espera necessário.</p>
+        <span class="tag">Material</span><h3>Resina e condição</h3><p>Viscosidade, formulação, pigmentação, cargas e temperatura mudam cura, escoamento e separação. Um perfil não deve ser transferido cegamente entre materiais ou estações do ano.</p>
       </article>
       <article class="panel factor">
         <svg viewBox="0 0 260 150"><path d="M75 110L190 55" stroke="#8fa5b8" stroke-width="24"/><path d="M65 125H205" stroke="#30d9ff" stroke-width="4"/><path d="M76 36H186V55H76Z" fill="#ff5f78" opacity=".65"/></svg>
-        <span class="tag">Modelo</span><h3>Orientação e área</h3><p>Altura total, área por camada, peça oca, suportes e orientação podem ser tão importantes quanto exposição. Menos altura nem sempre significa menos risco.</p>
+        <span class="tag">Geometria</span><h3>Altura, seção e cavidades</h3><p>Reduzir a altura pode diminuir ciclos, mas uma orientação mais baixa pode aumentar muito a área por camada ou criar cavidades seladas. Tempo e risco devem ser avaliados juntos.</p>
       </article>
     </div>
+    <div class="callout danger"><b>Não confunda dose com velocidade:</b> reduzir exposição sem um corpo de prova pode gerar subcura, suportes frágeis, delaminação ou dimensões incorretas. A exposição é calibrada; o tempo mecânico é otimizado depois.</div>
   </div>
 </section>
 
-<section>
+<section id="mecanica">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">3</div><div><h2>Onde normalmente o tempo é gasto</h2><p>Quando a exposição cai, a mecânica passa a dominar. Por isso, acelerar apenas a cura pode não reduzir tanto o tempo final.</p></div></div>
+    <div class="sectionHead"><div class="num">3</div><div><h2>Movimento: separação primeiro, percurso depois</h2><p>Em máquinas bottom-up, a camada recém-curada precisa se desprender da interface. É nesse evento — e não apenas no deslocamento livre — que a confiabilidade pode ser perdida.</p></div></div>
     <div class="grid2">
       <article class="panel card">
-        <h3>Exemplo de distribuição do tempo</h3>
-        <div class="bars">
-          <div class="bar"><b>Exposição normal</b><div class="track"><i style="width:34%"></i></div><small>médio</small></div>
-          <div class="bar"><b>Elevação/retorno</b><div class="track"><i style="width:72%"></i></div><small>alto</small></div>
-          <div class="bar"><b>Espera e estabilização</b><div class="track"><i style="width:45%"></i></div><small>médio</small></div>
-          <div class="bar"><b>Camadas de base</b><div class="track"><i style="width:22%"></i></div><small>baixo</small></div>
-        </div>
-        <div class="callout warning"><b>Leitura correta:</b> esta escala é didática. Em uma impressora rápida, o gargalo pode ser a exposição; em outra, pode ser lift, peel, espera, drenagem de resina ou geometria.</div>
+        <span class="tag">Um estágio</span><h3>Um trecho, uma velocidade</h3>
+        <p>O mesmo comando percorre toda a distância de elevação. É simples, mas não separa a fase crítica de liberação do restante do curso.</p>
+        <div class="formula">tempo idealizado de percurso = distância ÷ velocidade</div>
+        <p>Essa conta é apenas um limite inferior: motores não mudam de velocidade instantaneamente, e o firmware pode impor aceleração, rampas ou pausas.</p>
       </article>
       <article class="panel card">
-        <h3>A lógica do compromisso</h3>
-        <p><b>Mais rápido</b> pode significar menor tempo de exposição, lift mais agressivo, camada mais alta ou menor espera. Cada alteração precisa ser testada separadamente.</p>
-        <p><b>Mais seguro</b> pode significar mais espera, lift conservador, camada mais fina e orientação que reduza área por camada. O objetivo é encontrar o menor tempo que ainda mantém adesão, precisão e repetibilidade.</p>
+        <span class="tag">Dois estágios / TSMC</span><h3>Trecho de liberação + trecho de viagem</h3>
+        <p>Quando máquina, firmware e formato suportam, a primeira fase pode ser ajustada para a separação e a segunda para completar o percurso. O retorno também pode possuir dois estágios.</p>
+        <div class="callout"><b>Confirme o sentido dos campos:</b> a ordem visual de distância e velocidade varia entre fabricantes. Revise o perfil salvo e a documentação da impressora antes de iniciar.</div>
       </article>
     </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="sectionHead"><div class="num">4</div><div><h2>Decisões que aceleram e o preço de cada uma</h2><p>O ganho ideal é aquele que reduz tempo sem derrubar a confiabilidade do processo.</p></div></div>
-    <div class="tableWrap">
+    <div class="tableWrap" style="margin-top:20px">
       <table>
-        <thead><tr><th>Ajuste</th><th>Ganho esperado</th><th>Risco técnico</th><th>Como validar</th></tr></thead>
+        <thead><tr><th>Componente</th><th>O que ele controla</th><th>Risco ao encurtar ou acelerar</th><th>Evidência para validar</th></tr></thead>
         <tbody>
-          <tr><td>Aumentar altura de camada</td><td>Reduz o número total de camadas.</td><td>Perda de detalhe em Z, degraus visíveis e menor fidelidade vertical.</td><td>Comparar acabamento, encaixe e dimensão em corpo de prova.</td></tr>
-          <tr><td>Reduzir exposição normal</td><td>Diminui segundos em cada camada.</td><td>Subcura, falha em suportes, baixa resistência verde e delaminação.</td><td>Usar teste de exposição e medir encaixe/XYZ.</td></tr>
-          <tr><td>Aumentar lift speed</td><td>Reduz tempo mecânico de separação.</td><td>Mais carga nos suportes, deslocamento, ruptura ou desprendimento.</td><td>Testar com peça de área crítica e observar marcas de peel.</td></tr>
-          <tr><td>Reduzir lift distance</td><td>Menor percurso por camada.</td><td>Resina pode não refluir bem, especialmente em peças largas ou viscosas.</td><td>Verificar falhas de preenchimento, sucção e linhas.</td></tr>
-          <tr><td>Reduzir espera</td><td>Menos tempo morto por camada.</td><td>Bolhas, superfície instável, variação de espessura e falta de reposição.</td><td>Testar peças largas e resinas de maior viscosidade.</td></tr>
-          <tr><td>Reorientar o modelo</td><td>Pode reduzir altura ou área crítica por camada.</td><td>Mais suportes, marcas em outra face ou aumento de peel se mal orientado.</td><td>Simular tempo e revisar preview de camadas.</td></tr>
+          <tr><td>Distância de elevação</td><td>Curso disponível para completar a liberação da camada.</td><td>Separação incompleta; a peça continua presa ao filme quando o retorno começa.</td><td>Liberação consistente inclusive no centro do tanque e na maior seção do trabalho.</td></tr>
+          <tr><td>Velocidade de liberação</td><td>Taxa de movimento durante a fase em que a interface se desprende.</td><td>Picos de carga, deformação, perda de suportes ou adesão, dependendo do sistema.</td><td>Sem estalos anormais, deslocamento, linhas correlacionadas ou falha de suporte.</td></tr>
+          <tr><td>Velocidade de retorno</td><td>Tempo de volta à posição de exposição.</td><td>Agitação, assentamento insuficiente ou impacto mecânico próximo à posição final.</td><td>Superfície estabilizada e espessura de camada repetível.</td></tr>
+          <tr><td>Repouso após retorno</td><td>Tempo antes de acender a próxima imagem.</td><td>Resina ainda em movimento, sobretudo com alta viscosidade ou seção ampla.</td><td>Ausência de linhas sistemáticas e repetição dimensional.</td></tr>
+          <tr><td>Aceleração/tilt</td><td>Forma real da trajetória e do evento de peel.</td><td>O cálculo distância/velocidade deixa de representar o ciclo real.</td><td>Tempo medido na própria máquina ou log confiável.</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<section id="calculadora">
+<section id="decisoes">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">5</div><div><h2>Calculadora aproximada de tempo</h2><p>Use para entender a influência relativa de camada, exposição e movimento. O tempo real da impressora pode variar por firmware, aceleração, anti-aliasing, compressão do arquivo e rotina interna.</p></div></div>
+    <div class="sectionHead"><div class="num">4</div><div><h2>Otimização na ordem que reduz retrabalho</h2><p>Comece pelo que reduz ciclos ou elimina tempo comprovadamente ocioso. Evite mudar exposição, movimento, orientação e suportes ao mesmo tempo.</p></div></div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>Etapa</th><th>Ação</th><th>Por que vem nesta ordem</th><th>Critério de aprovação</th></tr></thead>
+        <tbody>
+          <tr><td>1. Baseline</td><td>Registrar perfil, resina/lote, temperatura, arquivo, tempo estimado, tempo real e resultado.</td><td>Sem uma referência aprovada não há como provar ganho ou identificar a causa de uma falha.</td><td>Peça repetível, dimensionalmente aceitável e sem defeito relevante.</td></tr>
+          <tr><td>2. Geometria</td><td>Comparar orientações pelo número de camadas, área máxima, variação de seção, suportes e cavidades.</td><td>Pode reduzir tempo sem alterar a química da cura, mas altura mínima não é automaticamente a orientação mais segura.</td><td>Preview inspecionado camada a camada; sem ilha ou cavidade selada.</td></tr>
+          <tr><td>3. Altura de camada</td><td>Escolher a maior camada que ainda atende acabamento, tolerância e resolução exigidos.</td><td>Reduz diretamente o número de ciclos; exige nova validação de exposição.</td><td>Superfície, detalhes e medidas aprovados na aplicação real.</td></tr>
+          <tr><td>4. Exposição</td><td>Calibrar com o conjunto impressora + resina + camada + condição térmica.</td><td>Exposição curta demais não é ganho: é risco de subcura e repetição do trabalho.</td><td>Corpo de prova, dimensões e resistência verde aprovados.</td></tr>
+          <tr><td>5. Movimento</td><td>Otimizar liberação, percurso, retorno e repousos, uma variável por rodada.</td><td>A separação depende da geometria, filme, máquina e material; uma peça pequena pode ocultar o risco da peça real.</td><td>Maior seção e condição mais exigente do processo passam repetidamente.</td></tr>
+          <tr><td>6. Confirmação</td><td>Repetir o trabalho representativo e comparar tempo real, taxa de sucesso e qualidade.</td><td>Evita declarar vitória com base apenas na previsão do fatiador.</td><td>Mais peças aprovadas por hora, sem deslocar custo para retrabalho.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="estimador">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">5</div><div><h2>Estimador por ciclos do seu processo</h2><p>Não há valores pré-carregados. Informe dados do seu perfil e, preferencialmente, tempos observados na máquina ou no log. O cálculo não recomenda parâmetros; apenas soma o cenário informado.</p></div></div>
     <div class="calculator">
       <article class="panel formPanel">
         <div class="inputGrid">
-          <div class="field"><label for="height">Altura da peça (mm)</label><input id="height" type="number" value="80" min="1" step="1"></div>
-          <div class="field"><label for="layer">Altura de camada (µm)</label><input id="layer" type="number" value="50" min="10" step="5"></div>
-          <div class="field"><label for="normalExp">Exposição normal (s)</label><input id="normalExp" type="number" value="2.5" min=".1" step=".1"></div>
-          <div class="field"><label for="bottomExp">Exposição base (s)</label><input id="bottomExp" type="number" value="28" min="1" step="1"></div>
-          <div class="field"><label for="bottomLayers">Camadas de base</label><input id="bottomLayers" type="number" value="5" min="0" step="1"></div>
-          <div class="field"><label for="liftDistance">Distância de elevação (mm)</label><input id="liftDistance" type="number" value="6" min="0" step=".5"></div>
-          <div class="field"><label for="liftSpeed">Velocidade de elevação (mm/min)</label><input id="liftSpeed" type="number" value="80" min="1" step="5"></div>
-          <div class="field"><label for="retractSpeed">Velocidade de retorno (mm/min)</label><input id="retractSpeed" type="number" value="150" min="1" step="5"></div>
-          <div class="field"><label for="wait">Espera total por camada (s)</label><input id="wait" type="number" value="1.2" min="0" step=".1"></div>
-          <div class="field"><label for="overhead">Margem/overhead (%)</label><input id="overhead" type="number" value="7" min="0" step="1"></div>
+          <div class="field"><label for="height">Altura impressa em Z (mm)</label><input id="height" type="number" min="0.001" step="0.01" placeholder="do arquivo fatiado"></div>
+          <div class="field"><label for="layer">Altura de camada (µm)</label><input id="layer" type="number" min="1" step="1" placeholder="do perfil"></div>
+          <div class="field"><label for="bottomLayers">Quantidade de camadas de base</label><input id="bottomLayers" type="number" min="0" step="1" placeholder="do perfil"></div>
+          <div class="field"><label for="transitionLayers">Quantidade de transição</label><input id="transitionLayers" type="number" min="0" step="1" placeholder="zero se não houver"></div>
+          <div class="field"><label for="normalCycle">Ciclo normal completo (s)</label><input id="normalCycle" type="number" min="0.001" step="0.01" placeholder="exposição + movimento + repousos"></div>
+          <div class="field"><label for="bottomCycle">Ciclo de base completo (s)</label><input id="bottomCycle" type="number" min="0.001" step="0.01" placeholder="medido ou calculado"></div>
+          <div class="field"><label for="transitionCycle">Ciclo médio de transição (s)</label><input id="transitionCycle" type="number" min="0.001" step="0.01" placeholder="se houver transição"></div>
+          <div class="field"><label for="fixedMinutes">Tempo fixo adicional (min)</label><input id="fixedMinutes" type="number" min="0" step="0.1" placeholder="início, fim ou atraso medido"></div>
         </div>
-        <button class="btn" id="calcBtn" type="button">Calcular tempo aproximado</button>
+        <button class="btn" id="calcBtn" type="button">Estimar este cenário</button>
+        <div class="callout warning"><b>Como obter o ciclo completo:</b> meça do início de uma exposição até o início da próxima em uma camada normal representativa. Assim entram aceleração, TSMC, repousos e parte do comportamento real do firmware.</div>
       </article>
       <aside class="panel resultPanel">
         <h3>Resultado estimado</h3>
         <div class="resultBig" id="timeResult">--</div>
-        <div class="resultSub" id="timeSub">Preencha os dados e clique em calcular.</div>
+        <div class="resultSub" id="timeSub" aria-live="polite">Preencha os campos obrigatórios com dados do seu processo.</div>
         <div id="timeDetails"></div>
       </aside>
     </div>
   </div>
 </section>
 
+<section id="validacao">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">6</div><div><h2>Validação: transforme velocidade em evidência</h2><p>Use o mesmo arquivo, posição no tanque, lote, mistura, temperatura e pós-processamento ao comparar perfis. Caso contrário, a causa fica misturada com outras variáveis.</p></div></div>
+    <div class="grid3">
+      <article class="panel card"><span class="tag">Antes</span><h3>Registre a referência</h3><p>Salve perfil, versão do fatiador, arquivo, número de camadas, tempo previsto e real, temperatura, resina/lote e fotos da peça aprovada.</p></article>
+      <article class="panel card"><span class="tag">Durante</span><h3>Altere uma variável</h3><p>Não mude exposição, lift, repouso e orientação juntos. Faça uma hipótese clara e defina antecipadamente o que indicará aprovação ou falha.</p></article>
+      <article class="panel card"><span class="tag">Depois</span><h3>Meça produção aprovada</h3><p>Compare tempo real, repetibilidade, dimensão, superfície, integridade dos suportes e ocorrências. Um único sucesso não define margem de processo.</p></article>
+    </div>
+    <div class="formula" style="margin-top:20px">produtividade útil = peças aprovadas ÷ tempo total de máquina, limpeza, repetição e descarte</div>
+  </div>
+</section>
+
 <section id="erros">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">6</div><div><h2>Erros comuns ao tentar imprimir mais rápido</h2><p>Nem todo ganho no fatiador vira ganho real. Às vezes a peça falha, precisa ser refeita e o tempo total dobra.</p></div></div>
+    <div class="sectionHead"><div class="num">7</div><div><h2>Sinais de que a aceleração passou do limite</h2><p>Relacione o defeito à variável alterada e volte ao último estado aprovado. Não tente compensar todo problema aumentando exposição.</p></div></div>
     <div class="errors">
-      <article class="panel error"><div class="errorIcon">×</div><div><h3>Reduzir exposição sem teste</h3><p>Pode derrubar suportes, reduzir resistência verde e causar delaminação.</p></div></article>
-      <article class="panel error"><div class="errorIcon">↟</div><div><h3>Aumentar lift em peça larga</h3><p>Elevação agressiva aumenta esforço nos contatos e pode deformar a peça.</p></div></article>
-      <article class="panel error"><div class="errorIcon">≈</div><div><h3>Ignorar viscosidade</h3><p>Resina fria ou viscosa pode precisar de mais espera para refluir corretamente.</p></div></article>
-      <article class="panel error"><div class="errorIcon">▱</div><div><h3>Confundir altura menor com melhor orientação</h3><p>Às vezes reduzir altura aumenta área por camada e piora o peel.</p></div></article>
-      <article class="panel error"><div class="errorIcon">☀</div><div><h3>Compensar tudo com potência</h3><p>Mais luz pode curar rápido, mas também pode engrossar detalhes e alterar encaixes.</p></div></article>
-      <article class="panel error"><div class="errorIcon">⌛</div><div><h3>Comparar apenas o tempo do fatiador</h3><p>Tempo real inclui aceleração, desaceleração, rotina da máquina e pós-processamento.</p></div></article>
+      <article class="panel error"><div class="errorIcon">×</div><div><h3>Suportes rompem ou somem</h3><p>Investigue subexposição, carga de separação, contato insuficiente, orientação e estado do filme. O fato de ocorrer após acelerar é evidência, não diagnóstico único.</p></div></article>
+      <article class="panel error"><div class="errorIcon">↟</div><div><h3>Desprendimento ou deformação</h3><p>Compare a altura Z e a seção onde começou. Movimento agressivo, separação incompleta, adesão de base ou cavidade selada podem participar.</p></div></article>
+      <article class="panel error"><div class="errorIcon">≈</div><div><h3>Linhas após reduzir repouso</h3><p>Verifique correlação com mudanças de seção, retorno e estabilização. Resina mais viscosa e seção ampla tornam o ensaio mais exigente.</p></div></article>
+      <article class="panel error"><div class="errorIcon">▱</div><div><h3>Falha perto do centro do tanque</h3><p>A flexão do filme e a distância necessária para liberar podem variar com a posição. Não valide lift curto somente na borda.</p></div></article>
+      <article class="panel error"><div class="errorIcon">☀</div><div><h3>Detalhes fecham ou encaixe muda</h3><p>A exposição ou dose deixou a janela dimensional aprovada. Retorne ao perfil calibrado antes de mexer em compensações geométricas.</p></div></article>
+      <article class="panel error"><div class="errorIcon">⌛</div><div><h3>Máquina demora mais que o fatiador</h3><p>Meça a diferença em um trabalho conhecido. Atraso quase constante por camada pode ser tratado como compensação, quando o fatiador oferecer esse recurso.</p></div></article>
     </div>
   </div>
 </section>
 
 <section id="checklist">
   <div class="wrap">
-    <div class="sectionHead"><div class="num">7</div><div><h2>Checklist antes de acelerar um perfil</h2><p>O ajuste deve ser progressivo e rastreável.</p></div></div>
+    <div class="sectionHead"><div class="num">8</div><div><h2>Checklist antes de liberar o perfil rápido</h2><p>Marque “sim” para o processo completo, não apenas para uma miniatura fácil.</p></div></div>
     <div class="checklist">
-      <div class="panel checkItem"><span class="tick">✓</span><p>O perfil atual imprime com repetibilidade.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>A resina está em temperatura adequada e constante.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>A película está limpa, íntegra e bem tensionada.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>A exposição normal foi validada em corpo de prova.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>A orientação reduz área crítica por camada.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>Os suportes resistem ao peel da peça real.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>A distância de lift permite reposição de resina.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>O tempo de espera não gera bolhas ou linhas.</p></div>
-      <div class="panel checkItem"><span class="tick">✓</span><p>Foi alterada uma variável por vez.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Existe baseline aprovado e rastreável.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Exposição foi calibrada para resina, máquina e altura de camada.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Base, transição e normal foram analisadas separadamente.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Unidades e ordem dos campos do movimento foram confirmadas.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>A liberação completa ocorre na maior seção e no centro do tanque.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Filme, plataforma, eixo e tanque estão íntegros e ajustados.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Preview não contém ilhas nem cavidades seladas.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Temperatura e condição da resina estão registradas.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Somente uma variável foi alterada por rodada.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Tempo real e previsto foram comparados.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>Dimensões, superfície e suportes foram inspecionados.</p></div>
+      <div class="panel checkItem"><span class="tick">✓</span><p>O resultado repetiu em trabalho representativo.</p></div>
     </div>
   </div>
 </section>
@@ -382,20 +408,44 @@ footer{padding:26px 0 50px;color:#8597a8;font-size:13px;border-top:1px solid #1d
       <article class="panel conclusion">
         <h2>Conclusão</h2>
         <ol>
-          <li>O tempo final é resultado da soma de camadas, exposição, movimento e espera.</li>
-          <li>Camada mais alta reduz ciclos, mas pode comprometer acabamento e precisão em Z.</li>
-          <li>Mais potência luminosa só ajuda quando a resina e a geometria aceitam menor exposição.</li>
-          <li>Lift, retract, peel e espera podem dominar o tempo em impressoras rápidas.</li>
-          <li>Material, pigmentação, viscosidade e temperatura mudam cura e fluxo.</li>
-          <li>Orientação do modelo pode reduzir ou aumentar o tempo, dependendo da altura e da área por camada.</li>
+          <li>Conte camadas de base, transição e normais com seus ciclos próprios.</li>
+          <li>Meça o ciclo real quando aceleração, TSMC, tilt ou firmware tornarem o cálculo simples insuficiente.</li>
+          <li>Use orientação e altura de camada para reduzir ciclos sem criar seção crítica, ilha ou cavidade selada.</li>
+          <li>Calibre exposição antes de otimizar separação, retorno e repousos.</li>
+          <li>Valide na maior seção e na condição mais exigente, não apenas em um objeto pequeno.</li>
+          <li>Compare peças aprovadas por hora, e não só o cronômetro do fatiador.</li>
         </ol>
         <div class="callout warning"><b>Sincericídio técnico:</b> o perfil mais rápido não é o que tem o menor tempo no fatiador; é o que entrega a peça certa na primeira tentativa, com acabamento e dimensão dentro do esperado.</div>
       </article>
       <aside class="panel directive">
         <h2>Diretriz técnica Quanton3D</h2>
-        <p style="color:var(--muted)">Aceleração segura exige método: medir, alterar uma variável, testar, registrar e comparar. Sem registro, o ajuste vira tentativa e erro.</p>
-        <div class="callout goodbox"><b>Regra de ouro:</b> comece otimizando orientação, altura de camada e movimento Z. Depois ajuste exposição com corpo de prova e só então refine espera, lift e retorno.</div>
+        <p style="color:var(--muted)">Aceleração segura exige método: medir, formular uma hipótese, alterar uma variável, testar, registrar e comparar. Sem registro, o ajuste vira tentativa e erro.</p>
+        <div class="callout goodbox"><b>Regra de ouro:</b> preserve a cura validada e procure primeiro o tempo que o ciclo realmente consome. Só reduza distância, repouso ou tempo de separação depois de comprovar liberação e estabilidade.</div>
       </aside>
+    </div>
+  </div>
+</section>
+
+<section id="fontes">
+  <div class="wrap">
+    <div class="sectionHead"><div class="num">9</div><div><h2>Referências técnicas e limites</h2><p>Fontes consultadas para nomenclatura, ciclo, TSMC, repousos, compensação de tempo e mecânica de separação. A documentação específica da sua impressora prevalece sobre nomes genéricos.</p></div></div>
+    <div class="grid2">
+      <article class="panel card">
+        <h3>Documentação de processo</h3>
+        <ul>
+          <li><a href="https://docs.chitubox.com/en-US/chitubox/latest/configure-print-settings" target="_blank" rel="noopener noreferrer">CHITUBOX — Configure Print Settings</a></li>
+          <li><a href="https://docs.chitubox.com/en-US/chitubox-basic/latest/ui-and-features/configure-print-parameters" target="_blank" rel="noopener noreferrer">CHITUBOX — Configure Print Parameters</a></li>
+          <li><a href="https://docs.mango3d.io/doc/j3d-tech-s-guide-to-resin-printing/print-settings/introduction-6/" target="_blank" rel="noopener noreferrer">Lychee — Two Step Motion Control (TSMC)</a></li>
+        </ul>
+      </article>
+      <article class="panel card">
+        <h3>Fundamentação da separação</h3>
+        <ul>
+          <li><a href="https://www.mdpi.com/2076-3417/12/1/442" target="_blank" rel="noopener noreferrer">The Effect of Acceleration on the Separation Force in Constrained-Surface Stereolithography</a></li>
+          <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10302688/" target="_blank" rel="noopener noreferrer">A Review of Critical Issues in High-Speed Vat Photopolymerization</a></li>
+        </ul>
+        <p><b>Limite:</b> este guia ensina raciocínio e validação. Não fornece perfil universal nem substitui limites de movimento, formato e firmware definidos pelo fabricante.</p>
+      </article>
     </div>
   </div>
 </section>
@@ -410,53 +460,63 @@ $('printBtn').addEventListener('click',()=>window.print());
 
 function fmtTime(seconds){
   const h=Math.floor(seconds/3600);
-  const m=Math.round((seconds-h*3600)/60);
-  if(h<=0) return `${m} min`;
+  const m=Math.floor((seconds-h*3600)/60);
+  const s=Math.round(seconds-h*3600-m*60);
+  if(h<=0 && m<=0) return `${s} s`;
+  if(h<=0) return `${m} min ${String(s).padStart(2,'0')} s`;
   return `${h} h ${String(m).padStart(2,'0')} min`;
 }
 
 function calculate(){
-  const height=parseFloat($('height').value)||0;
-  const layerMicron=parseFloat($('layer').value)||50;
-  const normalExp=parseFloat($('normalExp').value)||0;
-  const bottomExp=parseFloat($('bottomExp').value)||0;
-  const bottomLayers=Math.max(0,Math.floor(parseFloat($('bottomLayers').value)||0));
-  const liftDistance=parseFloat($('liftDistance').value)||0;
-  const liftSpeed=parseFloat($('liftSpeed').value)||1;
-  const retractSpeed=parseFloat($('retractSpeed').value)||1;
-  const wait=parseFloat($('wait').value)||0;
-  const overhead=parseFloat($('overhead').value)||0;
-
+  const number=id=>Number.parseFloat($(id).value);
+  const height=number('height');
+  const layerMicron=number('layer');
+  const bottomLayers=Math.max(0,Math.floor(number('bottomLayers')||0));
+  const transitionLayers=Math.max(0,Math.floor(number('transitionLayers')||0));
+  const normalCycle=number('normalCycle');
+  const bottomCycle=number('bottomCycle');
+  const transitionCycle=number('transitionCycle');
+  const fixedMinutes=Math.max(0,number('fixedMinutes')||0);
+  const missing=[];
+  if(!(height>0)) missing.push('altura em Z');
+  if(!(layerMicron>0)) missing.push('altura de camada');
+  if(!(normalCycle>0)) missing.push('ciclo normal');
+  if(bottomLayers>0 && !(bottomCycle>0)) missing.push('ciclo de base');
+  if(transitionLayers>0 && !(transitionCycle>0)) missing.push('ciclo de transição');
+  if(missing.length){
+    $('timeResult').textContent='Dados incompletos';
+    $('timeSub').textContent=`Informe: ${missing.join(', ')}.`;
+    $('timeDetails').innerHTML='<div class="diagItem"><b>Nenhum valor foi presumido</b><br>O estimador não completa campos com parâmetros genéricos.</div>';
+    return;
+  }
   const layerMm=layerMicron/1000;
   const totalLayers=Math.max(1,Math.ceil(height/layerMm));
-  const normalLayers=Math.max(0,totalLayers-bottomLayers);
-  const liftSec=liftDistance/liftSpeed*60;
-  const retractSec=liftDistance/retractSpeed*60;
-  const mechanical=liftSec+retractSec+wait;
-  const normalCycle=normalExp+mechanical;
-  const bottomCycle=bottomExp+mechanical;
-  const raw=normalLayers*normalCycle+Math.min(bottomLayers,totalLayers)*bottomCycle;
-  const total=raw*(1+overhead/100);
+  const actualBottom=Math.min(bottomLayers,totalLayers);
+  const actualTransition=Math.min(transitionLayers,Math.max(0,totalLayers-actualBottom));
+  const normalLayers=Math.max(0,totalLayers-actualBottom-actualTransition);
+  const bottomSeconds=actualBottom*(bottomCycle||0);
+  const transitionSeconds=actualTransition*(transitionCycle||0);
+  const normalSeconds=normalLayers*normalCycle;
+  const fixedSeconds=fixedMinutes*60;
+  const total=bottomSeconds+transitionSeconds+normalSeconds+fixedSeconds;
+  const shares=[
+    ['ciclos normais',normalSeconds],
+    ['ciclos de base',bottomSeconds],
+    ['ciclos de transição',transitionSeconds],
+    ['tempo fixo',fixedSeconds]
+  ].filter(([,value])=>value>0).sort((a,b)=>b[1]-a[1]);
+  const dominant=shares[0]?.[0]||'nenhum componente';
 
   $('timeResult').textContent=fmtTime(total);
-  $('timeSub').textContent=`${totalLayers.toLocaleString('pt-BR')} camadas estimadas • ciclo normal de ${normalCycle.toFixed(1)} s`;
-
-  let advice=[];
-  if(layerMicron<=35) advice.push(['Camada fina','Boa para detalhe, mas aumenta muito a quantidade de ciclos.']);
-  if(mechanical>normalExp*2) advice.push(['Gargalo mecânico','Lift, retorno e espera estão dominando o tempo. Otimize movimento com cuidado.']);
-  if(normalExp<1.5) advice.push(['Exposição baixa','Confirme resistência verde, suportes e encaixe antes de usar em produção.']);
-  if(liftDistance<4) advice.push(['Lift curto','Verifique reposição de resina, peças largas e risco de sucção.']);
-  if(overhead<3) advice.push(['Margem baixa','O tempo real da máquina pode ser maior por aceleração, arquivo e rotina interna.']);
-  advice.push(['Próximo teste','Altere apenas uma variável por vez e registre resultado, falha, temperatura e lote.']);
-
+  $('timeSub').textContent=`${totalLayers.toLocaleString('pt-BR')} camadas pela altura informada • resultado matemático, não previsão garantida.`;
   $('timeDetails').innerHTML=`
-    <div class="diagItem"><b>Camadas normais</b><br>${normalLayers.toLocaleString('pt-BR')} camadas normais e ${Math.min(bottomLayers,totalLayers)} camadas de base.</div>
-    <div class="diagItem"><b>Movimento por camada</b><br>Elevação: ${liftSec.toFixed(1)} s • Retorno: ${retractSec.toFixed(1)} s • Espera: ${wait.toFixed(1)} s.</div>
-    ${advice.map(([t,d])=>`<div class="diagItem"><b>${t}</b><br>${d}</div>`).join('')}
+    <div class="diagItem"><b>Distribuição de camadas</b><br>${actualBottom.toLocaleString('pt-BR')} de base • ${actualTransition.toLocaleString('pt-BR')} de transição • ${normalLayers.toLocaleString('pt-BR')} normais.</div>
+    <div class="diagItem"><b>Subtotal por ciclo</b><br>Base: ${fmtTime(bottomSeconds)} • Transição: ${fmtTime(transitionSeconds)} • Normal: ${fmtTime(normalSeconds)} • Fixo: ${fmtTime(fixedSeconds)}.</div>
+    <div class="diagItem"><b>Maior parcela matemática</b><br>${dominant}. Isso indica onde o tempo informado se concentra; não autoriza reduzir esse componente sem validação física.</div>
+    <div class="diagItem"><b>Próximo passo</b><br>Compare com o tempo real. Se houver diferença repetível, registre-a por camada ou como tempo fixo e investigue firmware, aceleração e transferência de dados.</div>
   `;
 }
 $('calcBtn').addEventListener('click',calculate);
-calculate();
 </script>
 </body>
 </html>
