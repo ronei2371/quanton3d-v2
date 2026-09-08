@@ -1,4 +1,27 @@
 /* Padrão visual compartilhado pelos guias técnicos. */
+:root {
+  --guide-content-max: 1800px;
+  --guide-side-gap: clamp(12px, 2vw, 34px);
+}
+
+/* Aproveita a largura disponível sem transformar telas ultrawide em linhas
+   intermináveis. Os seletores cobrem as três gerações de layout dos guias. */
+.wrap {
+  width: min(
+    var(--guide-content-max),
+    calc(100% - (2 * var(--guide-side-gap)))
+  ) !important;
+}
+
+.page > main {
+  width: min(var(--guide-content-max), 100%) !important;
+}
+
+body > .container {
+  width: 100% !important;
+  max-width: var(--guide-content-max) !important;
+}
+
 h1 {
   font-family: Inter, "Segoe UI", Arial, sans-serif !important;
   font-size: clamp(40px, 5vw, 68px) !important;
@@ -52,6 +75,11 @@ nav .navin,
   background: #05090e !important;
   border-top: 1px solid #1b2d40 !important;
   border-bottom: 1px solid #1b2d40 !important;
+  transition:
+    transform 0.24s ease,
+    opacity 0.18s ease,
+    box-shadow 0.18s ease;
+  will-change: transform;
 }
 
 .nav .navin,
@@ -60,7 +88,7 @@ nav .navin,
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 10px max(18px, calc((100% - 1180px) / 2));
+  padding: 10px max(var(--guide-side-gap), calc((100% - var(--guide-content-max)) / 2));
 }
 
 .nav .navin {
@@ -75,6 +103,20 @@ nav .navin,
   align-items: center;
   justify-content: center;
   gap: 8px 18px !important;
+}
+
+.guidenav-track {
+  width: min(var(--guide-content-max), 100%) !important;
+}
+
+/* O menu libera a área de leitura durante a descida e reaparece ao primeiro
+   movimento para cima. A classe é controlada pelo guia-padrao.js. */
+.nav.is-guide-nav-hidden,
+.guidenav.is-guide-nav-hidden,
+.guide-utility-bar.is-guide-nav-hidden {
+  transform: translateY(calc(-100% - 2px));
+  opacity: 0;
+  pointer-events: none;
 }
 
 .nav .links a,
@@ -126,7 +168,7 @@ nav .navin,
 .guide-utility-bar {
   display: flex;
   justify-content: flex-end;
-  padding: 10px max(18px, calc((100% - 1180px) / 2));
+  padding: 10px max(var(--guide-side-gap), calc((100% - var(--guide-content-max)) / 2));
 }
 
 @media (max-width: 720px) {
@@ -153,5 +195,13 @@ nav .navin,
   .guidenav,
   .guide-utility-bar {
     display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav,
+  .guidenav,
+  .guide-utility-bar {
+    transition: none;
   }
 }
