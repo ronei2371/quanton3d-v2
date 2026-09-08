@@ -89,17 +89,60 @@
     requestUpdate();
   }
 
+  function setupAutoHideNav() {
+    const submenu = document.querySelector("nav.nav, nav.guidenav, .guide-utility-bar");
+    if (!submenu) return;
+
+    const hiddenClass = "is-guide-nav-hidden";
+    let lastPosition = Math.max(window.scrollY, 0);
+    let scheduled = false;
+
+    const show = () => submenu.classList.remove(hiddenClass);
+
+    const update = () => {
+      scheduled = false;
+      const currentPosition = Math.max(window.scrollY, 0);
+
+      if (currentPosition <= 24 || submenu.contains(document.activeElement)) {
+        show();
+        lastPosition = currentPosition;
+        return;
+      }
+
+      const delta = currentPosition - lastPosition;
+      if (Math.abs(delta) < 8) return;
+
+      submenu.classList.toggle(hiddenClass, delta > 0);
+      lastPosition = currentPosition;
+    };
+
+    const requestUpdate = () => {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(update);
+    };
+
+    submenu.addEventListener("focusin", show);
+    submenu.addEventListener("click", show);
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("hashchange", show);
+    window.addEventListener("pageshow", show);
+    show();
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
       () => {
         ensurePrintButton();
         setupScrollSpy();
+        setupAutoHideNav();
       },
       { once: true },
     );
   } else {
     ensurePrintButton();
     setupScrollSpy();
+    setupAutoHideNav();
   }
 })();
