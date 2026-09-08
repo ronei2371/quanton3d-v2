@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { criarParametro, listarParametros, listarResinas, listarImpressoras, buscarPerfil } from '../controllers/parametrosController.js';
+import { criarParametro, listarParametros, listarResinas, listarImpressoras, listarImpressorasComFoto, buscarPerfil } from '../controllers/parametrosController.js';
 import Parametro from '../models/Parametro.js';
 
 const router = express.Router();
@@ -21,6 +21,7 @@ router.get('/', listarParametros);
 router.post('/', authAdmin, criarParametro);
 router.get('/resinas', listarResinas);
 router.get('/impressoras', listarImpressoras);
+router.get('/impressoras-com-foto', listarImpressorasComFoto);
 router.get('/perfil', buscarPerfil);
 
 /* Editar parametro */
