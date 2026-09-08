@@ -602,6 +602,8 @@ export function AdminContent({ tokenAtendente }) {
   const [resultadoMigracao, setResultadoMigracao] = useState(null);
   const [importandoCatalogo, setImportandoCatalogo] = useState(false);
   const [resultadoCatalogo, setResultadoCatalogo] = useState(null);
+  const [fixandoFotos, setFixandoFotos] = useState(false);
+  const [resultadoFixFotos, setResultadoFixFotos] = useState(null);
 
   async function migrarFotosImpressoras() {
     if (!window.confirm("Isso vai preencher automaticamente as fotos de todas as impressoras cadastradas sem foto. Continuar?")) return;
@@ -629,6 +631,20 @@ export function AdminContent({ tokenAtendente }) {
       setResultadoCatalogo({ success: false, error: err?.response?.data?.error || "Erro ao importar catálogo." });
     } finally {
       setImportandoCatalogo(false);
+    }
+  }
+
+  async function fixarFotosCatalogo() {
+    if (!window.confirm("Corrigir as URLs das fotos de todas as impressoras do catálogo? Isso vai sobrescrever as URLs existentes com as corretas do GitHub.")) return;
+    setFixandoFotos(true);
+    setResultadoFixFotos(null);
+    try {
+      const res = await api.post("/admin/fix-fotos-catalogo", {}, { headers: { Authorization: "Bearer " + token } });
+      setResultadoFixFotos(res.data);
+    } catch (err) {
+      setResultadoFixFotos({ success: false, error: err?.response?.data?.error || "Erro ao corrigir fotos." });
+    } finally {
+      setFixandoFotos(false);
     }
   }
 
@@ -1860,6 +1876,21 @@ export function AdminContent({ tokenAtendente }) {
                 {resultadoCatalogo.success
                   ? `✅ ${resultadoCatalogo.mensagem}${resultadoCatalogo.ignoradas > 0 ? ` · ${resultadoCatalogo.ignoradas} já existiam` : ""}`
                   : `❌ ${resultadoCatalogo.error}`}
+              </span>
+            )}
+          </div>
+
+          {/* Botão corrigir fotos catálogo */}
+          <div style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <button type="button" onClick={fixarFotosCatalogo} disabled={fixandoFotos}
+              style={{ padding: "9px 18px", borderRadius: "999px", border: "1px solid rgba(10,255,135,0.5)", background: fixandoFotos ? "rgba(10,255,135,0.05)" : "rgba(10,255,135,0.12)", color: "#0aff87", cursor: fixandoFotos ? "wait" : "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
+              {fixandoFotos ? "⏳ Corrigindo fotos…" : "🖼️ Corrigir Fotos do Catálogo"}
+            </button>
+            {resultadoFixFotos && (
+              <span style={{ fontSize: "0.78rem", color: resultadoFixFotos.success ? "#0aff87" : "#d73c3c" }}>
+                {resultadoFixFotos.success
+                  ? `✅ ${resultadoFixFotos.mensagem}`
+                  : `❌ ${resultadoFixFotos.error}`}
               </span>
             )}
           </div>
