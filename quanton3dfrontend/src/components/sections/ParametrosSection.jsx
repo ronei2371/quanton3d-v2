@@ -25,6 +25,7 @@ function ParamItem({ label, value }) {
 function ParametrosSection({ onAbrirExposicao }) {
   const [parametros, setParametros] = useState([]);
   const [todasImpressoras, setTodasImpressoras] = useState([]); // lista mesclada (parametros + catálogo)
+  const [fotosImpressoras, setFotosImpressoras] = useState(new Map()); // nome.lower -> fotoImpressora
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
   const [resinaSelecionada, setResinaSelecionada] = useState("");
@@ -38,7 +39,7 @@ function ParametrosSection({ onAbrirExposicao }) {
       setCarregando(true); setErro("");
       const [resParametros, resImpressoras] = await Promise.all([
         api.get("/parametros"),
-        api.get("/parametros/impressoras"),
+        api.get("/parametros/impressoras-com-foto"),
       ]);
       const lista = resParametros.data?.data || resParametros.data?.parametros || [];
       setParametros(lista.map((item) => ({
@@ -47,9 +48,18 @@ function ParametrosSection({ onAbrirExposicao }) {
         impressora: limparTexto(item.impressora),
         marca: limparTexto(item.marca),
       })));
-      // endpoint retorna { success, data: string[] } ou { success, impressoras: string[] }
-      const listaImpressoras = resImpressoras.data?.data || resImpressoras.data?.impressoras || [];
-      setTodasImpressoras(listaImpressoras.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
+      // endpoint retorna { success, data: [{nome, fotoImpressora}] } ou fallback string[]
+      const rawList = resImpressoras.data?.data || resImpressoras.data?.impressoras || [];
+      if (rawList.length > 0 && typeof rawList[0] === 'object') {
+        // novo formato com fotos
+        const mapa = new Map(rawList.map(i => [i.nome.trim().toLowerCase(), i.fotoImpressora || '']));
+        setFotosImpressoras(mapa);
+        setTodasImpressoras(rawList.map(i => limparTexto(i.nome)).filter(Boolean));
+      } else {
+        // fallback formato antigo (strings)
+        setFotosImpressoras(new Map());
+        setTodasImpressoras(rawList.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
+      }
     } catch (err) {
       console.error("Erro ao carregar parâmetros:", err);
       setErro("Não foi possível carregar os parâmetros técnicos.");
@@ -77,6 +87,13 @@ function ParametrosSection({ onAbrirExposicao }) {
     );
     if (p) { setResultado(p); setSemParametros(false); }
     else { setResultado(null); setSemParametros(true); }
+  }
+
+  // Foto da impressora: prioriza o campo do parâmetro, depois busca no mapa do catálogo
+  function getFotoImpressora(nomeImpressora) {
+    if (!nomeImpressora) return '';
+    const chave = nomeImpressora.trim().toLowerCase();
+    return fotosImpressoras.get(chave) || '';
   }
 
   const perfilChituboxTeste = chaveResina(resultado?.resina) === "SPIN+"
@@ -133,6 +150,7 @@ function ParametrosSection({ onAbrirExposicao }) {
 
       {semParametros && (
         <div className="q-empty" style={{ borderColor: "rgba(255,165,0,0.3)", background: "rgba(255,165,0,0.05)" }}>
+          {(() => { const foto = getFotoImpressora(impressoraSelecionada.includes(' - ') ? impressoraSelecionada.split(' - ').slice(1).join(' - ') : impressoraSelecionada); return foto ? <img src={foto} alt={impressoraSelecionada} onError={e => e.target.style.display='none'} style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', marginBottom: '10px' }} /> : null; })()}
           <AlertTriangle size={28} style={{ color: "orange", marginBottom: 8 }} />
           <h3 style={{ color: "var(--text-primary)" }}>Parâmetros ainda não disponíveis</h3>
           <p>
@@ -147,14 +165,7 @@ function ParametrosSection({ onAbrirExposicao }) {
         <div style={{ background: "rgba(0,146,255,0.04)", border: "1px solid var(--border-soft)", borderRadius: "var(--r-md)", padding: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px", marginBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              {resultado.fotoImpressora && (
-                <img
-                  src={resultado.fotoImpressora}
-                  alt={resultado.impressora}
-                  onError={e => e.target.style.display = "none"}
-                  style={{ width: "72px", height: "72px", objectFit: "contain", borderRadius: "10px", background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-soft)", flexShrink: 0 }}
-                />
-              )}
+              {(() => { const foto = resultado.fotoImpressora || getFotoImpressora(resultado.impressora); return foto ? <img src={foto} alt={resultado.impressora} onError={e => e.target.style.display='none'} style={{ width: '72px', height: '72px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', flexShrink: 0 }} /> : null; })()}
               <h3 style={{ fontSize: "1.05rem" }}>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
             </div>
             {perfilChituboxTeste && (
