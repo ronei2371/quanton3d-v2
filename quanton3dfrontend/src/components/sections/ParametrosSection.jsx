@@ -39,8 +39,11 @@ function ParametrosSection({ onAbrirExposicao }) {
     try {
       setCarregando(true); setErro("");
 
-      // 1) Parâmetros — crítico, não pode falhar
-      const resParametros = await api.get("/parametros");
+      // 1) Parâmetros + lista de impressoras (nomes exatos dos params) — comportamento original
+      const [resParametros, resImpressoras] = await Promise.all([
+        api.get("/parametros"),
+        api.get("/parametros/impressoras"),
+      ]);
       const lista = resParametros.data?.data || resParametros.data?.parametros || [];
       setParametros(lista.map((item) => ({
         ...item,
@@ -48,29 +51,19 @@ function ParametrosSection({ onAbrirExposicao }) {
         impressora: limparTexto(item.impressora),
         marca: limparTexto(item.marca),
       })));
+      const nomes = resImpressoras.data?.data || resImpressoras.data?.impressoras || [];
+      setTodasImpressoras(nomes.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
 
-      // 2) Impressoras com foto — opcional, não quebra os parâmetros se falhar
+      // 2) Fotos do catálogo — opcional, não quebra nada se falhar
       try {
-        const resImpressoras = await api.get("/parametros/impressoras-com-foto");
-        const rawList = resImpressoras.data?.data || [];
+        const resFotos = await api.get("/parametros/impressoras-com-foto");
+        const rawList = resFotos.data?.data || [];
         if (rawList.length > 0 && typeof rawList[0] === 'object') {
           const mapa = new Map(rawList.map(i => [i.nome.trim().toLowerCase(), i.fotoImpressora || '']));
           setFotosImpressoras(mapa);
-          setTodasImpressoras(rawList.map(i => limparTexto(i.nome)).filter(Boolean));
-        } else {
-          // fallback: busca lista simples de impressoras
-          const resFallback = await api.get("/parametros/impressoras");
-          const nomes = resFallback.data?.data || resFallback.data?.impressoras || [];
-          setTodasImpressoras(nomes.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
         }
-      } catch {
-        // se endpoint de fotos falhar, usa lista simples sem fotos
-        try {
-          const resFallback = await api.get("/parametros/impressoras");
-          const nomes = resFallback.data?.data || resFallback.data?.impressoras || [];
-          setTodasImpressoras(nomes.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
-        } catch { /* sem impressoras extras */ }
-      }
+      } catch { /* fotos são opcionais */ }
+
     } catch (err) {
       console.error("Erro ao carregar parâmetros:", err);
       setErro("Não foi possível carregar os parâmetros técnicos.");
@@ -91,32 +84,29 @@ function ParametrosSection({ onAbrirExposicao }) {
     setImpressoraSelecionada(valor);
     setBuscaImpressora(valor);
     if (!valor) { setResultado(null); setSemParametros(false); return; }
-    const chaveR = chaveResina(resinaSelecionada);
-    const valorLower = valor.trim().toLowerCase();
-    // Tenta match: 1) impressora exata, 2) catálogo tem "Marca Modelo" e parametro tem só "Modelo"
-    const p = parametros.find((item) => {
-      if (chaveResina(item.resina) !== chaveR) return false;
-      const imp = limparTexto(item.impressora).toLowerCase();
-      const marca = limparTexto(item.marca).toLowerCase();
-      // Match exato nome do catálogo com impressora
-      if (imp === valorLower) return true;
-      // Catálogo: "ELEGOO Mars 2 Pro" → item.impressora: "Mars 2 Pro", item.marca: "ELEGOO"
-      if (valorLower === `${marca} ${imp}`) return true;
-      // Catálogo nome contém o nome da impressora e começa com a marca
-      if (marca && valorLower.startsWith(marca) && valorLower.includes(imp)) return true;
-      // fallback: catálogo nome termina com o nome da impressora
-      if (valorLower.endsWith(imp)) return true;
-      return false;
-    });
+    // Match original: nome exato da impressora no dropdown = impressora no parâmetro
+    const nomeModelo = valor.includes(" - ") ? valor.split(" - ").slice(1).join(" - ") : valor;
+    const marcaModelo = valor.includes(" - ") ? valor.split(" - ")[0] : "";
+    const p = parametros.find((item) =>
+      chaveResina(item.resina) === chaveResina(resinaSelecionada) &&
+      limparTexto(item.impressora).toLowerCase() === nomeModelo.toLowerCase() &&
+      (!marcaModelo || limparTexto(item.marca).toLowerCase() === marcaModelo.toLowerCase())
+    );
     if (p) { setResultado(p); setSemParametros(false); }
     else { setResultado(null); setSemParametros(true); }
   }
 
-  // Foto da impressora: prioriza o campo do parâmetro, depois busca no mapa do catálogo
+  // Foto da impressora: busca no mapa do catálogo por match exato ou parcial
   function getFotoImpressora(nomeImpressora) {
     if (!nomeImpressora) return '';
     const chave = nomeImpressora.trim().toLowerCase();
-    return fotosImpressoras.get(chave) || '';
+    // 1) match exato
+    if (fotosImpressoras.has(chave)) return fotosImpressoras.get(chave);
+    // 2) catálogo termina com o nome da impressora ex: "elegoo mars 4 ultra".endsWith("mars 4 ultra")
+    for (const [catalogNome, foto] of fotosImpressoras) {
+      if (catalogNome.endsWith(chave) || catalogNome.includes(chave)) return foto;
+    }
+    return '';
   }
 
   const perfilChituboxTeste = chaveResina(resultado?.resina) === "SPIN+"
