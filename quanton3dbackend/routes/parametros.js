@@ -1,28 +1,55 @@
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import { criarParametro, listarParametros, listarResinas, listarImpressoras, listarImpressorasComFoto, buscarPerfil } from '../controllers/parametrosController.js';
 import Parametro from '../models/Parametro.js';
-import ImpressoraCatalogo from '../models/ImpressoraCatalogo.js';
-function cleanMm(v){ if(v==null) return ''; const n=String(v).replace(/mm+/gi,'').trim(); return n?`${n}mm`:''; }
-export async function criarParametro(req,res){ const p={...req.body}; if(!p.resina||!p.impressora) return res.status(400).json({success:false,error:'Resina e impressora são obrigatórias'}); p.alturaCamada=cleanMm(p.alturaCamada); const parametro=await Parametro.create(p); res.status(201).json({success:true,data:parametro}); }
-export async function listarParametros(_req,res){ const parametros=await Parametro.find().sort({resina:1,impressora:1}); res.json({success:true,data:parametros}); }
-export async function listarResinas(_req,res){ const resinas=(await Parametro.distinct('resina')).filter(Boolean).sort(); res.json({success:true,data:resinas}); }
-export async function listarImpressoras(_req,res){
-  const nomes = (await Parametro.distinct('impressora')).filter(Boolean).sort((a,b) => a.localeCompare(b));
-  res.json({ success: true, data: nomes });
+
+const router = express.Router();
+
+function authAdmin(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
+  try {
+    jwt.verify(token, process.env.ADMIN_JWT_SECRET);
+    return next();
+  } catch {
+    return res.status(401).json({ success: false, error: 'Token invalido' });
+  }
 }
 
-export async function listarImpressorasComFoto(_req, res) {
-  const [parametros, catalogo] = await Promise.all([
-    Parametro.find({}, 'impressora fotoImpressora').lean(),
-    ImpressoraCatalogo.find({}, 'nome fotoImpressora').lean(),
-  ]);
-  const mapa = new Map();
-  for (const c of catalogo) mapa.set(c.nome.trim().toLowerCase(), { nome: c.nome, fotoImpressora: c.fotoImpressora });
-  for (const p of parametros) {
-    if (!p.impressora) continue;
-    const key = p.impressora.trim().toLowerCase();
-    const existing = mapa.get(key);
-    mapa.set(key, { nome: p.impressora, fotoImpressora: p.fotoImpressora || (existing?.fotoImpressora ?? '') });
+router.get('/', listarParametros);
+router.post('/', authAdmin, criarParametro);
+router.get('/resinas', listarResinas);
+router.get('/impressoras', listarImpressoras);
+router.get('/impressoras-com-foto', listarImpressorasComFoto);
+router.get('/perfil', buscarPerfil);
+
+/* Editar parametro */
+router.patch('/:id', authAdmin, async (req, res) => {
+  try {
+    const parametro = await Parametro.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: false }
+    );
+    if (!parametro) return res.status(404).json({ success: false, error: 'Nao encontrado' });
+    res.json({ success: true, parametro });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
   }
-  const lista = [...mapa.values()].sort((a,b) => a.nome.localeCompare(b.nome));
-  res.json({ success: true, data: lista });
-}
-export async function buscarPerfil(req,res){ const {resina,impressora}=req.query||{}; const perfil=await Parametro.findOne({resina:new RegExp(`^${resina}$`,'i'),impressora:new RegExp(`^${impressora}$`,'i')}); res.json({success:true,data:perfil}); }
+});
+
+/* Excluir parametro */
+router.delete('/:id', authAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Parametro.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ success: false, error: 'Parametro nao encontrado' });
+    res.json({ success: true, message: 'Parametro excluido com sucesso' });
+  } catch (err) {
+    console.error('[DELETE PARAMETRO]', err);
+    res.status(500).json({ success: false, error: 'Erro ao excluir parametro' });
+  }
+});
+
+export default router;
