@@ -38,10 +38,9 @@ function ParametrosSection({ onAbrirExposicao }) {
   async function carregarParametros() {
     try {
       setCarregando(true); setErro("");
-      const [resParametros, resImpressoras] = await Promise.all([
-        api.get("/parametros"),
-        api.get("/parametros/impressoras-com-foto"),
-      ]);
+
+      // 1) Parâmetros — crítico, não pode falhar
+      const resParametros = await api.get("/parametros");
       const lista = resParametros.data?.data || resParametros.data?.parametros || [];
       setParametros(lista.map((item) => ({
         ...item,
@@ -49,17 +48,28 @@ function ParametrosSection({ onAbrirExposicao }) {
         impressora: limparTexto(item.impressora),
         marca: limparTexto(item.marca),
       })));
-      // endpoint retorna { success, data: [{nome, fotoImpressora}] } ou fallback string[]
-      const rawList = resImpressoras.data?.data || resImpressoras.data?.impressoras || [];
-      if (rawList.length > 0 && typeof rawList[0] === 'object') {
-        // novo formato com fotos
-        const mapa = new Map(rawList.map(i => [i.nome.trim().toLowerCase(), i.fotoImpressora || '']));
-        setFotosImpressoras(mapa);
-        setTodasImpressoras(rawList.map(i => limparTexto(i.nome)).filter(Boolean));
-      } else {
-        // fallback formato antigo (strings)
-        setFotosImpressoras(new Map());
-        setTodasImpressoras(rawList.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
+
+      // 2) Impressoras com foto — opcional, não quebra os parâmetros se falhar
+      try {
+        const resImpressoras = await api.get("/parametros/impressoras-com-foto");
+        const rawList = resImpressoras.data?.data || [];
+        if (rawList.length > 0 && typeof rawList[0] === 'object') {
+          const mapa = new Map(rawList.map(i => [i.nome.trim().toLowerCase(), i.fotoImpressora || '']));
+          setFotosImpressoras(mapa);
+          setTodasImpressoras(rawList.map(i => limparTexto(i.nome)).filter(Boolean));
+        } else {
+          // fallback: busca lista simples de impressoras
+          const resFallback = await api.get("/parametros/impressoras");
+          const nomes = resFallback.data?.data || resFallback.data?.impressoras || [];
+          setTodasImpressoras(nomes.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
+        }
+      } catch {
+        // se endpoint de fotos falhar, usa lista simples sem fotos
+        try {
+          const resFallback = await api.get("/parametros/impressoras");
+          const nomes = resFallback.data?.data || resFallback.data?.impressoras || [];
+          setTodasImpressoras(nomes.map(limparTexto).filter(Boolean).sort((a, b) => a.localeCompare(b)));
+        } catch { /* sem impressoras extras */ }
       }
     } catch (err) {
       console.error("Erro ao carregar parâmetros:", err);
@@ -145,33 +155,22 @@ function ParametrosSection({ onAbrirExposicao }) {
             {resinas.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
         </label>
-        <label className="q-field">
+        <div className="q-field">
           <span>2. Selecione a Impressora</span>
           <input
-            className="q-select"
             type="text"
-            placeholder={resinaSelecionada ? (impressoraSelecionada || "Digite para buscar...") : "Escolha uma resina primeiro"}
+            className="q-select"
+            placeholder="🔍 Filtrar impressora..."
             value={buscaImpressora}
             disabled={!resinaSelecionada}
             onChange={(e) => { setBuscaImpressora(e.target.value); setImpressoraSelecionada(""); setResultado(null); setSemParametros(false); }}
-            style={{ marginBottom: impressoras.length > 0 && buscaImpressora && !impressoraSelecionada ? "0" : undefined }}
+            style={{ marginBottom: "6px" }}
           />
-          {impressoras.length > 0 && buscaImpressora && !impressoraSelecionada && (
-            <div style={{ position: "relative" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 99, background: "var(--surface-2, #1a1a2e)", border: "1px solid var(--border-soft)", borderTop: "none", borderRadius: "0 0 10px 10px", maxHeight: "200px", overflowY: "auto" }}>
-                {impressoras.slice(0, 50).map((i) => (
-                  <div key={i} onClick={() => selecionarImpressora(i)}
-                    style={{ padding: "9px 14px", cursor: "pointer", fontSize: "0.85rem", color: "var(--text-primary)", borderBottom: "1px solid var(--border-soft)" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(79,209,255,0.1)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                    {i}
-                  </div>
-                ))}
-                {impressoras.length > 50 && <div style={{ padding: "8px 14px", fontSize: "0.75rem", color: "var(--text-muted)" }}>+{impressoras.length - 50} resultados — refine a busca</div>}
-              </div>
-            </div>
-          )}
-        </label>
+          <select className="q-select" value={impressoraSelecionada} onChange={(e) => selecionarImpressora(e.target.value)} disabled={!resinaSelecionada || impressoras.length === 0}>
+            <option value="">{resinaSelecionada ? "Selecione a impressora" : "Escolha uma resina primeiro"}</option>
+            {impressoras.map((i) => <option key={i} value={i}>{i}</option>)}
+          </select>
+        </div>
       </div>
 
       {!resultado && !semParametros && (
