@@ -26,3 +26,4 @@ export async function listarImpressorasComFoto(_req, res) {
   res.json({ success: true, data: lista });
 }
 export async function buscarPerfil(req,res){ const {resina,impressora}=req.query||{}; const perfil=await Parametro.findOne({resina:new RegExp(`^${resina}$`,'i'),impressora:new RegExp(`^${impressora}$`,'i')}); res.json({success:true,data:perfil}); }
+export default router;
