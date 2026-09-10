@@ -39,13 +39,13 @@
 
 .qnav-title {
   display: inline-block;
-  font-size: 1.1em;
+  font-size: 1.3em;
   font-weight: 800;
 }
 
 .qnav-logo {
-  width: 39px;
-  height: 39px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
   display: block;
   flex: 0 0 auto;
