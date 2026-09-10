@@ -8,12 +8,18 @@ function Guia() {
       <div className="q-alert q-alert--info">
         <p style={{ margin: "0 0 10px", fontWeight: 700, fontSize: "0.82rem" }}>O que é compensação de encolhimento?</p>
         <p style={{ margin: "0 0 10px", lineHeight: 1.7 }}>
-          Após a cura UV, a resina <strong style={{ color: "var(--q-laranja)" }}>encolhe levemente</strong> em relação ao arquivo STL.
-          Isso faz as peças saírem menores do que o projetado.
+          Durante a polimerização UV, a resina{" "}
+          <strong style={{ color: "var(--q-laranja)" }}>contrai levemente</strong> — as peças saem um pouco
+          menores que o arquivo STL. Quanto mais crítica a dimensão, maior o impacto desse erro.
+        </p>
+        <p style={{ margin: "0 0 10px", lineHeight: 1.7 }}>
+          A <strong style={{ color: "var(--primary)" }}>compensação de encolhimento (Scale)</strong> é um fator
+          percentual aplicado no fatiador. Como a peça vai contrair, o fatiador amplia o modelo antes de fatiar —
+          e após a contração a peça sai com o tamanho certo.
         </p>
         <p style={{ margin: 0, lineHeight: 1.7 }}>
-          A <strong style={{ color: "var(--primary)" }}>compensação de encolhimento (Scale)</strong> é o fator percentual que você aplica no fatiador
-          para que a peça impressa saia com o tamanho correto. Esta calculadora descobre o valor exato.
+          O valor será <strong style={{ color: "var(--primary)" }}>maior que 100%</strong> (ex: 101.266%) — isso
+          é normal e esperado. Esta calculadora encontra o valor exato para a sua resina.
         </p>
       </div>
 
@@ -40,7 +46,7 @@ function Guia() {
             <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.82rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>
               <li><strong style={{ color: "var(--primary)" }}>Dimensão teórica</strong> = valor no arquivo STL (ex: 20,000 mm)</li>
               <li><strong style={{ color: "var(--q-laranja)" }}>Dimensão medida</strong> = o que o paquímetro mostra na peça impressa (ex: 19,750 mm)</li>
-              <li>Meça em X e Y — não precisa de profundidade (Z)</li>
+              <li>Meça <strong style={{ color: "var(--text-primary)" }}>no meio da peça</strong> (X e Y) — evite medir na base, o pé de elefante pode distorcer o resultado</li>
             </ul>
           </div>
 
@@ -108,7 +114,10 @@ export default function CalculadoraEncolhimento() {
           <div className="calc-result-value">{escala}%</div>
           <div className="calc-result-hint">
             Chitubox: Compensação de Encolhimento → X e Y = {escala}%<br />
-            Lychee: Scale Compensation → {escala}%
+            Lychee: Scale Compensation → {escala}%<br />
+            {parseFloat(escala) > 100
+              ? "Valor acima de 100%: correto — o fatiador vai ampliar o modelo para compensar a contração."
+              : "Valor abaixo de 100%: a peça saiu maior que o STL — verifique se mediu no meio da peça, não na base."}
           </div>
         </div>
       )}
