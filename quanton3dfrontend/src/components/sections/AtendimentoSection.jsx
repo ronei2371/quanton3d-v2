@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Search, Settings2, Thermometer, Camera, Wrench, FlaskConical, MessageCircle, Phone, CheckCircle2, FolderOpen, Stethoscope, ArrowRight, X } from "lucide-react";
 import api from "../../lib/api";
-import { WHATSAPP_SUPORTE_URL } from "../../data/contact";
+import { WHATSAPP_SUPORTE_URL, HORARIO_ATENDIMENTO } from "../../data/contact";
 
 const PROBLEMAS = [
   "Peça não adere à plataforma",
@@ -293,6 +293,7 @@ function AtendimentoSection({ cliente, onAbrirContato }) {
         <button type="button" className="q-btn q-btn--primary" onClick={onAbrirContato}><MessageCircle size={15} /> Fale Conosco</button>
         <a className="q-btn q-btn--whatsapp" href={WHATSAPP_SUPORTE_URL} target="_blank" rel="noreferrer"><Phone size={15} /> WhatsApp Suporte</a>
       </div>
+          <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginTop: "4px" }}>Horário: {HORARIO_ATENDIMENTO}</p>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)" }}>
         {ABAS.map((a) => {
