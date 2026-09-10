@@ -114,7 +114,12 @@ style={{ cursor: "pointer", border: "1px solid", borderColor: i === resinaSel ? 
 </div>
 </div>
 
-<a href={r.url} target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ marginTop: "18px" }}><ShoppingCart size={15} /> Ver na loja</a>
+{r.cat === "Odontologia" && (
+              <p style={{ fontSize: "0.78rem", color: "#92400e", background: "rgba(251,191,36,0.15)", border: "1px solid rgba(217,119,6,0.35)", borderRadius: "6px", padding: "7px 10px", marginBottom: "10px" }}>
+                ⚠️ Uso externo — não biocompatível para contato intra-oral
+              </p>
+            )}
+            <a href={r.url} target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ marginTop: "18px" }}><ShoppingCart size={15} /> Ver na loja</a>
 </div>
 </div>
 </div>
