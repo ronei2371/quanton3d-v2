@@ -8,7 +8,7 @@ export const KNOWLEDGE_BASE = `
 
 ## EMPRESA
 - Nome: Quanton3D
-- Especialidade: Resinas UV fotopolimerizáveis para impressão 3D SLA/DLP/LCD
+- Especialidade: Resinas UV fotopolimerizáveis para impressão 3D LCD/DLP/MSLA
 - Sede: Belo Horizonte, MG
 - WhatsApp: (31) 3271-6935
 - Site: quanton3d.com.br
@@ -96,7 +96,7 @@ export const KNOWLEDGE_BASE = `
 - Características: Alta precisão, minimiza imperfeições, impressão fluida e rápida
 - Cores: Grey, Skin
 - Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405nm
+- Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 20-28°C
 - IMPORTANTE: NÃO é resina castable/fundível — não usar para fundição
 
@@ -104,7 +104,7 @@ export const KNOWLEDGE_BASE = `
 - Aplicação: Joalheria de alta precisão, fundição por cera perdida
 - Características: Castable premium, queima completamente sem resíduo de cinzas
 - Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 10-15 min câmara UV 405nm
+- Pós-cura: 10-15 min câmara UV 405 nm
 - Processo de queima: Seguir curva de temperatura do fabricante do forno
 - Temperatura ideal: 24-28°C
 - Dica: Imprimir camadas de 0,05mm para máxima definição de detalhes em jóias
@@ -114,7 +114,7 @@ export const KNOWLEDGE_BASE = `
 - Características: Alta precisão, leve flexibilidade, baixa deformação, Dureza Shore D 73
 - Cores: Black, Light Grey, Skin, White, Blue, Dark Grey
 - Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405nm
+- Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 22-28°C
 - IMPORTANTE: NÃO é resina para centrifugação — nome é referência ao processo de impressão
 
@@ -123,7 +123,7 @@ export const KNOWLEDGE_BASE = `
 - Características: Cura ultra-rápida, ideal para maximizar volume de impressão
 - Cores: Clear
 - Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 3-5 min câmara UV 405nm (cura muito rápida)
+- Pós-cura: 3-5 min câmara UV 405 nm (cura muito rápida)
 - Temperatura ideal: 20-28°C
 
 ### LOW SMELL
@@ -131,7 +131,7 @@ export const KNOWLEDGE_BASE = `
 - Características: Baixo odor, similar à Alchemist em desempenho
 - Cores: Grey, Skin, Clear
 - Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405nm
+- Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 20-28°C
 
 ### VELVET SKIN
@@ -139,7 +139,7 @@ export const KNOWLEDGE_BASE = `
 - Características: Acabamento aveludado e toque macio único
 - Cores: Velvet Skin (tom de pele com textura)
 - Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405nm
+- Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 22-28°C
 
 ## PROBLEMAS COMUNS E SOLUÇÕES TÉCNICAS
@@ -267,7 +267,7 @@ Soluções:
    - Ou remova após cura com alicate de corte lateral
 
 4. PÓS-CURA UV
-   - Câmara UV 405nm por 5-10 min por lado
+   - Câmara UV 405 nm por 5-10 min por lado
    - Gire a peça para curar uniformemente
    - NÃO exagere — pós-cura excessiva torna frágil e amarela
    - SPARK: 3-5 min (cura muito rápida)
