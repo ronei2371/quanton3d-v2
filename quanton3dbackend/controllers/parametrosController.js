@@ -8,4 +8,11 @@ export async function listarImpressoras(_req,res){
   const nomes = (await Parametro.distinct('impressora')).filter(Boolean).sort((a,b) => a.localeCompare(b));
   res.json({ success: true, data: nomes });
 }
+export async function listarImpressorasComFoto(_req,res){
+  const impressoras = await ImpressoraCatalogo
+    .find({}, 'nome fotoImpressora')
+    .sort({ nome: 1 })
+    .lean();
+  res.json({ success: true, data: impressoras });
+}
 export async function buscarPerfil(req,res){ const {resina,impressora}=req.query||{}; const perfil=await Parametro.findOne({resina:new RegExp(`^${resina}$`,'i'),impressora:new RegExp(`^${impressora}$`,'i')}); res.json({success:true,data:perfil}); }
