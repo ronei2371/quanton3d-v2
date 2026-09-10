@@ -8,11 +8,20 @@ export async function listarImpressoras(_req,res){
   const nomes = (await Parametro.distinct('impressora')).filter(Boolean).sort((a,b) => a.localeCompare(b));
   res.json({ success: true, data: nomes });
 }
-export async function listarImpressorasComFoto(_req,res){
-  const impressoras = await ImpressoraCatalogo
-    .find({}, 'nome fotoImpressora')
-    .sort({ nome: 1 })
-    .lean();
-  res.json({ success: true, data: impressoras });
+export async function listarImpressorasComFoto(_req, res) {
+    const [parametros, catalogo] = await Promise.all([
+          Parametro.find({}, 'impressora fotoImpressora').lean(),
+          ImpressoraCatalogo.find({}, 'nome fotoImpressora').lean(),
+        ]);
+    const mapa = new Map();
+    for (const c of catalogo) mapa.set(c.nome.trim().toLowerCase(), { nome: c.nome, fotoImpressora: c.fotoImpressora });
+    for (const p of parametros) {
+          if (!p.impressora) continue;
+          const key = p.impressora.trim().toLowerCase();
+          const existing = mapa.get(key);
+          mapa.set(key, { nome: p.impressora, fotoImpressora: p.fotoImpressora || (existing?.fotoImpressora ?? '') });
+    }
+    const lista = [...mapa.values()].sort((a,b) => a.nome.localeCompare(b.nome));
+    res.json({ success: true, data: lista });
 }
 export async function buscarPerfil(req,res){ const {resina,impressora}=req.query||{}; const perfil=await Parametro.findOne({resina:new RegExp(`^${resina}$`,'i'),impressora:new RegExp(`^${impressora}$`,'i')}); res.json({success:true,data:perfil}); }
