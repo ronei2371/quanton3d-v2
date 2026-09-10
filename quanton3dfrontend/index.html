@@ -34,6 +34,36 @@
     gtag('js', new Date());
     gtag('config', '%VITE_GA4_ID%', { send_page_view: true });
   </script>
+  <!-- Dados Estruturados — Organization + WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://quanton3d.com.br/#organization",
+        "name": "Quanton3D",
+        "url": "https://quanton3d.com.br",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://quanton3d.com.br/images/logo.png"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "availableLanguage": "pt-BR"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://quanton3d.com.br/#website",
+        "name": "Quanton3D",
+        "url": "https://quanton3d.com.br",
+        "publisher": { "@id": "https://quanton3d.com.br/#organization" }
+      }
+    ]
+  }
+  </script>
 </head>
   <body>
     <div id="root"></div>
