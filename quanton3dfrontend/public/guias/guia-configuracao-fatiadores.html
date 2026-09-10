@@ -289,6 +289,15 @@
       footer a {
         color: var(--cyan);
       }
+
+      .paramIntro{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 24px}
+      .paramIntro article{padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(7,18,32,.78)}
+      .paramIntro b{display:block;color:var(--cyan);margin-bottom:5px}.paramIntro span{color:var(--muted);font-size:14px}
+      .paramGroup{margin:14px 0;border:1px solid var(--line);border-radius:18px;background:rgba(5,14,25,.8);overflow:hidden}
+      .paramGroup summary{cursor:pointer;padding:18px 20px;font-weight:900;color:#fff;background:linear-gradient(90deg,rgba(31,125,255,.15),rgba(39,213,255,.05));list-style:none}
+      .paramGroup summary::-webkit-details-marker{display:none}.paramGroup summary:after{content:'＋';float:right;color:var(--cyan)}
+      .paramGroup[open] summary:after{content:'−'}.paramGroup .tableWrap{margin:0;border:0;border-top:1px solid var(--line);border-radius:0}
+      .paramGroup table{min-width:980px}.paramGroup td:first-child{font-weight:850;color:#fff;min-width:175px}.paramGroup td{font-size:14px}
       @media (max-width: 760px) {
         body {
           padding: 10px;
@@ -301,7 +310,8 @@
         }
         .grid2,
         .grid3,
-        .map {
+        .map,
+        .paramIntro {
           grid-template-columns: 1fr;
         }
         .flow {
@@ -361,13 +371,14 @@
         </div>
         <nav class="map" aria-label="Mapa do guia">
           <a href="#perfil">1 · Perfil correto</a
-          ><a href="#camada">2 · Camada e exposição</a
-          ><a href="#base">3 · Camadas base</a
-          ><a href="#movimento">4 · Movimento</a
-          ><a href="#esperas">5 · Esperas</a
-          ><a href="#recursos">6 · AA e compensação</a
-          ><a href="#fluxo">7 · Calibração</a
-          ><a href="#diagnostico">8 · Diagnóstico</a>
+          ><a href="#dicionario">2 · Dicionário dos campos</a
+          ><a href="#camada">3 · Camada e exposição</a
+          ><a href="#base">4 · Camadas base</a
+          ><a href="#movimento">5 · Movimento</a
+          ><a href="#esperas">6 · Esperas</a
+          ><a href="#recursos">7 · AA e compensação</a
+          ><a href="#fluxo">8 · Calibração</a
+          ><a href="#diagnostico">9 · Diagnóstico</a>
         </nav>
 
         <section class="step" id="perfil">
@@ -426,9 +437,90 @@
           </ul>
         </section>
 
-        <section class="step" id="camada">
+        <section class="step glossary" id="dicionario">
           <div class="stepHead">
             <span class="stepNo">2</span>
+            <h2>Dicionário Quanton3D dos campos do fatiador</h2>
+          </div>
+          <p>Os nomes podem mudar entre versões, mas a função física permanece. Leia primeiro o que o campo controla; depois altere uma variável por vez e registre o resultado.</p>
+          <div class="paramIntro">
+            <article><b>Não é receita</b><span>“Aumentar” ou “diminuir” descreve tendências, não valores universais.</span></article>
+            <article><b>Base ≠ peça</b><span>Camadas inferiores ancoram na plataforma; camadas normais constroem o restante.</span></article>
+            <article><b>Tempo ≠ potência</b><span>Exposição, irradiância, pigmentação e altura de camada trabalham em conjunto.</span></article>
+          </div>
+
+          <details class="paramGroup" open>
+            <summary>Máquina, tela e arquivo de saída</summary>
+            <div class="tableWrap"><table><thead><tr><th>Campo</th><th>O que faz</th><th>Se estiver incorreto</th><th>Como conferir</th></tr></thead><tbody>
+              <tr><td>Printer / Machine</td><td>Seleciona a impressora e carrega resolução, volume e formato compatíveis.</td><td>Arquivo pode ser recusado, invertido ou sair em escala errada.</td><td>Confirme fabricante, modelo completo e versão da máquina.</td></tr>
+              <tr><td>Resolution X/Y</td><td>Define a quantidade de pixels da tela; não é a dimensão física da área.</td><td>Geometria, escala e leitura do arquivo podem ficar incorretas.</td><td>Compare com a especificação da tela da impressora.</td></tr>
+              <tr><td>Build size X/Y/Z</td><td>Define a área física e a altura útil de fabricação.</td><td>Alterar para “corrigir medida” muda a escala do arquivo inteiro.</td><td>Mantenha o cadastro oficial e corrija dimensão por calibração.</td></tr>
+              <tr><td>Mirror</td><td>Espelha as imagens de camada conforme a óptica e o firmware.</td><td>Texto, encaixes e geometrias assimétricas podem sair invertidos.</td><td>Use o perfil oficial e uma peça assimétrica de verificação.</td></tr>
+              <tr><td>File format</td><td>Escolhe o formato que o firmware consegue interpretar.</td><td>A impressora pode não reconhecer ou pode ler campos parcialmente.</td><td>Confirme extensão aceita e versão de firmware.</td></tr>
+              <tr><td>Resin density / price</td><td>Ajuda a estimar massa e custo no fatiador.</td><td>Altera a estimativa econômica, não corrige exposição ou resistência.</td><td>Use densidade e custo documentados; valide consumo real.</td></tr>
+            </tbody></table></div>
+          </details>
+
+          <details class="paramGroup" open>
+            <summary>Camada e exposição</summary>
+            <div class="tableWrap"><table><thead><tr><th>Campo</th><th>O que controla</th><th>Ao aumentar</th><th>Ao diminuir</th><th>Como validar</th></tr></thead><tbody>
+              <tr><td>Layer height</td><td>Espessura de cada camada no eixo Z.</td><td>Reduz o número de camadas, mas pode evidenciar degraus e exigir nova exposição.</td><td>Aumenta o número de camadas; pode melhorar curvas, sem garantir detalhe real.</td><td>Compare superfície, detalhes, tempo, dimensão e união entre camadas.</td></tr>
+              <tr><td>Exposure time</td><td>Tempo de luz das camadas normais.</td><td>Tende a ampliar cura lateral, fechar negativos e aumentar dimensão.</td><td>Pode perder pinos, paredes, união e resistência.</td><td>Use corpo de prova com detalhes positivos, negativos e medida.</td></tr>
+              <tr><td>Light intensity / PWM</td><td>Controla a potência comandada da fonte UV quando suportado.</td><td>Muda a taxa de cura e invalida a exposição já calibrada.</td><td>Pode exigir mais tempo e aumentar sensibilidade a variações.</td><td>Não altere junto com o tempo; confirme suporte do firmware.</td></tr>
+              <tr><td>Normal layer count</td><td>É calculado pela altura do modelo e altura de camada; não costuma ser ajuste manual.</td><td>Mais camadas significam mais ciclos.</td><td>Menos camadas significam menor resolução Z.</td><td>Confira altura final e previsão de tempo após fatiar.</td></tr>
+            </tbody></table></div>
+          </details>
+
+          <details class="paramGroup">
+            <summary>Camadas inferiores e transição</summary>
+            <div class="tableWrap"><table><thead><tr><th>Campo</th><th>O que controla</th><th>Ao aumentar</th><th>Ao diminuir</th><th>Como validar</th></tr></thead><tbody>
+              <tr><td>Bottom layer count</td><td>Quantidade de camadas que recebe a condição de base.</td><td>Amplia a zona rígida e pode aumentar pé de elefante e tempo.</td><td>Reduz a margem de ancoragem na plataforma.</td><td>Aderência uniforme, remoção controlada e base dentro da tolerância.</td></tr>
+              <tr><td>Bottom exposure</td><td>Tempo de luz aplicado às camadas inferiores.</td><td>Aumenta adesão, mas pode dificultar remoção e ampliar a base.</td><td>Pode permitir descolamento durante o peel.</td><td>Busque a menor condição estável para o conjunto real.</td></tr>
+              <tr><td>Transition layer count</td><td>Quantidade de camadas que aproxima gradualmente base e exposição normal.</td><td>Suaviza a mudança por mais camadas e prolonga a região de transição.</td><td>Deixa a troca de exposição mais abrupta.</td><td>Observe delaminação e mudança de seção sobre a fundação.</td></tr>
+              <tr><td>Transition type</td><td>Define como o tempo muda entre base e normal, por exemplo linear.</td><td colspan="2">A distribuição depende do formato e firmware; o nome isolado não garante o comportamento.</td><td>Confira o tempo mostrado no preview ou no ciclo real.</td></tr>
+            </tbody></table></div>
+          </details>
+
+          <details class="paramGroup">
+            <summary>Elevação e retorno da plataforma</summary>
+            <div class="tableWrap"><table><thead><tr><th>Campo</th><th>O que controla</th><th>Ao aumentar</th><th>Ao diminuir</th><th>Como validar</th></tr></thead><tbody>
+              <tr><td>Bottom lift distance</td><td>Curso de separação durante as camadas de base.</td><td>Aumenta tempo e margem de liberação.</td><td>Pode não liberar completamente a camada do filme.</td><td>Observe liberação em diferentes posições da plataforma.</td></tr>
+              <tr><td>Lift distance</td><td>Curso de separação das camadas normais.</td><td>Alongará o ciclo sem melhorar a cura.</td><td>Pode manter a peça parcialmente presa ao filme.</td><td>Considere tamanho da tela, flexão do filme e área da camada.</td></tr>
+              <tr><td>Bottom lift speed</td><td>Velocidade de separação das camadas inferiores.</td><td>Pode elevar a carga sobre base, filme e plataforma.</td><td>Reduz agressividade, mas amplia o tempo.</td><td>Procure adesão estável sem deformar a fundação.</td></tr>
+              <tr><td>Lift speed</td><td>Velocidade de separação das camadas normais.</td><td>Pode aumentar pico de peel, alongar suportes ou delaminar.</td><td>Reduz agressividade; lenta demais apenas alonga o ciclo.</td><td>Valide com a maior seção e a posição mais crítica.</td></tr>
+              <tr><td>Retract distance</td><td>Curso de retorno; deve ser coerente com o curso de elevação.</td><td colspan="2">Distribuição errada entre estágios pode alterar onde a velocidade muda.</td><td>Confirme a soma dos estágios e o ponto final do retorno.</td></tr>
+              <tr><td>Retract speed</td><td>Velocidade de aproximação para a próxima camada.</td><td>Pode gerar pressão hidrodinâmica e manter a resina em movimento.</td><td>Aumenta o tempo de ciclo.</td><td>Observe assentamento, linhas e estabilidade antes da luz.</td></tr>
+              <tr><td>TSMC / dois estágios</td><td>Divide lift ou retract em trechos com velocidades diferentes.</td><td colspan="2">O primeiro trecho deve atender a separação; o segundo pode recuperar tempo após a liberação.</td><td>Confirme se impressora, formato e firmware executam os dois estágios.</td></tr>
+            </tbody></table></div>
+          </details>
+
+          <details class="paramGroup">
+            <summary>Tempos de espera</summary>
+            <div class="tableWrap"><table><thead><tr><th>Campo</th><th>Quando acontece</th><th>Se for insuficiente</th><th>Se for excessivo</th><th>Como validar</th></tr></thead><tbody>
+              <tr><td>Rest before lift</td><td>Depois da exposição e antes de elevar.</td><td>Pode iniciar o movimento sem relaxamento do conjunto.</td><td>Aumenta o ciclo sem corrigir movimento inadequado.</td><td>Compare estabilidade e tempo real.</td></tr>
+              <tr><td>Rest after lift</td><td>No topo, antes de iniciar o retorno.</td><td>Nem sempre produz impacto observável.</td><td>Aumenta o tempo de cada camada.</td><td>Use somente com hipótese e comparação controlada.</td></tr>
+              <tr><td>Rest after retract / before print</td><td>Após a aproximação e antes da próxima exposição.</td><td>Resina pode permanecer em fluxo ou com espessura instável.</td><td>Aumenta o ciclo, embora possa ajudar peças grandes ou resinas viscosas.</td><td>Observe linhas, repetibilidade e áreas extensas.</td></tr>
+              <tr><td>Light-off delay</td><td>Campo legado cujo cálculo pode incluir movimento e espera.</td><td colspan="2">Copiar como se fosse apenas “descanso” pode produzir um tempo real diferente do esperado.</td><td>Não combine cegamente com Rest Time; cronometre o ciclo.</td></tr>
+            </tbody></table></div>
+          </details>
+
+          <details class="paramGroup">
+            <summary>Imagem, suavização e dimensão</summary>
+            <div class="tableWrap"><table><thead><tr><th>Campo</th><th>O que faz</th><th>Ao aumentar</th><th>Ao diminuir</th><th>Como validar</th></tr></thead><tbody>
+              <tr><td>Anti-aliasing / grayscale</td><td>Modula pixels de borda para suavizar degraus XY.</td><td>Pode suavizar mais e também arredondar detalhes ou fechar cavidades.</td><td>Preserva borda mais dura, com serrilhado potencial.</td><td>Compare a mesma peça sem filtro e meça pinos e furos.</td></tr>
+              <tr><td>Image blur</td><td>Espalha a transição por pixels vizinhos.</td><td>Reduz nitidez e pode alterar dimensão.</td><td>Mantém transição mais localizada.</td><td>Use ampliação e medição, não apenas aparência distante.</td></tr>
+              <tr><td>Shrinkage / scale X-Y-Z</td><td>Escala o corpo inteiro por eixo.</td><td>Aumenta todas as entidades naquele eixo.</td><td>Reduz todas as entidades naquele eixo.</td><td>Calibre com corpos grandes e repetidos; separe X, Y e Z.</td></tr>
+              <tr><td>Dimensional / tolerance compensation</td><td>Desloca contornos para compensar erro dimensional.</td><td colspan="2">O sinal e o efeito sobre interno/externo variam por software e campo.</td><td>Faça pares de pino e furo e registre a convenção da versão.</td></tr>
+              <tr><td>Bottom tolerance compensation</td><td>Aplica compensação específica nas camadas de base.</td><td colspan="2">Pode reduzir pé de elefante, mas também criar degrau ou reduzir apoio.</td><td>Ajuste somente depois de estabilizar base e transição.</td></tr>
+            </tbody></table></div>
+          </details>
+
+          <div class="callout danger"><b>Regra de ouro:</b> não altere exposição, movimento, espera e compensação na mesma rodada. Sem isolar a variável, o resultado não ensina qual mudança resolveu ou piorou a impressão.</div>
+        </section>
+
+        <section class="step" id="camada">
+          <div class="stepHead">
+            <span class="stepNo">3</span>
             <h2>Altura de camada e exposição</h2>
           </div>
           <div class="tableWrap">
@@ -482,7 +574,7 @@
 
         <section class="step" id="base">
           <div class="stepHead">
-            <span class="stepNo">3</span>
+            <span class="stepNo">4</span>
             <h2>Camadas base e transição</h2>
           </div>
           <div class="grid3">
@@ -520,7 +612,7 @@
 
         <section class="step" id="movimento">
           <div class="stepHead">
-            <span class="stepNo">4</span>
+            <span class="stepNo">5</span>
             <h2>Lift, retract e mecanismo de separação</h2>
           </div>
           <img
@@ -578,7 +670,7 @@
 
         <section class="step" id="esperas">
           <div class="stepHead">
-            <span class="stepNo">5</span>
+            <span class="stepNo">6</span>
             <h2>Tempos de espera: cada posição tem uma função</h2>
           </div>
           <div class="grid3">
@@ -615,7 +707,7 @@
 
         <section class="step" id="recursos">
           <div class="stepHead">
-            <span class="stepNo">6</span>
+            <span class="stepNo">7</span>
             <h2>Anti-aliasing, blur e compensação</h2>
           </div>
           <div class="tableWrap">
@@ -671,7 +763,7 @@
 
         <section class="step" id="fluxo">
           <div class="stepHead">
-            <span class="stepNo">7</span>
+            <span class="stepNo">8</span>
             <h2>Fluxo Quanton3D de calibração</h2>
           </div>
           <div class="flow">
@@ -718,7 +810,7 @@
 
         <section class="step" id="diagnostico">
           <div class="stepHead">
-            <span class="stepNo">8</span>
+            <span class="stepNo">9</span>
             <h2>Diagnóstico sem trocar tudo de uma vez</h2>
           </div>
           <div class="tableWrap">
@@ -771,51 +863,14 @@
         <section class="step refs" id="fontes">
           <div class="stepHead">
             <span class="stepNo">R</span>
-            <h2>Documentação técnica consultada</h2>
+            <h2>Base técnica desta referência Quanton3D</h2>
           </div>
-          <ul class="list">
-            <li>
-              <b>Chitubox:</b>
-              <a
-                href="https://docs.chitubox.com/en-US/chitubox/latest/configure-print-settings"
-                target="_blank"
-                rel="noopener"
-                >impressão, grayscale, anti-aliasing, blur e compensação</a
-              >.
-            </li>
-            <li>
-              <b>Chitubox Basic:</b>
-              <a
-                href="https://docs.chitubox.com/en-US/chitubox-basic/latest/ui-and-features/configure-print-parameters"
-                target="_blank"
-                rel="noopener"
-                >perfil da impressora, TSMC, PWM e parâmetros avançados</a
-              >.
-            </li>
-            <li>
-              <b>Lychee Slicer:</b>
-              <a
-                href="https://docs.mango3d.io/doc/resin-documentation/resin-toolbar/resin/"
-                target="_blank"
-                rel="noopener"
-                >gestão de perfis por impressora e resina</a
-              >.
-            </li>
-            <li>
-              <b>Mango3D/J3D Tech:</b>
-              <a
-                href="https://docs.mango3d.io/doc/j3d-tech-s-guide-to-resin-printing/print-settings/introduction-6/"
-                target="_blank"
-                rel="noopener"
-                >controle de movimento em dois estágios</a
-              >.
-            </li>
-          </ul>
-          <div class="callout">
-            <b>Nota:</b> nomes e disponibilidade de campos mudam entre versões,
-            formatos e firmwares. A documentação da impressora prevalece quando
-            limita ou interpreta um parâmetro.
+          <p>Este conteúdo foi consolidado pela Quanton3D para que o operador não precise sair do guia para compreender os campos. A terminologia foi confrontada com a documentação técnica do CHITUBOX, CHITUBOX Basic, Lychee Slicer e materiais de treinamento sobre impressão em resina.</p>
+          <div class="grid2">
+            <article class="card"><h3>O que este guia entrega</h3><p>Função física, tendência ao aumentar ou reduzir, risco provável e método de validação para cada família de parâmetros.</p></article>
+            <article class="card"><h3>Limite responsável</h3><p>Nomes, disponibilidade e interpretação podem mudar conforme versão, formato e firmware. Quando a máquina limitar um campo, prevalece o comportamento comprovado no equipamento.</p></article>
           </div>
+          <div class="callout good"><b>Trabalho Quanton3D:</b> consulte este próprio guia durante a calibração, registre a versão do perfil e aprove somente resultados medidos e repetíveis.</div>
         </section>
       </main>
       <footer>
