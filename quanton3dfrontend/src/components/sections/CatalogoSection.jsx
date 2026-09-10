@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { trackClickBuyResin } from "../../utils/analytics";
 import { FlaskConical, FileText, ShoppingCart, X } from "lucide-react";
 
 const FISPQS = [
@@ -119,7 +120,7 @@ style={{ cursor: "pointer", border: "1px solid", borderColor: i === resinaSel ? 
                 ⚠️ Uso externo — não biocompatível para contato intra-oral
               </p>
             )}
-            <a href={r.url} target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ marginTop: "18px" }}><ShoppingCart size={15} /> Ver na loja</a>
+            <a href={r.url} target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ marginTop: "18px" }} onClick={() => trackClickBuyResin({ resin_name: r.nome, resin_id: r.nome.toLowerCase().replace(/\s+/g, '-') })}><ShoppingCart size={15} /> Ver na loja</a>
 </div>
 </div>
 </div>
