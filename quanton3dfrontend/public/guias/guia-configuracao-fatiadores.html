@@ -373,9 +373,9 @@
           <a href="#perfil">1 · Perfil correto</a
           ><a href="#dicionario">2 · Dicionário dos campos</a
           ><a href="#camada">3 · Camada e exposição</a
-          ><a href="#base">4 · Camadas base</a
+          ><a href="#base">4 · Base e transição</a
           ><a href="#movimento">5 · Movimento</a
-          ><a href="#esperas">6 · Esperas</a
+          ><a href="#esperas">6 · Modos de espera</a
           ><a href="#recursos">7 · AA e compensação</a
           ><a href="#fluxo">8 · Calibração</a
           ><a href="#diagnostico">9 · Diagnóstico</a>
@@ -575,38 +575,122 @@
         <section class="step" id="base">
           <div class="stepHead">
             <span class="stepNo">4</span>
-            <h2>Camadas base e transição</h2>
+            <h2>Camadas de base e camadas de transição</h2>
           </div>
-          <div class="grid3">
+
+          <p>
+            A região inicial da impressão não usa uma única condição do começo
+            ao fim. Ela pode ser dividida em três etapas: a fundação aderida à
+            plataforma, a passagem gradual e o corpo normal da peça.
+          </p>
+
+          <div class="flow">
             <article class="card">
-              <span class="tag">Bottom layers</span>
-              <h3>Quantidade</h3>
+              <span class="tag">1 · Fundação</span>
+              <h3>Bottom layers</h3>
               <p>
-                Forma a zona de ancoragem. Camadas demais aumentam pé de
-                elefante e rigidez da base; poucas podem reduzir segurança.
+                As primeiras camadas recebem a exposição de base para criar a
+                ancoragem na plataforma.
               </p>
             </article>
             <article class="card">
-              <span class="tag">Bottom exposure</span>
-              <h3>Energia de adesão</h3>
+              <span class="tag">2 · Passagem</span>
+              <h3>Transition layers</h3>
               <p>
-                Calibre pelo menor valor que mantém a impressão firme e permite
-                remoção controlada. A regra “8–10 vezes” não é universal.
+                Camadas intermediárias reduzem gradualmente a exposição de base
+                até chegar à exposição normal.
               </p>
             </article>
             <article class="card">
-              <span class="tag">Transition</span>
-              <h3>Mudança gradual</h3>
+              <span class="tag">3 · Corpo</span>
+              <h3>Normal layers</h3>
               <p>
-                Evita salto brusco entre exposição de base e normal. Seu efeito
-                depende de como firmware e formato distribuem os tempos.
+                O restante da peça usa a altura e a exposição normal já
+                calibradas para a resina e a impressora.
               </p>
             </article>
           </div>
+
           <div class="callout good">
-            <b>Critério de liberação:</b> todas as zonas do teste permanecem
-            aderidas, a base sai sem violência e o pé de elefante fica dentro da
-            tolerância da aplicação.
+            <b>O que significa “Transition Layer Count”:</b> é a quantidade de
+            camadas intermediárias após as camadas de base. Ela não cria um
+            espaço físico nem adiciona uma pausa; apenas determina por quantas
+            camadas a exposição será reduzida até alcançar o valor normal.
+          </div>
+
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campo no fatiador</th>
+                  <th>O que faz</th>
+                  <th>Ao aumentar</th>
+                  <th>Ao diminuir</th>
+                  <th>O que observar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Bottom Layer Count<br><small>Quantidade de camadas de base</small></td>
+                  <td>Define quantas camadas usam a condição de base.</td>
+                  <td>Amplia a região rígida, o tempo e a possibilidade de pé de elefante.</td>
+                  <td>Reduz a margem de ancoragem na plataforma.</td>
+                  <td>Aderência uniforme, remoção controlada e dimensão da base.</td>
+                </tr>
+                <tr>
+                  <td>Bottom Exposure Time<br><small>Exposição de base</small></td>
+                  <td>Define o tempo de luz das camadas inferiores.</td>
+                  <td>Tende a aumentar adesão, expansão lateral e dificuldade de remoção.</td>
+                  <td>Pode permitir que a impressão se solte durante a separação.</td>
+                  <td>Procure a menor condição que permaneça estável no conjunto real.</td>
+                </tr>
+                <tr>
+                  <td>Transition Layer Count<br><small>Número de camadas de transição</small></td>
+                  <td>Define por quantas camadas ocorre a passagem da exposição de base para a normal.</td>
+                  <td>Prolonga a mudança gradual; mais camadas ficam com exposições intermediárias.</td>
+                  <td>Torna a mudança mais curta e mais abrupta.</td>
+                  <td>União sobre a fundação, marcas de mudança, rigidez e dimensão.</td>
+                </tr>
+                <tr>
+                  <td>Transition Type<br><small>Tipo de transição</small></td>
+                  <td>Define a forma da redução. No modo linear, a diferença é distribuída em passos iguais.</td>
+                  <td colspan="2">Não é um controle de “mais ou menos”; é a escolha do comportamento disponível no fatiador.</td>
+                  <td>Confirme no preview se os tempos realmente diminuem camada a camada.</td>
+                </tr>
+                <tr>
+                  <td>Transition Layer Interval Time Difference<br><small>Diferença de tempo entre transições</small></td>
+                  <td>Mostra quanto a exposição muda de uma camada de transição para a seguinte.</td>
+                  <td colspan="2">Em alguns fatiadores é calculado automaticamente a partir das exposições e da quantidade de transições.</td>
+                  <td>Trate-o como resultado do perfil quando o campo estiver bloqueado.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid2">
+            <article class="card">
+              <h3>Exemplo conceitual</h3>
+              <p>
+                Se a exposição de base for maior que a normal, as transições
+                formam uma “escada” descendente entre elas. O guia não fixa
+                números universais: resina, tela, filme, área da camada e
+                firmware mudam o resultado.
+              </p>
+            </article>
+            <article class="card">
+              <h3>O que a transição não corrige</h3>
+              <p>
+                Ela não compensa plataforma desnivelada, exposição normal
+                incorreta, suporte insuficiente, movimento agressivo, filme
+                danificado ou contaminação.
+              </p>
+            </article>
+          </div>
+
+          <div class="callout warn">
+            <b>Altere uma variável por vez.</b> Primeiro confirme nivelamento,
+            estado do tanque e aderência de base. Depois ajuste a transição e
+            valide novamente com a mesma peça, posição, resina e temperatura.
           </div>
         </section>
 
@@ -671,38 +755,146 @@
         <section class="step" id="esperas">
           <div class="stepHead">
             <span class="stepNo">6</span>
-            <h2>Tempos de espera: cada posição tem uma função</h2>
+            <h2>Modos de espera: Resting Time e Light-off Delay</h2>
           </div>
-          <div class="grid3">
-            <article class="card">
-              <h3>Antes da elevação</h3>
-              <p>
-                Ocorre depois da exposição. Pode permitir relaxamento ou
-                drenagem, mas não substitui movimento correto.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Depois da elevação</h3>
-              <p>
-                Ocorre com a plataforma afastada. Nem sempre melhora o
-                preenchimento sob a peça.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Após retração / antes da luz</h3>
-              <p>
-                Permite acomodação da resina e redução do movimento antes da
-                próxima exposição.
-              </p>
-            </article>
-          </div>
+
           <p>
-            “Light-off delay”, “wait before print” e “rest time” podem ser
-            interpretados de forma diferente conforme formato e firmware.
-            Confirme na documentação e observe o ciclo real. Em peças grandes ou
-            resinas viscosas, descanso insuficiente pode gerar espessura
-            irregular; tempo excessivo só aumenta o ciclo.
+            O campo <b>Waiting Mode During Printing</b> escolhe como o fatiador
+            representa as pausas do ciclo. Os dois modos não significam a mesma
+            coisa e não devem ser somados sem entender como a impressora lê o
+            arquivo.
           </p>
+
+          <div class="grid2">
+            <article class="card">
+              <span class="tag">Controle por etapa</span>
+              <h3>Resting Time</h3>
+              <p>
+                Separa a espera em momentos específicos: antes de elevar,
+                depois de elevar e depois de retrair. É o modo mais claro quando
+                fatiador, formato e firmware oferecem suporte correto.
+              </p>
+            </article>
+            <article class="card">
+              <span class="tag">Modo legado</span>
+              <h3>Light-off Delay</h3>
+              <p>
+                Representa um intervalo total com a luz desligada. Dependendo do
+                formato e do firmware, o movimento pode consumir parte desse
+                intervalo; por isso o tempo efetivamente parado pode variar.
+              </p>
+            </article>
+          </div>
+
+          <h3>Onde cada espera acontece no ciclo</h3>
+          <div class="flow">
+            <article class="card">
+              <span class="tag">1</span>
+              <h3>Fim da exposição</h3>
+              <p>A luz UV apaga após formar a camada.</p>
+            </article>
+            <article class="card">
+              <span class="tag">2</span>
+              <h3>Rest Before Lift</h3>
+              <p>Pausa antes de começar a elevação.</p>
+            </article>
+            <article class="card">
+              <span class="tag">3</span>
+              <h3>Lift</h3>
+              <p>A plataforma sobe e a camada se separa do filme.</p>
+            </article>
+            <article class="card">
+              <span class="tag">4</span>
+              <h3>Rest After Lift</h3>
+              <p>Pausa no ponto superior antes da descida.</p>
+            </article>
+            <article class="card">
+              <span class="tag">5</span>
+              <h3>Retract</h3>
+              <p>A plataforma retorna à posição da próxima camada.</p>
+            </article>
+            <article class="card">
+              <span class="tag">6</span>
+              <h3>Rest After Retract</h3>
+              <p>Pausa já na posição de impressão, antes da próxima luz.</p>
+            </article>
+            <article class="card">
+              <span class="tag">7</span>
+              <h3>Nova exposição</h3>
+              <p>A luz UV acende para formar a camada seguinte.</p>
+            </article>
+          </div>
+
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campo no fatiador</th>
+                  <th>Momento exato</th>
+                  <th>Para que serve</th>
+                  <th>Se for curto demais</th>
+                  <th>Se for excessivo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Waiting Mode During Printing<br><small>Modo de espera durante a impressão</small></td>
+                  <td>Configuração geral do perfil.</td>
+                  <td>Escolhe entre pausas independentes ou atraso com a luz desligada.</td>
+                  <td colspan="2">Selecionar o modo errado pode fazer os valores significarem outra coisa no arquivo final.</td>
+                </tr>
+                <tr>
+                  <td>Rest Time Before Lift<br><small>Wait After Print / espera após imprimir</small></td>
+                  <td>Depois que a luz apaga e antes de a plataforma subir.</td>
+                  <td>Permite relaxamento inicial antes do movimento de separação.</td>
+                  <td>O movimento começa imediatamente após a exposição.</td>
+                  <td>Aumenta o ciclo e não substitui velocidade e distância corretas.</td>
+                </tr>
+                <tr>
+                  <td>Rest Time After Lift<br><small>Wait After Lift</small></td>
+                  <td>No alto, após completar a elevação e antes da retração.</td>
+                  <td>Cria uma pausa com a peça afastada do filme.</td>
+                  <td>A retração começa assim que a elevação termina.</td>
+                  <td>Aumenta o ciclo e não garante acomodação sob a peça.</td>
+                </tr>
+                <tr>
+                  <td>Rest Time After Retract<br><small>Wait Before Print / espera antes de imprimir</small></td>
+                  <td>Após retornar à altura da camada e antes de acender a luz.</td>
+                  <td>Permite que movimento, pressão e fluxo da resina se acomodem antes da exposição.</td>
+                  <td>Pode haver resina ainda em movimento, sobretudo em grandes seções ou alta viscosidade.</td>
+                  <td>Aumenta diretamente o tempo de cada camada.</td>
+                </tr>
+                <tr>
+                  <td>Light-off Delay<br><small>Atraso com a luz desligada</small></td>
+                  <td>Intervalo total entre exposições no modo legado.</td>
+                  <td>Reserva tempo para movimento e eventual pausa, conforme a interpretação da máquina.</td>
+                  <td>Pode não restar pausa real depois que o movimento consome o intervalo.</td>
+                  <td>Prolonga o ciclo sem assegurar onde ocorreu a espera.</td>
+                </tr>
+                <tr>
+                  <td>Bottom Light-off Delay<br><small>Atraso das camadas de base</small></td>
+                  <td>Mesmo conceito, aplicado às camadas inferiores.</td>
+                  <td>Permite uma condição diferente no início da impressão quando suportado.</td>
+                  <td colspan="2">Confirme se firmware e formato distinguem de fato o valor de base do valor normal.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout good">
+            <b>Para entender nomes diferentes:</b> “Wait Before Print” costuma
+            corresponder à espera após a retração e antes da próxima exposição;
+            “Wait After Print” costuma ocorrer após a exposição e antes da
+            elevação. O nome sozinho não basta: confirme a posição da pausa no
+            ciclo.
+          </div>
+
+          <div class="callout warn">
+            <b>Não copie tempos universais.</b> Área da camada, viscosidade,
+            temperatura, distância e velocidade de movimento alteram a
+            necessidade. Observe o ciclo real da impressora e valide mudando
+            somente um campo por vez.
+          </div>
         </section>
 
         <section class="step" id="recursos">
