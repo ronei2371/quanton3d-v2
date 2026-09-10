@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -22,6 +23,11 @@ import atendentesRoutes from "./routes/atendentes.js";
 import sugestoesConhecimentoRoutes from "./routes/sugestoesConhecimento.js";
 
 dotenv.config();
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 const app = express();
 const PORT = Number(process.env.PORT || 10000);
@@ -90,6 +96,8 @@ app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api/")) return next();
   res.sendFile(path.join(frontendBuildPath, "index.html"));
 });
+
+Sentry.setupExpressErrorHandler(app);
 
 app.use((err, _req, res, _next) => {
   console.error("[SERVER]", err);
