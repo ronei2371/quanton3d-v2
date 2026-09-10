@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { trackViewProfile, trackCopyProfile } from "../../utils/analytics";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import api from "../../lib/api";
 
@@ -95,7 +96,7 @@ chaveResina(item.resina) === chaveResina(resinaSelecionada) &&
 limparTexto(item.impressora).toLowerCase() === nomeModelo.toLowerCase() &&
 (!marcaModelo || limparTexto(item.marca).toLowerCase() === marcaModelo.toLowerCase())
 );
-if (p) { setResultado(p); setSemParametros(false); }
+if (p) { setResultado(p); setSemParametros(false); trackViewProfile({ resin_name: p.resina, printer_name: p.impressora }); }
 else { setResultado(null); setSemParametros(true); }
 }
 
@@ -116,6 +117,7 @@ const codigoChitubox = limparTexto(resultado?.codigoChitubox);
 async function copiarCodigoChitubox() {
 if (!codigoChitubox) return;
 await navigator.clipboard.writeText(codigoChitubox);
+trackCopyProfile({ resin_name: resultado?.resina, printer_name: resultado?.impressora });
 setCopiado(true);
 setTimeout(() => setCopiado(false), 2500);
 }
