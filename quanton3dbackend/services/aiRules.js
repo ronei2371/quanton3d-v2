@@ -61,7 +61,7 @@ export function ruleBasedAnswer(message) {
 
   // Cheiro forte / ventilação
   if (/(cheiro|odor|fede|fedendo|cheiro forte|mal cheiro|sem ventilacao|ventilacao ruim)/.test(t) && !mencionouResina) {
-    return 'Odor baixo não significa ausência de vapores ou risco. **Não use resina sem ventilação adequada**; melhore renovação/exaustão do ar e siga a FISPQ/SDS. Para menor percepção de odor, existem **LOW SMELL** e **POSEIDON**, mas isso não substitui ventilação, luvas e controle de exposição.\n\nO ambiente possui renovação de ar ou exaustão para fora?';
+    return 'Odor baixo não significa ausência de vapores ou risco. **Não use resina sem ventilação adequada**; melhore renovação/exaustão do ar e siga a FDS/SDS. Para menor percepção de odor, existem **LOW SMELL** e **POSEIDON**, mas isso não substitui ventilação, luvas e controle de exposição.\n\nO ambiente possui renovação de ar ou exaustão para fora?';
   }
 
   // Impressora genérica sem modelo
