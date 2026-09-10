@@ -3,7 +3,7 @@ import { ChevronDown, Menu, X, User } from "lucide-react";
 import { NAV_ITEMS } from "../../data/navigation";
 import AnimatedAtomLogo from "./AnimatedAtomLogo";
 
-const PRIMARY_IDS = new Set(["inicio", "parametros", "calculadoras", "guias", "academy", "atendimento"]);
+const PRIMARY_IDS = new Set(["inicio", "parametros", "calculadoras", "guias", "academy", "atendimento", "comunidade", "catalogo", "sobre"]);
 
 function NavItem({ item, active, onClick }) {
   const Icon = item.icon;
@@ -28,16 +28,12 @@ function NavBar({
   onAbrirAdm,
 }) {
   const [menuAberto, setMenuAberto] = useState(false);
-  const [maisAberto, setMaisAberto] = useState(false);
   const primaryItems = NAV_ITEMS.filter((item) => PRIMARY_IDS.has(item.id));
-  const secondaryItems = NAV_ITEMS.filter((item) => !PRIMARY_IDS.has(item.id));
-  const secondaryActive = secondaryItems.some((item) => item.id === paginaAtiva);
 
   useEffect(() => {
     function fecharComEscape(event) {
       if (event.key === "Escape") {
         setMenuAberto(false);
-        setMaisAberto(false);
       }
     }
     window.addEventListener("keydown", fecharComEscape);
@@ -47,13 +43,12 @@ function NavBar({
   function navegar(id) {
     onNavegar(id);
     setMenuAberto(false);
-    setMaisAberto(false);
   }
 
   return (
     <header className="qnav-header">
       <div className="q-shell qnav-inner">
-        <button type="button" className="qnav-brand" onClick={() => navegar("inicio")} aria-label="Ir para o início">
+        <button type="button" className="qnav-brand" onClick={() => navegar("inicio")} aria-label="Ir para o inicio">
           <AnimatedAtomLogo />
           <div>
             <span translate="no" className="qnav-title">Quanton3D<sup>®</sup></span>
@@ -70,45 +65,15 @@ function NavBar({
           {menuAberto ? <X size={19} /> : <Menu size={19} />}
         </button>
 
-        <nav className={`qnav-links${menuAberto ? " qnav-links--open" : ""}`} aria-label="Navegação principal">
+        <nav className={`qnav-links${menuAberto ? " qnav-links--open" : ""}`} aria-label="Navegacao principal">
           <div className="qnav-primary-links">
             {primaryItems.map((item) => (
               <NavItem key={item.id} item={item} active={paginaAtiva === item.id} onClick={() => navegar(item.id)} />
             ))}
-
-            <div className="qnav-more-wrap">
-              <button
-                type="button"
-                className={`qnav-link qnav-more-trigger${secondaryActive ? " qnav-link--active" : ""}`}
-                onClick={() => setMaisAberto((valor) => !valor)}
-                aria-expanded={maisAberto}
-                aria-haspopup="menu"
-              >
-                Mais <ChevronDown size={15} className={maisAberto ? "is-rotated" : ""} />
-              </button>
-
-              {maisAberto && (
-                <div className="qnav-more-menu" role="menu">
-                  <span className="qnav-menu-label">Explore também</span>
-                  {secondaryItems.map((item) => (
-                    <NavItem key={item.id} item={item} active={paginaAtiva === item.id} onClick={() => navegar(item.id)} />
-                  ))}
-
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="qnav-mobile-secondary">
-            <span className="qnav-menu-label">Explore também</span>
-            {secondaryItems.map((item) => (
-              <NavItem key={item.id} item={item} active={paginaAtiva === item.id} onClick={() => navegar(item.id)} />
-            ))}
-
           </div>
 
           <button type="button" className="q-btn q-btn--sm q-btn--primary qnav-client-button" onClick={atendenteLogado ? onAbrirAdm : onAbrirCadastro}>
-            <User size={14} /> {atendenteLogado ? (atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administração" : atendenteLogado.codigo) : (cliente ? cliente.nome.split(" ")[0] : "Área do cliente")}
+            <User size={14} /> {atendenteLogado ? (atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administracao" : atendenteLogado.codigo) : (cliente ? cliente.nome.split(" ")[0] : "Area do cliente")}
           </button>
         </nav>
       </div>
