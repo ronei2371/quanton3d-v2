@@ -120,8 +120,8 @@ style={{ cursor: "pointer", border: "1px solid", borderColor: i === resinaSel ? 
 </div>
 
 <div style={{ marginTop: "34px" }}>
-<h3 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1rem", marginBottom: "4px" }}><FileText size={16} /> Fichas de Segurança — FISPQ</h3>
-<p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginBottom: "14px" }}>Selecione a resina para abrir a Ficha de Informações de Segurança de Produto Químico.</p>
+<h3 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1rem", marginBottom: "4px" }}><FileText size={16} /> Fichas de Dados de Segurança — FDS</h3>
+<p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginBottom: "14px" }}>Selecione a resina para abrir a Ficha de Dados de Segurança (FDS).</p>
 <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))" }}>
 {FISPQS.map((item) => (
 <button key={item.nome} type="button" className="q-card q-card--interactive"
@@ -129,7 +129,7 @@ style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8
 onClick={() => setFispqAberta(item)}>
 <span className="q-icon-badge"><FileText size={16} /></span>
 <strong style={{ color: "var(--text-primary)", fontSize: "0.82rem" }}>{item.nome}</strong>
-<span style={{ color: "var(--text-muted)", fontSize: "0.7rem" }}>FISPQ · PDF</span>
+<span style={{ color: "var(--text-muted)", fontSize: "0.7rem" }}>FDS · PDF</span>
 </button>
 ))}
 </div>
@@ -139,10 +139,10 @@ onClick={() => setFispqAberta(item)}>
 <div className="q-modal-backdrop" onClick={(e) => e.target === e.currentTarget && setFispqAberta(null)}>
 <section className="q-modal q-modal--wide" style={{ display: "flex", flexDirection: "column" }}>
 <div className="q-modal-head">
-<h2 style={{ fontSize: "1rem" }}>FISPQ — {fispqAberta.nome}</h2>
+<h2 style={{ fontSize: "1rem" }}>FDS — {fispqAberta.nome}</h2>
 <button type="button" className="q-modal-close" onClick={() => setFispqAberta(null)}><X size={13} /> Fechar</button>
 </div>
-<iframe title={"FISPQ " + fispqAberta.nome} src={"/docs/" + fispqAberta.arquivo} style={{ flex: 1, width: "100%", border: "none", borderRadius: "var(--r-md)", background: "#fff" }} />
+<iframe title={"FDS " + fispqAberta.nome} src={"/docs/" + fispqAberta.arquivo} style={{ flex: 1, width: "100%", border: "none", borderRadius: "var(--r-md)", background: "#fff" }} />
 </section>
 </div>
 )}
