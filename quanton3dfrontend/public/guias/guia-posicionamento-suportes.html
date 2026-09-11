@@ -3,380 +3,306 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Guia técnico Quanton3D para orientar peças, detectar ilhas e dimensionar suportes estruturais em impressão 3D de resina."
-    />
-    <title>Guia de Posicionamento de Suportes | Quanton3D</title>
+    <meta name="description" content="Guia técnico Quanton3D para orientar peças, identificar ilhas e construir suportes funcionais em impressão 3D de resina." />
+    <title>Suportes e Posicionamento | Guia Técnico Quanton3D</title>
     <style>
       :root {
         --bg: #060e1e;
         --surface: #0a1425;
         --card: #0f1e35;
-        --border: rgba(79, 209, 255, 0.15);
+        --soft: rgba(255, 255, 255, 0.025);
+        --border: rgba(79, 209, 255, 0.16);
         --cyan: #4fd1ff;
         --purple: #b89cff;
         --green: #49e68b;
         --yellow: #ffd166;
         --red: #ff6b8a;
         --text: #c5d8e8;
-        --title: #eaf7ff;
+        --title: #edf8ff;
       }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
       body {
-        font-family: "Segoe UI", system-ui, sans-serif;
         background: var(--bg);
         color: var(--text);
+        font-family: "Segoe UI", system-ui, sans-serif;
         line-height: 1.7;
         padding: 20px;
       }
       .container {
-        max-width: 960px;
+        width: min(1180px, 100%);
         margin: 0 auto;
-        background: var(--surface);
-        border-radius: 16px;
-        border: 1px solid var(--border);
         overflow: hidden;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
         box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
       }
       .header {
-        background: linear-gradient(
-          135deg,
-          rgba(21, 101, 192, 0.4),
-          rgba(123, 31, 162, 0.3)
-        );
-        border-bottom: 1px solid var(--border);
-        padding: 40px 36px 32px;
+        padding: 46px 38px 38px;
         text-align: center;
-        position: relative;
-      }
-      .header::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          ellipse at 50% 0%,
-          rgba(79, 209, 255, 0.07) 0%,
-          transparent 70%
-        );
-        pointer-events: none;
+        border-bottom: 1px solid var(--border);
+        background:
+          radial-gradient(circle at 50% 0%, rgba(79, 209, 255, 0.12), transparent 62%),
+          linear-gradient(135deg, rgba(21, 101, 192, 0.38), rgba(124, 58, 237, 0.28));
       }
       .logo {
         display: inline-block;
-        padding: 4px 16px;
-        border-radius: 999px;
-        background: rgba(79, 209, 255, 0.1);
-        border: 1px solid rgba(79, 209, 255, 0.3);
+        margin-bottom: 14px;
+        padding: 5px 16px;
         color: var(--cyan);
         font-size: 0.75rem;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: 0.1em;
-        margin-bottom: 14px;
+        border: 1px solid rgba(79, 209, 255, 0.3);
+        border-radius: 999px;
+        background: rgba(79, 209, 255, 0.08);
       }
       .header h1 {
-        font-size: clamp(1.4rem, 3.5vw, 2rem);
-        font-weight: 900;
-        background: linear-gradient(135deg, #4fd1ff, #b89cff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
         margin-bottom: 8px;
+        color: var(--title);
+        font-size: clamp(1.65rem, 4vw, 2.5rem);
+        font-weight: 900;
       }
-      .header p {
-        font-size: 0.9rem;
-        color: #9fb4c7;
-      }
-      .content {
-        padding: 32px 36px 40px;
-      }
-      .intro {
-        background: rgba(79, 209, 255, 0.05);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 22px 26px;
-        margin-bottom: 24px;
-      }
-      .intro h2 {
-        font-size: 1rem;
-        color: var(--cyan);
-        font-weight: 800;
-        margin-bottom: 10px;
-      }
-      .intro p {
-        font-size: 0.88rem;
-      }
+      .header p { color: #a9bed0; font-size: 0.95rem; }
+      .content { padding: 34px 38px 42px; }
+      .intro,
       .step {
-        background: var(--card);
         border: 1px solid var(--border);
         border-radius: 14px;
-        padding: 26px;
-        margin: 18px 0;
-        transition: border-color 0.2s;
+        background: var(--card);
       }
-      .step:hover {
-        border-color: rgba(79, 209, 255, 0.3);
+      .intro {
+        margin-bottom: 22px;
+        padding: 24px 28px;
+        background: rgba(79, 209, 255, 0.05);
       }
+      .intro h2 { margin-bottom: 10px; color: var(--cyan); font-size: 1.05rem; }
+      .step { margin: 18px 0; padding: 28px; }
       .step-number {
         display: inline-flex;
-        align-items: center;
-        justify-content: center;
         width: 44px;
         height: 44px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+        color: white;
+        font-weight: 900;
         border-radius: 50%;
         background: linear-gradient(135deg, #1565c0, #7c3aed);
-        color: #fff;
-        font-size: 1.1rem;
-        font-weight: 900;
-        margin-bottom: 14px;
-        box-shadow: 0 4px 14px rgba(79, 209, 255, 0.2);
+        box-shadow: 0 5px 16px rgba(79, 209, 255, 0.18);
       }
-      .step h3 {
-        font-size: 1rem;
-        font-weight: 800;
-        color: var(--title);
-        margin-bottom: 14px;
-      }
+      .step h2,
+      .step h3 { color: var(--title); font-size: 1.08rem; margin-bottom: 12px; }
+      .step h4 { color: var(--cyan); font-size: 0.9rem; margin-bottom: 7px; }
+      p { margin: 8px 0; font-size: 0.9rem; }
+      a { color: var(--cyan); }
+      figure { margin: 18px auto; }
       .step-image {
-        width: 100%;
-        max-width: 720px;
-        height: auto;
-        border-radius: 10px;
-        margin: 16px auto;
         display: block;
-        border: 1px solid var(--border);
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+        width: 100%;
+        aspect-ratio: 16 / 9;
         object-fit: cover;
-      }
-      .step-description {
-        font-size: 0.88rem;
-        margin-bottom: 12px;
-      }
-      .step-list {
-        list-style: none;
-        margin: 12px 0;
-        display: grid;
-        gap: 7px;
-      }
-      .step-list li {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(79, 209, 255, 0.07);
-        border-left: 3px solid var(--cyan);
-        border-radius: 7px;
-        padding: 10px 14px;
-        font-size: 0.865rem;
-      }
-      .step-list li strong {
-        color: var(--cyan);
-      }
-      .tip-box {
-        background: rgba(73, 230, 139, 0.05);
-        border: 1px solid rgba(73, 230, 139, 0.18);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin: 14px 0;
-      }
-      .tip-box h3,
-      .tip-box h4 {
-        color: var(--green);
-        font-size: 0.85rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-      }
-      .tip-box p,
-      .tip-box ul {
-        font-size: 0.84rem;
-        color: #9fcfad;
-        line-height: 1.65;
-      }
-      .warning-box {
-        background: rgba(255, 209, 102, 0.05);
-        border: 1px solid rgba(255, 209, 102, 0.2);
-        border-left: 3px solid var(--yellow);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin: 14px 0;
-      }
-      .warning-box h3,
-      .warning-box h4 {
-        color: var(--yellow);
-        font-size: 0.85rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-      }
-      .warning-box p {
-        font-size: 0.84rem;
-        color: #c9a84c;
-        line-height: 1.65;
-      }
-      .error-box {
-        background: rgba(255, 107, 138, 0.05);
-        border: 1px solid rgba(255, 107, 138, 0.18);
-        border-left: 3px solid var(--red);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin: 14px 0;
-      }
-      .error-box h3,
-      .error-box h4 {
-        color: var(--red);
-        font-size: 0.85rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-      }
-      .error-box p {
-        font-size: 0.84rem;
-        color: #c49aab;
-        line-height: 1.65;
-      }
-      .info-box {
-        background: rgba(184, 156, 255, 0.05);
-        border: 1px solid rgba(184, 156, 255, 0.2);
-        border-left: 3px solid var(--purple);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin: 14px 0;
-      }
-      .info-box h3,
-      .info-box h4 {
-        color: var(--purple);
-        font-size: 0.85rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-      }
-      .info-box p {
-        font-size: 0.84rem;
-        color: #b8a8d4;
-        line-height: 1.65;
-      }
-      .materials {
-        background: rgba(73, 230, 139, 0.04);
-        border: 1px solid rgba(73, 230, 139, 0.18);
+        border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 22px 26px;
-        margin: 24px 0;
+        background: #071225;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       }
-      .materials h3 {
-        color: var(--green);
-        font-size: 1rem;
-        font-weight: 800;
-        margin-bottom: 14px;
+      figcaption { margin-top: 9px; color: #91a9bd; font-size: 0.8rem; text-align: center; }
+      .grid-2,
+      .grid-3,
+      .grid-4 { display: grid; gap: 13px; margin: 15px 0; }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .card {
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: var(--soft);
       }
-      .materials ul {
-        list-style: none;
-      }
-      .materials li {
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(73, 230, 139, 0.08);
-        font-size: 0.875rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .materials li:last-child {
-        border-bottom: none;
-      }
-      .materials li:before {
-        content: "✓";
-        color: var(--green);
-        font-weight: 900;
-        flex-shrink: 0;
-      }
-      .problem-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin: 14px 0;
-      }
-      .problem-card {
+      .card p { color: #b8cce0; font-size: 0.84rem; }
+      .card.good { border-color: rgba(73, 230, 139, 0.3); }
+      .card.good h4 { color: var(--green); }
+      .card.warn { border-color: rgba(255, 209, 102, 0.3); }
+      .card.warn h4 { color: var(--yellow); }
+      .card.bad { border-color: rgba(255, 107, 138, 0.3); }
+      .card.bad h4 { color: var(--red); }
+      .step-list { display: grid; gap: 8px; margin: 13px 0; list-style: none; }
+      .step-list li {
+        padding: 11px 14px;
+        font-size: 0.87rem;
+        border: 1px solid rgba(79, 209, 255, 0.09);
+        border-left: 3px solid var(--cyan);
+        border-radius: 8px;
         background: rgba(255, 255, 255, 0.02);
+      }
+      .step-list strong { color: var(--cyan); }
+      .tip-box,
+      .warning-box,
+      .error-box,
+      .info-box {
+        margin: 15px 0;
+        padding: 15px 18px;
+        border-radius: 10px;
+        border: 1px solid;
+        border-left-width: 3px;
+      }
+      .tip-box { border-color: rgba(73, 230, 139, 0.24); background: rgba(73, 230, 139, 0.05); }
+      .tip-box h4 { color: var(--green); }
+      .warning-box { border-color: rgba(255, 209, 102, 0.26); background: rgba(255, 209, 102, 0.05); }
+      .warning-box h4 { color: var(--yellow); }
+      .error-box { border-color: rgba(255, 107, 138, 0.24); background: rgba(255, 107, 138, 0.05); }
+      .error-box h4 { color: var(--red); }
+      .info-box { border-color: rgba(184, 156, 255, 0.26); background: rgba(184, 156, 255, 0.05); }
+      .info-box h4 { color: var(--purple); }
+      .tip-box p,
+      .warning-box p,
+      .error-box p,
+      .info-box p { font-size: 0.85rem; }
+      .table-scroll {
+        width: 100%;
+        margin: 15px 0;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+      }
+      table { width: 100%; min-width: 720px; border-collapse: collapse; table-layout: fixed; }
+      th,
+      td {
+        padding: 13px 14px;
+        text-align: left;
+        vertical-align: top;
+        border-right: 1px solid rgba(79, 209, 255, 0.1);
+        border-bottom: 1px solid rgba(79, 209, 255, 0.1);
+        overflow-wrap: anywhere;
+      }
+      th {
+        color: var(--title);
+        font-size: 0.76rem;
+        letter-spacing: 0.035em;
+        text-transform: uppercase;
+        background: rgba(79, 209, 255, 0.09);
+      }
+      td { font-size: 0.83rem; }
+      td strong { color: var(--title); }
+      th:last-child,
+      td:last-child { border-right: 0; }
+      tbody tr:last-child td { border-bottom: 0; }
+      tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.016); }
+      details {
+        margin: 10px 0;
+        overflow: hidden;
         border: 1px solid var(--border);
         border-radius: 10px;
-        padding: 16px;
+        background: rgba(255, 255, 255, 0.018);
       }
-      .problem-card h4 {
-        color: var(--cyan);
-        font-size: 0.85rem;
+      summary {
+        padding: 13px 15px;
+        color: var(--title);
+        font-size: 0.88rem;
         font-weight: 800;
-        margin-bottom: 8px;
+        cursor: pointer;
       }
-      .problem-card p {
-        font-size: 0.82rem;
+      details > div { padding: 0 15px 15px; }
+      .flow { display: grid; gap: 9px; margin: 15px 0; counter-reset: support-flow; }
+      .flow li {
+        display: grid;
+        grid-template-columns: 36px 1fr;
+        gap: 11px;
+        align-items: start;
+        padding: 12px 14px;
+        list-style: none;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.02);
       }
+      .flow li::before {
+        counter-increment: support-flow;
+        content: counter(support-flow);
+        display: inline-flex;
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 900;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1565c0, #7c3aed);
+      }
+      .assistant-box {
+        padding: 20px;
+        border: 1px solid rgba(79, 209, 255, 0.28);
+        border-radius: 12px;
+        background: rgba(79, 209, 255, 0.045);
+      }
+      label { display: block; margin-bottom: 7px; color: var(--title); font-size: 0.82rem; font-weight: 800; }
+      select,
+      button {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 12px;
+        color: var(--title);
+        font: inherit;
+        border: 1px solid rgba(79, 209, 255, 0.3);
+        border-radius: 8px;
+        background: #081426;
+      }
+      button {
+        margin-top: 10px;
+        font-weight: 900;
+        cursor: pointer;
+        background: linear-gradient(135deg, #1565c0, #7c3aed);
+      }
+      #diagnostic-result { min-height: 94px; margin-top: 13px; }
       .footer {
-        background: rgba(0, 0, 0, 0.25);
-        border-top: 1px solid var(--border);
         padding: 28px 36px;
         text-align: center;
+        border-top: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.24);
       }
-      .footer h3 {
-        color: var(--cyan);
-        font-size: 1rem;
-        margin-bottom: 12px;
-        font-weight: 800;
-      }
-      .footer p {
-        font-size: 0.84rem;
-        color: #9fb4c7;
-        margin: 6px 0;
-      }
-      .footer a {
-        color: var(--cyan);
-        text-decoration: none;
-        font-weight: 700;
-      }
-      .footer a:hover {
-        text-decoration: underline;
-      }
-      p {
-        font-size: 0.88rem;
-        margin: 8px 0;
-      }
-      ul:not(.step-list):not(.materials ul) {
-        padding-left: 20px;
-        margin: 8px 0;
-      }
-      ul:not(.step-list) li {
-        font-size: 0.88rem;
-        margin: 4px 0;
-      }
-      .encaixe-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin: 14px 0;
-      }
-      .encaixe-card {
-        padding: 14px;
-        text-align: center;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.03);
-      }
-      .encaixe-card p {
-        font-size: 0.82rem;
-      }
-      @media (max-width: 640px) {
-        body {
-          padding: 10px;
+      .footer p { color: #9fb4c7; font-size: 0.84rem; }
+      @media (max-width: 780px) {
+        body { padding: 8px; }
+        .header { padding: 32px 18px 26px; }
+        .content { padding: 22px 15px 32px; }
+        .step { padding: 20px 15px; }
+        .grid-4,
+        .grid-3,
+        .grid-2 { grid-template-columns: 1fr; }
+        .table-scroll { overflow: visible; border: 0; }
+        table { min-width: 0; border-collapse: separate; border-spacing: 0 10px; }
+        thead {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
         }
-        .content {
-          padding: 20px 16px 32px;
+        tbody,
+        tr,
+        td { display: block; width: 100%; }
+        tr {
+          overflow: hidden;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.018);
         }
-        .header {
-          padding: 28px 16px 22px;
+        td {
+          display: grid;
+          grid-template-columns: minmax(105px, 34%) minmax(0, 1fr);
+          gap: 10px;
+          border-right: 0;
         }
-        .step {
-          padding: 18px 14px;
-        }
-        .encaixe-grid {
-          grid-template-columns: 1fr;
-        }
-        .problem-grid {
-          grid-template-columns: 1fr;
+        td::before {
+          content: attr(data-label);
+          color: var(--cyan);
+          font-size: 0.69rem;
+          font-weight: 900;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
         }
       }
     </style>
@@ -385,1067 +311,296 @@
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <div class="logo">🔬 QUANTON3D</div>
-        <h1>🏗️ Guia de Posicionamento de Suportes</h1>
-        <p>Domine a arte dos suportes para impressões perfeitas</p>
-      </div>
+      <header class="header">
+        <div class="logo">QUANTON3D • GUIA TÉCNICO</div>
+        <h1>Suportes e Posicionamento</h1>
+        <p>Construa um caminho de carga confiável sem sacrificar acabamento e precisão.</p>
+      </header>
 
-      <div class="content">
-        <div class="intro">
-          <h2>🎯 Por que Suportes São Importantes?</h2>
+      <main class="content">
+        <section class="intro">
+          <h2>O suporte não é um palito segurando peso</h2>
           <p>
-            Suportes criam um caminho de carga entre cada nova região da peça e
-            a plataforma. Eles não eliminam a força de separação: distribuem
-            essa carga, controlam flexão e estabilizam ilhas e extremidades. O
-            objetivo não é usar muitos contatos, mas posicionar suporte
-            estrutural suficiente sem alterar superfícies funcionais ou
-            estéticas.
+            Em impressão bottom-up, cada camada precisa sobreviver à separação do filme, ao
+            crescimento da área projetada, à flexão e ao braço de alavanca da geometria. Um
+            suporte funcional liga a primeira região impressa a uma base estável, controla o
+            movimento lateral e mantém detalhes na posição até o final do ciclo.
           </p>
-        </div>
+        </section>
 
-        <!-- COMO FUNCIONAM OS SUPORTES -->
-        <div class="step">
-          <div class="step-number">📚</div>
-          <h3>Como Funcionam os Suportes</h3>
-          <img
-            src="images/como-funcionam-suportes .png"
-            alt="Como funcionam os suportes"
-            class="step-image"
-          />
-
-          <div class="step-description">
-            <p>
-              Os suportes em impressão de resina são compostos por três partes
-              principais:
-            </p>
+        <section class="step" id="leitura-da-peca">
+          <div class="step-number">1</div>
+          <h2>Leia a peça antes de adicionar suportes</h2>
+          <div class="grid-4">
+            <article class="card"><h4>Primeira ilha</h4><p>Localize o primeiro pixel de cada componente que nasce sem ligação com a camada anterior.</p></article>
+            <article class="card"><h4>Salto de seção</h4><p>Observe onde a área de uma camada cresce bruscamente; a carga aumenta antes de a peça ganhar rigidez.</p></article>
+            <article class="card"><h4>Braço de alavanca</h4><p>Extremidades longas podem girar ou vibrar mesmo quando não aparecem como ilha.</p></article>
+            <article class="card"><h4>Face protegida</h4><p>Marque encaixes, margens, textos e superfícies estéticas antes de escolher os contatos.</p></article>
           </div>
-
-          <ul class="step-list">
-            <li>
-              <strong>Ponto de Contato (Topo):</strong> Pequeno ponto que toca a
-              peça. Deve ser grande o suficiente para sustentar, mas pequeno o
-              suficiente para ser removido facilmente sem deixar marcas.
-            </li>
-
-            <li>
-              <strong>Pilar (Meio):</strong> Coluna que conecta o ponto de
-              contato à base. Deve ser forte o suficiente para suportar o peso
-              da peça e resistir às forças de sucção do FEP.
-            </li>
-
-            <li>
-              <strong>Base (Inferior):</strong> Ponto de ancoragem na plataforma
-              ou no estrado (raft). Distribui a força e garante estabilidade
-              durante toda a impressão.
-            </li>
-          </ul>
-
-          <div class="highlight-box">
-            <h4>🎯 Princípio Fundamental</h4>
-            <p>
-              <strong>45° é apenas um limiar visual do software.</strong> A
-              necessidade real depende do deslocamento lateral entre camadas,
-              altura de camada, geometria, exposição, rigidez em formação e
-              carga de peel. Uma ilha sempre precisa de conexão; um balanço
-              progressivo pode ou não precisar, mesmo quando aparece vermelho.
-            </p>
-          </div>
-        </div>
-
-        <!-- ANATOMIA DO SUPORTE NO CHITUBOX -->
-        <div class="step">
-          <div class="step-number">🔧</div>
-          <h3>Anatomia do Suporte no Chitubox</h3>
-          <img
-            src="images/chitubox-suportes-config.png"
-            alt="Configurações de suportes no Chitubox"
-            class="step-image"
-          />
-
-          <div class="step-description">
-            <p>
-              O Chitubox oferece controle completo sobre cada parte do suporte.
-              Entenda TODOS os parâmetros:
-            </p>
-          </div>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            🔝 Seção: TOPO (Ponto de Contato)
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Forma de Toque (Contact Shape):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Formato do ponto que toca a peça <br /><strong>Opções:</strong>
-              Esfera, Cone <br /><strong>Recomendado:</strong> Esfera para áreas
-              planas. Cone para áreas curvas <br /><strong>Por quê:</strong>
-              Esfera distribui melhor a força. Cone penetra menos na superfície
-            </li>
-
-            <li>
-              <strong>Diâmetro Contato (Contact Diameter):</strong>
-              <br /><strong>O que é:</strong> Tamanho do ponto que toca a peça
-              <br /><strong>Valor típico:</strong> 0.50mm <br /><strong
-                >Como ajustar:</strong
-              >
-              0.30mm para detalhes finos. 0.50-0.80mm para áreas robustas
-              <br /><strong>Impacto:</strong> Maior = mais forte, mais marca.
-              Menor = menos marca, mais frágil
-            </li>
-
-            <li>
-              <strong>Prof. de Contato (Contact Depth):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Profundidade que o suporte penetra na peça <br /><strong
-                >Valor típico:</strong
-              >
-              0.30mm <br /><strong>Como ajustar:</strong> 0.20mm para
-              superfícies visíveis. 0.40mm para áreas ocultas <br /><strong
-                >Impacto:</strong
-              >
-              Mais profundo = mais forte, mais difícil remover
-            </li>
-          </ul>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            🏛️ Seção: MEIO (Pilar)
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Forma (Shape):</strong> <br /><strong>O que é:</strong>
-              Formato do pilar central <br /><strong>Opções:</strong> Cilindro,
-              Cone <br /><strong>Recomendado:</strong> Cilindro para peças
-              pesadas. Cone para economizar resina <br /><strong
-                >Por quê:</strong
-              >
-              Cilindro é mais forte. Cone usa menos material
-            </li>
-
-            <li>
-              <strong>Diâmetro (Diameter):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Espessura do pilar <br /><strong>Valor típico:</strong> 0.80mm
-              <br /><strong>Como ajustar:</strong> 0.60mm para detalhes.
-              1.00-1.50mm para peças grandes <br /><strong>Impacto:</strong>
-              Mais grosso = mais forte, mais difícil remover
-            </li>
-
-            <li>
-              <strong>Ângulo (Angle):</strong> <br /><strong>O que é:</strong>
-              Inclinação do pilar em relação à vertical <br /><strong
-                >Valor típico:</strong
-              >
-              70° <br /><strong>Como ajustar:</strong> 60-80° conforme geometria
-              da peça <br /><strong>Por quê:</strong> Ângulos maiores facilitam
-              remoção e reduzem marcas
-            </li>
-
-            <li>
-              <strong>Forma Pilar Pequeno (Small Pillar Shape):</strong>
-              <br /><strong>O que é:</strong> Formato de pilares curtos (para
-              suportes próximos) <br /><strong>Opções:</strong> Cone, Cilindro
-              <br /><strong>Recomendado:</strong> Cone <br /><strong
-                >Por quê:</strong
-              >
-              Economiza espaço e resina
-            </li>
-
-            <li>
-              <strong>Diâmetro Pilar Pequeno:</strong> <br /><strong
-                >O que é:</strong
-              >
-              Espessura de pilares curtos <br /><strong>Valor típico:</strong>
-              0.40mm <br /><strong>Uso:</strong> Suportes em áreas densas ou
-              detalhadas
-            </li>
-
-            <li>
-              <strong>Profundidade Superior (Top Depth):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Comprimento da transição entre ponto de contato e pilar
-              <br /><strong>Valor típico:</strong> 0.25mm <br /><strong
-                >Impacto:</strong
-              >
-              Transição mais suave reduz concentração de tensão
-            </li>
-
-            <li>
-              <strong>Profundidade Inferior (Bottom Depth):</strong>
-              <br /><strong>O que é:</strong> Comprimento da transição entre
-              pilar e base <br /><strong>Valor típico:</strong> 0.25mm
-              <br /><strong>Impacto:</strong> Melhora ancoragem na base
-            </li>
-
-            <li>
-              <strong>Espaçamento Máximo da Estrutura Cruzada:</strong>
-              <br /><strong>O que é:</strong> Distância máxima entre suportes
-              antes de criar reforço cruzado <br /><strong
-                >Valor típico:</strong
-              >
-              30.00mm <br /><strong>Uso:</strong> Para áreas grandes e planas,
-              cria estrutura em treliça
-            </li>
-
-            <li>
-              <strong>Altura Inicial Cruzada:</strong> <br /><strong
-                >O que é:</strong
-              >
-              Altura mínima do pilar para começar reforços cruzados
-              <br /><strong>Valor típico:</strong> 3.00mm <br /><strong
-                >Por quê:</strong
-              >
-              Pilares muito curtos não precisam de reforço
-            </li>
-          </ul>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            ⚓ Seção: INFERIOR (Base)
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Tipo de Contato na Mesa (Platform Contact Type):</strong>
-              <br /><strong>O que é:</strong> Formato da base que toca a
-              plataforma <br /><strong>Opções:</strong> Skate (patim), Cone
-              <br /><strong>Recomendado:</strong> Skate <br /><strong
-                >Por quê:</strong
-              >
-              Distribui melhor a força e é mais estável
-            </li>
-
-            <li>
-              <strong>Diâmetro Contato (Contact Diameter):</strong>
-              <br /><strong>O que é:</strong> Tamanho da base na plataforma
-              <br /><strong>Valor típico:</strong> 10.00mm (Skate) <br /><strong
-                >Impacto:</strong
-              >
-              Maior = mais estável, mais difícil remover da plataforma
-            </li>
-
-            <li>
-              <strong>Espessura (Thickness):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Altura da base tipo Skate <br /><strong>Valor típico:</strong>
-              0.80mm <br /><strong>Impacto:</strong> Mais grosso = mais adesão,
-              mais desperdício
-            </li>
-
-            <li>
-              <strong>Forma Contato no Modelo:</strong> <br /><strong
-                >O que é:</strong
-              >
-              Formato quando o suporte se conecta à própria peça (não à
-              plataforma) <br /><strong>Opções:</strong> Nenhum (None), Cone,
-              Cilindro <br /><strong>Recomendado:</strong> Nenhum ou Cone
-              pequeno <br /><strong>Uso:</strong> Para suportes que se apoiam em
-              partes já impressas
-            </li>
-
-            <li>
-              <strong>Diâmetro Contato (Model Contact):</strong> <br /><strong
-                >Valor típico:</strong
-              >
-              0.40mm <br /><strong>Por quê:</strong> Pequeno para facilitar
-              remoção
-            </li>
-
-            <li>
-              <strong>Prof. de Contato (Model Contact Depth):</strong>
-              <br /><strong>Valor típico:</strong> 0.20mm <br /><strong
-                >Por quê:</strong
-              >
-              Raso para não danificar a peça
-            </li>
-
-            <li>
-              <strong>Ponto de Contato (Contact Point):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Número de pontos de ancoragem na base <br /><strong
-                >Valor típico:</strong
-              >
-              1 <br /><strong>Uso:</strong> Múltiplos pontos para áreas muito
-              pesadas
-            </li>
-          </ul>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            🏗️ Seção: ESTRADO (Raft)
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Forma Raft:</strong> <br /><strong>O que é:</strong>
-              Formato da base comum para todos os suportes <br /><strong
-                >Opções:</strong
-              >
-              Nenhum (None), Retangular, Circular <br /><strong
-                >Recomendado:</strong
-              >
-              Nenhum para peças pequenas. Retangular para peças grandes
-              <br /><strong>Por quê:</strong> Raft melhora adesão mas usa mais
-              resina
-            </li>
-
-            <li>
-              <strong>Proporção Área Raft (%):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Tamanho do raft em relação à área da peça <br /><strong
-                >Valor típico:</strong
-              >
-              110% (10% maior que a peça) <br /><strong>Ajuste:</strong>
-              100-120% conforme estabilidade necessária
-            </li>
-
-            <li>
-              <strong>Espessura Raft:</strong> <br /><strong>O que é:</strong>
-              Altura do raft <br /><strong>Valor típico:</strong> 1.00mm
-              <br /><strong>Impacto:</strong> Mais grosso = mais estável, mais
-              desperdício
-            </li>
-
-            <li>
-              <strong>Altura Raft:</strong> <br /><strong>O que é:</strong>
-              Distância entre plataforma e raft <br /><strong
-                >Valor típico:</strong
-              >
-              1.80mm <br /><strong>Por quê:</strong> Espaço para resina fluir e
-              facilitar remoção
-            </li>
-
-            <li>
-              <strong>Inclinação Raft (°):</strong> <br /><strong
-                >O que é:</strong
-              >
-              Ângulo das bordas do raft <br /><strong>Valor típico:</strong> 30°
-              <br /><strong>Por quê:</strong> Facilita remoção e reduz força de
-              sucção
-            </li>
-
-            <li>
-              <strong>Comprimento Lateral da Grade:</strong> <br /><strong
-                >O que é:</strong
-              >
-              Tamanho das células da grade interna do raft <br /><strong
-                >Valor típico:</strong
-              >
-              2.00mm <br /><strong>Por quê:</strong> Grade economiza resina
-              mantendo resistência
-            </li>
-
-            <li>
-              <strong>Largura da Grade:</strong> <br /><strong>O que é:</strong>
-              Espessura das linhas da grade <br /><strong>Valor típico:</strong>
-              2.00mm <br /><strong>Ajuste:</strong> Mais grosso = mais forte,
-              mais resina
-            </li>
-          </ul>
-
           <div class="warning-box">
-            <h3>⚠️ ATENÇÃO - Diâmetro do Pilar</h3>
-            <p>
-              <strong>O suporte funciona como conjunto.</strong> Ponta,
-              penetração, pilar, altura livre, inclinação, travamento e
-              distância até a carga precisam ser compatíveis. Um pilar grosso
-              com contato fraco ainda solta; uma ponta forte em haste longa
-              ainda flexiona. Use os valores da tabela apenas como candidatos de
-              teste.
-            </p>
+            <h4>Mapa vermelho não é sentença</h4>
+            <p>O mapa de ângulos mostra candidatos geométricos. A decisão correta vem do preview camada por camada: continuidade, tamanho da seção, rigidez e distância até o apoio. Não existe um ângulo universal que resolva todas as peças.</p>
           </div>
-        </div>
+        </section>
 
-        <!-- CONFIGURAÇÕES BÁSICAS -->
-        <div class="step">
-          <div class="step-number">⚙️</div>
-          <h3>Configurações Básicas Recomendadas</h3>
-
-          <div class="step-description">
-            <p>
-              Use estas configurações como ponto de partida e ajuste conforme
-              necessário:
-            </p>
+        <section class="step" id="anatomia">
+          <div class="step-number">2</div>
+          <h2>Anatomia funcional do suporte</h2>
+          <figure>
+            <img src="images/suportes-anatomia-quanton3d.webp" alt="Peça mecânica inclinada ligada por contatos, hastes e travamentos a um raft sobre a plataforma" class="step-image" />
+            <figcaption>O caminho precisa ser contínuo da peça até a plataforma.</figcaption>
+          </figure>
+          <div class="grid-3">
+            <article class="card"><h4>Contato</h4><p>É a interface com a peça. Precisa segurar a região sem penetrar ou marcar além do aceitável.</p></article>
+            <article class="card"><h4>Conexão superior</h4><p>Transfere a carga do contato para a haste. Uma ponta adequada em conexão fraca ainda rompe.</p></article>
+            <article class="card"><h4>Haste</h4><p>Resiste à tração e à flexão. Comprimento livre e inclinação importam tanto quanto o diâmetro.</p></article>
+            <article class="card"><h4>Travamento</h4><p>As diagonais reduzem vibração, flambagem e deslocamento lateral de hastes longas.</p></article>
+            <article class="card"><h4>Base do suporte</h4><p>Ancora cada haste ao raft ou à plataforma sem criar uma conexão frágil no pé.</p></article>
+            <article class="card"><h4>Raft</h4><p>Integra as bases e facilita aderência e remoção. Não corrige exposição de base mal calibrada.</p></article>
           </div>
+        </section>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Parâmetro</th>
-                <th>Suporte Leve</th>
-                <th>Suporte Médio</th>
-                <th>Suporte Pesado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Uso</strong></td>
-                <td>Detalhes finos, miniaturas</td>
-                <td>Peças normais, uso geral</td>
-                <td>Peças grandes, áreas planas</td>
-              </tr>
-              <tr>
-                <td><strong>Diâmetro Contato Topo</strong></td>
-                <td>0.30mm</td>
-                <td>0.50mm</td>
-                <td>0.80mm</td>
-              </tr>
-              <tr>
-                <td><strong>Profundidade Contato</strong></td>
-                <td>0.20mm</td>
-                <td>0.30mm</td>
-                <td>0.40mm</td>
-              </tr>
-              <tr>
-                <td><strong>Diâmetro Pilar</strong></td>
-                <td>0.60mm</td>
-                <td>0.80mm</td>
-                <td>1.20mm</td>
-              </tr>
-              <tr>
-                <td><strong>Ângulo</strong></td>
-                <td>75°</td>
-                <td>70°</td>
-                <td>65°</td>
-              </tr>
-              <tr>
-                <td><strong>Base (Skate)</strong></td>
-                <td>8.00mm</td>
-                <td>10.00mm</td>
-                <td>12.00mm</td>
-              </tr>
-            </tbody>
-          </table>
-
+        <section class="step" id="contato">
+          <div class="step-number">3</div>
+          <h2>Contato: segurar sem destruir o detalhe</h2>
+          <figure>
+            <img src="images/suportes-contato-comparativo.webp" alt="Comparação entre contato rompido, contato equilibrado e contato excessivo com marca profunda" class="step-image" />
+            <figcaption>A leitura deve considerar retenção, marca e integridade da haste.</figcaption>
+          </figure>
+          <div class="grid-3">
+            <article class="card bad"><h4>Contato insuficiente</h4><p>A ponta rompe ou solta da peça. Antes de engrossar, confirme exposição, primeira ilha e flexão da haste.</p></article>
+            <article class="card good"><h4>Contato equilibrado</h4><p>A região permanece estável, o suporte pode ser removido de modo controlado e a marca atende ao acabamento.</p></article>
+            <article class="card bad"><h4>Contato excessivo</h4><p>A remoção arranca material ou deixa cratera. Reduza somente uma variável e revalide a sustentação.</p></article>
+          </div>
           <div class="tip-box">
-            <h4>💡 Dica Profissional</h4>
-            <p>
-              Salve estes três perfis no Chitubox com nomes descritivos:<br />
-              • "Quanton3D - Suporte Leve"<br />
-              • "Quanton3D - Suporte Médio"<br />
-              • "Quanton3D - Suporte Pesado"<br /><br />
-              Assim você pode alternar rapidamente entre eles durante o
-              posicionamento!
-            </p>
+            <h4>Método de calibração do contato</h4>
+            <p>Use um cupom com orientação, seção e altura próximas da peça real. Mude apenas diâmetro ou profundidade por rodada, nunca os dois juntos. Registre retenção, marca após remoção e repetibilidade antes de salvar o perfil.</p>
           </div>
-        </div>
+        </section>
 
-        <!-- SUPORTE AUTOMÁTICO VS MANUAL -->
-        <div class="step">
-          <div class="step-number">🤖</div>
-          <h3>Suporte Automático vs Manual</h3>
-          <img
-            src="images/exemplo-suportes-1.jpg"
-            alt="Exemplo de suportes automáticos"
-            class="step-image"
-          />
-
-          <div class="step-description">
-            <p>
-              O Chitubox oferece suporte automático, mas ele nem sempre é
-              perfeito. Entenda quando usar cada método:
-            </p>
-          </div>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            🤖 Suporte Automático
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Vantagens:</strong> Rápido, cobre todas as áreas críticas,
-              bom ponto de partida
-            </li>
-            <li>
-              <strong>Desvantagens:</strong> Pode colocar suportes em áreas
-              visíveis, às vezes usa suportes demais ou de menos
-            </li>
-            <li>
-              <strong>Quando usar:</strong> Como base inicial, depois revisar e
-              ajustar manualmente
-            </li>
-            <li>
-              <strong>Configuração:</strong> Use modo "Normal" ou "Médio" como
-              padrão
-            </li>
-          </ul>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            ✋ Suporte Manual
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Vantagens:</strong> Controle total, pode evitar áreas
-              visíveis, otimiza quantidade de suportes
-            </li>
-            <li>
-              <strong>Desvantagens:</strong> Mais demorado, requer experiência,
-              pode esquecer áreas críticas
-            </li>
-            <li>
-              <strong>Quando usar:</strong> Para peças com áreas visíveis
-              importantes, miniaturas detalhadas, ou quando automático falha
-            </li>
-            <li>
-              <strong>Dica:</strong> Use automático primeiro, depois delete
-              suportes ruins e adicione manualmente onde necessário
-            </li>
-          </ul>
-
-          <div class="highlight-box">
-            <h4>🎯 Método Híbrido Recomendado</h4>
-            <p>
-              <strong>1.</strong> Gere suportes automáticos no modo "Médio"<br />
-              <strong>2.</strong> Revise a peça em 360° procurando por:<br />
-              &nbsp;&nbsp;&nbsp;• Suportes em áreas muito visíveis (rosto,
-              superfícies lisas)<br />
-              &nbsp;&nbsp;• Ilhas, primeiras regiões, saltos de seção e
-              extremidades com alavanca<br />
-              &nbsp;&nbsp;• Ilhas (áreas isoladas sem conexão)<br />
-              <strong>3.</strong> Delete suportes problemáticos<br />
-              <strong>4.</strong> Adicione suportes manuais nas áreas
-              corrigidas<br />
-              <strong>5.</strong> Verifique novamente antes de fatiar!
-            </p>
-          </div>
-        </div>
-
-        <!-- ONDE COLOCAR SUPORTES -->
-        <div class="step">
-          <div class="step-number">📍</div>
-          <h3>Onde Colocar Suportes</h3>
-          <img
-            src="images/exemplo-suportes-2.png"
-            alt="Exemplos de posicionamento de suportes"
-            class="step-image"
-          />
-
-          <div class="step-description">
-            <p>
-              Saber ONDE colocar suportes é tão importante quanto saber COMO
-              configurá-los:
-            </p>
-          </div>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            ✅ SEMPRE Coloque Suportes Em:
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Primeiras regiões e balanços críticos:</strong> Use o mapa
-              de ângulos para localizar candidatos, depois confirme camada por
-              camada se há apoio anterior suficiente.
-            </li>
-
-            <li>
-              <strong>Ilhas:</strong> Áreas que começam no meio do ar, sem
-              conexão com camadas anteriores. São as principais causas de falha!
-            </li>
-
-            <li>
-              <strong>Pontes e planos suspensos:</strong> distribua contatos
-              conforme rigidez, vão, espessura e carga; não existe espaçamento
-              universal de 3–5 mm.
-            </li>
-
-            <li>
-              <strong>Detalhes finos suspensos:</strong> Dedos, antenas, armas,
-              cabelos. Use suportes leves mas abundantes.
-            </li>
-
-            <li>
-              <strong>Bordas de áreas planas:</strong> Mesmo que o centro esteja
-              acima de 45°, as bordas podem precisar de suporte para evitar
-              "curling" (enrolamento).
-            </li>
-
-            <li>
-              <strong>Áreas grandes e planas:</strong> Mesmo acima de 45°, áreas
-              muito grandes sofrem força de sucção. Coloque suportes espaçados.
-            </li>
-          </ul>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            ❌ EVITE Colocar Suportes Em:
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Rostos e superfícies visíveis:</strong> reoriente
-              primeiro. Se o contato for inevitável, valide ponta e remoção em
-              amostra; 0,30 mm não garante ausência de marca.
-            </li>
-
-            <li>
-              <strong>Áreas quase verticais:</strong> normalmente crescem
-              apoiadas, mas detalhes que começam como ilha ou extremidades
-              longas ainda podem precisar de estabilização.
-            </li>
-
-            <li>
-              <strong>Topos de peças:</strong> A última camada não precisa de
-              suporte (não tem nada acima dela).
-            </li>
-
-            <li>
-              <strong>Áreas que podem ser reorientadas:</strong> Às vezes girar
-              a peça 45° elimina a necessidade de suportes.
-            </li>
-          </ul>
-
-          <div class="warning-box">
-            <h3>⚠️ CUIDADO COM ILHAS!</h3>
-            <p>
-              Uma ilha começa sem ligação à camada anterior e precisa ser
-              conectada por suporte ou eliminada pela orientação. O detector
-              automático é triagem: pode deixar microilhas ou sinalizar regiões
-              sem relevância estrutural. Percorra o preview e confirme o
-              primeiro pixel de cada componente.
-            </p>
-          </div>
-        </div>
-
-        <!-- ORIENTAÇÃO DA PEÇA -->
-        <div class="step">
-          <div class="step-number">🔄</div>
-          <h3>Orientação da Peça</h3>
-
-          <div class="step-description">
-            <p>
-              Antes de adicionar suportes, oriente a peça corretamente! A
-              orientação certa reduz drasticamente a necessidade de suportes:
-            </p>
-          </div>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            🎯 Princípios de Orientação:
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Distribua a área por camada:</strong> incline o suficiente
-              para evitar grandes saltos de seção, escolhendo o ângulo pela
-              geometria — não por uma regra fixa de 30–45°.
-            </li>
-
-            <li>
-              <strong>Proteja detalhes importantes:</strong> Oriente a peça para
-              que rostos e superfícies visíveis fiquem virados para cima (longe
-              dos suportes).
-            </li>
-
-            <li>
-              <strong>Controle seção e alavanca:</strong> reduzir a área
-              instantânea ajuda, mas aumentar demais a altura e o braço de
-              alavanca pode piorar vibração e flexão.
-            </li>
-
-            <li>
-              <strong>Evite criar ilhas:</strong> Gire a peça para que áreas
-              isoladas se conectem com o resto da geometria.
-            </li>
-
-            <li>
-              <strong>Considere linhas de camada:</strong> Linhas de camada
-              horizontais são mais visíveis. Para superfícies lisas, oriente
-              para que as linhas fiquem diagonais ou verticais.
-            </li>
-          </ul>
-
-          <div class="tip-box">
-            <h4>💡 Orientação Ideal Para Miniaturas</h4>
-            <p>
-              <strong>Incline conforme a anatomia:</strong> preserve rosto e
-              detalhes, verificando onde surgem as primeiras ilhas.<br /><br />
-              <strong>Gire levemente para o lado:</strong> Evita que braços e
-              armas criem ilhas.<br /><br />
-              <strong>Base:</strong> pode ficar apoiada, elevada ou integrada ao
-              raft conforme acabamento, geometria e estratégia de produção.
-            </p>
-          </div>
-        </div>
-
-        <!-- REMOÇÃO DE SUPORTES -->
-        <div class="step">
-          <div class="step-number">✂️</div>
-          <h3>Remoção de Suportes</h3>
-
-          <div class="step-description">
-            <p>
-              Remover suportes corretamente é tão importante quanto
-              posicioná-los bem:
-            </p>
-          </div>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            🛠️ Ferramentas Necessárias:
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>Alicate de corte rente (flush cutter):</strong> Essencial!
-              Corta suportes sem danificar a peça
-            </li>
-            <li>
-              <strong>Estilete ou bisturi:</strong> Para suportes muito pequenos
-              e detalhes finos
-            </li>
-            <li>
-              <strong>Lixa fina (400-600 grit):</strong> Para suavizar marcas de
-              suportes
-            </li>
-            <li>
-              <strong>Primer e tinta:</strong> Para camuflar marcas em áreas
-              visíveis
-            </li>
-          </ul>
-
-          <h4 style="color: #667eea; margin: 30px 0 15px 0">
-            📋 Processo de Remoção:
-          </h4>
-
-          <ul class="step-list">
-            <li>
-              <strong>1. Lave e cure parcialmente:</strong> Peça semi-curada é
-              mais flexível e suportes saem mais fácil
-            </li>
-
-            <li>
-              <strong>2. Remova suportes grandes primeiro:</strong> Use alicate
-              de corte rente, cortando o mais próximo possível da peça
-            </li>
-
-            <li>
-              <strong>3. Remova suportes pequenos:</strong> Use estilete para
-              detalhes finos
-            </li>
-
-            <li>
-              <strong>4. Lixe as marcas:</strong> Lixa úmida 400 grit, depois
-              600 grit para suavizar
-            </li>
-
-            <li>
-              <strong>5. Cure completamente:</strong> Após remover todos os
-              suportes, cure a peça final
-            </li>
-
-            <li>
-              <strong>6. Pós-processamento:</strong> Primer, tinta ou verniz
-              para camuflar marcas restantes
-            </li>
-          </ul>
-
-          <div class="warning-box">
-            <h3>⚠️ NUNCA Puxe ou Torça!</h3>
-            <p>
-              <strong>NUNCA puxe ou torça suportes para removê-los!</strong
-              ><br /><br />
-              Isso pode:<br />
-              • Quebrar detalhes finos da peça<br />
-              • Deixar marcas grandes e irregulares<br />
-              • Danificar a superfície ao redor<br /><br />
-              <strong>SEMPRE corte com alicate de corte rente!</strong> Faça
-              movimentos de corte limpo, não de torção.
-            </p>
-          </div>
-        </div>
-
-        <!-- ERROS COMUNS -->
-        <div class="step">
-          <div class="step-number">❌</div>
-          <h3>Erros Comuns e Como Evitar</h3>
-
-          <div class="step-description">
-            <p>
-              Aprenda com os erros mais comuns para economizar tempo e resina:
-            </p>
-          </div>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Erro</th>
-                <th>Sintoma</th>
-                <th>Solução</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Suportes muito finos</strong></td>
-                <td>Suportes quebram durante impressão, peça cai</td>
-                <td>Aumente diâmetro do pilar para 0.80-1.00mm</td>
-              </tr>
-              <tr>
-                <td><strong>Suportes muito grossos</strong></td>
-                <td>Marcas grandes na peça, difícil remover</td>
-                <td>Reduza diâmetro de contato para 0.30-0.50mm</td>
-              </tr>
-              <tr>
-                <td><strong>Poucos suportes</strong></td>
-                <td>Peça deforma, áreas caídas, detalhes quebrados</td>
-                <td>
-                  Revise ilhas, caminho estrutural e espaçamento conforme a
-                  deformação observada
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Muitos suportes</strong></td>
-                <td>Desperdício de resina, tempo de remoção longo</td>
-                <td>
-                  Remova contatos sem função depois de revisar o preview e a
-                  estabilidade
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Ilhas não suportadas</strong></td>
-                <td>Falha total de impressão, resina solta no tanque</td>
-                <td>Use "Island Detection" e suporte TODAS as ilhas</td>
-              </tr>
-              <tr>
-                <td><strong>Suportes em áreas visíveis</strong></td>
-                <td>Marcas feias em rostos e superfícies importantes</td>
-                <td>Reoriente a peça ou use suportes muito leves (0.30mm)</td>
-              </tr>
-              <tr>
-                <td><strong>Ângulo de suporte errado</strong></td>
-                <td>Suportes difíceis de remover, marcas profundas</td>
-                <td>Use ângulos maiores (70-75°) para facilitar remoção</td>
-              </tr>
-              <tr>
-                <td><strong>Sem raft em peças grandes</strong></td>
-                <td>Peça não adere à plataforma, falha no início</td>
-                <td>Adicione raft retangular 110% para peças > 50mm</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- CHECKLIST FINAL -->
-        <div class="step">
-          <div class="step-number">🧭</div>
-          <h3>Mapa funcional de suportes</h3>
-          <div class="encaixe-grid">
-            <div class="encaixe-card">
-              <h4 style="color: #49e68b">Estrutural</h4>
-              <p>
-                Ancora primeira ilha, grande seção ou extremidade. Precisa de
-                contato, haste e base compatíveis com a carga.
-              </p>
+        <section class="step" id="parametros">
+          <div class="step-number">4</div>
+          <h2>O que cada parâmetro de suporte faz</h2>
+          <p>Os nomes mudam entre versões do Chitubox e do Lychee, mas a função mecânica permanece.</p>
+          <details open>
+            <summary>Topo: contato com a peça</summary>
+            <div class="table-scroll" role="region" aria-label="Parâmetros do topo do suporte" tabindex="0">
+              <table>
+                <thead><tr><th>Parâmetro</th><th>Função</th><th>Ao aumentar</th><th>Ao reduzir</th></tr></thead>
+                <tbody>
+                  <tr><td data-label="Parâmetro"><strong>Diâmetro do contato</strong></td><td data-label="Função">Define a área que toca a peça.</td><td data-label="Ao aumentar">Eleva retenção e tende a ampliar a marca.</td><td data-label="Ao reduzir">Preserva acabamento, mas pode romper.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Profundidade do contato</strong></td><td data-label="Função">Define quanto a ponta entra na malha.</td><td data-label="Ao aumentar">Eleva ancoragem e risco de cratera.</td><td data-label="Ao reduzir">Facilita remoção e pode soltar cedo.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Diâmetro superior</strong></td><td data-label="Função">Dimensiona a conexão logo abaixo da ponta.</td><td data-label="Ao aumentar">Reduz quebra na transição.</td><td data-label="Ao reduzir">Cria um pescoço mais fácil de romper.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Comprimento da conexão</strong></td><td data-label="Função">Liga o contato à haste principal.</td><td data-label="Ao aumentar">Aumenta alcance, mas também flexão.</td><td data-label="Ao reduzir">Enrijece a ligação e limita o alcance.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Forma do contato</strong></td><td data-label="Função">Controla a transição geométrica com a peça.</td><td data-label="Ao aumentar">Não se aplica isoladamente.</td><td data-label="Ao reduzir">Compare formas em cupom; não escolha por aparência.</td></tr>
+                </tbody>
+              </table>
             </div>
-            <div class="encaixe-card">
-              <h4 style="color: #4fd1ff">Estabilização</h4>
-              <p>
-                Evita giro e vibração lateral. Trabalha em conjunto e não
-                precisa carregar toda a peça.
-              </p>
+          </details>
+          <details>
+            <summary>Meio: haste, alcance e travamento</summary>
+            <div class="table-scroll" role="region" aria-label="Parâmetros do meio do suporte" tabindex="0">
+              <table>
+                <thead><tr><th>Parâmetro</th><th>Função</th><th>Risco de excesso</th><th>Risco de falta</th></tr></thead>
+                <tbody>
+                  <tr><td data-label="Parâmetro"><strong>Diâmetro da haste</strong></td><td data-label="Função">Controla rigidez e resistência do corpo.</td><td data-label="Excesso">Mais consumo e remoção congestionada.</td><td data-label="Falta">Flexão, flambagem ou ruptura.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Inclinação da haste</strong></td><td data-label="Função">Permite alcançar o contato a partir da base.</td><td data-label="Excesso">Amplia componente lateral e flexão.</td><td data-label="Falta">Pode obrigar bases em áreas ruins.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Comprimento livre</strong></td><td data-label="Função">Distância sem travamento entre base e contato.</td><td data-label="Excesso">Aumenta movimento lateral.</td><td data-label="Falta">Pode gerar estrutura densa sem necessidade.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Travessas</strong></td><td data-label="Função">Conectam hastes e controlam deslocamento.</td><td data-label="Excesso">Dificulta acesso, lavagem e remoção.</td><td data-label="Falta">Permite vibração e giro do conjunto.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Pilar curto</strong></td><td data-label="Função">Apoia regiões próximas de outra superfície.</td><td data-label="Excesso">Pode unir áreas e prender resina.</td><td data-label="Falta">Deixa detalhe local sem apoio.</td></tr>
+                </tbody>
+              </table>
             </div>
-            <div class="encaixe-card">
-              <h4 style="color: #b89cff">Acabamento</h4>
-              <p>
-                Sustenta borda ou detalhe local com contato menor, sem
-                substituir o caminho estrutural principal.
-              </p>
+          </details>
+          <details>
+            <summary>Inferior e raft: ligação com a plataforma</summary>
+            <div class="table-scroll" role="region" aria-label="Parâmetros da base e do raft" tabindex="0">
+              <table>
+                <thead><tr><th>Parâmetro</th><th>Função</th><th>Como avaliar</th></tr></thead>
+                <tbody>
+                  <tr><td data-label="Parâmetro"><strong>Base da haste</strong></td><td data-label="Função">Transfere a carga da haste ao raft ou plataforma.</td><td data-label="Avaliação">Não deve separar, tombar nem criar um pé difícil de remover.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Área do raft</strong></td><td data-label="Função">Integra suportes e distribui a aderência.</td><td data-label="Avaliação">Precisa cobrir o conjunto sem virar uma placa desnecessariamente grande.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Espessura e borda</strong></td><td data-label="Função">Dão rigidez e acesso à espátula.</td><td data-label="Avaliação">A borda deve permitir remoção sem curling ou esforço perigoso.</td></tr>
+                  <tr><td data-label="Parâmetro"><strong>Grade ou alívio</strong></td><td data-label="Função">Pode reduzir material e melhorar escoamento.</td><td data-label="Avaliação">Não deve criar copos fechados, zonas frágeis ou bolsões de resina.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+          <div class="error-box">
+            <h4>Não copie números de outra peça</h4>
+            <p>O mesmo contato muda de comportamento com resina, exposição, altura de camada, orientação, comprimento da haste e área por camada. Use os perfis do fatiador como candidatos de teste, não como garantia universal.</p>
+          </div>
+        </section>
+
+        <section class="step" id="funcoes">
+          <div class="step-number">5</div>
+          <h2>Escolha suportes pela função</h2>
+          <div class="table-scroll" role="region" aria-label="Funções dos suportes" tabindex="0">
+            <table>
+              <thead><tr><th>Função</th><th>Onde entra</th><th>O que precisa entregar</th><th>Erro comum</th></tr></thead>
+              <tbody>
+                <tr><td data-label="Função"><strong>Estrutural</strong></td><td data-label="Onde">Primeira ilha, começo da massa principal e grandes mudanças de seção.</td><td data-label="Entrega">Caminho rígido e contínuo até o raft.</td><td data-label="Erro">Usar ponta forte em haste longa sem travamento.</td></tr>
+                <tr><td data-label="Função"><strong>Estabilização</strong></td><td data-label="Onde">Extremidades, braços de alavanca e regiões com tendência a girar.</td><td data-label="Entrega">Controle lateral em conjunto com a estrutura principal.</td><td data-label="Erro">Esperar que um suporte lateral carregue toda a peça.</td></tr>
+                <tr><td data-label="Função"><strong>Detalhe</strong></td><td data-label="Onde">Dedos, pontas, fios, dentes, bordas e microilhas relevantes.</td><td data-label="Entrega">Manter a forma local com a menor marca validada.</td><td data-label="Erro">Usar contato leve antes de criar a sustentação estrutural.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="step" id="automatico-manual">
+          <div class="step-number">6</div>
+          <h2>Automático para triagem, manual para engenharia</h2>
+          <figure>
+            <img src="images/suportes-automatico-manual.webp" alt="Comparação entre excesso de suportes desorganizados e estrutura manual com caminho de carga definido" class="step-image" />
+            <figcaption>Quantidade não substitui função mecânica nem revisão do preview.</figcaption>
+          </figure>
+          <ol class="flow">
+            <li><div><strong>Oriente primeiro.</strong> Proteja a face funcional e reduza saltos bruscos de seção.</div></li>
+            <li><div><strong>Execute detecção de ilhas.</strong> Use o resultado como lista de candidatos.</div></li>
+            <li><div><strong>Gere uma cobertura inicial.</strong> O automático acelera a triagem, mas não encerra o trabalho.</div></li>
+            <li><div><strong>Crie a espinha estrutural.</strong> Reforce primeiras regiões, massas principais e extremidades.</div></li>
+            <li><div><strong>Remova contatos sem função.</strong> Limpe faces visíveis, encaixes e regiões inacessíveis.</div></li>
+            <li><div><strong>Revise camada por camada.</strong> Confirme que nenhuma região nasce no ar e que a seção cresce de modo controlado.</div></li>
+          </ol>
+        </section>
+
+        <section class="step" id="orientacao">
+          <div class="step-number">7</div>
+          <h2>Orientação antes do suporte</h2>
+          <figure>
+            <img src="images/suportes-orientacao-comparativo.webp" alt="Comparação da mesma peça quase paralela e moderadamente inclinada sobre suportes" class="step-image" />
+            <figcaption>A melhor orientação equilibra seção por camada, altura, alavanca, acabamento e acesso aos suportes.</figcaption>
+          </figure>
+          <div class="grid-2">
+            <article class="card warn"><h4>Quase paralela à plataforma</h4><p>Pode criar grande área simultânea, bordas suspensas extensas e deformação entre contatos.</p></article>
+            <article class="card good"><h4>Crescimento progressivo</h4><p>Uma inclinação bem escolhida inicia em região controlada e aumenta a seção sem saltos bruscos.</p></article>
+          </div>
+          <ul class="step-list">
+            <li><strong>Prioridade 1 — primeiro ponto:</strong> ancore a primeira região que fará parte da peça.</li>
+            <li><strong>Prioridade 2 — bordas inferiores:</strong> distribua apoio onde a seção começa a se abrir.</li>
+            <li><strong>Prioridade 3 — extremidades:</strong> estabilize pontas distantes do caminho estrutural.</li>
+            <li><strong>Prioridade 4 — grandes vãos:</strong> reduza deformação entre contatos sem criar uma floresta.</li>
+            <li><strong>Evite:</strong> margens, encaixes, texto, oclusal, superfícies polidas e cavidades sem acesso para remoção.</li>
+          </ul>
+          <div class="info-box">
+            <h4>Peças ocas</h4>
+            <p>Defina furos de drenagem e ventilação antes dos suportes. Suporte interno só é aceitável quando pode ser removido ou completamente limpo e curado; caso contrário, ele pode aprisionar resina e dificultar a inspeção.</p>
+          </div>
+        </section>
+
+        <section class="step" id="remocao">
+          <div class="step-number">8</div>
+          <h2>Remoção sem arrancar a superfície</h2>
+          <ol class="flow">
+            <li><div><strong>Siga a ficha da resina.</strong> Remover antes ou depois da pós-cura depende do material e da aplicação; não existe sequência universal.</div></li>
+            <li><div><strong>Estabilize a peça.</strong> Apoie a região próxima ao contato e use alicate de corte rente em bom estado.</div></li>
+            <li><div><strong>Corte por grupos acessíveis.</strong> Não puxe uma árvore inteira nem use torção como método.</div></li>
+            <li><div><strong>Inspecione as marcas.</strong> Cratera, lasca ou deformação orientam o próximo ajuste do contato.</div></li>
+            <li><div><strong>Finalize com segurança.</strong> Só lixe material completamente curado, preferindo processo úmido e controle do resíduo.</div></li>
+          </ol>
+          <div class="warning-box">
+            <h4>Segurança</h4>
+            <p>Use luvas compatíveis e proteção ocular ao manipular peças ainda contaminadas. Corte sempre para longe das mãos. Não aqueça a peça nem use água quente para soltar suportes sem autorização da ficha técnica: calor pode deformar e alterar dimensão.</p>
+          </div>
+        </section>
+
+        <section class="step" id="diagnostico">
+          <div class="step-number">9</div>
+          <h2>Diagnóstico por evidência</h2>
+          <div class="table-scroll" role="region" aria-label="Diagnóstico de falhas de suportes" tabindex="0">
+            <table>
+              <thead><tr><th>Evidência</th><th>Leitura provável</th><th>Primeira correção</th></tr></thead>
+              <tbody>
+                <tr><td data-label="Evidência"><strong>Raft e hastes impressos, peça ausente</strong></td><td data-label="Leitura">Ruptura na interface ou primeira região sem caminho suficiente.</td><td data-label="Correção">Localize a altura da separação e reforce primeiro contato, conexão e estabilidade local.</td></tr>
+                <tr><td data-label="Evidência"><strong>Pontas rompem em alturas parecidas</strong></td><td data-label="Leitura">Contato ou conexão superior abaixo da carga daquela seção.</td><td data-label="Correção">Ajuste uma variável do topo e repita com a mesma orientação.</td></tr>
+                <tr><td data-label="Evidência"><strong>Peça ondula entre contatos</strong></td><td data-label="Leitura">Vão grande, seção fina ou abertura rápida da área.</td><td data-label="Correção">Reoriente ou redistribua contatos nas bordas de crescimento.</td></tr>
+                <tr><td data-label="Evidência"><strong>Conjunto inclina ou vibra</strong></td><td data-label="Leitura">Hastes longas sem travamento ou alavanca lateral elevada.</td><td data-label="Correção">Adicione estabilização e diagonais antes de engrossar todas as pontas.</td></tr>
+                <tr><td data-label="Evidência"><strong>Marcas profundas e lascas</strong></td><td data-label="Leitura">Contato excessivo, remoção inadequada ou cura incompatível.</td><td data-label="Correção">Revise a sequência de remoção e reduza uma variável do contato.</td></tr>
+                <tr><td data-label="Evidência"><strong>Raft levanta em uma borda</strong></td><td data-label="Leitura">Problema de base, nivelamento, área inicial ou concentração de carga.</td><td data-label="Correção">Corrija a base separadamente; aumentar suportes na peça não resolve a origem.</td></tr>
+                <tr><td data-label="Evidência"><strong>Falha sempre na mesma coordenada XY</strong></td><td data-label="Leitura">Indício de tanque, filme, tela, sujeira ou plataforma naquela zona.</td><td data-label="Correção">Mude a posição do teste e inspecione o equipamento antes de editar suportes.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="step" id="assistente">
+          <div class="step-number">Q</div>
+          <h2>Triagem rápida de suportes</h2>
+          <div class="assistant-box">
+            <label for="failure-select">Qual evidência apareceu na impressão?</label>
+            <select id="failure-select">
+              <option value="missing">Raft e suportes ficaram, mas a peça soltou</option>
+              <option value="tips">Pontas romperam em uma altura parecida</option>
+              <option value="sag">A superfície ondulou entre os contatos</option>
+              <option value="marks">Os contatos deixaram crateras ou lascas</option>
+              <option value="raft">O raft levantou da plataforma</option>
+              <option value="xy">A falha repete na mesma posição da tela</option>
+            </select>
+            <button type="button" id="diagnose-button">Gerar orientação inicial</button>
+            <div id="diagnostic-result" class="info-box" role="status" aria-live="polite">
+              <h4>Ponto de partida</h4>
+              <p>Selecione a evidência e gere uma orientação. Confirme sempre no equipamento.</p>
             </div>
           </div>
+        </section>
+
+        <section class="step" id="checklist">
+          <div class="step-number">10</div>
+          <h2>Checklist antes de fatiar</h2>
           <ul class="step-list">
-            <li>
-              <strong>Primeiro:</strong> marque margens, encaixes, faces
-              estéticas e regiões frágeis que devem ficar livres.
-            </li>
-            <li>
-              <strong>Depois:</strong> localize a primeira ilha e acompanhe o
-              crescimento da seção no preview.
-            </li>
-            <li>
-              <strong>Em seguida:</strong> crie a linha estrutural até a base e
-              trave hastes longas contra movimento lateral.
-            </li>
-            <li>
-              <strong>Por último:</strong> acrescente estabilização e acabamento
-              somente onde houver função clara.
-            </li>
+            <li><strong>Orientação justificada:</strong> seção progressiva, alavanca controlada e faces críticas protegidas.</li>
+            <li><strong>Ilhas confirmadas:</strong> detector executado e preview revisado camada por camada.</li>
+            <li><strong>Espinha estrutural:</strong> primeiras regiões ligadas ao raft por caminho estável.</li>
+            <li><strong>Extremidades travadas:</strong> braços, pontas e massas distantes não podem girar livremente.</li>
+            <li><strong>Contato validado:</strong> retenção e marca foram testadas para esta resina e aplicação.</li>
+            <li><strong>Hastes acessíveis:</strong> lavagem, inspeção e remoção são possíveis sem prender ferramentas.</li>
+            <li><strong>Raft funcional:</strong> base contínua, removível e sem cavidade fechada.</li>
+            <li><strong>Peças ocas ventiladas:</strong> drenagem definida antes do suporte.</li>
+            <li><strong>Registro salvo:</strong> orientação, captura do preview, perfil e resultado da impressão documentados.</li>
           </ul>
           <div class="tip-box">
-            <h4>📚 Referência técnica</h4>
-            <p>
-              Consulte também a documentação oficial do
-              <a
-                href="https://docs.chitubox.com/en-US/chitubox/latest/support-settings"
-                target="_blank"
-                rel="noopener"
-                >Chitubox sobre parâmetros de suporte</a
-              >. Os nomes mudam entre versões; o ensaio local continua
-              obrigatório.
-            </p>
+            <h4>Critério de aprovação</h4>
+            <p>Aprove o conjunto quando ele repetir a peça completa, dentro da tolerância e com acabamento aceitável. Uma impressão que “deu certo por sorte” ainda não é um perfil.</p>
           </div>
-        </div>
+        </section>
 
-        <div class="step">
-          <div class="step-number">✅</div>
-          <h3>Checklist Antes de Imprimir</h3>
-
-          <div class="step-description">
-            <p>
-              Use este checklist para garantir que seus suportes estão
-              perfeitos:
-            </p>
-          </div>
-
+        <section class="step" id="referencias">
+          <div class="step-number">R</div>
+          <h2>Referências técnicas</h2>
           <ul class="step-list">
-            <li>
-              ☑️ <strong>Orientação justificada:</strong> seção progressiva,
-              alavanca controlada e zonas críticas protegidas
-            </li>
-            <li>
-              ☑️ <strong>Mapa de ângulos revisado:</strong> usado como triagem,
-              não como ordem automática de suporte
-            </li>
-            <li>
-              ☑️ <strong>Todas as ilhas estão suportadas:</strong> Use "Island
-              Detection" e verifique camada por camada
-            </li>
-            <li>
-              ☑️ <strong>Suportes não estão em áreas muito visíveis:</strong> Ou
-              use suportes leves se inevitável
-            </li>
-            <li>
-              ☑️ <strong>Caminho estrutural:</strong> primeiras ilhas e
-              extremidades estão ligadas à base por hastes estáveis e travadas
-            </li>
-            <li>
-              ☑️ <strong>Contato validado:</strong> ponta e penetração seguram
-              sem atravessar nem alterar a superfície
-            </li>
-            <li>
-              ☑️ <strong>Raft funcional:</strong> geometria permite aderência,
-              drenagem e remoção sem criar copo de sucção
-            </li>
-            <li>
-              ☑️ <strong>Visualização 360° completa:</strong> Gire a peça e
-              verifique todos os ângulos
-            </li>
-            <li>
-              ☑️ <strong>Simulação de fatiamento:</strong> Verifique camada por
-              camada no modo de visualização
-            </li>
-            <li>
-              ☑️ <strong>Parâmetros de impressão corretos:</strong> Tempo de
-              exposição calibrado com gabarito Quanton3D
-            </li>
+            <li><strong>Chitubox:</strong> <a href="https://docs.chitubox.com/en-US/chitubox-basic/latest/ui-and-features/configure-support-parameters" target="_blank" rel="noopener">definições oficiais dos parâmetros de suporte</a>.</li>
+            <li><strong>Chitubox:</strong> <a href="https://docs.chitubox.com/en-US/chitubox/latest/support-your-model" target="_blank" rel="noopener">ferramentas de raft, suporte automático e edição</a>.</li>
+            <li><strong>Lychee:</strong> <a href="https://docs.mango3d.io/doc/resin-documentation/resin-support/island/" target="_blank" rel="noopener">detecção e leitura de ilhas</a>.</li>
+            <li><strong>Lychee:</strong> <a href="https://docs.mango3d.io/doc/resin-documentation/resin-support/manual-supports/" target="_blank" rel="noopener">adição e revisão manual de suportes</a>.</li>
           </ul>
+        </section>
+      </main>
 
-          <div class="highlight-box">
-            <h4>🎯 Regra de Ouro</h4>
-            <p>
-              <strong>Suporte precisa ter função.</strong> Contato extra pode
-              marcar, deformar, dificultar lavagem e acumular tensão. Quando
-              houver dúvida, identifique primeiro a carga que ele precisa
-              conter; então escolha posição e dimensão compatíveis.
-            </p>
-          </div>
-        </div>
-
-        <!-- DICAS AVANÇADAS -->
-        <div class="step">
-          <div class="step-number">🎓</div>
-          <h3>Dicas Avançadas</h3>
-
-          <div class="step-description">
-            <p>
-              Para usuários experientes que querem levar seus suportes ao
-              próximo nível:
-            </p>
-          </div>
-
-          <ul class="step-list">
-            <li>
-              <strong>Suportes em árvore (Tree Supports):</strong> Use para
-              peças orgânicas complexas. Economizam resina e são mais fáceis de
-              remover, mas requerem configuração manual cuidadosa.
-            </li>
-
-            <li>
-              <strong>Suportes internos:</strong> use somente quando forem
-              necessários e puderem ser removidos ou completamente lavados; caso
-              contrário podem aprisionar resina e contaminar a peça.
-            </li>
-
-            <li>
-              <strong>Suportes graduais:</strong> Varie o diâmetro do pilar
-              conforme a altura. Base mais grossa (1.2mm), topo mais fino
-              (0.6mm) para otimizar resistência e remoção.
-            </li>
-
-            <li>
-              <strong>Estabilização preventiva:</strong> adicione somente quando
-              houver risco identificado de giro, vibração ou alavanca,
-              preferindo área não funcional.
-            </li>
-
-            <li>
-              <strong>Teste de suportes:</strong> use um cupom com a mesma
-              seção, orientação e contato; cortar a peça nos primeiros 10 mm
-              pode não reproduzir a maior carga do trabalho.
-            </li>
-
-            <li>
-              <strong>Documentação de suportes:</strong> Tire screenshots da
-              configuração de suportes que funcionou bem. Reutilize em peças
-              similares!
-            </li>
-
-            <li>
-              <strong>Suportes híbridos:</strong> Combine suportes automáticos
-              leves com manuais pesados em áreas críticas para otimizar tempo e
-              qualidade.
-            </li>
-
-            <li>
-              <strong>Não cure durante a impressão:</strong> pausar para aplicar
-              UV externo não reduz peel de forma controlada e pode causar linha
-              de parada, exposição ocupacional e cura de resina na cuba.
-            </li>
-          </ul>
-
-          <div class="tip-box">
-            <h4>💡 Truque Profissional: Suportes Invisíveis</h4>
-            <p>
-              Para miniaturas e peças artísticas onde marcas são
-              inaceitáveis:<br /><br />
-              <strong>1.</strong> Teste contatos leves em amostra; não adote
-              0,25 mm sem validar a resina e a resolução<br />
-              <strong>2.</strong> Coloque suportes apenas em áreas que serão
-              pintadas ou texturizadas<br />
-              <strong>3.</strong> Mantenha hastes curtas e acessíveis quando a
-              orientação permitir<br />
-              <strong>4.</strong> Reforce o caminho estrutural, não apenas a
-              quantidade de contatos<br />
-              <strong>5.</strong> Remova com estilete afiado, não alicate<br />
-              <strong>6.</strong> Preencha marcas com putty antes de pintar
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer">
-        <p>
-          📘 Guia criado por <a href="https://quanton3d.com.br">Quanton3D</a>
-        </p>
-        <p>Resinas UV SLA de Alta Performance</p>
-        <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8">
-          Para mais guias e tutoriais, visite nosso site!
-        </p>
-      </div>
+      <footer class="footer">
+        <p>Guia técnico desenvolvido pela Quanton3D</p>
+        <p>Resinas UV para impressão SLA, DLP e LCD</p>
+      </footer>
     </div>
+
+    <script>
+      (() => {
+        const answers = {
+          missing: { title: "Comece pela interface com a peça", text: "Se o raft e as hastes sobreviveram, localize a altura exata em que a peça soltou. Reforce primeiro contato, conexão superior e estabilidade da primeira região; não engrosse todo o conjunto de uma vez." },
+          tips: { title: "Compare a carga naquela camada", text: "Rupturas na mesma altura apontam para aumento de seção ou contato insuficiente. Ajuste somente uma variável do topo e repita com o mesmo arquivo, resina e pós-processamento." },
+          sag: { title: "Reduza o vão sem apoio", text: "Ondulação entre contatos indica flexão local. Reoriente para crescimento mais progressivo ou redistribua contatos nas bordas onde a seção começa a abrir." },
+          marks: { title: "Separe contato de remoção", text: "Primeiro confirme se a peça foi removida na condição recomendada para a resina. Depois reduza apenas diâmetro ou profundidade e verifique se a retenção continua suficiente." },
+          raft: { title: "Trate a base separadamente", text: "Raft levantado aponta para aderência inicial, nivelamento, concentração de área ou esforço de separação. Aumentar contatos na peça não corrige a ligação entre raft e plataforma." },
+          xy: { title: "Investigue o equipamento", text: "Falha repetida na mesma coordenada sugere uma condição localizada. Mova o teste e inspecione filme, tanque, tela e plataforma antes de alterar a estratégia de suportes." }
+        };
+        const select = document.getElementById("failure-select");
+        const button = document.getElementById("diagnose-button");
+        const result = document.getElementById("diagnostic-result");
+        if (!select || !button || !result) return;
+        button.addEventListener("click", () => {
+          const answer = answers[select.value];
+          result.innerHTML = "<h4>" + answer.title + "</h4><p>" + answer.text + "</p>";
+        });
+      })();
+    </script>
   </body>
 </html>
