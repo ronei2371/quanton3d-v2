@@ -200,7 +200,8 @@
       }
       .heroVisual {
         position: relative;
-        min-height: 535px;
+        min-height: 0;
+        aspect-ratio: 16 / 10;
         border-radius: 30px;
         border: 1px solid #25394d;
         overflow: hidden;
@@ -212,10 +213,11 @@
           linear-gradient(145deg, #07111c, #02070c 72%);
         box-shadow: var(--shadow);
       }
-      .heroVisual svg {
+      .heroVisual > img {
         width: 100%;
         height: 100%;
         display: block;
+        object-fit: contain;
       }
       .heroNote {
         position: absolute;
@@ -308,6 +310,33 @@
         width: 100%;
         height: auto;
         display: block;
+      }
+      .photoVisual > img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+      }
+      .guideFigure {
+        margin: 20px 0;
+        overflow: hidden;
+        border: 1px solid #263d51;
+        border-radius: 20px;
+        background: #071018;
+        box-shadow: var(--shadow);
+      }
+      .guideFigure img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .guideFigure figcaption {
+        padding: 14px 17px 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .guideFigure figcaption b {
+        color: var(--cyan);
       }
       .callout {
         border-left: 4px solid var(--cyan);
@@ -762,7 +791,7 @@
           padding-top: 35px;
         }
         .heroVisual {
-          min-height: 420px;
+          aspect-ratio: 16 / 10;
         }
         .grid3,
         .appGrid,
@@ -798,7 +827,7 @@
           grid-template-columns: 1fr;
         }
         .heroVisual {
-          min-height: 370px;
+          aspect-ratio: 16 / 10;
         }
         .btn {
           padding: 9px 10px;
@@ -892,97 +921,15 @@
             ><span class="badge"><strong>✓</strong> 16 capítulos</span>
           </div>
         </div>
-        <div
-          class="heroVisual"
-          role="img"
-          aria-label="Restauração odontológica inclinada, suportada e impressa por camadas"
-        >
-          <svg viewBox="0 0 700 560" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-                <stop stop-color="#10263a" />
-                <stop offset="1" stop-color="#02070c" />
-              </linearGradient>
-              <linearGradient id="tooth" x1="0" y1="0" x2="1" y2="1">
-                <stop stop-color="#e9f8ff" />
-                <stop offset=".55" stop-color="#91c6e5" />
-                <stop offset="1" stop-color="#476579" />
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="7" result="b" />
-                <feMerge>
-                  <feMergeNode in="b" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <rect width="700" height="560" fill="url(#bg)" />
-            <g opacity=".38" stroke="#244057">
-              <path d="M0 110H700M0 180H700M0 250H700M0 320H700M0 390H700" />
-              <path
-                d="M100 0V560M200 0V560M300 0V560M400 0V560M500 0V560M600 0V560"
-              />
-            </g>
-            <rect
-              x="72"
-              y="442"
-              width="556"
-              height="42"
-              rx="12"
-              fill="#152536"
-              stroke="#57718a"
-              stroke-width="3"
-            />
-            <g transform="translate(350 260) rotate(-18)">
-              <path
-                d="M-120-90Q-55-145 0-108Q58-145 120-90L102 44Q82 132 20 122L0 78L-20 122Q-82 132-102 44Z"
-                fill="url(#tooth)"
-                stroke="#dff5ff"
-                stroke-width="4"
-              />
-              <path
-                d="M-103 45Q0 80 103 45"
-                fill="none"
-                stroke="#30d9ff"
-                stroke-width="7"
-                filter="url(#glow)"
-              />
-              <path
-                d="M-80-82Q-30-46 0-80Q34-45 82-82"
-                fill="none"
-                stroke="#fff"
-                stroke-width="8"
-                opacity=".45"
-              />
-            </g>
-            <g stroke="#30d9ff" stroke-width="7" stroke-linecap="round">
-              <path d="M245 445L275 360" />
-              <path d="M320 445L330 374" />
-              <path d="M394 445L380 366" />
-              <path d="M468 445L436 344" />
-            </g>
-            <g fill="#43d17b">
-              <circle cx="275" cy="360" r="8" />
-              <circle cx="330" cy="374" r="8" />
-              <circle cx="380" cy="366" r="8" />
-              <circle cx="436" cy="344" r="8" />
-            </g>
-            <g
-              fill="#30d9ff"
-              font-family="Arial"
-              font-size="14"
-              font-weight="700"
-            >
-              <text x="92" y="84">CAMADAS CONTROLADAS</text>
-              <text x="458" y="128">ZONA DE ENCAIXE</text>
-            </g>
-            <path
-              d="M510 138Q488 182 445 222"
-              fill="none"
-              stroke="#30d9ff"
-              stroke-width="3"
-            />
-          </svg>
+        <div class="heroVisual">
+          <img
+            src="/guias/images/encaixe-coroa-orientada-quanton3d.webp"
+            alt="Representação técnica de uma coroa posterior inclinada, com suportes fora da superfície interna de encaixe"
+            width="1439"
+            height="810"
+            loading="eager"
+            decoding="async"
+          />
           <div class="heroNote">
             <b>Regra Quanton3D:</b> a melhor orientação não é a mais bonita no
             slicer; é a que controla a área por camada e mantém suportes longe
@@ -1923,6 +1870,22 @@
               </p>
             </div>
           </div>
+          <figure class="guideFigure">
+            <img
+              src="/guias/images/encaixe-placa-oclusal-quanton3d.webp"
+              alt="Representação técnica de uma placa oclusal com apoios distribuídos na periferia"
+              width="1439"
+              height="810"
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>
+              <b>Leitura da imagem:</b> a rede de suporte acompanha a periferia,
+              enquanto as superfícies de adaptação e função permanecem livres.
+              É uma representação conceitual; confirme cada contato no preview
+              do arquivo real.
+            </figcaption>
+          </figure>
           <div class="grid3">
             <article class="panel card">
               <span class="tag">Placa 0°</span>
@@ -2100,6 +2063,22 @@
               </p>
             </div>
           </div>
+          <figure class="guideFigure">
+            <img
+              src="/guias/images/encaixe-modelo-troqueis-quanton3d.webp"
+              alt="Modelo odontológico inclinado com troquéis e suportes concentrados sob a base"
+              width="1439"
+              height="810"
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>
+              <b>Leitura da imagem:</b> os suportes sustentam a base e evitam
+              dentes preparados, términos, canais e superfícies de
+              assentamento. No arquivo real, valide também o primeiro ponto de
+              cada troquel e a drenagem da estrutura interna.
+            </figcaption>
+          </figure>
           <div class="tableWrap">
             <table>
               <thead>
@@ -2203,49 +2182,15 @@
             </div>
           </div>
           <div class="bigGrid">
-            <article class="panel visual">
-              <svg viewBox="0 0 760 430">
-                <rect
-                  x="35"
-                  y="30"
-                  width="690"
-                  height="365"
-                  rx="22"
-                  fill="#071018"
-                  stroke="#263d51"
-                />
-                <path
-                  d="M135 185Q380 45 625 185Q590 315 380 345Q170 315 135 185Z"
-                  fill="#27455b"
-                  stroke="#bcecff"
-                  stroke-width="5"
-                />
-                <g fill="#061019" stroke="#30d9ff" stroke-width="5">
-                  <ellipse cx="235" cy="185" rx="28" ry="38" />
-                  <ellipse cx="330" cy="145" rx="28" ry="38" />
-                  <ellipse cx="430" cy="145" rx="28" ry="38" />
-                  <ellipse cx="525" cy="185" rx="28" ry="38" />
-                </g>
-                <g stroke="#43d17b" stroke-width="7">
-                  <path d="M235 185V340M330 145V340M430 145V340M525 185V340" />
-                </g>
-                <path
-                  d="M110 355H650"
-                  stroke="#8196aa"
-                  stroke-width="20"
-                  stroke-linecap="round"
-                />
-                <text
-                  x="380"
-                  y="382"
-                  text-anchor="middle"
-                  fill="#a7b6c7"
-                  font-family="Arial"
-                  font-size="16"
-                >
-                  cilindros em eixo favorável e suporte distribuído
-                </text>
-              </svg>
+            <article class="panel visual photoVisual">
+              <img
+                src="/guias/images/encaixe-all-on-x-quanton3d.webp"
+                alt="Prótese total implantossuportada inclinada, com quatro canais de parafuso livres e suportes distribuídos ao redor do arco"
+                width="1439"
+                height="810"
+                loading="lazy"
+                decoding="async"
+              />
             </article>
             <article class="panel sideText">
               <div class="parts">
