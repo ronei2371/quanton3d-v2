@@ -33,7 +33,7 @@ export function BoasVindasModal({ onEntrar }) {
       </h1>
 
       <p style={{ fontSize: "clamp(0.82rem, 2.5vw, 1.05rem)", color: "rgba(200,220,240,0.9)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, margin: "0 0 6px" }}>
-        Resinas UV SLA/DLP de Alta Performance
+        Resinas UV LCD/DLP de Alta Performance
       </p>
       <p style={{ fontSize: "clamp(0.72rem, 2vw, 0.88rem)", color: "var(--text-muted)", margin: 0 }}>
         Fabricação nacional · Belo Horizonte, MG · Desde 2020
