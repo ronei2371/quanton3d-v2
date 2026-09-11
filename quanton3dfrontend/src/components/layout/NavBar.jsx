@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Menu, X, User } from "lucide-react";
+import { ChevronDown, Menu, X, User, Search } from "lucide-react";
 import { NAV_ITEMS } from "../../data/navigation";
 import AnimatedAtomLogo from "./AnimatedAtomLogo";
 
@@ -26,6 +26,7 @@ function NavBar({
   onAbrirCadastro,
   atendenteLogado,
   onAbrirAdm,
+  onAbrirBusca,
 }) {
   const [menuAberto, setMenuAberto] = useState(false);
   const primaryItems = NAV_ITEMS.filter((item) => PRIMARY_IDS.has(item.id));
@@ -72,6 +73,9 @@ function NavBar({
             ))}
           </div>
 
+          <button type="button" className="q-btn q-btn--sm q-btn--ghost qnav-search-button" onClick={onAbrirBusca} aria-label="Buscar (Ctrl+K)" title="Buscar (Ctrl+K)" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <Search size={14} /> <span className="qnav-search-hint">Buscar</span> <kbd style={{ fontSize: "0.62rem", padding: "1px 4px", borderRadius: 3, background: "var(--surface-card)", border: "1px solid var(--border)", color: "var(--text-faint)", lineHeight: 1.4 }}>⌘K</kbd>
+          </button>
           <button type="button" className="q-btn q-btn--sm q-btn--primary qnav-client-button" onClick={atendenteLogado ? onAbrirAdm : onAbrirCadastro}>
             <User size={14} /> {atendenteLogado ? (atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administracao" : atendenteLogado.codigo) : (cliente ? cliente.nome.split(" ")[0] : "Area do cliente")}
           </button>
