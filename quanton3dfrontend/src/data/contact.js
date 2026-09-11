@@ -5,3 +5,6 @@ export const WHATSAPP_SUPORTE_URL = "https://wa.me/553132716935";
 export const WHATSAPP_VENDAS_URL = "https://wa.me/5531983340053?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Quanton3D!";
 // Horário de atendimento — use este valor em rodapé, WhatsApp e políticas.
 export const HORARIO_ATENDIMENTO = "Seg–Sex, 9h às 18h (horário de Brasília)";
+// Telefone para exibição e link clicável (tel:)
+export const TELEFONE_DISPLAY = "(31) 3271-6935";
+export const TELEFONE_TEL = "tel:+553132716935";
