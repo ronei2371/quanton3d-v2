@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserCog, Check, Bot } from "lucide-react";
 import api from "./lib/api";
 import NavBar from "./components/layout/NavBar";
@@ -26,6 +26,17 @@ function getPrivacidadeAceita() {
 }
 
 function App() {
+  const TITULOS = {
+    inicio: "Quanton3D — Suporte Técnico e Resinas UV",
+    catalogo: "Catálogo de Resinas — Quanton3D",
+    parametros: "Parâmetros de Impressão — Quanton3D",
+    calculadoras: "Calculadoras 3D — Quanton3D",
+    guias: "Guias Técnicos — Quanton3D",
+    academy: "Quanton Academy — Quanton3D",
+    atendimento: "Atendimento — Quanton3D",
+    comunidade: "Comunidade — Quanton3D",
+    sobre: "Sobre Nós — Quanton3D",
+  };
   const [paginaAtiva, setPaginaAtiva] = useState("inicio");
 
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
@@ -51,6 +62,7 @@ function App() {
   const [loginAtForm, setLoginAtForm] = useState({ email: "", senha: "" });
   const [loginAtErro, setLoginAtErro] = useState("");
   const [loginAtLoading, setLoginAtLoading] = useState(false);
+useEffect(() => { document.title = TITULOS["inicio"]; }, []);
 
   async function loginEquipe() {
     if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha o usuário/e-mail e a senha."); return; }
@@ -157,6 +169,7 @@ function App() {
     setPaginaAtiva(pagina);
     setCalcInicial(null);
     setActiveGuide(null);
+    document.title = TITULOS[pagina] || "Quanton3D — Suporte Técnico e Resinas UV";
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
