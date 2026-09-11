@@ -5,21 +5,27 @@ import api from "../../lib/api";
 
 function limparTexto(valor) { return String(valor || "").trim(); }
 function toTitleCase(str) {
-  return str.toLowerCase().replace(/(?:^|\s)\S/g, c => c.toUpperCase());
+return str.toLowerCase().replace(/(?:^|\s)\S/g, c => c.toUpperCase());
 }
 function corrigirNomeResina(nome) {
-  const limpo = limparTexto(nome);
-  if (!limpo) return limpo;
-  const corrigido = limpo
-    .replace(/^FERRO\s*70\/30\b/i, "70/30")
-    .replace(/^IRON\s*70\/30\b/i, "70/30")
-    .replace(/^FERRO\s*7030\b/i, "Iron 7030")
-    .replace(/^FERRO\b/i, "IRON")
-    .replace(/^Iron\b/i, "IRON")
-    .replace(/^iron\b/i, "IRON");
-  return toTitleCase(corrigido);
+const limpo = limparTexto(nome);
+if (!limpo) return limpo;
+const corrigido = limpo
+.replace(/^FERRO\s*70\/30\b/i, "70/30")
+.replace(/^IRON\s*70\/30\b/i, "70/30")
+.replace(/^FERRO\s*7030\b/i, "Iron 7030")
+.replace(/^FERRO\b/i, "IRON")
+.replace(/^Iron\b/i, "IRON")
+.replace(/^iron\b/i, "IRON");
+return toTitleCase(corrigido);
 }
 function chaveResina(nome) { return corrigirNomeResina(nome).toUpperCase(); }
+
+const METODO_LABELS = {
+"teste-fisico": "Validado em teste fisico",
+"calculado": "Parametros calculados",
+"fornecedor": "Dados do fornecedor",
+};
 
 function ParamItem({ label, value }) {
 return (
@@ -66,7 +72,7 @@ if (rawList.length > 0 && typeof rawList[0] === 'object') {
 const mapa = new Map(rawList.map(i => [i.nome.trim().toLowerCase(), i.fotoImpressora || '']));
 setFotosImpressoras(mapa);
 }
-} catch { /* fotos sao opcionais */ }
+} catch { }
 } catch (err) {
 console.error("Erro ao carregar parametros:", err);
 setErro("Nao foi possivel carregar os parametros tecnicos.");
@@ -77,8 +83,8 @@ useEffect(() => { const t = setTimeout(carregarParametros, 0); return () => clea
 
 const RESINAS_OCULTAR = ["ATHOM CASTABLE", "ATHOM CASTABLE 2"];
 const resinas = Array.from(new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean)))
-  .filter(r => !RESINAS_OCULTAR.includes(r.toUpperCase()))
-  .sort((a, b) => a.localeCompare(b));
+.filter(r => !RESINAS_OCULTAR.includes(r.toUpperCase()))
+.sort((a, b) => a.localeCompare(b));
 
 const impressoras = buscaImpressora && !impressoraSelecionada
 ? todasImpressoras.filter(i => i.toLowerCase().includes(buscaImpressora.toLowerCase()))
@@ -197,10 +203,21 @@ Ainda nao temos parametros validados para <strong>{impressoraSelecionada}</stron
 )}
 </div>
 
-<span className={"q-badge " + (resultado.confianca === "estimado" ? "q-badge--warning" : "q-badge--success")} style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginBottom: "14px" }}>
+<span className={"q-badge " + (resultado.confianca === "estimado" ? "q-badge--warning" : "q-badge--success")} style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginBottom: "4px" }}>
 {resultado.confianca === "estimado" ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} />}
 {resultado.confianca === "estimado" ? "Estimativa inicial" : "Testado pela Quanton3D"}
 </span>
+<div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "14px", fontSize: "0.71rem", color: "var(--text-muted)", lineHeight: 1.4 }}>
+{resultado.updatedAt && (
+<span>Atualizado: {new Date(resultado.updatedAt).toLocaleDateString("pt-BR")}</span>
+)}
+{resultado.versao && (
+<span>&#xB7; v{resultado.versao}</span>
+)}
+{resultado.metodoValidacao && (
+<span>&#xB7; {METODO_LABELS[resultado.metodoValidacao] || resultado.metodoValidacao}</span>
+)}
+</div>
 
 <div className="q-grid" style={{ marginTop: "14px", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
 <ParamItem label="Altura de Camada" value={resultado.alturaCamada} />
