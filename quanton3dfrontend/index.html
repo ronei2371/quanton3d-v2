@@ -1,31 +1,40 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Quanton3D - Resinas UV de Alta Performance</title>
-    <link rel="canonical" href="https://quanton3d.com.br/" />
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Quanton3D – Resinas UV de Alta Performance</title>
+  <meta name="description" content="Resinas fotopolimerizáveis para impressão 3D LCD/DLP. Parâmetros técnicos validados, guias de calibração e suporte especializado. Linha completa: Poseidon, Iron, Spin, Athom Dental e mais." />
+  <link rel="canonical" href="https://quanton3d.com.br/" />
 
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#060d1f" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Quanton3D" />
-    <!-- Open Graph / WhatsApp / Facebook -->
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Quanton3D" />
+
+  <!-- Open Graph / WhatsApp / Facebook -->
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Quanton3D" />
   <meta property="og:url" content="https://quanton3d.com.br/" />
   <meta property="og:title" content="Quanton3D — Resinas e Lab de Impressão 3D" />
   <meta property="og:description" content="Resinas fotopolimerizáveis para impressão 3D LCD/DLP. Parâmetros técnicos validados, guias e suporte especializado." />
   <meta property="og:image" content="https://quanton3d.com.br/images/og-cover.webp" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Quanton3D — Resinas UV de Alta Performance para Impressão 3D" />
   <meta property="og:locale" content="pt_BR" />
+
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Quanton3D — Resinas e Lab de Impressão 3D" />
   <meta name="twitter:description" content="Resinas fotopolimerizáveis para impressão 3D LCD/DLP. Parâmetros técnicos validados, guias e suporte especializado." />
   <meta name="twitter:image" content="https://quanton3d.com.br/images/og-cover.webp" />
+  <meta name="twitter:image:alt" content="Quanton3D — Resinas UV de Alta Performance para Impressão 3D" />
+
   <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA4_ID%"></script>
   <script>
@@ -34,6 +43,7 @@
     gtag('js', new Date());
     gtag('config', '%VITE_GA4_ID%', { send_page_view: true });
   </script>
+
   <!-- Dados Estruturados — Organization + WebSite -->
   <script type="application/ld+json">
   {
@@ -46,12 +56,22 @@
         "url": "https://quanton3d.com.br",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://quanton3d.com.br/images/logo.png"
+          "url": "https://quanton3d.com.br/images/logo.png",
+          "width": 200,
+          "height": 60
         },
         "contactPoint": {
           "@type": "ContactPoint",
+          "telephone": "+55-31-3271-6935",
           "contactType": "customer support",
-          "availableLanguage": "pt-BR"
+          "areaServed": "BR",
+          "availableLanguage": "pt-BR",
+          "hoursAvailable": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+            "opens": "09:00",
+            "closes": "18:00"
+          }
         }
       },
       {
@@ -59,21 +79,22 @@
         "@id": "https://quanton3d.com.br/#website",
         "name": "Quanton3D",
         "url": "https://quanton3d.com.br",
+        "inLanguage": "pt-BR",
         "publisher": { "@id": "https://quanton3d.com.br/#organization" }
       }
     ]
   }
   </script>
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js").catch(() => {});
-        });
-      }
-    </script>
-  </body>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
 </html>
