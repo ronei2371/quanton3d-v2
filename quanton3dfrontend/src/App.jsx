@@ -16,6 +16,7 @@ import CatalogoSection from "./components/sections/CatalogoSection";
 import SobreSection from "./components/sections/SobreSection";
 import GuideViewer from "./components/guides/GuideViewer";
 import BotModal from "./components/modals/BotModal";
+import SearchModal from "./components/modals/SearchModal";
 import AdminModal from "./components/modals/AdminModal";
 
 function getClienteSalvo() {
@@ -51,6 +52,7 @@ function App() {
 
   const [activeGuide, setActiveGuide] = useState(null);
   const [mostrarBot, setMostrarBot] = useState(false);
+  const [mostrarBusca, setMostrarBusca] = useState(false);
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
   const [mostrarAdm, setMostrarAdm] = useState(false);
@@ -63,6 +65,13 @@ function App() {
   const [loginAtErro, setLoginAtErro] = useState("");
   const [loginAtLoading, setLoginAtLoading] = useState(false);
 useEffect(() => { document.title = TITULOS["inicio"]; }, []);
+  useEffect(() => {
+    function onKey(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setMostrarBusca(p => !p); }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   async function loginEquipe() {
     if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha o usuário/e-mail e a senha."); return; }
@@ -204,6 +213,7 @@ useEffect(() => { document.title = TITULOS["inicio"]; }, []);
       )}
 
       {mostrarBot && <BotModal cliente={cliente} onClose={() => setMostrarBot(false)} />}
+      {mostrarBusca && <SearchModal onClose={() => setMostrarBusca(false)} onNavegar={navegar} />}
       {mostrarAdm && <AdminModal atendenteLogado={atendenteLogado} onClose={() => setMostrarAdm(false)} onLogout={logoutAtendente} />}
       <ContactMessageModal aberto={mostrarContatoMensagem} aoFechar={() => setMostrarContatoMensagem(false)} cliente={cliente} />
       <PartnerRequestModal aberto={mostrarParceiroModal} aoFechar={() => setMostrarParceiroModal(false)} cliente={cliente} />
@@ -238,6 +248,7 @@ useEffect(() => { document.title = TITULOS["inicio"]; }, []);
         onAbrirCadastro={abrirCadastro}
         atendenteLogado={atendenteLogado}
         onAbrirAdm={() => setMostrarAdm(true)}
+        onAbrirBusca={() => setMostrarBusca(true)}
       />
 
       <main className="app-main q-shell">
