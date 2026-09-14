@@ -21,37 +21,38 @@ import conversasRoutes from "./routes/conversas.js";
 import visitasRoutes from "./routes/visitas.js";
 import atendentesRoutes from "./routes/atendentes.js";
 import sugestoesConhecimentoRoutes from "./routes/sugestoesConhecimento.js";
+import feedbackParametrosRoutes from "./routes/feedbackParametros.js";
 
 dotenv.config();
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  tracesSampleRate: 1.0,
+dsn: process.env.SENTRY_DSN,
+tracesSampleRate: 1.0,
 });
 
 const app = express();
 const PORT = Number(process.env.PORT || 10000);
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
-  .split(",")
-  .map((x) => x.trim())
-  .filter(Boolean);
+.split(",")
+.map((x) => x.trim())
+.filter(Boolean);
 
 app.use(
-  cors({
-    origin(origin, cb) {
-      if (
-        !origin ||
-        allowedOrigins.length === 0 ||
-        allowedOrigins.includes(origin)
-      ) {
-        return cb(null, true);
-      }
+cors({
+origin(origin, cb) {
+if (
+!origin ||
+allowedOrigins.length === 0 ||
+allowedOrigins.includes(origin)
+) {
+return cb(null, true);
+}
 
-      return cb(new Error(`Origin not allowed by CORS: ${origin}`));
-    },
-    credentials: true,
-  })
+return cb(new Error(`Origin not allowed by CORS: ${origin}`));
+},
+credentials: true,
+})
 );
 
 app.use(express.json({ limit: "25mb" }));
@@ -64,18 +65,18 @@ const frontendBuildPath = path.join(__dirname, "../quanton3dfrontend/dist");
 app.use(express.static(frontendBuildPath));
 
 app.get("/api-status", (_req, res) => {
-  res.json({
-    success: true,
-    message: "Quanton3D Final Backend online",
-  });
+res.json({
+success: true,
+message: "Quanton3D Final Backend online",
+});
 });
 
 app.get("/health", (_req, res) => {
-  res.json({
-    success: true,
-    status: "ok",
-    timestamp: new Date().toISOString(),
-  });
+res.json({
+success: true,
+status: "ok",
+timestamp: new Date().toISOString(),
+});
 });
 
 app.use("/api/clientes", clientesRoutes);
@@ -90,26 +91,27 @@ app.use("/api/visitas", visitasRoutes);
 app.use("/api/atendentes", atendentesRoutes);
 app.use("/api/contact-messages", contactMessagesRoutes);
 app.use("/api/sugestoes-conhecimento", sugestoesConhecimentoRoutes);
+app.use("/api/feedback-parametros", feedbackParametrosRoutes);
 
 // Rota coringa para o Frontend (Single Page Application)
 app.get("*", (req, res, next) => {
-  if (req.path.startsWith("/api/")) return next();
-  res.sendFile(path.join(frontendBuildPath, "index.html"));
+if (req.path.startsWith("/api/")) return next();
+res.sendFile(path.join(frontendBuildPath, "index.html"));
 });
 
 Sentry.setupExpressErrorHandler(app);
 
 app.use((err, _req, res, _next) => {
-  console.error("[SERVER]", err);
+console.error("[SERVER]", err);
 
-  res.status(err.status || 500).json({
-    success: false,
-    error: err.message || "Erro interno",
-  });
+res.status(err.status || 500).json({
+success: false,
+error: err.message || "Erro interno",
+});
 });
 
 await connectDB();
 
 app.listen(PORT, () => {
-  console.log(`🚀 Quanton3D Final Backend rodando na porta ${PORT}`);
+console.log(`🚀 Quanton3D Final Backend rodando na porta ${PORT}`);
 });
