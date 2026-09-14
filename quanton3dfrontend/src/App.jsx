@@ -26,6 +26,23 @@ function getPrivacidadeAceita() {
   return localStorage.getItem("quanton3d_privacidade_aceita") === "true";
 }
 
+// p0-seo-5: mapeia path da URL para a chave de página interna
+const PATH_TO_PAGINA = {
+  '/catalogo': 'catalogo',
+  '/parametros': 'parametros',
+  '/calculadoras': 'calculadoras',
+  '/guias': 'guias',
+  '/academia': 'academy',
+  '/atendimento': 'atendimento',
+  '/comunidade': 'comunidade',
+  '/sobre': 'sobre',
+};
+const PAGINA_TO_PATH = {
+  inicio: '/', catalogo: '/catalogo', parametros: '/parametros',
+  calculadoras: '/calculadoras', guias: '/guias', academy: '/academia',
+  atendimento: '/atendimento', comunidade: '/comunidade', sobre: '/sobre',
+};
+
 function App() {
   const TITULOS = {
     inicio: "Quanton3D — Suporte Técnico e Resinas UV",
@@ -38,7 +55,7 @@ function App() {
     comunidade: "Comunidade — Quanton3D",
     sobre: "Sobre Nós — Quanton3D",
   };
-  const [paginaAtiva, setPaginaAtiva] = useState("inicio");
+  const [paginaAtiva, setPaginaAtiva] = useState(() => PATH_TO_PAGINA[window.location.pathname] || 'inicio');
 
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
   const [privacidadeAceitaInicial] = useState(() => getPrivacidadeAceita());
@@ -178,7 +195,10 @@ useEffect(() => { document.title = TITULOS["inicio"]; }, []);
     setPaginaAtiva(pagina);
     setCalcInicial(null);
     setActiveGuide(null);
-    document.title = TITULOS[pagina] || "Quanton3D — Suporte Técnico e Resinas UV";
+    const titulo = TITULOS[pagina] || "Quanton3D — Suporte Técnico e Resinas UV";
+    document.title = titulo;
+    // p0-seo-5: atualiza URL sem recarregar a página
+    history.pushState({ pagina }, titulo, PAGINA_TO_PATH[pagina] || '/');
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
