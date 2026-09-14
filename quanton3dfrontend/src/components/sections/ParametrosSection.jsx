@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackViewProfile, trackCopyProfile } from "../../utils/analytics";
 import { AlertTriangle, CheckCircle2, ThumbsUp, ThumbsDown } from "lucide-react";
 import api from "../../lib/api";
@@ -142,6 +142,7 @@ const [buscaImpressora, setBuscaImpressora] = useState("");
 const [resultado, setResultado] = useState(null);
 const [semParametros, setSemParametros] = useState(false);
 const [copiado, setCopiado] = useState(false);
+const _pendingURL = useRef(null);
 
 async function carregarParametros() {
 try {
@@ -173,7 +174,50 @@ setErro("Nao foi possivel carregar os parametros tecnicos.");
 } finally { setCarregando(false); }
 }
 
+// Le params de URL na montagem para auto-selecionar perfil (SEO p2-8)
+useEffect(() => {
+const p = new URLSearchParams(window.location.search);
+const r = p.get('resina'); const i = p.get('impressora');
+if (r) _pendingURL.current = { resina: r, impressora: i || '' };
+}, []);
+
 useEffect(() => { const t = setTimeout(carregarParametros, 0); return () => clearTimeout(t); }, []);
+
+// Apos carregar dados, aplica auto-selecao da URL
+useEffect(() => {
+if (carregando || !parametros.length || !_pendingURL.current) return;
+const { resina, impressora } = _pendingURL.current;
+_pendingURL.current = null;
+selecionarResina(resina);
+if (impressora) setTimeout(() => selecionarImpressora(impressora), 80);
+}, [carregando, parametros]); // eslint-disable-line
+
+// Atualiza SEO (titulo, meta description, JSON-LD, URL) ao exibir resultado
+useEffect(() => {
+if (!resultado) return;
+const resina = corrigirNomeResina(resultado.resina);
+const impressora = [limparTexto(resultado.marca), limparTexto(resultado.impressora)].filter(Boolean).join(' ');
+document.title = `Parametros ${resina} + ${impressora} - Quanton3D`;
+let meta = document.querySelector('meta[name="description"]');
+if (!meta) { meta = document.createElement('meta'); meta.setAttribute('name', 'description'); document.head.appendChild(meta); }
+meta.setAttribute('content', `Parametros de impressao para ${resina} na ${impressora}: camada ${resultado.alturaCamada || '-'}, exposicao ${resultado.exposicaoNormal || '-'}, base ${resultado.exposicaoBase || '-'}. Perfil testado pela Quanton3D.`);
+let ld = document.getElementById('q3d-ld');
+if (!ld) { ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.id = 'q3d-ld'; document.head.appendChild(ld); }
+ld.textContent = JSON.stringify({
+"@context": "https://schema.org",
+"@type": "TechArticle",
+"headline": `Parametros de impressao: ${resina} + ${impressora}`,
+"description": meta.getAttribute('content'),
+"publisher": { "@type": "Organization", "name": "Quanton3D", "url": "https://quanton3d.com.br" },
+"dateModified": resultado.updatedAt || new Date().toISOString(),
+});
+try {
+const url = new URL(window.location.href);
+url.searchParams.set('resina', resultado.resina);
+url.searchParams.set('impressora', resultado.impressora);
+history.replaceState(null, '', url.toString());
+} catch { }
+}, [resultado]);
 
 const RESINAS_OCULTAR = ["ATHOM CASTABLE", "ATHOM CASTABLE 2"];
 const resinas = Array.from(new Set(parametros.map((item) => corrigirNomeResina(item.resina)).filter(Boolean)))
