@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { trackViewProfile, trackCopyProfile } from "../../utils/analytics";
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ThumbsUp, ThumbsDown } from "lucide-react";
 import api from "../../lib/api";
 
 function limparTexto(valor) { return String(valor || "").trim(); }
@@ -32,6 +32,100 @@ return (
 <div style={{ padding: "12px 14px", borderRadius: "var(--r-sm)", background: "rgba(0,146,255,0.05)", border: "1px solid var(--border-soft)" }}>
 <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-muted)", marginBottom: "4px" }}>{label}</span>
 <strong style={{ color: "var(--text-primary)", fontSize: "1rem" }}>{value || "-"}</strong>
+</div>
+);
+}
+
+function FeedbackParametros({ resina, impressora }) {
+const [voto, setVoto] = useState(null);
+const [obs, setObs] = useState("");
+const [enviado, setEnviado] = useState(false);
+const [enviando, setEnviando] = useState(false);
+
+async function enviar(v) {
+if (enviando || enviado) return;
+setVoto(v);
+if (v === "positivo") {
+await submeter(v, "");
+}
+}
+
+async function submeter(v, observacao) {
+setEnviando(true);
+try {
+await api.post("/feedback-parametros", { resina, impressora, voto: v, observacao });
+setEnviado(true);
+} catch (e) {
+console.error("[FEEDBACK]", e);
+setEnviado(true);
+} finally {
+setEnviando(false);
+}
+}
+
+if (enviado) {
+return (
+<div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "16px", padding: "10px 14px", borderRadius: "var(--r-sm)", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+<CheckCircle2 size={14} style={{ color: "#22C55E", flexShrink: 0 }} />
+Obrigado pelo feedback! Vamos usar isso para melhorar os perfis.
+</div>
+);
+}
+
+return (
+<div style={{ marginTop: "16px", borderTop: "1px solid var(--border-soft)", paddingTop: "14px" }}>
+<span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Esses parametros funcionaram para voce?</span>
+<div style={{ display: "flex", gap: "8px", marginTop: "8px", alignItems: "flex-start", flexWrap: "wrap" }}>
+<button
+type="button"
+onClick={() => enviar("positivo")}
+disabled={enviando}
+className={"q-btn q-btn--sm " + (voto === "positivo" ? "q-btn--success" : "q-btn--ghost")}
+style={{ display: "flex", alignItems: "center", gap: "5px" }}
+>
+<ThumbsUp size={13} /> Sim
+</button>
+<button
+type="button"
+onClick={() => setVoto("negativo")}
+disabled={enviando}
+className={"q-btn q-btn--sm " + (voto === "negativo" ? "q-btn--danger" : "q-btn--ghost")}
+style={{ display: "flex", alignItems: "center", gap: "5px" }}
+>
+<ThumbsDown size={13} /> Nao
+</button>
+</div>
+{voto === "negativo" && (
+<div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
+<textarea
+rows={2}
+placeholder="O que nao funcionou? (opcional)"
+value={obs}
+onChange={e => setObs(e.target.value)}
+maxLength={500}
+style={{
+width: "100%",
+resize: "vertical",
+fontSize: "0.8rem",
+padding: "8px 10px",
+borderRadius: "var(--r-sm)",
+border: "1px solid var(--border-soft)",
+background: "var(--surface, #161B27)",
+color: "var(--text-primary)",
+fontFamily: "inherit",
+boxSizing: "border-box",
+}}
+/>
+<button
+type="button"
+className="q-btn q-btn--primary q-btn--sm"
+disabled={enviando}
+onClick={() => submeter("negativo", obs)}
+>
+{enviando ? "Enviando..." : "Enviar feedback"}
+</button>
+</div>
+)}
 </div>
 );
 }
@@ -237,6 +331,12 @@ Ajuste a exposicao na calculadora
 </>
 )}
 </p>
+
+<FeedbackParametros
+key={resultado._id || (resultado.resina + resultado.impressora)}
+resina={resultado.resina}
+impressora={resultado.impressora}
+/>
 </div>
 )}
 </section>
