@@ -57,6 +57,14 @@ credentials: true,
 
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ extended: true, limit: "25mb" }));
+
+// Noindex no subdomínio temporário do Render (evitar duplicidade com lab.quanton3d.com.br)
+app.use((req, res, next) => {
+  if ((req.hostname || req.headers.host || '').includes('onrender.com')) {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  }
+  next();
+});
 app.use("/uploads", express.static("uploads"));
 app.use("/api/bot-tickets", botTicketsRoutes);
 
