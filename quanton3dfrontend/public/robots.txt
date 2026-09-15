@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://quanton3d.com.br/sitemap.xml
+Sitemap: https://lab.quanton3d.com.br/sitemap.xml
