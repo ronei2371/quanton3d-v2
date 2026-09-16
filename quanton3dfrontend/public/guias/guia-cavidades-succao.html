@@ -430,7 +430,17 @@
         border-radius: 9px;
         background: #0d1420;
       }
-    </style>
+    
+      .print-btn-wrap { display: flex; justify-content: flex-end; padding: 8px 0 0; }
+      .print-btn { border: 1px solid var(--border); background: transparent; color: var(--muted); padding: 8px 16px; border-radius: 9px; font: inherit; font-size: 0.82rem; cursor: pointer; }
+      .print-btn:hover { border-color: var(--cyan); color: var(--title); }
+      @media print {
+        nav, .print-btn-wrap { display: none !important; }
+        body { background: #fff !important; color: #111 !important; }
+        .panel, .anim-card, .compare-card, .callout, .issue, .check-item, .diag-item { background: #fff !important; box-shadow: none !important; border-color: #ccc !important; color: #111 !important; }
+        .lift-scene, .vent-scene, .trap-scene, .animation { display: none; }
+      }
+</style>
     <link rel="stylesheet" href="/guias/guia-padrao.css" />
     <script src="/guias/guia-padrao.js" defer></script>
   </head>
@@ -451,6 +461,9 @@
         <a href="#checklist">Checklist</a>
       </div>
     </nav>
+    <div class="print-btn-wrap">
+      <button class="print-btn" id="printBtn" type="button">🖨️ Imprimir / salvar PDF</button>
+    </div>
 
     <div class="page">
       <header class="hero">
@@ -1695,6 +1708,12 @@
           document.getElementById(id).addEventListener("change", update);
         });
       })();
-    </script>
+    
+      // Botão imprimir / salvar PDF
+      (function () {
+        var btn = document.getElementById('printBtn');
+        if (btn) btn.addEventListener('click', function () { window.print(); });
+      })();
+</script>
   </body>
 </html>
