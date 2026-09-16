@@ -170,6 +170,17 @@
       .print-btn-wrap { display: flex; justify-content: flex-end; padding: 6px 0 0 0; }
       .print-btn { background: transparent; border: 1.5px solid var(--cyan-strong, #2f7bff); color: var(--cyan-strong, #2f7bff); border-radius: 6px; padding: 5px 14px; font-size: 0.82rem; cursor: pointer; }
       .print-btn:hover { background: rgba(47, 123, 255, 0.1); }
+
+      /* ── Impressão / salvar PDF ──────────────────────────── */
+      @media print {
+        .guidenav, .print-btn-wrap { display: none !important; }
+        body { background: #fff; color: #000; }
+        .panel { box-shadow: none; border: 1px solid #ccc; }
+        a { color: inherit; text-decoration: none; }
+      }
+      .print-btn-wrap { display: flex; justify-content: flex-end; padding: 6px 0 0 0; }
+      .print-btn { background: transparent; border: 1.5px solid var(--cyan-strong, #2f7bff); color: var(--cyan-strong, #2f7bff); border-radius: 6px; padding: 5px 14px; font-size: 0.82rem; cursor: pointer; }
+      .print-btn:hover { background: rgba(47, 123, 255, 0.1); }
     </style>
     <link rel="stylesheet" href="/guias/guia-padrao.css" />
     <script src="/guias/guia-padrao.js" defer></script>
@@ -189,6 +200,9 @@
         <a href="#diretriz">Diretriz técnica</a>
       </div>
     </nav>
+    <div class="print-btn-wrap">
+      <button class="print-btn" id="printBtn" type="button">🖨️ Imprimir / salvar PDF</button>
+    </div>
     <div class="print-btn-wrap">
       <button class="print-btn" id="printBtn" type="button">🖨️ Imprimir / salvar PDF</button>
     </div>
@@ -996,6 +1010,8 @@
         analyze();
       })();
   
+    document.getElementById('printBtn').addEventListener('click', function() { window.print(); });
+
     document.getElementById('printBtn').addEventListener('click', function() { window.print(); });
   </script>
   </body>
