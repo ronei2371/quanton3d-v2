@@ -338,7 +338,19 @@
           padding: 18px 14px;
         }
       }
-    </style>
+    
+      .print-btn-wrap { display: flex; justify-content: flex-end; padding: 8px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+      .print-btn { border: 1px solid rgba(79,209,255,0.25); background: transparent; color: #9fb4c7; padding: 7px 15px; border-radius: 8px; font: inherit; font-size: 0.82rem; cursor: pointer; }
+      .print-btn:hover { border-color: var(--cyan); color: var(--title); }
+      @media print {
+        .print-btn-wrap, .warning-box { display: none !important; }
+        body { background: #fff !important; color: #111 !important; padding: 0; }
+        .container { background: #fff !important; border: none !important; box-shadow: none !important; }
+        .header { background: #fff !important; }
+        .step, .section, .tip-box { background: #fff !important; border-color: #ccc !important; color: #111 !important; box-shadow: none !important; }
+        .footer { background: #fff !important; color: #333 !important; }
+      }
+</style>
     <link rel="stylesheet" href="/guias/guia-padrao.css" />
     <script src="/guias/guia-padrao.js" defer></script>
   </head>
@@ -350,7 +362,10 @@
         <p>Impressoras 3D de Resina LCD/SLA/DLP</p>
       </div>
 
-      <div class="content">
+            <div class="print-btn-wrap">
+        <button class="print-btn" id="printBtn" type="button">🖨️ Imprimir / salvar PDF</button>
+      </div>
+<div class="content">
         <div class="intro">
           <h2>📋 Por que o Nivelamento é Crucial em Impressoras de Resina?</h2>
           <p>
@@ -1611,5 +1626,11 @@
         </p>
       </div>
     </div>
-  </body>
+    <script>
+    (function () {
+      var btn = document.getElementById('printBtn');
+      if (btn) btn.addEventListener('click', function () { window.print(); });
+    })();
+  </script>
+</body>
 </html>
