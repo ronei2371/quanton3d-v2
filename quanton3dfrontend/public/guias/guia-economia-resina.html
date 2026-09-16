@@ -50,6 +50,18 @@
   .calc-field input { width: 100%; padding: 10px 11px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--title); font: inherit; }
   .calc-field small { color: var(--muted); font-size: 0.72rem; }
   @media (max-width: 680px) { .calc-grid, .result-grid { grid-template-columns: 1fr; } }
+
+      .print-btn-wrap { display: flex; justify-content: flex-end; padding: 8px 0 0; }
+      .print-btn { border: 1px solid var(--border); background: transparent; color: var(--muted); padding: 8px 16px; border-radius: 9px; font: inherit; font-size: 0.82rem; cursor: pointer; }
+      .print-btn:hover { border-color: var(--cyan); color: var(--title); }
+      @media print {
+        nav, .print-btn-wrap { display: none !important; }
+        body { background: #fff !important; color: #111 !important; }
+        .panel, .anim-card, .result-card, .check-item, .callout, .issue, .compare-card, .fail-step { background: #fff !important; box-shadow: none !important; border-color: #ccc !important; color: #111 !important; }
+        .hollow-scene, .scale-scene { display: none; }
+        .prog-bar { background: #eee !important; }
+        .prog-bar span { background: #555 !important; }
+      }
 </style>
   <link rel="stylesheet" href="/guias/guia-padrao.css">
   <script src="/guias/guia-padrao.js" defer></script>
@@ -70,6 +82,9 @@
       <a href="#fontes">Fontes</a>
     </div>
   </nav>
+    <div class="print-btn-wrap" style="padding-right:max(16px,calc((100% - 1100px)/2))">
+      <button class="print-btn" id="printBtn" type="button">🖨️ Imprimir / salvar PDF</button>
+    </div>
 
   <div class="page">
     <header class="hero">
@@ -499,6 +514,12 @@
       checks.forEach(function (c) { c.addEventListener('change', update); });
       update();
     })();
-  </script>
+  
+      // Botão imprimir / salvar PDF
+      (function () {
+        var btn = document.getElementById('printBtn');
+        if (btn) btn.addEventListener('click', function () { window.print(); });
+      })();
+</script>
 </body>
 </html>
