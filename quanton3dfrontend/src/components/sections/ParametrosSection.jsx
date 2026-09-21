@@ -354,7 +354,7 @@ function ParametrosSection({ onAbrirExposicao }) {
 
       {semParametros && (
         <div className="q-empty" style={{ borderColor: "rgba(255,165,0,0.3)", background: "rgba(255,165,0,0.05)" }}>
-          {(() => { const foto = getFotoImpressora(impressoraSelecionada); return foto ? <img src={foto} alt={impressoraSelecionada} onError={e => e.target.style.display='none'} style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', marginBottom: '10px' }} /> : null; })()}
+          {(() => { const foto = getFotoImpressora(impressoraSelecionada); return foto ? <img src={foto} alt={impressoraSelecionada} onError={e => e.target.style.display='none'} style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', marginBottom: '10px' }} /> : null; })()}
           <AlertTriangle size={28} style={{ color: "orange", marginBottom: 8 }} />
           <h3 style={{ color: "var(--text-primary)" }}>Parametros ainda nao disponiveis</h3>
           <p>
