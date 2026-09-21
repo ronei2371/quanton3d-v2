@@ -277,9 +277,10 @@ function ParametrosSection({ onAbrirExposicao }) {
   function getFotoImpressora(nomeImpressora) {
     if (!nomeImpressora) return '';
     const chave = nomeImpressora.trim().toLowerCase();
-    if (fotosImpressoras.has(chave)) return fotosImpressoras.get(chave);
+    const fotoExata = fotosImpressoras.get(chave);
+  if (fotoExata) return fotoExata;
     for (const [catalogNome, foto] of fotosImpressoras) {
-      if (catalogNome.endsWith(chave) || catalogNome.includes(chave)) return foto;
+      if (foto && (catalogNome.endsWith(chave) || catalogNome.includes(chave))) return foto;
     }
     return '';
   }
@@ -366,8 +367,8 @@ function ParametrosSection({ onAbrirExposicao }) {
         <div style={{ background: "rgba(0,146,255,0.04)", border: "1px solid var(--border-soft)", borderRadius: "var(--r-md)", padding: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px", marginBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              {(() => { const foto = resultado.fotoImpressora || getFotoImpressora(resultado.impressora); return foto ? <img src={foto} alt={resultado.impressora} onError={e => e.target.style.display='none'} style={{ width: '72px', height: '72px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', flexShrink: 0 }} /> : null; })()}
-              <h3 style={{ fontSize: "1.05rem" }}>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
+              {(() => { const foto = resultado.fotoImpressora || getFotoImpressora(resultado.impressora); return foto ? <img src={foto} alt={resultado.impressora} onError={e => e.target.style.display='none'} style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', flexShrink: 0 }} /> : null; })()}
+              <h3 style={{ fontSize: "1.3rem" }}>{corrigirNomeResina(resultado.resina)} + {resultado.marca} {resultado.impressora}</h3>
             </div>
             {perfilChituboxTeste && (
               <button type="button" className={"q-btn q-btn--sm " + (copiado ? "q-btn--success" : "q-btn--primary")} onClick={copiarCodigoChitubox} disabled={!codigoChitubox}>
