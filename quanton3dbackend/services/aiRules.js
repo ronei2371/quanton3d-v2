@@ -2,6 +2,10 @@ export function ruleBasedAnswer(message) {
   if (!message) return null;
   const t = String(message).toLowerCase();
 
+  // Regras de indicacao de resina so valem quando o cliente PEDE uma resina
+  // (ex.: "qual a melhor orientacao para miniatura?" nao e pedido de resina).
+  const pedeResina = /resina|material|qual usar|qual (voces )?(indica|recomenda)|indicam|recomendam|serve pra|serve para|melhor opcao/.test(t);
+
   const mencionouResina = /\biron\b|\bflexform\b|alchemist|athom|poseidon|pyroblast|vulcan|spark|\bspin\b|low smell|70.30|velvet/.test(t);
 
   // Peça saindo menor / encolhendo
@@ -35,27 +39,27 @@ export function ruleBasedAnswer(message) {
   }
 
   // Peças flexíveis (pneus, juntas, borracha)
-  if (/pneu|pneus|borracha|junta|vedacao|sola|flexivel/.test(t) && !mencionouResina) {
+  if (/pneu|pneus|borracha|junta|vedacao|vedação|sola|flexivel|flexível/.test(t) && pedeResina && !mencionouResina) {
     return 'Para peças flexíveis como pneus, juntas, solas e vedações, a resina indicada é a **FLEXFORM**. Confirme dureza e deformação exigidas pela aplicação antes de escolher o perfil. Qual impressora você usa?';
   }
 
   // Peças funcionais com resistência
-  if (/(resist|impacto|mecan|funcional)/.test(t) && /personagem|miniatura|boneco/.test(t) && !mencionouResina) {
+  if (/(resist|impacto|mecan|funcional)/.test(t) && /personagem|miniatura|boneco/.test(t) && pedeResina && !mencionouResina) {
     return 'Para resistência mecânica e impacto, a resina indicada é a **IRON**. Qual impressora você usa?';
   }
 
   // Joalheria / fundição
-  if (/(joalheria|joia|jóia|fundição|fundicao|cera perdida|castable|ourivesaria)/.test(t) && !mencionouResina) {
+  if (/(joalheria|joia|jóia|fundição|fundicao|cera perdida|castable|ourivesaria)/.test(t) && pedeResina && !mencionouResina) {
     return 'Para joalheria e fundição por cera perdida, a opção Quanton3D é a **VULCAN CAST**. O resultado depende do ciclo de queima, revestimento, espessura e cura da peça; siga o procedimento validado do produto em vez de assumir um ciclo universal. Qual impressora você usa?';
   }
 
   // Miniatura / RPG / detalhes finos
-  if (/(miniatura|miniaturas|rpg|dungeons|fantasia|detalhe fino|detalhes finos)/.test(t) && !mencionouResina) {
+  if (/(miniatura|miniaturas|rpg|dungeons|fantasia|detalhe fino|detalhes finos)/.test(t) && pedeResina && !mencionouResina) {
     return 'Para miniaturas e detalhes finos, compare **ALCHEMIST** para uso versátil e **PYROBLAST** para alta definição. A escolha final depende de resistência, acabamento e velocidade desejados. Qual impressora você usa?';
   }
 
   // Odontologia / dental
-  if (/(dentista|odontolog|dental|odontal|alinhador|model.*odonto|odonto.*model|troquel)/.test(t) && !mencionouResina) {
+  if (/(dentista|odontolog|dental|odontal|alinhador|model.*odonto|odonto.*model|troquel)/.test(t) && pedeResina && !mencionouResina) {
     return 'Para laboratório odontológico, a Quanton3D oferece **ATHOM DENTAL**, **ATHOM ALINHADORES** e **ATHOM WASHABLE**, conforme a aplicação. Esses materiais são para uso externo/laboratorial e **não devem ser usados diretamente na boca do paciente**. Qual aplicação e impressora você usa?';
   }
 
