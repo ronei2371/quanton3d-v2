@@ -37,6 +37,7 @@ export const KNOWLEDGE_BASE = `
 - Lavagem: Álcool isopropílico, 2-4 minutos em movimento
 - Temperatura de trabalho: 18-35°C
 - Nota: propriedades podem variar com geometria, temperatura e parâmetros de impressão da peça
+- Validade: 12 meses a partir da data de fabricação
 
 ### FLEXFORM (fonte: site oficial)
 - Aplicação oficial: Protótipos e peças industriais que exigem alta flexibilidade e resistência, sem comprometer estrutura
@@ -45,6 +46,7 @@ export const KNOWLEDGE_BASE = `
 - Lavagem: Álcool isopropílico, ~1 minuto em movimento (mais curto que as outras resinas)
 - Temperatura de trabalho: 18-35°C
 - Atenção: Resinas pigmentadas já vêm com carga de pigmento pronta — não adicionar pigmento extra
+- Validade: 12 meses a partir da data de fabricação
 
 ### 70/30 (fonte: site oficial)
 - Aplicação oficial: Protótipos e peças que exigem resistência mecânica com leve flexibilidade
@@ -54,6 +56,7 @@ export const KNOWLEDGE_BASE = `
 - Características físicas: Odor médio, viscosidade média, pH 6,0, densidade 1,017 g/cm³
 - Cores: Black, Grey, Skin, Clear
 - Lavagem: Álcool isopropílico, 2-4 minutos em movimento
+- Validade: 12 meses a partir da data de fabricação
 
 ### ATHOM DENTAL (fonte: site oficial)
 ⚠️ AVISO DE SEGURANÇA OFICIAL DO FABRICANTE: "Esta resina é destinada apenas para uso EXTERNO, NÃO sendo biocompatível." Uso confirmado apenas para modelos de estudo, troquéis e protótipos de peças dentárias — NUNCA para contato direto/prolongado com a mucosa oral do paciente. A IAQ3D NUNCA deve sugerir uso intraoral desta resina.
@@ -62,6 +65,7 @@ export const KNOWLEDGE_BASE = `
 - Cores: White Cream, Ocre, Light Grey, Terracota, Dark Grey, Blue, Skin, White, Marfim
 - Lavagem: Álcool isopropílico, 2-4 minutos em movimento
 - Temperatura de trabalho: 18-35°C
+- Validade: 12 meses a partir da data de fabricação
 
 ### ATHOM ALINHADORES (fonte: site oficial)
 ⚠️ AVISO: Descrição oficial confirma "Produto de uso externo e não intraoral." Uso profissional em laboratório odontológico.
@@ -71,6 +75,7 @@ export const KNOWLEDGE_BASE = `
 - Cores: Terracota, Dark Grey, White, Ocre, Marfim
 - Lavagem: Álcool isopropílico, 2-4 minutos em movimento
 - Odor: Baixo/médio, viscosidade baixa
+- Validade: 12 meses a partir da data de fabricação
 
 ### ATHOM WASHABLE (fonte: site oficial)
 ⚠️ AVISO DE SEGURANÇA OFICIAL: "Embora lavável em água, a resina NÃO é biocompatível e apresenta toxicidade." Mesma restrição das demais ATHOM — uso de laboratório/bancada, não para contato intraoral direto.
@@ -80,6 +85,7 @@ export const KNOWLEDGE_BASE = `
 - Cores: Light Grey, White Cream, Skin, Marfim
 - Lavagem: Água corrente, ~2 minutos em movimento
 - Vantagem: reduz custo operacional por não precisar de álcool isopropílico
+- Validade: 12 meses a partir da data de fabricação
 
 ### POSEIDON (fonte: site oficial)
 ⚠️ AVISO: "Não é biocompatível" — embora lavável em água, ainda apresenta toxicidade e exige EPIs.
@@ -90,6 +96,7 @@ export const KNOWLEDGE_BASE = `
 - Cores: Clear, Light Grey, Skin
 - Lavagem: Água corrente, ~2 minutos em movimento
 - Temperatura de trabalho: 18-35°C
+- Validade: 12 meses a partir da data de fabricação
 
 ### PYROBLAST
 - Aplicação: Prototipagem rápida, arte, decoração, action figures com detalhes finos
@@ -99,6 +106,7 @@ export const KNOWLEDGE_BASE = `
 - Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 20-28°C
 - IMPORTANTE: NÃO é resina castable/fundível — não usar para fundição
+- Validade: 12 meses a partir da data de fabricação
 
 ### VULCAN CAST
 - Aplicação: Joalheria de alta precisão, fundição por cera perdida
@@ -108,6 +116,7 @@ export const KNOWLEDGE_BASE = `
 - Processo de queima: Seguir curva de temperatura do fabricante do forno
 - Temperatura ideal: 24-28°C
 - Dica: Imprimir camadas de 0,05mm para máxima definição de detalhes em jóias
+- Validade: 12 meses a partir da data de fabricação
 
 ### SPIN
 - Aplicação: Peças de grande formato, protótipos funcionais, action figures de grande porte, modelos odontológicos de estudo
@@ -117,6 +126,7 @@ export const KNOWLEDGE_BASE = `
 - Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 22-28°C
 - IMPORTANTE: NÃO é resina para centrifugação — nome é referência ao processo de impressão
+- Validade: 12 meses a partir da data de fabricação
 
 ### SPARK
 - Aplicação: Produção em lote, prototipagem rápida, uso geral com alta produtividade
@@ -125,6 +135,7 @@ export const KNOWLEDGE_BASE = `
 - Lavagem: Álcool isopropílico 95%+
 - Pós-cura: 3-5 min câmara UV 405 nm (cura muito rápida)
 - Temperatura ideal: 20-28°C
+- Validade: 12 meses a partir da data de fabricação
 
 ### LOW SMELL
 - Aplicação: Ambientes sem ventilação adequada, uso doméstico, escritórios
@@ -133,6 +144,7 @@ export const KNOWLEDGE_BASE = `
 - Lavagem: Álcool isopropílico 95%+
 - Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 20-28°C
+- Validade: 12 meses a partir da data de fabricação
 
 ### VELVET SKIN
 - Aplicação: Bustos artísticos, action figures com efeito de pele realista, peças decorativas premium
@@ -141,6 +153,7 @@ export const KNOWLEDGE_BASE = `
 - Lavagem: Álcool isopropílico 95%+
 - Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 22-28°C
+- Validade: 12 meses a partir da data de fabricação
 
 ## PROBLEMAS COMUNS E SOLUÇÕES TÉCNICAS
 
