@@ -4,12 +4,27 @@ export function containsTechnicalQuantity(value = '') {
   return TECHNICAL_QUANTITY_PATTERN.test(String(value));
 }
 
+// Quebra em frases sem cortar abreviacao ("max."), negrito aberto ou numero de lista.
+function splitSentences(line) {
+  const out = [];
+  for (const part of String(line).split(/(?<=[.!?])\s+/)) {
+    const prev = out[out.length - 1];
+    const juntar = prev !== undefined && (
+      /(?:^|[\s*(])(?:m[aá]x|m[ií]n|aprox|approx|ex|obs|p\.?\s?ex)\.$/i.test(prev)
+      || ((prev.match(/\*\*/g) || []).length % 2 === 1)
+      || /^\s*\d+[.)]$/.test(prev)
+    );
+    if (juntar) out[out.length - 1] = prev + ' ' + part;
+    else out.push(part);
+  }
+  return out;
+}
+
 // Remove somente as frases com numero tecnico, preservando o diagnostico.
 export function stripTechnicalQuantities(value = '') {
   const kept = String(value)
     .split('\n')
-    .map((line) => line
-      .split(/(?<=[.!?])\s+/)
+    .map((line) => splitSentences(line)
       .filter((sentence) => !containsTechnicalQuantity(sentence))
       .join(' '))
     // descarta item de lista que ficou vazio ("1." ou "-")
