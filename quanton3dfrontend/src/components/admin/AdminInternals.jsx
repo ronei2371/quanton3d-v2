@@ -676,7 +676,8 @@ export function AdminContent({ tokenAtendente }) {
     try {
       setCarregandoRelatorio(true);
       const res = await api.get("/admin/relatorio-semanal", { headers: { Authorization: "Bearer " + token } });
-      setRelatorioSemanal(res.data?.relatorio || null);
+      // o backend devolve os campos direto na resposta (sem a chave "relatorio")
+      setRelatorioSemanal(res.data?.relatorio || (res.data?.success ? res.data : null));
     } catch(e) { alert("Erro ao gerar relatório."); }
     finally { setCarregandoRelatorio(false); }
   }
