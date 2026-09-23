@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { UserCog, Check, Bot } from "lucide-react";
+import { UserCog, Check } from "lucide-react";
+import IAQ3DAvatar from "./components/IAQ3DAvatar";
 import api from "./lib/api";
 import NavBar from "./components/layout/NavBar";
 import { BoasVindasModal, PrivacidadeModal, CadastroInicial, SOCIAL_LINKS } from "./components/modals/GatingModals";
@@ -288,8 +289,8 @@ useEffect(() => { document.title = TITULOS["inicio"]; }, []);
       </footer>
 
       {!mostrarBot && (
-        <button type="button" className="iaq3d-fab" onClick={() => setMostrarBot(true)} aria-label="Converse com a IAQ3D">
-          <span className="iaq3d-fab-dot" /> <Bot size={22} /> <span className="iaq3d-fab-label">Converse com a IAQ3D</span>
+        <button type="button" className="iaq3d-fab iaq3d-fab--avatar" onClick={() => setMostrarBot(true)} aria-label="Converse com a IAQ3D">
+          <span className="iaq3d-fab-avatar"><IAQ3DAvatar size={42} compact /></span> <span className="iaq3d-fab-label">Converse com a IAQ3D</span>
         </button>
       )}
     </div>
