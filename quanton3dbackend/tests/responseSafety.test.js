@@ -26,3 +26,13 @@ test('libera quantidade somente para fonte Quanton3D aprovada', () => {
   assert.equal(hasApprovedQuantitativeSource(['conversas_aprovadas']), true);
   assert.equal(hasApprovedQuantitativeSource(['sugestoes_aprovadas']), true);
 });
+
+test('remove so as frases com numero tecnico e preserva o diagnostico', async () => {
+  const { stripTechnicalQuantities } = await import('../services/responseSafety.js');
+  const texto = 'A causa provavel e bolha presa. Aqueca a resina a 30°C antes. Misture devagar e deixe repousar.\n\nQual resina voce usa?';
+  const limpo = stripTechnicalQuantities(texto);
+  assert.equal(containsTechnicalQuantity(limpo), false);
+  assert.match(limpo, /bolha presa/);
+  assert.match(limpo, /Misture devagar/);
+  assert.match(limpo, /Qual resina/);
+});
