@@ -12,8 +12,18 @@ export function stripTechnicalQuantities(value = '') {
       .split(/(?<=[.!?])\s+/)
       .filter((sentence) => !containsTechnicalQuantity(sentence))
       .join(' '))
+    // descarta item de lista que ficou vazio ("1." ou "-")
+    .filter((line) => !/^\s*(?:\d+[.)]|[-*•])\s*(?:\*\*)?\s*$/.test(line))
     .filter((line, index, all) => line.trim() || (index > 0 && all[index - 1].trim()));
-  return kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  // renumera listas numeradas depois de remover itens
+  let n = 0;
+  const renumbered = kept.map((line) => {
+    const m = line.match(/^(\s*)\d+([.)])\s/);
+    if (!m) { if (!line.trim()) n = 0; return line; }
+    n += 1;
+    return line.replace(/^(\s*)\d+([.)])/, `$1${n}$2`);
+  });
+  return renumbered.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 export function hasApprovedQuantitativeSource(sources = []) {
