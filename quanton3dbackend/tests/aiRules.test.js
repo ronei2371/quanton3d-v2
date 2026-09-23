@@ -55,3 +55,10 @@ test('nao responde indicacao de resina quando a pergunta e sobre outra coisa', (
   assert.equal(ruleBasedAnswer('Qual a melhor orientação para imprimir uma miniatura?'), null);
   assert.match(ruleBasedAnswer('Qual resina para miniaturas de RPG?'), /ALCHEMIST/);
 });
+
+test('peca menor com furo apertado aponta escala e nao exposicao baixa', () => {
+  const answer = ruleBasedAnswer('A peça saiu com medida menor que o projeto, o furo ficou apertado');
+  assert.match(answer, /não é exposição/);
+  assert.match(answer, /escala/);
+  assert.match(ruleBasedAnswer('minhas peças esta ficando menor que deveria'), /exposição normal baixa/);
+});
