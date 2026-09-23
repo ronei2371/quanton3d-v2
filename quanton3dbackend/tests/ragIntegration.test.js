@@ -53,12 +53,15 @@ test('integra as fontes reais na ordem correta', async (t) => {
   const result = await retrieveRagContext('Qual exposição da IRON na Mars 4 Ultra?', []);
 
   assert.equal(result.used, true);
-  assert.deepEqual(result.sources.slice(0, 3), [
+  assert.deepEqual(result.sources.slice(0, 4), [
     'parametros_oficiais',
+    'ficha_produto',
     'conversas_aprovadas',
     'sugestoes_aprovadas',
   ]);
-  assert.ok(result.context.indexOf('PRIORIDADE 1') < result.context.indexOf('PRIORIDADE 2'));
+  assert.ok(result.context.indexOf('PRIORIDADE 1 ') < result.context.indexOf('PRIORIDADE 1B'));
+  assert.ok(result.context.indexOf('PRIORIDADE 1B') < result.context.indexOf('PRIORIDADE 2'));
+  assert.match(result.context, /Dureza Shore D ~55/);
   assert.ok(result.context.indexOf('PRIORIDADE 2') < result.context.indexOf('PRIORIDADE 3'));
   assert.match(result.context, /Exposicao normal: 2\.1s/);
   assert.doesNotMatch(result.context, /2\.1ss/);
@@ -91,4 +94,54 @@ test('integra corpus externo rastreavel quando nao ha conhecimento superior', as
   assert.match(result.context, /FONTES EXTERNAS CURADAS E RASTREAVEIS/);
   assert.match(result.context, /CHITUBOX Docs/);
   assert.match(result.context, /https:\/\/docs\.chitubox\.com/);
+});
+
+test('busca parametro oficial com nome do banco diferente do digitado e ignora perfis zerados', async (t) => {
+  const originalParametroFind = Parametro.find;
+  const originalConversaFind = Conversa.find;
+  const originalSugestaoFind = SugestaoConhecimento.find;
+  t.after(() => {
+    Parametro.find = originalParametroFind;
+    Conversa.find = originalConversaFind;
+    SugestaoConhecimento.find = originalSugestaoFind;
+  });
+
+  Parametro.find = () => queryResult([
+    { _id: 'z1', resina: 'SPIN+', impressora: 'SATURN 3 ULTRA', exposicaoNormal: '0s', exposicaoBase: '0s' },
+    { _id: 'p1', resina: 'SPIN+', impressora: 'SATURN 3 ULTRA', exposicaoNormal: '1,3s', exposicaoBase: '22s', alturaCamada: '0,05' },
+    { _id: 'p2', resina: 'SPIN+', impressora: 'Saturn 3', exposicaoNormal: '2', exposicaoBase: '30' },
+  ]);
+  Conversa.find = () => queryResult([]);
+  SugestaoConhecimento.find = () => queryResult([]);
+
+  const result = await retrieveRagContext('Qual o parametro da SPIN+ na Saturn 3 Ultra?', []);
+  assert.ok(result.sources.includes('parametros_oficiais'));
+  assert.match(result.context, /Exposicao normal: 1,3s/);
+  assert.doesNotMatch(result.context, /Exposicao normal: 0s/);
+  assert.equal(result.guardInstruction, '');
+});
+
+test('injeta catalogo de aplicacoes quando pedem indicacao de resina', async (t) => {
+  const originals = [Parametro.find, Conversa.find, SugestaoConhecimento.find];
+  t.after(() => { [Parametro.find, Conversa.find, SugestaoConhecimento.find] = originals; });
+  Parametro.find = () => queryResult([]);
+  Conversa.find = () => queryResult([]);
+  SugestaoConhecimento.find = () => queryResult([]);
+
+  const result = await retrieveRagContext('Preciso de uma peça que aguente calor, qual resina?', []);
+  assert.ok(result.sources.includes('guia_aplicacoes'));
+  assert.match(result.context, /PYROBLAST: Aplicação: Prototipagem rápida/);
+  assert.match(result.context, /ATHOM ALINHADORES: .*RESISTÊNCIA TÉRMICA/);
+});
+
+test('compara IRON e IRON 70/30 com as duas fichas', async (t) => {
+  const originals = [Parametro.find, Conversa.find, SugestaoConhecimento.find];
+  t.after(() => { [Parametro.find, Conversa.find, SugestaoConhecimento.find] = originals; });
+  Parametro.find = () => queryResult([]);
+  Conversa.find = () => queryResult([]);
+  SugestaoConhecimento.find = () => queryResult([]);
+
+  const result = await retrieveRagContext('Qual a diferença entre IRON e IRON 70/30?', []);
+  assert.match(result.context, /Alongamento 50%/);
+  assert.match(result.context, /Alongamento 11%/);
 });
