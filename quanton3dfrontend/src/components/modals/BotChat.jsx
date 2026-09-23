@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Send, ThumbsUp, ThumbsDown, Camera, ArrowRight, SkipForward } from "lucide-react";
 import api from "../../lib/api";
+import IAQ3DAvatar from "../IAQ3DAvatar";
 
 const RESINAS_BOT = [
   "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "ATHOM DENTAL", "ATHOM ALINHADORES",
@@ -226,6 +227,8 @@ function BotChat({ cliente }) {
     } finally { setEnviandoFeedback(false); }
   }
 
+  const ultimoBot = mensagens.reduce((ultimo, m, i) => (m.isBot ? i : ultimo), -1);
+
   if (carregandoHistorico) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "var(--text-muted)", fontSize: "0.86rem" }}>
       Carregando seu histórico...
@@ -297,7 +300,17 @@ function BotChat({ cliente }) {
 
       <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", overflowX: "hidden", width: "100%", minWidth: 0, boxSizing: "border-box", padding: "14px 6px", display: "flex", flexDirection: "column", gap: "12px" }}>
         {mensagens.map((m, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", width: "100%", minWidth: 0, boxSizing: "border-box" }}>
+          <div key={i} className={m.isBot ? "iaq3d-msg-bot" : undefined} style={{ display: "flex", flexDirection: "column", alignItems: m.isBot ? "flex-start" : "flex-end", width: "100%", minWidth: 0, boxSizing: "border-box" }}>
+            {m.isBot && (
+              <span className="iaq3d-msg-avatar">
+                <IAQ3DAvatar
+                  size={30}
+                  compact
+                  estado={m.feedbackEnviado === "satisfatoria" || i === 0 ? "feliz" : ""}
+                  parado={pensando || i !== ultimoBot}
+                />
+              </span>
+            )}
             <div
               style={{ padding: "10px 14px", borderRadius: "var(--r-md)", background: m.isBot ? "var(--bg-raised)" : "rgba(47,123,255,0.12)", border: "1px solid " + (m.isBot ? "var(--border-soft)" : "rgba(47,123,255,0.3)"), color: "var(--text-primary)", fontSize: "0.9rem", lineHeight: 1.55, maxWidth: "min(88%, 640px)", boxSizing: "border-box", overflowWrap: "anywhere", wordBreak: "normal" }}
               dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
@@ -349,7 +362,12 @@ function BotChat({ cliente }) {
             )}
           </div>
         ))}
-        {pensando && <div style={{ alignSelf: "flex-start", padding: "10px 14px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", border: "1px solid var(--border-soft)", color: "var(--text-muted)", fontSize: "0.86rem" }}>Analisando base técnica...</div>}
+        {pensando && (
+          <div className="iaq3d-msg-bot" style={{ alignSelf: "flex-start" }}>
+            <span className="iaq3d-msg-avatar"><IAQ3DAvatar size={30} compact estado="pensando" /></span>
+            <div style={{ padding: "10px 14px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", border: "1px solid var(--border-soft)", color: "var(--text-muted)", fontSize: "0.86rem" }}>Analisando base técnica...</div>
+          </div>
+        )}
       </div>
 
       <ChatInput onEnviar={enviar} pensando={pensando} modo={modo} onModoChange={setModo} />
