@@ -1,0 +1,66 @@
+/* Mascote IAQ3D - atomo com rosto (somente ASCII nos comentarios) */
+.iaq3d-atom { display: block; overflow: visible; flex-shrink: 0; }
+.iaq3d-atom.compact { overflow: hidden; border-radius: 50%; }
+
+.iaq3d-atom .a-float { animation: iaq3dFloat 3.4s ease-in-out infinite; }
+.iaq3d-atom .a-orbits { transform-box: view-box; transform-origin: 60px 60px; animation: iaq3dSway 7s ease-in-out infinite; }
+.iaq3d-atom .a-core { transform-box: view-box; transform-origin: 60px 60px; animation: iaq3dBreath 3.4s ease-in-out infinite; }
+.iaq3d-atom .a-glow { transform-box: view-box; transform-origin: 60px 60px; animation: iaq3dGlow 3.4s ease-in-out infinite; }
+
+.iaq3d-atom .f-eyes { transform-box: fill-box; transform-origin: center; animation: iaq3dBlink 5s infinite; }
+.iaq3d-atom .f-look { animation: iaq3dLook 9s ease-in-out infinite; }
+.iaq3d-atom .f-happy,
+.iaq3d-atom .f-dots,
+.iaq3d-atom .f-blush { opacity: 0; transition: opacity 0.25s; }
+.iaq3d-atom .f-dots circle { transform-box: fill-box; transform-origin: center; animation: iaq3dDot 1s ease-in-out infinite; }
+.iaq3d-atom .f-dots circle:nth-child(2) { animation-delay: 0.15s; }
+.iaq3d-atom .f-dots circle:nth-child(3) { animation-delay: 0.3s; }
+
+/* pensando */
+.iaq3d-atom.is-thinking .f-look { opacity: 0; }
+.iaq3d-atom.is-thinking .f-dots { opacity: 1; }
+.iaq3d-atom.is-thinking .a-orbits { animation: iaq3dSpin 2.4s linear infinite; }
+
+/* feliz */
+.iaq3d-atom.is-happy .f-look { opacity: 0; }
+.iaq3d-atom.is-happy .f-happy,
+.iaq3d-atom.is-happy .f-blush { opacity: 1; }
+.iaq3d-atom.is-happy .a-float { animation: iaq3dHop 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) 3; }
+
+/* parado (mensagens antigas ou reduzir movimento) */
+.iaq3d-atom.is-static * { animation: none !important; }
+
+@keyframes iaq3dFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes iaq3dSway { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+@keyframes iaq3dSpin { to { transform: rotate(360deg); } }
+@keyframes iaq3dBreath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes iaq3dGlow { 0%, 100% { opacity: 0.55; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.12); } }
+@keyframes iaq3dHop { 0%, 100% { transform: translateY(0) scale(1); } 30% { transform: translateY(1px) scale(1.05, 0.95); } 60% { transform: translateY(-7px) scale(0.97, 1.04); } }
+@keyframes iaq3dBlink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.15); } }
+@keyframes iaq3dLook { 0%, 38% { transform: translateX(0); } 44%, 54% { transform: translateX(-2.5px); } 60%, 70% { transform: translateX(2.5px); } 76%, 100% { transform: translateX(0); } }
+@keyframes iaq3dDot { 0%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-2.5px); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .iaq3d-atom * { animation: none !important; }
+}
+
+/* Botao flutuante com o mascote */
+.iaq3d-fab.iaq3d-fab--avatar { padding: 6px 22px 6px 6px; }
+.iaq3d-fab-avatar { position: relative; display: inline-flex; border-radius: 50%; box-shadow: 0 0 0 2px #fff; }
+.iaq3d-fab-avatar::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; background: var(--q-verde, #17c982); border: 2px solid var(--primary); box-shadow: 0 0 8px rgba(23, 201, 130, 0.85); }
+.iaq3d-fab:hover .iaq3d-atom .a-float { animation: iaq3dHop 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) 1; }
+
+@media (max-width: 560px) {
+  .iaq3d-fab.iaq3d-fab--avatar { padding: 5px; }
+}
+
+/* Cabecalho do chat */
+.iaq3d-head { display: flex; align-items: center; gap: 10px; }
+.iaq3d-head .iaq3d-atom { box-shadow: 0 0 0 2px rgba(47, 123, 255, 0.55); border-radius: 50%; }
+.iaq3d-head-text { display: flex; flex-direction: column; line-height: 1.2; }
+.iaq3d-head-text small { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 500; color: var(--text-muted); }
+.iaq3d-head-text small::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--q-verde, #17c982); box-shadow: 0 0 8px rgba(23, 201, 130, 0.85); }
+
+/* Mensagens do bot com o mascote ao lado */
+.iaq3d-msg-bot { position: relative; padding-left: 38px; }
+.iaq3d-msg-avatar { position: absolute; left: 0; top: 0; }
