@@ -1,5 +1,6 @@
-import { Bot, X } from "lucide-react";
+import { X } from "lucide-react";
 import BotChat from "./BotChat";
+import IAQ3DAvatar from "../IAQ3DAvatar";
 
 function BotModal({ cliente, onClose }) {
   return (
@@ -14,8 +15,9 @@ function BotModal({ cliente, onClose }) {
         }}
       >
         <div className="q-modal-head">
-          <h2 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1rem" }}>
-            <Bot size={18} color="var(--primary)" /> IAQ3D
+          <h2 className="iaq3d-head" style={{ fontSize: "1rem" }}>
+            <IAQ3DAvatar size={42} compact />
+            <span className="iaq3d-head-text">IAQ3D<small>assistente técnica · online</small></span>
           </h2>
           <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
         </div>
