@@ -91,6 +91,20 @@ useEffect(() => { document.title = TITULOS["inicio"]; }, []);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Registra visita ao site uma vez por sessao do navegador (alimenta o relatorio de visitantes do ADM)
+  useEffect(() => {
+    try {
+      let sessionId = sessionStorage.getItem("quanton3d_session_id");
+      if (!sessionId) {
+        sessionId = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+        sessionStorage.setItem("quanton3d_session_id", sessionId);
+      }
+      api.post("/visitas", { sessionId, pagina: window.location.pathname, origem: document.referrer || "" }).catch(() => {});
+    } catch {
+      // registro de visita e opcional
+    }
+  }, []);
+
   async function loginEquipe() {
     if (!loginAtForm.email || !loginAtForm.senha) { setLoginAtErro("Preencha o usuário/e-mail e a senha."); return; }
     try {
