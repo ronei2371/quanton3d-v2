@@ -13,21 +13,27 @@ splitKnowledgeBase,
 tokenize,
 } from './ragRanking.js';
 
+// Apelidos que o cliente digita -> nome canonico da resina.
+// O nome canonico e depois resolvido para o nome gravado no MongoDB (ex.: SPIN -> SPIN+, LOW SMELL -> LOWSMELL).
 const RESINAS_MAP = {
 'athom alinhadores': 'ATHOM ALINHADORES',
 'athom alinhador': 'ATHOM ALINHADORES',
 'athom washable': 'ATHOM WASHABLE',
 'athom dental': 'ATHOM DENTAL',
+'athom gengiva': 'ATHOM GENGIVA',
 'velvet skin': 'VELVET SKIN',
 'vulcan cast': 'VULCAN CAST',
 'iron 70/30': 'IRON 70/30',
+'iron 7030': 'IRON 70/30',
 'iron 70': 'IRON 70/30',
 'low smell': 'LOW SMELL',
 'lowsmell': 'LOW SMELL',
+'rpg 4k': 'RPG 4K',
 'alchemist': 'ALCHEMIST',
 'flexform': 'FLEXFORM',
 'pyroblast': 'PYROBLAST',
 'poseidon': 'POSEIDON',
+'gengiva': 'GENGIVA',
 '70/30': 'IRON 70/30',
 '7030': 'IRON 70/30',
 'vulcan': 'VULCAN CAST',
@@ -38,39 +44,112 @@ const RESINAS_MAP = {
 'iron': 'IRON',
 };
 
+const RESIN_ALIASES = Object.keys(RESINAS_MAP).sort((a, b) => b.length - a.length);
+
+// Lista base (fallback quando o catalogo do MongoDB ainda nao carregou).
+// Em producao ela e somada a todos os modelos cadastrados na colecao de parametros.
 const IMPRESSORAS = [
 'uniformation gktwo',
 'photon mono m3 premium', 'photon mono m3 plus', 'photon mono x 6k',
-'photon mono m5s', 'photon mono m5', 'photon mono m3', 'photon mono 4k',
+'photon mono m7 pro', 'photon mono m7 max', 'photon mono m7',
+'photon mono m5s pro', 'photon mono m5s', 'photon mono m5', 'photon mono m3', 'photon mono 4k',
 'photon mono x', 'photon mono 2', 'photon mono', 'photon m5s', 'photon m5',
 'photon ultra', 'photon',
-'saturn 4 ultra', 'saturn 3 ultra', 'saturn 4', 'saturn 3', 'saturn 2',
+'saturn 4 ultra 16k', 'saturn 5 ultra', 'saturn 4 ultra', 'saturn 3 ultra', 'saturn 4', 'saturn 3', 'saturn 2',
 'saturn s', 'saturn',
-'mars 4 ultra', 'mars 4', 'mars 3', 'mars 2', 'mars pro', 'mars',
+'mars 5 ultra', 'mars 5', 'mars 4 ultra', 'mars 4', 'mars 3', 'mars 2', 'mars pro', 'mars',
+'jupiter se', 'jupiter 2', 'jupiter',
 'sonic mega 8k', 'sonic mini 8k', 'sonic mini 4k', 'sonic mini', 'sonic',
-'halot one pro', 'halot one plus', 'halot one', 'halot sky', 'halot max', 'halot',
-'ld-006', 'ld-002r', 'ld-002h', 'ld-002',
+'halot one pro', 'halot one plus', 'halot one', 'halot sky', 'halot max', 'halot mage', 'halot',
+'ld 006', 'ld 002r', 'ld 002h', 'ld 002',
 'uniformation', 'proxima', 'voxelab',
 'anycubic', 'elegoo', 'phrozen', 'creality',
-].sort((a, b) => b.length - a.length);
+];
 
-const GENERIC_PRINTER_NAMES = new Set([
+// So a marca: precisa perguntar o modelo.
+const BRAND_NAMES = new Set([
 'anycubic', 'elegoo', 'phrozen', 'creality', 'uniformation', 'voxelab',
-'photon', 'mars', 'saturn', 'sonic', 'halot',
 ]);
+// Familia: pode existir o modelo "original" com esse nome e varias variantes.
+const FAMILY_NAMES = new Set(['photon', 'mars', 'saturn', 'sonic', 'halot', 'jupiter']);
 
 const GENERIC_RESIN_NAMES = new Set(['ATHOM']);
 
 const LEGACY_DOCUMENTS = splitKnowledgeBase(KNOWLEDGE_BASE);
 
+// ---------------------------------------------------------------
+// Catalogo dinamico (resinas e impressoras realmente cadastradas)
+// ---------------------------------------------------------------
+const CATALOG_TTL_MS = 10 * 60 * 1000;
+let catalogCache = { at: 0, resins: [], printers: [] };
+let catalogPromise = null;
+
+function withTimeout(promise, ms) {
+return Promise.race([
+  promise,
+  new Promise((_, reject) => setTimeout(() => reject(new Error('timeout catalogo')), ms)),
+]);
+}
+
+export function compactName(value) {
+return normalizeText(value).replace(/[^a-z0-9]/g, '');
+}
+
+export async function loadCatalog() {
+if (Date.now() - catalogCache.at < CATALOG_TTL_MS) return catalogCache;
+if (!catalogPromise) {
+  catalogPromise = (async () => {
+    try {
+      const rows = await withTimeout(Parametro.find({}).select('resina impressora').lean(), 4000);
+      const list = Array.isArray(rows) ? rows : [];
+      catalogCache = {
+        at: Date.now(),
+        resins: [...new Set(list.map((r) => String(r.resina || '').trim()).filter(Boolean))],
+        printers: [...new Set(list.map((r) => normalizeText(r.impressora)).filter(Boolean))],
+      };
+    } catch (error) {
+      console.error('[RAG-WARN] Falha ao carregar catalogo de parametros:', error.message);
+      // tenta de novo em 1 minuto, mantendo o que ja tinha
+      catalogCache = Object.assign({}, catalogCache, { at: Date.now() - CATALOG_TTL_MS + 60 * 1000 });
+    } finally {
+      catalogPromise = null;
+    }
+    return catalogCache;
+  })();
+}
+return catalogPromise;
+}
+
+// Resolve o nome canonico da resina para o(s) nome(s) gravado(s) no banco.
+export function resolveResinDbNames(resin, dbResins = catalogCache.resins) {
+if (!resin) return [];
+const target = compactName(resin);
+const exact = dbResins.filter((name) => compactName(name) === target);
+if (exact.length) return exact;
+// VELVET SKIN -> VELVET (nome curto no banco)
+return dbResins.filter((name) => {
+  const c = compactName(name);
+  return c.length >= 4 && (target.startsWith(c) || c.startsWith(target));
+});
+}
+
 // Detecta se a pergunta e sobre parametros especificos (exposicao, config).
 // Perguntas de diagnostico (defeito, problema, encolhimento) NAO devem acionar o guard.
 function isParameterRequest(message) {
-  return /param[ae]tro|exposi[cç][aã]o|tempo de exposi|camada base|base layer|velocidade|lift speed|bottom layer|configurar|configura[cç][aã]o|perfil de impresso|quanto tempo|qual o tempo|como configur/i.test(String(message));
+  return /param[ae]tro|exposi[cç][aã]o|tempo de exposi|camada base|camadas base|base layer|velocidade|lift speed|bottom layer|configurar|configura[cç][aã]o|perfil|quanto tempo|qual o tempo|como configur|ajuste(s)? d[ao]|valores/i.test(String(message));
 }
 
 function escapeRegex(value) {
 return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// "Photon Mono M3" e "Photon M3" sao o mesmo modelo no cadastro.
+export function printerKey(value) {
+return normalizeText(value).replace(/^photon mono (m\d)/, 'photon $1');
+}
+
+function hasWord(normalizedText, term) {
+return (' ' + normalizedText + ' ').includes(' ' + term + ' ');
 }
 
 function queryWithHistory(message, history = []) {
@@ -84,30 +163,114 @@ const recentUserMessages = Array.isArray(history)
 return [...recentUserMessages, message].filter(Boolean).join(' ');
 }
 
+export function detectAllResins(text) {
+const normalized = normalizeText(text || '');
+const found = [];
+let remaining = ' ' + normalized + ' ';
+for (const alias of RESIN_ALIASES) {
+  const term = ' ' + normalizeText(alias) + ' ';
+  if (remaining.includes(term)) {
+    const canonical = RESINAS_MAP[alias];
+    if (!found.includes(canonical)) found.push(canonical);
+    remaining = remaining.split(term).join(' ');
+  }
+}
+return found;
+}
+
 export function detectResin(text) {
-if (!text) text = '';
-const normalized = normalizeText(text);
-const match = Object.keys(RESINAS_MAP)
-  .sort((a, b) => b.length - a.length)
-  .find((alias) => normalized.includes(normalizeText(alias)));
+const normalized = normalizeText(text || '');
+const match = RESIN_ALIASES.find((alias) => hasWord(normalized, normalizeText(alias)));
 return match ? RESINAS_MAP[match] : '';
 }
 
-export function detectPrinter(text) {
-if (!text) text = '';
-const normalized = normalizeText(text);
-return IMPRESSORAS.find((printer) => normalized.includes(normalizeText(printer))) || '';
+function printerCandidates(catalogPrinters = catalogCache.printers) {
+const map = new Map();
+for (const name of IMPRESSORAS) map.set(normalizeText(name), normalizeText(name));
+for (const name of catalogPrinters) {
+  const norm = normalizeText(name);
+  if (!norm) continue;
+  map.set(norm, norm);
+  // "Anycubic M7 Pro" -> "photon mono m7 pro"
+  const short = norm.match(/^photon (?:mono )?(m\d.*)$/);
+  if (short && !map.has(short[1])) map.set(short[1], norm);
+  // "Halot One" / "Halote One" ja cobertos pela normalizacao do hifen
+}
+// Marca sozinha ("anycubic") so vale se nenhum modelo for encontrado.
+return [...map.entries()].sort((a, b) => {
+  const brandA = BRAND_NAMES.has(a[0]) ? 1 : 0;
+  const brandB = BRAND_NAMES.has(b[0]) ? 1 : 0;
+  return brandA - brandB || b[0].length - a[0].length;
+});
+}
+
+export function detectPrinter(text, catalogPrinters) {
+const normalized = normalizeText(text || '');
+if (!normalized) return '';
+const hit = printerCandidates(catalogPrinters).find(([alias]) => hasWord(normalized, alias));
+return hit ? hit[1] : '';
 }
 
 export function extractEntities(message, history) {
 if (!history) history = [];
-const currentResin = detectResin(message);
-const currentPrinter = detectPrinter(message);
-const historyText = Array.isArray(history) ? history.map((item) => (item && item.content) || '').join(' ') : '';
-return {
-  resin: currentResin || detectResin(historyText),
-  printer: currentPrinter || detectPrinter(historyText),
-};
+const list = Array.isArray(history) ? history.filter((item) => item && item.content) : [];
+// Somente o que o CLIENTE escreveu, do mais recente para o mais antigo.
+const userTexts = list.filter((item) => item.role !== 'assistant').map((item) => item.content).reverse();
+
+let resin = detectResin(message);
+if (!resin) {
+  for (const t of userTexts) { resin = detectResin(t); if (resin) break; }
+}
+if (!resin) {
+  // Se a ultima resposta do bot indicou UMA unica resina, o cliente provavelmente esta falando dela.
+  const lastBot = [...list].reverse().find((item) => item.role === 'assistant');
+  const botResins = lastBot ? detectAllResins(lastBot.content) : [];
+  if (botResins.length === 1) resin = botResins[0];
+}
+
+let printer = detectPrinter(message);
+if (!printer) {
+  for (const t of userTexts) { printer = detectPrinter(t); if (printer) break; }
+}
+return { resin: resin, printer: printer };
+}
+
+function numericValue(value) {
+const n = Number.parseFloat(String(value ?? '').replace(',', '.').replace(/[^0-9.]/g, ''));
+return Number.isFinite(n) ? n : 0;
+}
+
+// Descarta perfis vazios/zerados que existem no banco (ex.: "0s").
+function isUsableParameter(p) {
+return numericValue(p.exposicaoNormal) > 0 && numericValue(p.exposicaoBase) > 0;
+}
+
+function uniqueProfiles(list) {
+const seen = new Set();
+return list.filter((p) => {
+  const key = [p.exposicaoNormal, p.exposicaoBase, p.alturaCamada, p.camadasBase].map((v) => String(v ?? '').replace(',', '.').trim().toLowerCase()).join('|');
+  if (seen.has(key)) return false;
+  seen.add(key);
+  return true;
+});
+}
+
+function displayNames(list) {
+const byNorm = new Map();
+for (const p of list) {
+  const norm = normalizeText(p.impressora);
+  if (!byNorm.has(norm)) byNorm.set(norm, String(p.impressora).trim());
+}
+return [...byNorm.values()].sort((a, b) => a.localeCompare(b));
+}
+
+async function findResinParameters(resin) {
+const dbNames = resolveResinDbNames(resin);
+const query = dbNames.length
+  ? { resina: { $in: dbNames } }
+  : { resina: { $regex: '^' + escapeRegex(resin) + '$', $options: 'i' } };
+const rows = await Parametro.find(query).limit(500).lean();
+return (Array.isArray(rows) ? rows : []).filter(isUsableParameter);
 }
 
 // message e passada para restringir o guard apenas a perguntas de parametros.
@@ -115,21 +278,21 @@ return {
 async function retrieveOfficialParameters(resin, printer, message) {
 if (!message) message = '';
 if (!resin && !printer) return { context: '', guardInstruction: '', found: false };
+const wantsParameters = isParameterRequest(message);
 
 if (GENERIC_RESIN_NAMES.has(resin)) {
   return {
     context: '',
-    guardInstruction: 'O cliente informou apenas a familia ATHOM. Pergunte qual produto exato ele usa: ATHOM DENTAL, ATHOM ALINHADORES ou ATHOM WASHABLE. Nao forneca parametros antes dessa confirmacao.',
+    guardInstruction: wantsParameters
+      ? 'O cliente informou apenas a familia ATHOM. Pergunte qual produto exato ele usa: ATHOM DENTAL, ATHOM ALINHADORES ou ATHOM WASHABLE. Nao forneca parametros antes dessa confirmacao.'
+      : '',
     found: false,
   };
 }
 
-if (resin && (!printer || GENERIC_PRINTER_NAMES.has(printer))) {
+if (resin && (!printer || BRAND_NAMES.has(printer))) {
   // Para diagnosticos nao bloqueie — o bot pode ajudar sem saber a impressora exata.
-  // O guard so e necessario quando o usuario quer parametros especificos.
-  if (!isParameterRequest(message)) {
-    return { context: '', guardInstruction: '', found: false };
-  }
+  if (!wantsParameters) return { context: '', guardInstruction: '', found: false };
   return {
     context: '',
     guardInstruction: 'O cliente mencionou a resina ' + resin + ', mas nao informou o modelo exato da impressora. Pergunte apenas qual e o modelo exato antes de fornecer parametros. Nao invente nem liste parametros de outras impressoras.',
@@ -138,9 +301,7 @@ if (resin && (!printer || GENERIC_PRINTER_NAMES.has(printer))) {
 }
 
 if (!resin && printer) {
-  if (!isParameterRequest(message)) {
-    return { context: '', guardInstruction: '', found: false };
-  }
+  if (!wantsParameters) return { context: '', guardInstruction: '', found: false };
   return {
     context: '',
     guardInstruction: 'O cliente informou a impressora ' + printer.toUpperCase() + ', mas nao informou a resina Quanton3D. Pergunte qual resina ele usa antes de fornecer parametros.',
@@ -148,22 +309,40 @@ if (!resin && printer) {
   };
 }
 
-const query = {
-  resina: { $regex: '^' + escapeRegex(resin) + '$', $options: 'i' },
-  impressora: { $regex: '^' + escapeRegex(printer) + '(?:\\s|$)', $options: 'i' },
-};
+const all = await findResinParameters(resin);
+const key = printerKey(printer);
+const exact = all.filter((p) => printerKey(p.impressora) === key);
+const variants = displayNames(all.filter((p) => printerKey(p.impressora).startsWith(key + ' ')));
 
-const parameters = await Parametro.find(query).limit(5).lean();
-if (!parameters.length) {
+if (!exact.length) {
+  if (variants.length) {
+    return {
+      context: '',
+      guardInstruction: 'Para ' + resin + ' existem perfis oficiais para estes modelos: ' + variants.slice(0, 12).join(', ') + '. Pergunte qual deles e o modelo exato do cliente antes de passar valores. Nao improvise valores.',
+      found: false,
+    };
+  }
   return {
     context: '',
-    guardInstruction: 'Nao ha parametro oficial cadastrado para ' + resin + ' + ' + printer.toUpperCase() + '. Informe isso claramente e indique o WhatsApp (31) 3271-6935. Nao improvise valores.',
+    guardInstruction: wantsParameters
+      ? 'Nao ha parametro oficial cadastrado para ' + resin + ' + ' + printer.toUpperCase() + '. Informe isso claramente e indique o WhatsApp (31) 3271-6935. Nao improvise valores.'
+      : '',
     found: false,
   };
 }
 
+const profiles = uniqueProfiles(exact).slice(0, 2);
+const lines = profiles.map(formatParameter).filter(Boolean);
+if (profiles.length > 1) {
+  lines.push('Observacao: ha mais de um perfil cadastrado para esta combinacao. Apresente o primeiro como perfil principal e cite o segundo como alternativa.');
+}
+if (variants.length && FAMILY_NAMES.has(printer)) {
+  lines.push('ATENCAO: o cliente escreveu apenas "' + printer.toUpperCase() + '". Os valores acima sao do modelo original com esse nome. Tambem existem perfis para: ' + variants.slice(0, 12).join(', ') + '. Apresente os valores deixando claro que sao do modelo original e pergunte se a impressora dele e uma dessas variantes.');
+} else if (variants.length) {
+  lines.push('Variantes do mesmo modelo com perfil proprio: ' + variants.slice(0, 8).join(', ') + '. Se o cliente tiver uma dessas variantes, os valores sao outros.');
+}
 return {
-  context: parameters.map(formatParameter).filter(Boolean).join('\n'),
+  context: lines.join('\n'),
   guardInstruction: '',
   found: true,
 };
@@ -207,6 +386,7 @@ return rankDocuments(query, documents, options);
 
 export async function retrieveRagContext(message, history) {
 if (!history) history = [];
+await loadCatalog();
 const query = queryWithHistory(message, history);
 const entities = extractEntities(message, history);
 const resin = entities.resin;
@@ -258,6 +438,7 @@ console.log('[RAG-INFO]', JSON.stringify({
   threshold: threshold,
   resin: resin || null,
   printer: printer || null,
+  catalogo: { resinas: catalogCache.resins.length, impressoras: catalogCache.printers.length },
   sources: sources,
   results: {
     conversations: approvedConversations.length,
