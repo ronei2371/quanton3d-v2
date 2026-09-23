@@ -1070,7 +1070,9 @@ router.delete('/limpar-testes', auth, async (req, res) => {
     for (const nome of colecoes) {
       const Model = MAPA[nome];
       if (Model) {
-        const r = await Model.deleteMany({});
+        // Conversas aprovadas viraram conhecimento da IAQ3D: nunca sao apagadas pela limpeza.
+        const filtro = nome === 'conversas' ? { aprovado: { $ne: true } } : {};
+        const r = await Model.deleteMany(filtro);
         resultados[nome] = r.deletedCount;
       }
     }
