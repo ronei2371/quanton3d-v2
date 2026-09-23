@@ -20,6 +20,10 @@ const CAMPOS_CONFIGURACAO_GALERIA = [
   { name: "velRetracao", label: "Vel. retração", placeholder: "Ex.: 135,000 mm/min" },
 ];
 
+// Perfil sem exposicao normal ou de base (0s) fica escondido do site ate ser corrigido.
+function numeroParametro(v) { const m = String(v ?? "").replace(",", ".").match(/\d+(?:\.\d+)?/); return m ? Number(m[0]) : 0; }
+function parametroZerado(p) { return !(numeroParametro(p?.exposicaoNormal) > 0 && numeroParametro(p?.exposicaoBase) > 0); }
+
 function formatarDataHora(data) {
   if (!data) return "-";
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data));
@@ -267,6 +271,7 @@ export function AdminContent({ tokenAtendente }) {
   const [msgParam, setMsgParam] = useState("");
   const [parametrosAdm, setParametrosAdm] = useState([]);
   const [buscaParam, setBuscaParam] = useState("");
+  const [soZerados, setSoZerados] = useState(false);
   const [editandoParam, setEditandoParam] = useState(null); // id do parametro em edicao
   const [paramEdit, setParamEdit] = useState({}); // dados sendo editados
   const [sugestoesIaq3d, setSugestoesIaq3d] = useState([]);
@@ -297,7 +302,7 @@ export function AdminContent({ tokenAtendente }) {
       const [metricas, galeria, todosParams] = await Promise.all([
         api.get("/admin/metrics", { headers }),
         api.get("/gallery/admin", { headers, params: filtroGaleria }),
-        api.get("/parametros", { headers }),
+        api.get("/parametros", { headers, params: { todos: 1 } }),
       ]);
       const listaParams = Array.isArray(todosParams.data?.data) ? todosParams.data.data : [];
       setParametrosAdm(listaParams);
@@ -1981,15 +1986,21 @@ export function AdminContent({ tokenAtendente }) {
               placeholder="Buscar por resina ou impressora..."
               style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.88rem" }}
             />
+            {parametrosAdm.some(parametroZerado) && (
+              <label style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px", fontSize: "0.8rem", color: "#ffb4b4", cursor: "pointer" }}>
+                <input type="checkbox" checked={soZerados} onChange={e => setSoZerados(e.target.checked)} style={{ accentColor: "#d73c3c" }} />
+                Mostrar só os perfis zerados ({parametrosAdm.filter(parametroZerado).length}) — eles ficam escondidos do site até serem corrigidos
+              </label>
+            )}
           </div>
 
           <p style={{ color: "#9fb4c7", fontSize: "0.78rem", marginBottom: "10px" }}>
-            {parametrosAdm.filter(p => !buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase())).length} parâmetro(s) encontrado(s)
+            {parametrosAdm.filter(p => (!soZerados || parametroZerado(p)) && (!buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase()))).length} parâmetro(s) encontrado(s)
           </p>
 
           <div style={{ display: "grid", gap: "8px", maxHeight: "450px", overflowY: "auto" }}>
             {parametrosAdm
-              .filter(p => !buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase()))
+              .filter(p => (!soZerados || parametroZerado(p)) && (!buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase())))
               .map((p) => (
                 <div key={p._id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "10px", padding: "10px 12px" }}>
                   {editandoParam === p._id ? (
@@ -2046,6 +2057,11 @@ export function AdminContent({ tokenAtendente }) {
                           <strong style={{ color: "#0092ff", fontSize: "0.88rem" }}>{p.resina}</strong>
                           <span style={{ color: "#9fb4c7", fontSize: "0.82rem" }}>+</span>
                           <span style={{ color: "#eaf3ff", fontSize: "0.85rem" }}>{p.impressora}</span>
+                          {parametroZerado(p) && (
+                            <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800, background: "rgba(255,107,107,0.15)", color: "#ff8a8a", border: "1px solid rgba(255,107,107,0.4)" }}>
+                              ⛔ 0s — escondido do site
+                            </span>
+                          )}
                           <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800,
                             background: p.confianca === "estimado" ? "rgba(255,209,102,0.12)" : "rgba(73,230,139,0.12)",
                             color: p.confianca === "estimado" ? "#dc913c" : "#0aff87",
