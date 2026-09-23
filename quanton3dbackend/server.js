@@ -22,6 +22,7 @@ import visitasRoutes from "./routes/visitas.js";
 import atendentesRoutes from "./routes/atendentes.js";
 import sugestoesConhecimentoRoutes from "./routes/sugestoesConhecimento.js";
 import feedbackParametrosRoutes from "./routes/feedbackParametros.js";
+import { auditLog } from "./services/auditLog.js";
 
 dotenv.config();
 
@@ -57,6 +58,9 @@ credentials: true,
 
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ extended: true, limit: "25mb" }));
+
+// Historico de acoes do ADM (admin e atendentes)
+app.use(auditLog);
 
 // Noindex no subdomínio temporário do Render (evitar duplicidade com lab.quanton3d.com.br)
 app.use((req, res, next) => {
