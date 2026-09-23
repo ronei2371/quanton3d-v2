@@ -317,9 +317,11 @@ export function AdminContent({ tokenAtendente }) {
         } catch (_) {}
       }
       let conversas = [];
+      let conversasTotal = null;
       try {
         const cResp = await api.get("/conversas", { headers, params: { limit: 100 } });
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
+        conversasTotal = Number.isFinite(cResp.data?.total) ? cResp.data.total : null;
       } catch (_) {}
       const clientesCarregados = Array.isArray(m.clientes) ? m.clientes : [];
       carregarAtendentes();
@@ -330,7 +332,7 @@ export function AdminContent({ tokenAtendente }) {
       setClienteMetrics(m.clienteMetrics || null);
       setVisitaMetrics(m.visitaMetrics || null);
       setAtencaoMetrics(m.atencaoMetrics || null);
-      setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, parceiros, totais: m.totals || {} });
+      setDados({ clientes: clientesCarregados, formulacoes, chamados, mensagens, galeria: Array.isArray(galeria.data?.data) ? galeria.data.data : [], conversas, conversasTotal, parceiros, totais: m.totals || {} });
     } catch (err) {
       if (err?.response?.status === 401) { localStorage.removeItem("quanton3d_admin_token"); setToken(""); }
       setErro(err?.response?.data?.error || "Erro ao carregar dados.");
@@ -779,7 +781,7 @@ export function AdminContent({ tokenAtendente }) {
     { id: "formulacoes", label: "Formulações", icon: "🧪", count: dados.formulacoes.length },
     { id: "galeria", label: "Galeria", icon: "📸", count: dados.galeria.length },
     { id: "parceiros", label: "Parceiros", icon: "🤝", count: dados.parceiros?.length || 0 },
-    { id: "conversas", label: "Conversas Bot", icon: "🤖", count: dados.conversas?.length || 0 },
+    { id: "conversas", label: "Conversas Bot", icon: "🤖", count: dados.conversasTotal ?? (dados.conversas?.length || 0) },
     { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
     { id: "atendentes", label: "Atendentes", icon: "👨‍💼", count: null },
     { id: "logs", label: "Logs", icon: "📋", count: null },
@@ -3004,7 +3006,7 @@ function LimpezaContent({ token }) {
   const COLECOES = [
     { id: "clientes",        label: "👥 Clientes",          desc: "Cadastros de entrada do site" },
     { id: "visitas",         label: "👁️ Visitas",           desc: "Registros de visitas ao site" },
-    { id: "conversas",       label: "💬 Conversas Assistente", desc: "Histórico de conversas com o bot" },
+    { id: "conversas",       label: "💬 Conversas Assistente", desc: "Histórico de conversas com o bot (as aprovadas como conhecimento são mantidas)" },
     { id: "bottickets",      label: "🔧 Chamados",          desc: "Chamados técnicos abertos" },
     { id: "contactmessages", label: "✉️ Mensagens",         desc: "Mensagens de contato" },
     { id: "formulacoes",     label: "🧪 Formulações",       desc: "Pedidos de formulação" },
