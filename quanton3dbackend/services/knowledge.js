@@ -574,7 +574,7 @@ P: Qual resina recomendam para iniciantes?
 R: ALCHEMIST é a mais versátil e tolerante a pequenos erros de parâmetro — ótima para quem está começando. Depois que pegar prática, pode migrar para resinas mais específicas como IRON (resistência) ou VULCAN CAST (joalheria).
 
 P: A Quanton3D vende resina para dentistas?
-R: Sim — temos linha odontológica completa: ATHOM DENTAL (modelos e guias cirúrgicos), ATHOM ALINHADORES (placas termoformadas) e ATHOM WASHABLE (lavável em água, sem álcool).
+R: Sim — temos linha odontológica completa: ATHOM DENTAL (modelos de estudo e troquéis, uso externo), ATHOM ALINHADORES (placas termoformadas) e ATHOM WASHABLE (lavável em água, sem álcool).
 
 ## EXEMPLOS DE USO POR APLICAÇÃO
 (Use para inspirar o cliente ou confirmar a resina certa para o projeto)
