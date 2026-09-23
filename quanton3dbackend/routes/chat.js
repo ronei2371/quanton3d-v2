@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
-import { retrieveRagContext } from '../services/rag.js';
+import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
 import { isFounderPhone } from '../services/founderIdentity.js';
 import {
     containsTechnicalQuantity,
@@ -152,6 +152,7 @@ router.post('/', async (req, res) => {
         }
 
         let systemFinal = SYSTEM_PROMPT;
+        systemFinal += `\n\n--- CATALOGO RESUMIDO DE RESINAS QUANTON3D (aplicacao oficial) ---\n${RESIN_CATALOG_SHORT}\nSo cite ou indique resina de acordo com este catalogo. Se a pergunta nao pediu indicacao de resina, responda o que foi perguntado sem empurrar resina.`;
 
         // Instrucoes especificas por modo de atendimento
         if (modo === 'parametros') {
@@ -254,7 +255,7 @@ router.post('/', async (req, res) => {
 
             if (!providerReply || containsTechnicalQuantity(providerReply)) {
                 providerReply = ruleBasedAnswer(text)
-                    || 'Encontrei orientacao tecnica sobre o sintoma, mas nao ha um valor quantitativo oficial para recomendar com seguranca. Informe a resina e o modelo exato da impressora para consultar o parametro correto.';
+                    || 'Nao tenho um valor oficial Quanton3D para te passar com seguranca nesse caso. Me diga qual resina Quanton3D voce usa (e a impressora, se for sobre parametros) que eu consulto a ficha e o perfil corretos. Se preferir, fale com a equipe pelo WhatsApp (31) 3271-6935.';
             }
         }
         console.log('[DEEPSEEK-INFO]', JSON.stringify({
