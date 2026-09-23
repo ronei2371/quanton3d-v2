@@ -78,6 +78,53 @@ const GENERIC_RESIN_NAMES = new Set(['ATHOM']);
 const LEGACY_DOCUMENTS = splitKnowledgeBase(KNOWLEDGE_BASE);
 
 // ---------------------------------------------------------------
+// Fichas dos produtos (secoes "### NOME" do knowledge.js)
+// ---------------------------------------------------------------
+const SHEET_ALIASES = { 'IRON 70/30': '70/30' };
+
+function sheetKey(title) {
+return compactName(String(title || '').split('(')[0]);
+}
+
+const PRODUCT_SHEETS = new Map();
+{
+  const start = LEGACY_DOCUMENTS.findIndex((d) => /^RESINAS/i.test(d.title));
+  const end = LEGACY_DOCUMENTS.findIndex((d, i) => i > start && /^PROBLEMAS COMUNS/i.test(d.title));
+  if (start >= 0) {
+    for (const doc of LEGACY_DOCUMENTS.slice(start + 1, end > start ? end : undefined)) {
+      PRODUCT_SHEETS.set(sheetKey(doc.title), doc);
+    }
+  }
+}
+
+export function getProductSheet(resin) {
+if (!resin) return null;
+return PRODUCT_SHEETS.get(sheetKey(SHEET_ALIASES[resin] || resin)) || null;
+}
+
+// Guia de aplicacoes: linha "Aplicacao" de cada ficha + secao de exemplos por aplicacao.
+const APPLICATION_GUIDE = (() => {
+  const lines = [];
+  for (const doc of PRODUCT_SHEETS.values()) {
+    const name = String(doc.title).split('(')[0].trim();
+    const app = String(doc.content).split('\n').find((l) => /aplica[cç][aã]o/i.test(l));
+    const car = String(doc.content).split('\n').find((l) => /caracter[ií]sticas/i.test(l));
+    if (app) lines.push(name + ': ' + app.replace(/^[-\s]+/, '') + (car ? ' | ' + car.replace(/^[-\s]+/, '') : ''));
+  }
+  const examples = LEGACY_DOCUMENTS.find((d) => /^EXEMPLOS DE USO/i.test(d.title));
+  return [
+    'Catalogo de resinas Quanton3D (use SOMENTE estas descricoes para indicar resina; nao atribua propriedades que nao estao aqui):',
+    ...lines,
+    examples ? '\n' + examples.content : '',
+  ].join('\n');
+})();
+
+// Pergunta pedindo indicacao de resina para uma aplicacao.
+export function isResinRecommendation(message) {
+return /qual (a )?(melhor )?resina|que resina|quais resinas|resina (ideal|indicada|certa|boa|melhor|pra |para )|indica(m|r|ria)?\b.*resina|recomenda(m|r|ria)?\b.*resina|resina.*(aguent|resist|suport)|serve para|posso usar a? ?(resina|athom|iron|alchemist|pyroblast|spin|spark|poseidon|flexform)/i.test(String(message || ''));
+}
+
+// ---------------------------------------------------------------
 // Catalogo dinamico (resinas e impressoras realmente cadastradas)
 // ---------------------------------------------------------------
 const CATALOG_TTL_MS = 10 * 60 * 1000;
@@ -414,12 +461,29 @@ const official = results[0];
 const approvedConversations = results[1];
 const approvedSuggestions = results[2];
 
+// Fichas dos produtos citados (na mensagem ou na conversa).
+const resinsInMessage = detectAllResins(message);
+const sheetResins = resinsInMessage.length ? resinsInMessage : (resin ? [resin] : []);
+const sheets = [];
+for (const r of sheetResins) {
+  const sheet = getProductSheet(r);
+  if (sheet && !sheets.includes(sheet)) sheets.push(sheet);
+  if (sheets.length >= 3) break;
+}
+const wantsRecommendation = isResinRecommendation(message);
+const productContext = [
+  ...sheets.map((doc) => doc.content),
+  wantsRecommendation ? APPLICATION_GUIDE : '',
+].filter(Boolean).join('\n\n');
+
 const technicalRankingOptions = Object.assign({}, rankingOptions, { requireTechnicalAnchor: true });
 const externalDocuments = rankDocuments(query, EXTERNAL_KNOWLEDGE, technicalRankingOptions);
-const legacyDocuments = rankDocuments(query, LEGACY_DOCUMENTS, technicalRankingOptions);
+const legacyDocuments = rankDocuments(query, LEGACY_DOCUMENTS, technicalRankingOptions)
+  .filter((doc) => !sheets.includes(LEGACY_DOCUMENTS.find((d) => d.id === doc.id)));
 
 const context = buildPriorityContext({
   parameterContext: official.context,
+  productContext: productContext,
   approvedConversations: approvedConversations,
   approvedSuggestions: approvedSuggestions,
   externalDocuments: externalDocuments,
@@ -428,6 +492,8 @@ const context = buildPriorityContext({
 
 const sources = [
   ...(official.found ? ['parametros_oficiais'] : []),
+  ...(sheets.length ? ['ficha_produto'] : []),
+  ...(wantsRecommendation ? ['guia_aplicacoes'] : []),
   ...(approvedConversations.length ? ['conversas_aprovadas'] : []),
   ...(approvedSuggestions.length ? ['sugestoes_aprovadas'] : []),
   ...(externalDocuments.length ? ['base_externa_curada'] : []),
