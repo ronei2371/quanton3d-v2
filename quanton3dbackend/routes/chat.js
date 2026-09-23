@@ -9,6 +9,7 @@ import { isFounderPhone } from '../services/founderIdentity.js';
 import {
     containsTechnicalQuantity,
     hasApprovedQuantitativeSource,
+    stripTechnicalQuantities,
 } from '../services/responseSafety.js';
 
 const router = express.Router();
@@ -253,7 +254,12 @@ router.post('/', async (req, res) => {
             firstChoice = completion.choices?.[0];
             providerReply = firstChoice?.message?.content?.trim();
 
-            if (!providerReply || containsTechnicalQuantity(providerReply)) {
+            if (providerReply && containsTechnicalQuantity(providerReply)) {
+                // Mantem o diagnostico e tira so as frases com numero nao autorizado.
+                const limpa = stripTechnicalQuantities(providerReply);
+                providerReply = limpa.length >= 120 ? limpa : '';
+            }
+            if (!providerReply) {
                 providerReply = ruleBasedAnswer(text)
                     || 'Nao tenho um valor oficial Quanton3D para te passar com seguranca nesse caso. Me diga qual resina Quanton3D voce usa (e a impressora, se for sobre parametros) que eu consulto a ficha e o perfil corretos. Se preferir, fale com a equipe pelo WhatsApp (31) 3271-6935.';
             }
