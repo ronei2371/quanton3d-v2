@@ -76,7 +76,8 @@ router.get('/', authAdmin, async (req, res) => {
       .limit(limite)
       .lean();
 
-    res.json({ success: true, data: conversas, total: conversas.length });
+    const total = await Conversa.countDocuments(filtro);
+    res.json({ success: true, data: conversas, total });
   } catch (err) {
     console.error('[LISTAR CONVERSAS]', err);
     res.status(500).json({ success: false, error: 'Erro ao listar conversas' });
