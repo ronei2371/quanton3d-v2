@@ -36,3 +36,12 @@ test('remove so as frases com numero tecnico e preserva o diagnostico', async ()
   assert.match(limpo, /Misture devagar/);
   assert.match(limpo, /Qual resina/);
 });
+
+test('nao deixa item de lista vazio e renumera', async () => {
+  const { stripTechnicalQuantities } = await import('../services/responseSafety.js');
+  const texto = 'Verifique nesta ordem:\n\n1. Use escala de 100% no fatiador.\n2. Se ha compensacao XY ativa.\n3. Se a peca encolhe so depois da pos-cura.';
+  const limpo = stripTechnicalQuantities(texto);
+  assert.doesNotMatch(limpo, /^\s*\d+\.\s*$/m);
+  assert.match(limpo, /^1\. Se ha compensacao/m);
+  assert.match(limpo, /^2\. Se a peca encolhe/m);
+});
