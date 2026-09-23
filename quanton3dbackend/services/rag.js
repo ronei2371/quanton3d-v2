@@ -120,11 +120,11 @@ const APPLICATION_GUIDE = (() => {
 })();
 
 // Catalogo curto (uma linha por resina) que vai sempre no prompt para o bot nunca inventar aplicacao.
-export const RESIN_CATALOG_SHORT = [...PRODUCT_SHEETS.values()].map((doc) => {
+export const RESIN_CATALOG_SHORT = ['Validade de todas as resinas Quanton3D: 12 meses a partir da data de fabricacao.', ''].concat([...PRODUCT_SHEETS.values()].map((doc) => {
   const name = String(doc.title).split('(')[0].trim();
   const app = String(doc.content).split('\n').find((l) => /aplica[cç][aã]o/i.test(l)) || '';
   return name + ': ' + app.replace(/^[-\s]+/, '').replace(/^Aplica[cç][aã]o( oficial)?:\s*/i, '');
-}).concat((() => {
+})).concat((() => {
   const ex = LEGACY_DOCUMENTS.find((d) => /^EXEMPLOS DE USO/i.test(d.title));
   return ex ? ['', 'Indicacao por aplicacao:', ...String(ex.content).split('\n').filter((l) => l.includes(':') && !/^#|^\(/.test(l.trim()))] : [];
 })()).join('\n');
