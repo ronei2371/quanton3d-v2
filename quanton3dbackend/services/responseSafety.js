@@ -5,6 +5,6 @@ export function containsTechnicalQuantity(value = '') {
 }
 
 export function hasApprovedQuantitativeSource(sources = []) {
-  return ['parametros_oficiais', 'conversas_aprovadas', 'sugestoes_aprovadas']
+  return ['parametros_oficiais', 'ficha_produto', 'conversas_aprovadas', 'sugestoes_aprovadas']
     .some((source) => sources.includes(source));
 }
