@@ -50,3 +50,8 @@ test('protege formula Quanton3D no chat publico', () => {
   assert.doesNotMatch(source, /ehFundadorPorNome/);
   assert.doesNotMatch(source, /3198334005[35]/);
 });
+
+test('nao responde indicacao de resina quando a pergunta e sobre outra coisa', () => {
+  assert.equal(ruleBasedAnswer('Qual a melhor orientação para imprimir uma miniatura?'), null);
+  assert.match(ruleBasedAnswer('Qual resina para miniaturas de RPG?'), /ALCHEMIST/);
+});
