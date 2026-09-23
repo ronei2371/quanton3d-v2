@@ -8,6 +8,11 @@ export function ruleBasedAnswer(message) {
 
   const mencionouResina = /\biron\b|\bflexform\b|alchemist|athom|poseidon|pyroblast|vulcan|spark|\bspin\b|low smell|70.30|velvet/.test(t);
 
+  // Peca menor E furo/encaixe apertado: nao e exposicao baixa (ela abriria o furo).
+  if (/(menor|encolh)/.test(t) && /(furo|encaixe|buraco)/.test(t) && /(apertad|fech|menor|justo)/.test(t.replace(/.*?(furo|encaixe|buraco)/, ''))) {
+    return 'Se a peça saiu menor por fora **e** o furo também ficou apertado, a causa provável **não é exposição**: exposição baixa deixaria a medida externa menor, mas abriria o furo. Quando tudo diminui junto, confira primeiro a **escala e a unidade** entre o arquivo e o fatiador, se há **compensação XY** já ativa e se a peça encolhe só **depois da pós-cura** (meça antes e depois). Corrija uma coisa por vez e reimprima o mesmo corpo de prova.\n\nVocê mediu a peça antes da pós-cura também?';
+  }
+
   // Peça saindo menor / encolhendo
   if (/(peca|peças|peça|impressao|modelo).*(menor|pequena|encolh|contra[cç][aã]o)|(?:menor|encolh).*(peca|peças|peça|impressao|modelo)/i.test(t)) {
     return 'A causa mais provável de a peça sair menor nas dimensões externas é **exposição normal baixa**: a borda não polimeriza até o contorno nominal e perde medida. Primeiro calibre a exposição aumentando em passos pequenos e repetindo o mesmo corpo de prova; não use escala ou compensação XY para esconder exposição descalibrada. Se a medida estiver correta antes da pós-cura e diminuir somente depois, aí investigue contração, dose UV e temperatura da pós-cura.\n\nQual exposição normal, altura de camada, resina e impressora você está usando?';
