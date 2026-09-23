@@ -64,6 +64,11 @@ const SYNONYM_GROUPS = [
   ['aumentar', 'aumentou', 'aumentando', 'elevar', 'elevou'],
   ['aquecer', 'aquecimento', 'aqueca', 'aquecida', 'aquecido'],
   ['liberar', 'liberacao', 'aprovar', 'aprovacao'],
+  ['validade', 'vencimento', 'vencida', 'vencido', 'venceu', 'prazo'],
+  ['armazenar', 'armazenamento', 'guardar', 'estocar', 'estoque'],
+  ['amarelada', 'amarelado', 'amarelou', 'amarelamento', 'amarelar', 'yellowing'],
+  ['orientacao', 'orientar', 'inclinacao', 'inclinar', 'angulo'],
+  ['deslocada', 'deslocadas', 'deslocamento', 'deslocou', 'shift'],
 ];
 
 const SYNONYM_MAP = new Map();
@@ -80,6 +85,8 @@ const TECHNICAL_QUERY_TERMS = new Set([
   'peca', 'pegajosa', 'pigmento', 'plaqueta', 'plataforma', 'poscura',
   'pseudoplastico', 'quebradica', 'resina', 'sedimentacao', 'silica', 'suporte',
   'tela', 'tixotropia', 'trinca', 'turbidez', 'ventilacao', 'viscosidade',
+  'validade', 'armazenar', 'amarelada', 'orientacao', 'deslocada', 'delay', 'light',
+  'altura', 'tanque', 'chitubox', 'fatiador', 'lcd', 'elevacao', 'retracao', 'toxica', 'luva',
   'dlp', 'fep', 'ipa', 'lcd', 'pfa', 'sla', 'uv', 'xy',
 ]);
 
@@ -209,6 +216,7 @@ function formatDocuments(label, documents = []) {
 
 export function buildPriorityContext({
   parameterContext = '',
+  productContext = '',
   approvedConversations = [],
   approvedSuggestions = [],
   externalDocuments = [],
@@ -216,6 +224,7 @@ export function buildPriorityContext({
 } = {}) {
   const sections = [
     parameterContext ? `### PRIORIDADE 1 — PARAMETROS OFICIAIS DO MONGODB\n${parameterContext}` : '',
+    productContext ? `### PRIORIDADE 1B — FICHA OFICIAL DOS PRODUTOS QUANTON3D\n${productContext}` : '',
     formatDocuments('PRIORIDADE 2 — CONVERSAS APROVADAS', approvedConversations),
     formatDocuments('PRIORIDADE 3 — SUGESTOES APROVADAS', approvedSuggestions),
     formatDocuments('PRIORIDADE 4 — FONTES EXTERNAS CURADAS E RASTREAVEIS', externalDocuments),
