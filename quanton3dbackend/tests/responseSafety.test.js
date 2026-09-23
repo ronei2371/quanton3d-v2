@@ -22,6 +22,7 @@ test('libera quantidade somente para fonte Quanton3D aprovada', () => {
   assert.equal(hasApprovedQuantitativeSource(['base_externa_curada']), false);
   assert.equal(hasApprovedQuantitativeSource(['base_tecnica']), false);
   assert.equal(hasApprovedQuantitativeSource(['parametros_oficiais']), true);
+  assert.equal(hasApprovedQuantitativeSource(['ficha_produto']), true);
   assert.equal(hasApprovedQuantitativeSource(['conversas_aprovadas']), true);
   assert.equal(hasApprovedQuantitativeSource(['sugestoes_aprovadas']), true);
 });
