@@ -3,7 +3,13 @@ import OpenAI from 'openai';
 import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import Conversa from '../models/Conversa.js';
+import Cliente from '../models/Cliente.js';
 import { retrieveRagContext } from '../services/rag.js';
+import { isFounderPhone } from '../services/founderIdentity.js';
+import {
+    containsTechnicalQuantity,
+    hasApprovedQuantitativeSource,
+} from '../services/responseSafety.js';
 
 const router = express.Router();
 
@@ -42,12 +48,21 @@ ANALISE DE CONTEXTO (SCENE ANALYSIS):
 
 COMO RESPONDER (regra de ouro):
 - Quando o cliente descreve um problema, DE A SOLUCAO PRINCIPAL IMEDIATAMENTE. Nao fique so perguntando.
-- Estrutura ideal: Causa mais provavel -> Ajuste concreto com numero -> Como confirmar.
+- Estrutura ideal: Causa mais provavel -> Ajuste seguro -> Como confirmar.
 - Priorize a causa MAIS PROVAVEL. Nao liste 5 causas parecidas — escolha a principal e explique bem.
 - So forneca numeros que estejam nos parametros oficiais ou em conhecimento aprovado recuperado. Nunca improvise valores.
+- Se o contexto recuperado nao trouxer explicitamente um valor Quanton3D aprovado, NAO inclua segundos, minutos, porcentagens, temperaturas ou dimensoes como recomendacao. Oriente o teste de forma qualitativa e peça somente o dado que falta.
+- Fontes externas e base tecnica antiga explicam principios e diagnosticos; elas nao autorizam criar faixas numericas universais.
 - Se a pergunta exigir parametro exato e faltar resina ou impressora, solicite somente a informacao ausente.
 - Termine com NO MAXIMO uma pergunta de confirmacao, nunca varias.
-- Linguagem direta: "Reduza a exposicao base em 20%" e nao "Considere possivelmente reduzir".
+- Linguagem direta: indique a acao principal sem fingir precisao numerica quando o valor oficial nao estiver disponivel.
+
+PARAMETROS OFICIAIS (quando o contexto trouxer "PRIORIDADE 1 — PARAMETROS OFICIAIS"):
+- ESSES VALORES EXISTEM E SAO OFICIAIS. Nunca diga que nao tem parametro quando eles estiverem no contexto.
+- Apresente em lista: Altura de camada, Exposicao normal, Exposicao base, Camadas base e demais campos que vierem preenchidos. Copie os valores exatamente como estao, sem arredondar nem converter.
+- Deixe claro que e o perfil inicial recomendado pela Quanton3D e que pequenos ajustes podem ser necessarios conforme temperatura, FEP e manutencao.
+- Se o cliente relatar um defeito e o perfil oficial estiver no contexto, compare o que ele usa com o perfil oficial antes de sugerir qualquer mudanca.
+- Se o contexto listar variantes do modelo, cite-as em uma linha para o cliente confirmar.
 
 TECNOLOGIA EXCLUSIVA — REGRA ABSOLUTA:
 - A Quanton3D trabalha EXCLUSIVAMENTE com resinas UV fotopolimerizaveis para impressoras SLA/DLP/LCD (resina liquida curada por luz UV).
@@ -56,7 +71,7 @@ TECNOLOGIA EXCLUSIVA — REGRA ABSOLUTA:
 
 NOMES DAS RESINAS — NUNCA TRADUZIR:
 - O nome correto e IRON (nunca "FERRO" ou "Ferro")
-- O nome correto e SPIN (nunca "GIRO" ou "Giro")
+- O nome correto e SPIN / SPIN+ (nunca "GIRO" ou "Giro")
 - O nome correto e ALCHEMIST (nunca "ALQUIMISTA")
 - O nome correto e FLEXFORM (nunca "FLEXFORMA")
 - O nome correto e PYROBLAST (nunca "PIROLBLAST" ou variações)
@@ -64,7 +79,8 @@ NOMES DAS RESINAS — NUNCA TRADUZIR:
 - O nome correto e VULCAN CAST (nunca traduzir)
 - O nome correto e ATHOM (nunca traduzir)
 - O nome correto e SPARK (nunca traduzir)
-- O nome correto e LOW SMELL (nunca traduzir)
+- O nome correto e LOW SMELL (nunca traduzir; no cadastro aparece como LOWSMELL)
+- O nome correto e RPG 4K (nunca traduzir)
 - Sempre use os nomes em MAIUSCULAS exatamente como escritos acima.
 
 CREDITOS:
@@ -99,7 +115,7 @@ SUGESTAO DE FERRAMENTAS DO SITE:
 
 router.post('/', async (req, res) => {
     try {
-        const { message = '', historico = [], clienteId = '', clienteNome = '', clienteTelefone = '', modo = '' } = req.body || {};
+        const { message = '', historico = [], clienteId = '', clienteNome = '', modo = '' } = req.body || {};
         const text = String(message || '').trim();
 
         if (!text) {
@@ -126,9 +142,9 @@ router.post('/', async (req, res) => {
 
         // Instrucoes especificas por modo de atendimento
         if (modo === 'parametros') {
-            systemFinal += `\n\n--- MODO ATIVO: PARAMETROS ---\nO usuario quer parametros de impressao especificos. Foque em: exposicao normal (s), exposicao base (s), camadas base, velocidade de lift (mm/s). Se faltar resina ou impressora, solicite somente o que falta. Apresente os parametros em lista clara e objetiva. Se os valores nao estiverem no banco de dados validado, informe isso explicitamente antes de sugerir uma faixa estimada.`;
+            systemFinal += `\n\n--- MODO ATIVO: PARAMETROS ---\nO usuario quer parametros de impressao especificos. Foque em: exposicao normal (s), exposicao base (s), camadas base, velocidade de lift (mm/s). Se faltar resina ou impressora, solicite somente o que falta. Apresente os parametros em lista clara e objetiva. Se os valores nao estiverem no banco de dados validado, informe isso explicitamente e nao sugira faixa estimada; indique a Calculadora de Exposicao e o WhatsApp (31) 3271-6935.`;
         } else if (modo === 'tecnico') {
-            systemFinal += `\n\n--- MODO ATIVO: DUVIDA TECNICA ---\nO usuario tem um problema tecnico ou falha de impressao. Use SEMPRE esta estrutura: 1) Causa mais provavel -> 2) Ajuste concreto com numero -> 3) Como confirmar o resultado. Seja direto. Uma causa, um ajuste, uma confirmacao.`;
+            systemFinal += `\n\n--- MODO ATIVO: DUVIDA TECNICA ---\nO usuario tem um problema tecnico ou falha de impressao. Use SEMPRE esta estrutura: 1) Causa mais provavel -> 2) Ajuste seguro (valores somente se vierem do contexto oficial) -> 3) Como confirmar o resultado. Seja direto. Uma causa, um ajuste, uma confirmacao.`;
         } else if (modo === 'resina') {
             systemFinal += `\n\n--- MODO ATIVO: INDICACAO DE RESINA ---\nO usuario quer saber qual resina Quanton3D usar para um caso especifico. Se o uso final nao estiver claro, pergunte primeiro (prototipo, peca funcional, fundicao, dental, flexivel, etc). Apresente no maximo 2 opcoes Quanton3D com justificativa curta para cada. Nunca indique resinas de outras marcas.`;
         }
@@ -137,29 +153,45 @@ router.post('/', async (req, res) => {
             systemFinal += `\n\n--- RAG QUANTON3D ---\n${rag.context}\n---\nResponda somente com informacoes compativeis com a hierarquia acima.`;
         } else if (!rag.guardInstruction) {
             // Sem dados validados no banco — exige transparencia
-            systemFinal += `\n\n--- AVISO DE TRANSPARENCIA ---\nNao ha parametros ou conhecimento validado no banco para esta consulta especifica. Se precisar fornecer valores numericos, deixe CLARO que sao estimativas tecnicas gerais, NAO perfis validados pela Quanton3D. Use a formula: "Nao tenho perfil validado para esta combinacao. Como ponto de partida tecnico, voce pode tentar [valor], mas confirme com a equipe pelo WhatsApp (31) 3271-6935."`;
+            systemFinal += `\n\n--- AVISO DE TRANSPARENCIA ---\nNao ha parametros ou conhecimento validado no banco para esta consulta especifica. Nao forneca valores numericos. Ajude com diagnostico qualitativo e, se o cliente precisar de numeros, diga: "Nao tenho perfil validado para esta combinacao. Confirme com a equipe pelo WhatsApp (31) 3271-6935."`;
         }
         if (rag.guardInstruction) {
             systemFinal += `\n\n--- CONTROLE DE SEGURANCA DOS PARAMETROS ---\n${rag.guardInstruction}`;
         }
 
-        const nomeNormalizado = (clienteNome || '').toLowerCase().trim();
-        const telefoneNormalizado = (clienteTelefone || '').replace(/\D/g, '');
-        const TELEFONES_FUNDADOR = ['31983340053', '31983340055'];
-        const ehFundadorPorTelefone = TELEFONES_FUNDADOR.some(t => telefoneNormalizado.endsWith(t.slice(-9)));
-        const ehFundadorPorNome = nomeNormalizado.includes('ronei') && nomeNormalizado.includes('fonseca');
-        const ehFundador = ehFundadorPorTelefone || ehFundadorPorNome;
+        if (resinaAtual || impressoraAtual) {
+            systemFinal += `\n\n--- CONTEXTO DETECTADO NA CONVERSA ---\nResina: ${resinaAtual || 'nao informada'} | Impressora: ${impressoraAtual ? impressoraAtual.toUpperCase() : 'nao informada'}\nUse isso para nao perguntar de novo o que o cliente ja disse.`;
+        }
+
+        // Telefone vem somente do cadastro do cliente no banco (nome ou telefone digitado nao provam identidade).
+        let clienteTelefone = '';
+        if (mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24) {
+            try {
+                const cad = await Cliente.findById(clienteId).select('telefone').lean();
+                clienteTelefone = cad?.telefone || '';
+            } catch (_) {}
+        }
+        const ehFundador = isFounderPhone(clienteTelefone);
         if (ehFundador) {
             systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVoce esta falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir voce (a IAQ3D) junto com a IA Claude. Reconheca isso de forma natural quando fizer sentido. Trate-o com mais informalidade e proximidade tecnica.`;
         }
 
-        const mensagensHistorico = Array.isArray(historico)
-            ? historico.slice(-8).filter(m => m.role && m.content)
+        const historicoValido = Array.isArray(historico)
+            ? historico.filter(m => m && (m.role === 'user' || m.role === 'assistant') && m.content)
             : [];
+        // Mantem o par "Contexto: resina..., impressora..." que o site envia no inicio.
+        const temContexto = historicoValido.length >= 2 && /^Contexto:/i.test(String(historicoValido[0].content));
+        const parContexto = temContexto ? historicoValido.slice(0, 2) : [];
+        let recentes = historicoValido.slice(parContexto.length).slice(-8);
+        const ultimo = recentes[recentes.length - 1];
+        if (ultimo && ultimo.role === 'user' && String(ultimo.content).trim() === text) {
+            recentes = recentes.slice(0, -1);
+        }
 
         const messages = [
             { role: 'system', content: systemFinal },
-            ...mensagensHistorico.slice(0, -1),
+            ...parContexto,
+            ...recentes,
             { role: 'user', content: text }
         ];
 
@@ -168,7 +200,7 @@ router.post('/', async (req, res) => {
             2000,
             Math.max(600, Number.parseInt(process.env.BOT_MAX_TOKENS, 10) || 1200)
         );
-        const completion = await client().chat.completions.create(
+        let completion = await client().chat.completions.create(
             {
                 model,
                 thinking: { type: 'disabled' },
@@ -179,8 +211,39 @@ router.post('/', async (req, res) => {
             }
         );
 
-        const firstChoice = completion.choices?.[0];
-        const providerReply = firstChoice?.message?.content?.trim();
+        let firstChoice = completion.choices?.[0];
+        let providerReply = firstChoice?.message?.content?.trim();
+        let numericRewrite = false;
+
+        // Trava: sem fonte oficial/aprovada, a resposta nao pode trazer numeros tecnicos inventados.
+        if (
+            providerReply
+            && !hasApprovedQuantitativeSource(rag.sources)
+            && containsTechnicalQuantity(providerReply)
+        ) {
+            numericRewrite = true;
+            const safeMessages = messages.map((item, index) => index === 0
+                ? {
+                    ...item,
+                    content: `${item.content}\n\n--- REVISAO NUMERICA OBRIGATORIA ---\nReescreva sem qualquer numero, faixa, unidade, porcentagem, tempo, temperatura ou dimensao. Nenhum valor quantitativo oficial foi recuperado. Preserve o diagnostico e indique apenas o ajuste qualitativo seguro.`,
+                }
+                : item);
+            completion = await client().chat.completions.create({
+                model,
+                thinking: { type: 'disabled' },
+                reasoning_effort: 'low',
+                temperature: 0.05,
+                max_tokens: maxTokens,
+                messages: safeMessages,
+            });
+            firstChoice = completion.choices?.[0];
+            providerReply = firstChoice?.message?.content?.trim();
+
+            if (!providerReply || containsTechnicalQuantity(providerReply)) {
+                providerReply = ruleBasedAnswer(text)
+                    || 'Encontrei orientacao tecnica sobre o sintoma, mas nao ha um valor quantitativo oficial para recomendar com seguranca. Informe a resina e o modelo exato da impressora para consultar o parametro correto.';
+            }
+        }
         console.log('[DEEPSEEK-INFO]', JSON.stringify({
             model,
             requestId: completion.id || null,
@@ -188,6 +251,7 @@ router.post('/', async (req, res) => {
             contentReturned: Boolean(providerReply),
             promptTokens: completion.usage?.prompt_tokens ?? null,
             completionTokens: completion.usage?.completion_tokens ?? null,
+            numericRewrite,
         }));
         const reply = providerReply
             || ruleBasedAnswer(text)
