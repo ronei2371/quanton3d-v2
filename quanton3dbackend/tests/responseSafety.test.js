@@ -45,3 +45,13 @@ test('nao deixa item de lista vazio e renumera', async () => {
   assert.match(limpo, /^1\. Se ha compensacao/m);
   assert.match(limpo, /^2\. Se a peca encolhe/m);
 });
+
+test('nao deixa pedaco solto de abreviacao ou negrito', async () => {
+  const { stripTechnicalQuantities } = await import('../services/responseSafety.js');
+  const texto = 'Ajuste concreto:\n1. Reduza o pos-cura para **max. 5 min por lado**.\n2. Agite bem a resina antes de usar.\n3. Mantenha a peca longe de luz solar direta.';
+  const limpo = stripTechnicalQuantities(texto);
+  assert.doesNotMatch(limpo, /max\./);
+  assert.doesNotMatch(limpo, /\*\*/);
+  assert.match(limpo, /^1\. Agite bem/m);
+  assert.match(limpo, /^2\. Mantenha/m);
+});
