@@ -119,6 +119,16 @@ const APPLICATION_GUIDE = (() => {
   ].join('\n');
 })();
 
+// Catalogo curto (uma linha por resina) que vai sempre no prompt para o bot nunca inventar aplicacao.
+export const RESIN_CATALOG_SHORT = [...PRODUCT_SHEETS.values()].map((doc) => {
+  const name = String(doc.title).split('(')[0].trim();
+  const app = String(doc.content).split('\n').find((l) => /aplica[cç][aã]o/i.test(l)) || '';
+  return name + ': ' + app.replace(/^[-\s]+/, '').replace(/^Aplica[cç][aã]o( oficial)?:\s*/i, '');
+}).concat((() => {
+  const ex = LEGACY_DOCUMENTS.find((d) => /^EXEMPLOS DE USO/i.test(d.title));
+  return ex ? ['', 'Indicacao por aplicacao:', ...String(ex.content).split('\n').filter((l) => l.includes(':') && !/^#|^\(/.test(l.trim()))] : [];
+})()).join('\n');
+
 // Pergunta pedindo indicacao de resina para uma aplicacao.
 export function isResinRecommendation(message) {
 return /qual (a )?(melhor )?resina|que resina|quais resinas|resina (ideal|indicada|certa|boa|melhor|pra |para )|indica(m|r|ria)?\b.*resina|recomenda(m|r|ria)?\b.*resina|resina.*(aguent|resist|suport)|serve para|posso usar a? ?(resina|athom|iron|alchemist|pyroblast|spin|spark|poseidon|flexform)/i.test(String(message || ''));
