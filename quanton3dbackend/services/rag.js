@@ -80,7 +80,7 @@ const LEGACY_DOCUMENTS = splitKnowledgeBase(KNOWLEDGE_BASE);
 // ---------------------------------------------------------------
 // Fichas dos produtos (secoes "### NOME" do knowledge.js)
 // ---------------------------------------------------------------
-const SHEET_ALIASES = { 'IRON 70/30': '70/30' };
+const SHEET_ALIASES = { 'IRON 70/30': '70/30', 'SPIN+': 'SPIN', GENGIVA: 'ATHOM GENGIVA' };
 
 function sheetKey(title) {
 return compactName(String(title || '').split('(')[0]);
