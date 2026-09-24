@@ -13,8 +13,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, 'dist');
 const indexHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
 
-// Dominio oficial do site (definido pelo fundador).
-const BASE_URL = 'https://lab.quanton3d.com.br';
+// Endereco oficial do site. Se um dia o dominio proprio (ex.: lab.quanton3d.com.br) for
+// configurado, basta trocar aqui, no index.html e no public/robots.txt.
+const BASE_URL = 'https://quanton3d-v2.onrender.com';
 
 function esc(texto) {
   return String(texto ?? '')
