@@ -100,9 +100,11 @@ app.use("/api/sugestoes-conhecimento", sugestoesConhecimentoRoutes);
 app.use("/api/feedback-parametros", feedbackParametrosRoutes);
 
 // Rota coringa para o Frontend (Single Page Application)
+// As paginas do site ja sao servidas como arquivos (dist/<pagina>/index.html). O que chega
+// aqui e endereco que nao existe: responde 404 e o site mostra "Pagina nao encontrada".
 app.get("*", (req, res, next) => {
 if (req.path.startsWith("/api/")) return next();
-res.sendFile(path.join(frontendBuildPath, "index.html"));
+res.status(404).sendFile(path.join(frontendBuildPath, "index.html"));
 });
 
 Sentry.setupExpressErrorHandler(app);
