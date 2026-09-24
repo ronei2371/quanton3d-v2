@@ -61,11 +61,14 @@ function CalculadorasSection({ calculadoraInicial, onNavegar }) {
 
       {ativa && (
         <div className="q-modal-backdrop" onClick={() => setAtiva(null)}>
-          <div className="q-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="q-modal-close" onClick={() => setAtiva(null)} aria-label="Fechar">
+          <div className="q-modal q-modal--wide" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }} onClick={(e) => e.stopPropagation()}>
+            <button className="q-modal-close" style={{ alignSelf: "flex-start", marginBottom: "10px" }} onClick={() => setAtiva(null)} aria-label="Fechar">
               <X size={20} />
             </button>
-            {conteudo[ativa]}
+            {/* A calculadora ocupa a janela inteira; a de custos (iframe) precisa de altura definida */}
+            <div style={{ flex: 1, minHeight: 0, overflowY: ativa === "custo_avancado" ? "hidden" : "auto" }}>
+              {conteudo[ativa]}
+            </div>
           </div>
         </div>
       )}
