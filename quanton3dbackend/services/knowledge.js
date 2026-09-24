@@ -31,6 +31,8 @@ export const KNOWLEDGE_BASE = `
 - Aplicação oficial: Projetos que exigem flexibilidade e resistência a impactos — industrial, prototipagem funcional, peças finais, ferramentas
 - Características: Alta resistência ao impacto, dureza intermediária, flexibilidade
 - Atenção técnica: Adequada para peças acima de 2mm de espessura — abaixo disso fica mais flexível. NÃO recomendada para peças muito inclinadas. Baixa resistência à água.
+- Cuidado (fundador): por ser flexível, em peças com asas grandes ou partes inclinadas pode entortar
+- Miniaturas (fundador): para dar mais resistência, adicionar 30% de IRON na SPIN+
 - Propriedades físicas medidas em laboratório: Módulo de Elasticidade 635 MPa | Tensão de Ruptura 11,5 MPa | Alongamento 50% | Dureza Shore D ~55
 - Características físicas: Odor baixo, viscosidade baixa, pH 6,1, densidade 1,09 g/cm³
 - Cores: Grey, Skin, Black, Clear
@@ -52,6 +54,8 @@ export const KNOWLEDGE_BASE = `
 - Aplicação oficial: Protótipos e peças que exigem resistência mecânica com leve flexibilidade
 - Características: Equilíbrio entre flexibilidade e resistência, alto detalhamento
 - Atenção técnica: NÃO recomendada para peças com geometrias finas e suspensas (estruturas delicadas)
+- Cuidado (fundador): por ser flexível, em peças com asas grandes ou partes inclinadas pode entortar
+- Miniaturas (fundador): junto com a SPIN+, é uma das ideais para miniaturas
 - Propriedades físicas medidas em laboratório: Módulo de Elasticidade 620 MPa | Tensão de Ruptura 15,7 MPa | Alongamento 11% | Dureza Shore D ~67
 - Características físicas: Odor médio, viscosidade média, pH 6,0, densidade 1,017 g/cm³
 - Cores: Black, Grey, Skin, Clear
@@ -120,6 +124,7 @@ export const KNOWLEDGE_BASE = `
 
 ### SPIN
 - Nome no cadastro de parâmetros: SPIN+ (é a mesma resina SPIN)
+- Miniaturas (fundador): SPIN+ e 70/30 são as ideais para miniaturas. Para mais resistência, adicionar 30% de IRON na SPIN+ (fica ótimo)
 - Aplicação: Peças de grande formato com alto nível de detalhe sem deformação, protótipos funcionais e peças de uso final, action figures de grande porte, modelos odontológicos de estudo
 - Características: Alta precisão, rigidez com leve flexibilidade, baixa deformação, cores opacas, impressão mais rápida que outras linhas
 - Propriedades físicas (site oficial): Módulo de Elasticidade 943 MPa | Tensão de Ruptura 13,8 MPa | Alongamento 3% | Dureza Shore D 73 | Densidade 1,39 g/cm³
@@ -157,18 +162,19 @@ export const KNOWLEDGE_BASE = `
 - Temperatura ideal: 22-28°C
 - Validade: 12 meses a partir da data de fabricação
 
-### ATHOM GENGIVA (fonte: site oficial)
+### ATHOM GENGIVA (fonte: site oficial e fundador)
 ⚠️ AVISO DE SEGURANÇA: mesma regra da ATHOM DENTAL — uso EXTERNO (laboratório/bancada), NÃO é biocompatível. NUNCA sugerir uso intraoral nem peça que vá na boca do paciente.
 - Nome no cadastro de parâmetros: ATHOM GENGIVA ou GENGIVA (mesma linha)
-- Aplicação: Impressão da gengiva em modelos odontológicos de laboratório (no site oficial fica em Odontologia > Gengiva, junto da linha ATHOM DENTAL)
-- Para cor e detalhes específicos desta resina, orientar o cliente a confirmar com o suporte Quanton3D
+- Aplicação: Trabalho odontológico — imita a gengiva real e faz o complemento de gengiva para a instalação de dente fixo ou provisório (trabalho de laboratório)
+- Cor: rosa, a cor da própria gengiva
+- No site oficial fica em Odontologia > Gengiva, junto da linha ATHOM DENTAL
 - Lavagem: Álcool isopropílico, 2-4 minutos em movimento
 - Pós-cura: câmara de luz UV (tempo conforme a potência da câmara)
 - Temperatura de trabalho: 18-35°C
 - Validade: 12 meses a partir da data de fabricação
 
 ### RPG 4K
-- Aplicação: AINDA NÃO DISPONÍVEL para venda. Não indicar, não descrever propriedades e não dizer que o cliente pode comprar. Se perguntarem, dizer que ainda não está disponível e, para miniaturas/RPG, indicar ALCHEMIST ou PYROBLAST.
+- Aplicação: AINDA NÃO DISPONÍVEL para venda. Não indicar, não descrever propriedades e não dizer que o cliente pode comprar. Se perguntarem, dizer que ainda não está disponível e, para miniaturas/RPG, indicar SPIN+ ou 70/30.
 
 ## PROBLEMAS COMUNS E SOLUÇÕES TÉCNICAS
 
@@ -608,7 +614,8 @@ R: Sim — temos linha odontológica completa: ATHOM DENTAL (modelos de estudo e
 ## EXEMPLOS DE USO POR APLICAÇÃO
 (Use para inspirar o cliente ou confirmar a resina certa para o projeto)
 
-Miniaturas e RPG: ALCHEMIST ou PYROBLAST — alta definição de detalhes finos
+Miniaturas e RPG: SPIN+ ou 70/30 (as ideais) — para mais resistência, adicionar 30% de IRON na SPIN+
+Peças com asas grandes ou partes inclinadas: cuidado com IRON e 70/30 — por serem flexíveis podem entortar
 Peças funcionais/engrenagens: IRON — resistência mecânica testada
 Vedações e peças flexíveis: FLEXFORM — dobra sem quebrar
 Action figures grandes: SPIN ou 70/30 — leve flexibilidade evita quebra no transporte
