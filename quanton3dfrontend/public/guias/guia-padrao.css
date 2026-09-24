@@ -205,3 +205,68 @@ nav .navin,
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------
+   Imagens dos guias (ajuste feito em 24/09)
+   --------------------------------------------------------------- */
+img.guia-img-zoom { cursor: zoom-in; }
+img.guia-img-zoom:focus-visible { outline: 2px solid #5d99ff; outline-offset: 3px; }
+img.guia-img-inteira { background: #060a14; }
+
+.guia-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  background: rgba(2, 4, 10, 0.92);
+  cursor: zoom-out;
+}
+.guia-zoom img {
+  max-width: min(96vw, 1600px);
+  max-height: calc(100vh - 120px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  background: #060a14;
+}
+.guia-zoom p {
+  max-width: 900px;
+  margin: 0;
+  color: #d8e2f2;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  text-align: center;
+}
+.guia-zoom button {
+  align-self: flex-end;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.guia-zoom-aberto, .guia-zoom-aberto body { overflow: hidden; }
+
+/* Frasco da resina recomendada: um pouco maior */
+.brand-note img { width: 150px !important; height: auto !important; object-fit: contain !important; }
+
+/* Fotos com a peca muito pequena no meio de um fundo escuro enorme: aproxima (recorte) */
+.guia-img-recorte { display: block; overflow: hidden; }
+.guia-img-recorte > img { transform: scale(var(--guia-zoom, 2)); transform-origin: center; }
+.guia-zoom-recorte { border-radius: 10px; max-width: min(96vw, 1100px); }
+.guia-zoom-recorte > img { max-height: calc(100vh - 140px); box-shadow: none; }
+
+@media print {
+  .guia-zoom { display: none !important; }
+}
+
