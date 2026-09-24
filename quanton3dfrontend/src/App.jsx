@@ -41,7 +41,8 @@ const PATH_TO_PAGINA = {
 // Aceita a URL com ou sem barra no final (o servidor redireciona /parametros para /parametros/).
 function paginaDaUrl() {
   const caminho = window.location.pathname.replace(/\/+$/, '') || '/';
-  return PATH_TO_PAGINA[caminho] || 'inicio';
+  if (PATH_TO_PAGINA[caminho]) return PATH_TO_PAGINA[caminho];
+  return caminho === '/' ? 'inicio' : 'naoEncontrada';
 }
 const PAGINA_TO_PATH = {
   inicio: '/', catalogo: '/catalogo', parametros: '/parametros',
@@ -51,15 +52,16 @@ const PAGINA_TO_PATH = {
 
 function App() {
   const TITULOS = {
-    inicio: "Quanton3D — Suporte Técnico e Resinas UV",
-    catalogo: "Catálogo de Resinas — Quanton3D",
+    inicio: "Quanton3D — Suporte Técnico e Resinas UV para Impressão 3D",
+    catalogo: "Catálogo de Resinas UV — Quanton3D",
     parametros: "Parâmetros de Impressão — Quanton3D",
-    calculadoras: "Calculadoras 3D — Quanton3D",
-    guias: "Guias Técnicos — Quanton3D",
+    calculadoras: "Calculadoras de Impressão 3D em Resina — Quanton3D",
+    guias: "Guias Técnicos de Impressão 3D em Resina — Quanton3D",
     academy: "Quanton Academy — Quanton3D",
-    atendimento: "Atendimento — Quanton3D",
+    atendimento: "Atendimento e Suporte Técnico — Quanton3D",
     comunidade: "Comunidade — Quanton3D",
-    sobre: "Sobre Nós — Quanton3D",
+    sobre: "Sobre a Quanton3D — Resinas UV Fabricadas no Brasil",
+    naoEncontrada: "Página não encontrada — Quanton3D",
   };
   const [paginaAtiva, setPaginaAtiva] = useState(paginaDaUrl);
 
@@ -228,7 +230,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     setPaginaAtiva(pagina);
     setCalcInicial(null);
     setActiveGuide(null);
-    const titulo = TITULOS[pagina] || "Quanton3D — Suporte Técnico e Resinas UV";
+    const titulo = TITULOS[pagina] || TITULOS["inicio"];
     document.title = titulo;
     // p0-seo-5: atualiza URL sem recarregar a página
     history.pushState({ pagina }, titulo, PAGINA_TO_PATH[pagina] || '/');
@@ -253,6 +255,17 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     comunidade: <ComunidadeSection cliente={cliente} onAbrirParceiroModal={() => setMostrarParceiroModal(true)} />,
     catalogo: <CatalogoSection />,
     sobre: <SobreSection onAbrirParceiroModal={() => setMostrarParceiroModal(true)} />,
+    naoEncontrada: (
+      <section className="q-card q-panel q-empty">
+        <h3>Página não encontrada</h3>
+        <p>O endereço que você abriu não existe ou mudou. Escolha por onde continuar:</p>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center", marginTop: "14px" }}>
+          <button type="button" className="q-btn q-btn--primary" onClick={() => navegar("inicio")}>Ir para o início</button>
+          <button type="button" className="q-btn q-btn--ghost" onClick={() => navegar("parametros")}>Parâmetros de impressão</button>
+          <button type="button" className="q-btn q-btn--ghost" onClick={() => navegar("guias")}>Guias técnicos</button>
+        </div>
+      </section>
+    ),
   };
 
   return (
