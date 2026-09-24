@@ -22,8 +22,8 @@ function corrigirNomeResina(nome) {
 function chaveResina(nome) { return corrigirNomeResina(nome).toUpperCase(); }
 
 const METODO_LABELS = {
-  "teste-fisico": "Validado em teste fisico",
-  "calculado": "Parametros calculados",
+  "teste-fisico": "Validado em teste físico",
+  "calculado": "Parâmetros calculados",
   "fornecedor": "Dados do fornecedor",
 };
 
@@ -95,7 +95,7 @@ function FeedbackParametros({ resina, impressora }) {
 
   return (
     <div style={{ marginTop: "16px", borderTop: "1px solid var(--border-soft)", paddingTop: "14px" }}>
-      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Esses parametros funcionaram para voce?</span>
+      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Esses parâmetros funcionaram para você?</span>
       <div style={{ display: "flex", gap: "8px", marginTop: "8px", alignItems: "flex-start", flexWrap: "wrap" }}>
         <button
           type="button"
@@ -120,7 +120,7 @@ function FeedbackParametros({ resina, impressora }) {
         <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
           <textarea
             rows={2}
-            placeholder="O que nao funcionou? (opcional)"
+            placeholder="O que não funcionou? (opcional)"
             value={obs}
             onChange={e => setObs(e.target.value)}
             maxLength={500}
@@ -192,7 +192,7 @@ function ParametrosSection({ onAbrirExposicao }) {
       } catch { }
     } catch (err) {
       console.error("Erro ao carregar parametros:", err);
-      setErro("Nao foi possivel carregar os parametros tecnicos.");
+      setErro("Não foi possível carregar os parâmetros técnicos.");
     } finally { setCarregando(false); }
   }
 
@@ -305,12 +305,12 @@ function ParametrosSection({ onAbrirExposicao }) {
   return (
     <section className="q-card q-panel">
       <div className="q-section-head">
-        <span className="q-eyebrow">Consulta rapida</span>
+        <span className="q-eyebrow">Consulta rápida</span>
       </div>
-      <h2 className="q-section-title">Parametros de impressao</h2>
+      <h2 className="q-section-title">Parâmetros de impressão</h2>
       <p className="q-section-desc">
-        Selecione sua resina e impressora para ver a configuracao inicial recomendada pela Quanton3D.
-        {" "}Quer entender o que cada parametro faz? <a href="/guias/secao-parametros-detalhados.html" target="_blank" rel="noreferrer" style={{ color: "var(--primary)", fontWeight: 700, textDecoration: "none" }}>Veja a referencia completa</a>
+        Selecione sua resina e impressora para ver a configuração inicial recomendada pela Quanton3D.
+        {" "}Quer entender o que cada parâmetro faz? <a href="/guias/secao-parametros-detalhados.html" target="_blank" rel="noreferrer" style={{ color: "var(--primary)", fontWeight: 700, textDecoration: "none" }}>Veja a referência completa</a>
       </p>
 
       <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
@@ -348,7 +348,7 @@ function ParametrosSection({ onAbrirExposicao }) {
       {!resultado && !semParametros && (
         <div className="q-empty">
           <h3>Selecione resina e impressora</h3>
-          <p>A configuracao inicial recomendada aparecera aqui automaticamente.</p>
+          <p>A configuração inicial recomendada aparecerá aqui automaticamente.</p>
         </div>
       )}
 
@@ -356,9 +356,9 @@ function ParametrosSection({ onAbrirExposicao }) {
         <div className="q-empty" style={{ borderColor: "rgba(255,165,0,0.3)", background: "rgba(255,165,0,0.05)" }}>
           {(() => { const foto = getFotoImpressora(impressoraSelecionada); return foto ? <img src={foto} alt={impressoraSelecionada} onError={e => e.target.style.display='none'} style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-soft)', marginBottom: '10px' }} /> : null; })()}
           <AlertTriangle size={28} style={{ color: "orange", marginBottom: 8 }} />
-          <h3 style={{ color: "var(--text-primary)" }}>Parametros ainda nao disponiveis</h3>
+          <h3 style={{ color: "var(--text-primary)" }}>Parâmetros ainda não disponíveis</h3>
           <p>
-            Ainda nao temos parametros validados para <strong>{impressoraSelecionada}</strong> com a resina <strong>{resinaSelecionada}</strong>.
+            Ainda não temos parâmetros validados para <strong>{impressoraSelecionada}</strong> com a resina <strong>{resinaSelecionada}</strong>.
           </p>
         </div>
       )}
@@ -372,7 +372,7 @@ function ParametrosSection({ onAbrirExposicao }) {
             </div>
             {perfilChituboxTeste && (
               <button type="button" className={"q-btn q-btn--sm " + (copiado ? "q-btn--success" : "q-btn--primary")} onClick={copiarCodigoChitubox} disabled={!codigoChitubox}>
-                {copiado ? <><CheckCircle2 size={13} /> Codigo copiado!</> : "Copiar Codigo CHITUBOX"}
+                {copiado ? <><CheckCircle2 size={13} /> Código copiado!</> : "Copiar código CHITUBOX"}
               </button>
             )}
           </div>
@@ -395,18 +395,18 @@ function ParametrosSection({ onAbrirExposicao }) {
 
           <div className="q-grid" style={{ marginTop: "14px", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
             <ParamItem label="Altura de Camada" value={resultado.alturaCamada} />
-            <ParamItem label="Tempo de Exposicao" value={resultado.exposicaoNormal} />
-            <ParamItem label="Exposicao Base" value={resultado.exposicaoBase} />
+            <ParamItem label="Tempo de Exposição" value={resultado.exposicaoNormal} />
+            <ParamItem label="Exposição Base" value={resultado.exposicaoBase} />
             <ParamItem label="Camadas de Base" value={resultado.camadasBase} />
           </div>
 
           <p style={{ margin: "16px 0 0", fontSize: "0.78rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
-            Essa e uma configuracao inicial recomendada. Pequenos ajustes podem ser necessarios conforme temperatura ambiente, manutencao da impressora e estado do FEP.
+            Essa é uma configuração inicial recomendada. Pequenos ajustes podem ser necessários conforme temperatura ambiente, manutenção da impressora e estado do FEP.
             {onAbrirExposicao && (
               <>
-                {" "}Ambiente fora de 20-25 C?{" "}
+                {" "}Ambiente fora de 20-25 °C?{" "}
                 <button type="button" onClick={onAbrirExposicao} style={{ padding: 0, border: 0, background: "transparent", color: "var(--primary)", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer" }}>
-                  Ajuste a exposicao na calculadora
+                  Ajuste a exposição na calculadora
                 </button>
               </>
             )}
@@ -425,9 +425,9 @@ function ParametrosSection({ onAbrirExposicao }) {
         <div style={{ marginTop: "24px", borderTop: "1px solid var(--border-soft)", paddingTop: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
             <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-muted)" }}>
-              <History size={14} /> Historico recente
+              <History size={14} /> Histórico recente
             </span>
-            <button type="button" onClick={limparHistorico} title="Limpar historico"
+            <button type="button" onClick={limparHistorico} title="Limpar histórico"
               style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "2px", display: "flex", alignItems: "center" }}>
               <X size={13} />
             </button>
