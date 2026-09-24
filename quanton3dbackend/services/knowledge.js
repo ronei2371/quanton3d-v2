@@ -615,7 +615,7 @@ R: Sim — temos linha odontológica completa: ATHOM DENTAL (modelos de estudo e
 (Use para inspirar o cliente ou confirmar a resina certa para o projeto)
 
 Miniaturas e RPG: SPIN+ ou 70/30 (as ideais) — para mais resistência, adicionar 30% de IRON na SPIN+
-Peças com asas grandes ou partes inclinadas: cuidado com IRON e 70/30 — por serem flexíveis podem entortar
+Peças com asas grandes ou partes inclinadas: indicar a SPIN+. NÃO indicar IRON nem 70/30 — por serem flexíveis podem entortar
 Peças funcionais/engrenagens: IRON — resistência mecânica testada
 Vedações e peças flexíveis: FLEXFORM — dobra sem quebrar
 Action figures grandes: SPIN ou 70/30 — leve flexibilidade evita quebra no transporte
