@@ -53,7 +53,7 @@ test('protege formula Quanton3D no chat publico', () => {
 
 test('nao responde indicacao de resina quando a pergunta e sobre outra coisa', () => {
   assert.equal(ruleBasedAnswer('Qual a melhor orientação para imprimir uma miniatura?'), null);
-  assert.match(ruleBasedAnswer('Qual resina para miniaturas de RPG?'), /ALCHEMIST/);
+  assert.match(ruleBasedAnswer('Qual resina para miniaturas de RPG?'), /SPIN\+.*70\/30/);
 });
 
 test('peca menor com furo apertado aponta escala e nao exposicao baixa', () => {
