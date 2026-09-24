@@ -153,12 +153,13 @@ export const KNOWLEDGE_BASE = `
 - Temperatura ideal: 20-28°C
 - Validade: 12 meses a partir da data de fabricação
 
-### VELVET SKIN
-- Aplicação: Bustos artísticos, action figures com efeito de pele realista, peças decorativas premium
-- Características: Acabamento aveludado e toque macio único
-- Cores: Velvet Skin (tom de pele com textura)
-- Lavagem: Álcool isopropílico 95%+
-- Pós-cura: 5-10 min câmara UV 405 nm
+### VELVET SKIN (fonte: site oficial e fundador)
+- Nome no cadastro de parâmetros: VELVET SKIN (antes aparecia como VELVET)
+- Aplicação: Base para pintura — tom de pele pensado para servir de base na pintura de personagens, bustos, esculturas, miniaturas e figuras colecionáveis
+- Características: Ajuda na pintura como base (facilita o acabamento em tons de pele), acabamento suave, alta definição, maior rigidez com leve flexibilidade que reduz o risco de quebras, tempo de cura reduzido
+- Cores: Velvet Skin (tom de pele neutro, base para pintura)
+- Lavagem: Álcool isopropílico, 2-4 minutos em movimento
+- Pós-cura: câmara de luz UV (tempo conforme a potência da câmara)
 - Temperatura ideal: 22-28°C
 - Validade: 12 meses a partir da data de fabricação
 
