@@ -38,6 +38,11 @@ const PATH_TO_PAGINA = {
   '/comunidade': 'comunidade',
   '/sobre': 'sobre',
 };
+// Aceita a URL com ou sem barra no final (o servidor redireciona /parametros para /parametros/).
+function paginaDaUrl() {
+  const caminho = window.location.pathname.replace(/\/+$/, '') || '/';
+  return PATH_TO_PAGINA[caminho] || 'inicio';
+}
 const PAGINA_TO_PATH = {
   inicio: '/', catalogo: '/catalogo', parametros: '/parametros',
   calculadoras: '/calculadoras', guias: '/guias', academy: '/academia',
@@ -56,7 +61,7 @@ function App() {
     comunidade: "Comunidade — Quanton3D",
     sobre: "Sobre Nós — Quanton3D",
   };
-  const [paginaAtiva, setPaginaAtiva] = useState(() => PATH_TO_PAGINA[window.location.pathname] || 'inicio');
+  const [paginaAtiva, setPaginaAtiva] = useState(paginaDaUrl);
 
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
   const [privacidadeAceitaInicial] = useState(() => getPrivacidadeAceita());
@@ -82,7 +87,7 @@ function App() {
   const [loginAtForm, setLoginAtForm] = useState({ email: "", senha: "" });
   const [loginAtErro, setLoginAtErro] = useState("");
   const [loginAtLoading, setLoginAtLoading] = useState(false);
-useEffect(() => { document.title = TITULOS["inicio"]; }, []);
+useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; }, []);
   useEffect(() => {
     function onKey(e) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setMostrarBusca(p => !p); }
@@ -205,6 +210,19 @@ useEffect(() => { document.title = TITULOS["inicio"]; }, []);
   }
 
   const [calcInicial, setCalcInicial] = useState(null);
+
+  // Botao "voltar" do navegador/celular volta para a pagina anterior do site.
+  useEffect(() => {
+    function aoVoltar() {
+      const pagina = paginaDaUrl();
+      setPaginaAtiva(pagina);
+      setCalcInicial(null);
+      setActiveGuide(null);
+      document.title = TITULOS[pagina] || TITULOS["inicio"];
+    }
+    window.addEventListener("popstate", aoVoltar);
+    return () => window.removeEventListener("popstate", aoVoltar);
+  }, []);
 
   function navegar(pagina) {
     setPaginaAtiva(pagina);
