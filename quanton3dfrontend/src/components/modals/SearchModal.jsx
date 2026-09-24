@@ -25,7 +25,7 @@ const SEARCH_INDEX = [
   { type: "Resina", label: "Alchemist", desc: "Cores translúcidas · miniaturas e arte", page: "catalogo", keywords: "alchemist translucida colorida miniatura arte" },
   { type: "Resina", label: "Spark", desc: "Cristalina e pigmentável", page: "catalogo", keywords: "spark transparente cristalina clear" },
   { type: "Resina", label: "Low Smell", desc: "Uso Geral · odor reduzido", page: "catalogo", keywords: "lowsmell low smell odor cheiro" },
-  { type: "Resina", label: "Velvet Skin", desc: "Acabamento aveludado · bustos e figuras", page: "catalogo", keywords: "velvet skin pele aveludado busto" },
+  { type: "Resina", label: "Velvet Skin", desc: "Base para pintura · tom de pele para bustos e figuras", page: "catalogo", keywords: "velvet skin pele base pintura busto miniatura" },
   { type: "Resina", label: "Vulcan Cast", desc: "Joalheria · fundição por cera perdida", page: "catalogo", keywords: "vulcan cast castable fundicao cera perdida joalheria anel" },
   { type: "Resina", label: "Athom Dental", desc: "Odontologia · modelos de estudo e troquéis (uso externo, não biocompatível)", page: "catalogo", keywords: "athom dental odontologia modelo dentario troquel" },
   { type: "Resina", label: "Athom Alinhadores", desc: "Odontologia · modelos para termoformagem (uso externo)", page: "catalogo", keywords: "athom alinhadores alinhador placa termoformagem" },
