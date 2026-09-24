@@ -275,3 +275,9 @@
   .catalogo-detalhe img { max-height: 320px; object-fit: contain !important; }
   .catalogo-chip { min-height: 34px; padding: 6px 12px; }
 }
+
+/* Janelas (ADM e outras) no celular: botoes do topo quebram linha em vez de sair da tela */
+@media (max-width: 560px) {
+  .q-modal-head { flex-wrap: wrap; gap: 8px; }
+  .q-modal-head > div { flex-wrap: wrap; }
+}
