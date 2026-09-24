@@ -83,7 +83,7 @@ function HomeSection({ onNavegar }) {
         <div className="home-hero-visual">
           <video
             className="home-hero-video"
-            src="/images/videos/video_banner_home.mp4"
+            src="/images/videos/video_banner_home_v2.mp4"
             autoPlay
             muted
             loop
