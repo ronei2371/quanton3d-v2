@@ -40,3 +40,19 @@ test('ADM com ?todos=1 recebe tudo, inclusive zerados', async (t) => {
   await listarParametros({ query: { todos: '1' } }, res);
   assert.equal(res.body.data.length, 3);
 });
+
+test('resina ainda nao disponivel (RPG 4K) nao aparece no site', async (t) => {
+  const original = Parametro.find;
+  t.after(() => { Parametro.find = original; });
+  const lista = [
+    { resina: 'RPG 4K', impressora: 'Saturn 3', exposicaoNormal: '2s', exposicaoBase: '25s' },
+    { resina: 'IRON', impressora: 'Saturn 3', exposicaoNormal: '2s', exposicaoBase: '25s' },
+  ];
+  Parametro.find = () => ({ sort() { return this; }, async lean() { return lista; } });
+  const site = resposta();
+  await listarParametros({ query: {} }, site);
+  assert.deepEqual(site.body.data.map((p) => p.resina), ['IRON']);
+  const adm = resposta();
+  await listarParametros({ query: { todos: '1' } }, adm);
+  assert.equal(adm.body.data.length, 2);
+});
