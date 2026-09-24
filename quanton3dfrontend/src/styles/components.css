@@ -268,3 +268,10 @@
 .q-alert--success { background: rgba(23, 201, 130, 0.07); border-color: rgba(23, 201, 130, 0.3); color: #8dffc4; }
 .q-alert--info { background: rgba(47, 123, 255, 0.08); border-color: rgba(47, 123, 255, 0.28); color: #a8d0ff; }
 .q-alert--warning { background: rgba(220, 145, 60, 0.09); border-color: rgba(220, 145, 60, 0.32); color: #ffcf94; }
+
+/* Catalogo no celular: foto em cima e texto embaixo (antes o texto saia da tela) */
+@media (max-width: 720px) {
+  .catalogo-detalhe { grid-template-columns: 1fr !important; gap: 16px !important; padding: 16px !important; }
+  .catalogo-detalhe img { max-height: 320px; object-fit: contain !important; }
+  .catalogo-chip { min-height: 34px; padding: 6px 12px; }
+}
