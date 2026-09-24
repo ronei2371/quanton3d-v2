@@ -8,7 +8,7 @@ Ultima atualizacao: 24/09/2026.
 Site de suporte tecnico da Quanton3D (fabricante de resinas UV para impressoras 3D de resina SLA/DLP/LCD, Belo Horizonte, MG).
 O site tem o bot IAQ3D, parametros de impressao, calculadoras, guias, catalogo, galeria e o painel ADM.
 
-- Site no ar: https://quanton3d-v2.onrender.com
+- Site no ar: https://quanton3d-v2.onrender.com (endereco oficial: canonical, sitemap e Google usam este endereco. Para trocar por dominio proprio no futuro, mudar BASE_URL em `quanton3dfrontend/generate-static-routes.mjs`, o `index.html` e o `public/robots.txt`).
 - Hospedagem: Render (servico `novo-quanton3d-site-bot`). Cada commit na `main` gera deploy automatico.
 - Loja (WooCommerce): quanton3d.com.br. **Este projeto NAO mexe na loja.** Ela e so fonte de consulta das fichas das resinas.
 
