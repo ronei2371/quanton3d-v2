@@ -62,13 +62,7 @@ app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 // Historico de acoes do ADM (admin e atendentes)
 app.use(auditLog);
 
-// Noindex no subdomínio temporário do Render (evitar duplicidade com lab.quanton3d.com.br)
-app.use((req, res, next) => {
-  if ((req.hostname || req.headers.host || '').includes('onrender.com')) {
-    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-  }
-  next();
-});
+// O endereco quanton3d-v2.onrender.com e o endereco oficial do site: o Google pode indexar.
 app.use("/uploads", express.static("uploads"));
 app.use("/api/bot-tickets", botTicketsRoutes);
 
