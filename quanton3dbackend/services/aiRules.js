@@ -50,7 +50,7 @@ export function ruleBasedAnswer(message) {
 
   // Peças funcionais com resistência
   if (/(resist|impacto|mecan|funcional)/.test(t) && /personagem|miniatura|boneco/.test(t) && pedeResina && !mencionouResina) {
-    return 'Para resistência mecânica e impacto, a resina indicada é a **IRON**. Qual impressora você usa?';
+    return 'Para miniatura com mais resistência, use a **SPIN+** com **30% de IRON** misturada — fica ótimo. Só tome cuidado com IRON e 70/30 em peças com asas grandes ou partes inclinadas: por serem flexíveis, podem entortar. Qual impressora você usa?';
   }
 
   // Joalheria / fundição
@@ -60,7 +60,7 @@ export function ruleBasedAnswer(message) {
 
   // Miniatura / RPG / detalhes finos
   if (/(miniatura|miniaturas|rpg|dungeons|fantasia|detalhe fino|detalhes finos)/.test(t) && pedeResina && !mencionouResina) {
-    return 'Para miniaturas e detalhes finos, compare **ALCHEMIST** para uso versátil e **PYROBLAST** para alta definição. A escolha final depende de resistência, acabamento e velocidade desejados. Qual impressora você usa?';
+    return 'Para miniaturas, as ideais são a **SPIN+** e a **70/30**. Se quiser mais resistência, adicione **30% de IRON** na SPIN+. Cuidado com IRON e 70/30 em peças com asas grandes ou partes inclinadas: por serem flexíveis, podem entortar. Qual impressora você usa?';
   }
 
   // Odontologia / dental
