@@ -6,8 +6,11 @@ export async function criarParametro(req,res){ const p={...req.body}; if(!p.resi
 function numeroParametro(v){ const m=String(v ?? '').replace(',', '.').match(/\d+(?:\.\d+)?/); return m ? Number(m[0]) : 0; }
 export function perfilValido(p){ return numeroParametro(p?.exposicaoNormal) > 0 && numeroParametro(p?.exposicaoBase) > 0; }
 // Site e calculadoras recebem so perfis validos; o ADM pede ?todos=1 para ver e corrigir os zerados.
-export async function listarParametros(req,res){ const parametros=await Parametro.find().sort({resina:1,impressora:1}).lean(); const todos=req.query?.todos==='1'; res.json({success:true,data: todos ? parametros : parametros.filter(perfilValido)}); }
-export async function listarResinas(_req,res){ const resinas=(await Parametro.distinct('resina')).filter(Boolean).sort(); res.json({success:true,data:resinas}); }
+// Resinas que ainda nao estao a venda: continuam no banco (ADM ve com ?todos=1), mas nao aparecem no site.
+export const RESINAS_INDISPONIVEIS = new Set(['RPG 4K']);
+export function visivelNoSite(p){ return perfilValido(p) && !RESINAS_INDISPONIVEIS.has(String(p?.resina || '').trim().toUpperCase()); }
+export async function listarParametros(req,res){ const parametros=await Parametro.find().sort({resina:1,impressora:1}).lean(); const todos=req.query?.todos==='1'; res.json({success:true,data: todos ? parametros : parametros.filter(visivelNoSite)}); }
+export async function listarResinas(_req,res){ const resinas=(await Parametro.distinct('resina')).filter((r) => r && !RESINAS_INDISPONIVEIS.has(String(r).trim().toUpperCase())).sort(); res.json({success:true,data:resinas}); }
 export async function listarImpressoras(_req,res){
   const nomes = (await Parametro.distinct('impressora')).filter(Boolean).sort((a,b) => a.localeCompare(b));
   res.json({ success: true, data: nomes });
