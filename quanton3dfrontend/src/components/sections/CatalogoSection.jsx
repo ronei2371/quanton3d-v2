@@ -20,7 +20,7 @@ const RESINAS = [
 { img: "/images/resinas/poseidon.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-poseidon/", nome: "Poseidon", cat: "Uso Geral", desc: "Lavável em água — dispensa álcool na limpeza. Rígida com leve flexibilidade, baixo odor e detalhamento impecável. Compatível com impressoras LCD/DLP 395–405nm. Ideal para protótipos, miniaturas e peças funcionais.", specs: "Odor baixo | Shore D 64 | Densidade 1,10 g/cm³", volumes: ["1kg", "5kg"], cores: ["Clear", "Light Grey", "Skin"] },
 { img: "/images/resinas/flexform.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-flexform/", nome: "Flexform", cat: "Engenharia", desc: "A mais flexível da linha — para componentes industriais e protótipos que exigem elasticidade extrema sem perder precisão dimensional. Adapta-se a diversas formas sem comprometer a integridade estrutural.", specs: "Ultra flexibilidade | Peças industriais", volumes: ["500g", "1kg"], cores: ["Black", "Clear"] },
 { img: "/images/resinas/spin.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-spin/", nome: "Spin", cat: "Action Figures", desc: "Máxima rigidez para peças de grande formato com alto nível de detalhes. Shore D 73 com leve flexibilidade — preferida para action figures, encaixes firmes e protótipos de tamanho real sem deformação.", specs: "Odor médio | Shore D 73 | Densidade 1,39 g/cm³", volumes: ["500g", "1kg", "5kg"], cores: ["Black", "Light Grey", "Skin", "White", "Blue", "Dark Grey"] },
-{ img: "/images/resinas/athom-dental.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-athom-dental/", nome: "Athom Dental", cat: "Odontologia", desc: "Alta precisão para modelos de estudo, troquéis e guias cirúrgicos. Reprodução fiel de margens para fluxo digital odontológico. Dica técnica: para modelos com encaixe dimensional, prefira a Spin.", specs: "Alta precisão | Uso externo", volumes: ["500g", "1kg", "5kg"], cores: ["White Cream", "Ocre", "Light Grey", "Terracota", "Dark Grey", "Blue", "Skin", "White", "Marfim"] },
+{ img: "/images/resinas/athom-dental.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-athom-dental/", nome: "Athom Dental", cat: "Odontologia", desc: "Alta precisão para modelos de estudo, troquéis e protótipos de peças dentárias (uso externo). Reprodução fiel de margens para fluxo digital odontológico. Dica técnica: para modelos com encaixe dimensional, prefira a Spin.", specs: "Alta precisão | Uso externo", volumes: ["500g", "1kg", "5kg"], cores: ["White Cream", "Ocre", "Light Grey", "Terracota", "Dark Grey", "Blue", "Skin", "White", "Marfim"] },
 { img: "/images/resinas/athom-alinhadores.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-athom-alinhadores/", nome: "Athom Alinhadores", cat: "Odontologia", desc: "Estabilidade dimensional máxima com resistência à temperatura para termoformação a vácuo. Projetada para alinhadores, contenções, placas de bruxismo e protetores bucais — sem deformação no plastificador.", specs: "Resistência térmica | Baixa contração", volumes: ["500g", "1kg"], cores: ["Terracota", "Dark Grey", "White", "Ocre", "Marfim"] },
 { img: "/images/resinas/athom-washable.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-athom-washable1/", nome: "Athom Washable", cat: "Odontologia", desc: "A única washable do fluxo odontológico — elimina o álcool, reduz custos e simplifica a limpeza. Alta rigidez com leve flexibilidade e detalhamento superficial excepcional para modelos de alta precisão.", specs: "Lavável em água | Baixo odor", volumes: ["1kg"], cores: ["Light Grey", "White Cream", "Skin", "Marfim"] },
 { img: "/images/resinas/spark.webp", url: "https://quanton3d.com.br/produtos/resina-quanton-spark/", nome: "Spark", cat: "Action Figures", desc: "Cristalina e altamente pigmentável — ideal para personalizar cores vibrantes com acabamento transparente. Cura rápida e alta rigidez para action figures, joias e peças decorativas de visual limpo.", specs: "Translúcida rígida | Cura rápida", volumes: ["500g", "1kg", "5kg"], cores: ["Clear"] },
@@ -95,14 +95,14 @@ style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem" 
 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "16px" }}>
 {RESINAS.map((res, i) => (
 <button key={res.nome} type="button" onClick={() => setResinaSel(i)}
-className="q-badge"
+className="q-badge catalogo-chip"
 style={{ cursor: "pointer", border: "1px solid", borderColor: i === resinaSel ? "var(--primary)" : "var(--border-soft)", background: i === resinaSel ? "rgba(47,123,255,0.14)" : "rgba(255,255,255,0.03)", color: i === resinaSel ? "var(--primary)" : "var(--text-muted)" }}>
 {res.nome}
 </button>
 ))}
 </div>
 
-<div className="q-card" style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "26px", padding: "26px" }}>
+<div className="q-card catalogo-detalhe" style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "26px", padding: "26px" }}>
 <div style={{ borderRadius: "var(--r-md)", overflow: "hidden", background: "rgba(0,0,0,0.25)", minHeight: "260px", display: "flex", alignItems: "center", justifyContent: "center" }}>
 <img src={r.img} alt={r.nome} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
 </div>
@@ -127,7 +127,7 @@ style={{ cursor: "pointer", border: "1px solid", borderColor: i === resinaSel ? 
 </div>
 
 {r.cat === "Odontologia" && (
-<p style={{ fontSize: "0.78rem", color: "#92400e", background: "rgba(251,191,36,0.15)", border: "1px solid rgba(217,119,6,0.35)", borderRadius: "6px", padding: "7px 10px", marginBottom: "10px" }}>
+<p style={{ fontSize: "0.78rem", color: "#ffcf94", background: "rgba(251,191,36,0.15)", border: "1px solid rgba(217,119,6,0.35)", borderRadius: "6px", padding: "7px 10px", marginBottom: "10px" }}>
 ⚠️ Uso externo — não biocompatível para contato intra-oral
 </p>
 )}
