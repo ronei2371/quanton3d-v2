@@ -324,7 +324,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
       </main>
 
       <footer className="site-footer">
-        <span style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "0.86rem" }}>Quanton3D © Suporte técnico e resinas UV de alta performance.</span>
+        <span style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "0.86rem" }}>Quanton3D © Suporte técnico e resinas UV para impressão 3D.</span>
         <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>Copyright Quanton 3D LTDA · CNPJ 11.165.962/0001-17 · 2026. Todos os direitos reservados.</span>
         <div className="footer-social-links">
           {SOCIAL_LINKS.map((link) => (
