@@ -130,6 +130,127 @@
     show();
   }
 
+
+  // Imagens dos guias: identifica o guia (para ajustes especificos no CSS),
+  // mostra a figura inteira quando ela estava cortada em faixa fina e
+  // permite ampliar qualquer imagem com um clique.
+  function setupImagens() {
+    const nome = (location.pathname.split("/").pop() || "").replace(/\.html$/i, "");
+    if (nome) document.documentElement.dataset.guia = nome;
+
+    const ehConteudo = (img) =>
+      !img.closest("nav, .nav, .guidenav, .guide-utility-bar, header .brand, .logo") &&
+      !img.classList.contains("no-zoom");
+
+    const ajustar = (img) => {
+      if (!ehConteudo(img) || !img.naturalWidth || !img.naturalHeight) return;
+      const box = img.getBoundingClientRect();
+      if (box.width < 60 || box.height < 30) return;
+      const cs = getComputedStyle(img);
+      const heroi = img.closest("header, .hero, .heroVisual, .photoHero") || box.height >= 300;
+      // Recortes pequenos de um infografico maior: mostrar inteiro revelaria texto cortado
+      const recortePequeno = Math.max(img.naturalWidth, img.naturalHeight) < 200;
+      if (cs.objectFit === "cover" && !heroi && !recortePequeno) {
+        const proporcaoImg = img.naturalWidth / img.naturalHeight;
+        const proporcaoCaixa = box.width / box.height;
+        const corte = Math.max(proporcaoImg / proporcaoCaixa, proporcaoCaixa / proporcaoImg);
+        // Cortava mais de ~25% da figura: mostra inteira, sem esticar alem de 2x o original
+        if (corte > 1.33) {
+          const alturaIdeal = box.width / proporcaoImg;
+          const altura = Math.round(Math.max(box.height, Math.min(alturaIdeal, img.naturalHeight * 2, 420)));
+          img.classList.add("guia-img-inteira");
+          img.style.setProperty("height", altura + "px", "important");
+          img.style.setProperty("object-fit", "contain", "important");
+        }
+      }
+      img.classList.add("guia-img-zoom");
+      if (!img.hasAttribute("tabindex")) img.tabIndex = 0;
+      if (!img.getAttribute("title")) img.title = "Clique para ampliar";
+    };
+
+    // Guias cujas fotos tem a peca pequena num fundo escuro grande: aproxima a imagem
+    const RECORTES = {
+      "guia-tensao-termica": [
+        { seletor: '.visualCard > img:not([src^="images/"])', zoom: 4.5 },
+        { seletor: ".heroVisual > img", zoom: 2.2 },
+      ],
+    };
+    (RECORTES[nome] || []).forEach(({ seletor, zoom }) => {
+      document.querySelectorAll(seletor).forEach((img) => {
+        if (img.parentElement.classList.contains("guia-img-recorte")) return;
+        const moldura = document.createElement("span");
+        moldura.className = "guia-img-recorte";
+        moldura.style.setProperty("--guia-zoom", String(zoom));
+        img.dataset.guiaZoom = String(zoom);
+        img.replaceWith(moldura);
+        moldura.append(img);
+      });
+    });
+
+    const imagens = [...document.images].filter(ehConteudo);
+    imagens.forEach((img) => {
+      if (img.complete) ajustar(img);
+      else img.addEventListener("load", () => ajustar(img), { once: true });
+    });
+
+    // Imagens com carregamento tardio (lazy) so tem tamanho depois de entrar na tela
+    window.addEventListener("load", () => imagens.forEach(ajustar), { once: true });
+
+    let overlay = null;
+    const fechar = () => {
+      if (!overlay) return;
+      overlay.remove();
+      overlay = null;
+      document.documentElement.classList.remove("guia-zoom-aberto");
+    };
+    const abrir = (img) => {
+      fechar();
+      overlay = document.createElement("div");
+      overlay.className = "guia-zoom";
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-label", "Imagem ampliada");
+      const grande = document.createElement("img");
+      grande.src = img.currentSrc || img.src;
+      grande.alt = img.alt || "";
+      const legenda = document.createElement("p");
+      const fig = img.closest("figure");
+      legenda.textContent = (fig && fig.querySelector("figcaption")?.textContent.trim()) || img.alt || "";
+      const botao = document.createElement("button");
+      botao.type = "button";
+      botao.textContent = "Fechar ✕";
+      if (img.dataset.guiaZoom) {
+        // Foto com a peca pequena: a ampliacao mostra o mesmo recorte aproximado
+        const moldura = document.createElement("span");
+        moldura.className = "guia-img-recorte guia-zoom-recorte";
+        moldura.style.setProperty("--guia-zoom", img.dataset.guiaZoom);
+        moldura.append(grande);
+        overlay.append(botao, moldura);
+      } else {
+        overlay.append(botao, grande);
+      }
+      if (legenda.textContent) overlay.append(legenda);
+      overlay.addEventListener("click", fechar);
+      document.body.append(overlay);
+      document.documentElement.classList.add("guia-zoom-aberto");
+      botao.focus();
+    };
+
+    document.addEventListener("click", (e) => {
+      const img = e.target.closest && e.target.closest("img.guia-img-zoom");
+      if (!img || (overlay && overlay.contains(img))) return;
+      if (img.closest("a")) return;
+      e.preventDefault();
+      abrir(img);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") fechar();
+      if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("guia-img-zoom")) {
+        e.preventDefault();
+        abrir(e.target);
+      }
+    });
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
@@ -137,6 +258,7 @@
         ensurePrintButton();
         setupScrollSpy();
         setupAutoHideNav();
+        setupImagens();
       },
       { once: true },
     );
@@ -144,5 +266,6 @@
     ensurePrintButton();
     setupScrollSpy();
     setupAutoHideNav();
+    setupImagens();
   }
 })();
