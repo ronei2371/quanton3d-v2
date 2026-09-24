@@ -119,8 +119,10 @@ export const KNOWLEDGE_BASE = `
 - Validade: 12 meses a partir da data de fabricação
 
 ### SPIN
-- Aplicação: Peças de grande formato, protótipos funcionais, action figures de grande porte, modelos odontológicos de estudo
-- Características: Alta precisão, leve flexibilidade, baixa deformação, Dureza Shore D 73
+- Nome no cadastro de parâmetros: SPIN+ (é a mesma resina SPIN)
+- Aplicação: Peças de grande formato com alto nível de detalhe sem deformação, protótipos funcionais e peças de uso final, action figures de grande porte, modelos odontológicos de estudo
+- Características: Alta precisão, rigidez com leve flexibilidade, baixa deformação, cores opacas, impressão mais rápida que outras linhas
+- Propriedades físicas (site oficial): Módulo de Elasticidade 943 MPa | Tensão de Ruptura 13,8 MPa | Alongamento 3% | Dureza Shore D 73 | Densidade 1,39 g/cm³
 - Cores: Black, Light Grey, Skin, White, Blue, Dark Grey
 - Lavagem: Álcool isopropílico 95%+
 - Pós-cura: 5-10 min câmara UV 405 nm
@@ -154,6 +156,19 @@ export const KNOWLEDGE_BASE = `
 - Pós-cura: 5-10 min câmara UV 405 nm
 - Temperatura ideal: 22-28°C
 - Validade: 12 meses a partir da data de fabricação
+
+### ATHOM GENGIVA (fonte: site oficial)
+⚠️ AVISO DE SEGURANÇA: mesma regra da ATHOM DENTAL — uso EXTERNO (laboratório/bancada), NÃO é biocompatível. NUNCA sugerir uso intraoral nem peça que vá na boca do paciente.
+- Nome no cadastro de parâmetros: ATHOM GENGIVA ou GENGIVA (mesma linha)
+- Aplicação: Impressão da gengiva em modelos odontológicos de laboratório (no site oficial fica em Odontologia > Gengiva, junto da linha ATHOM DENTAL)
+- Para cor e detalhes específicos desta resina, orientar o cliente a confirmar com o suporte Quanton3D
+- Lavagem: Álcool isopropílico, 2-4 minutos em movimento
+- Pós-cura: câmara de luz UV (tempo conforme a potência da câmara)
+- Temperatura de trabalho: 18-35°C
+- Validade: 12 meses a partir da data de fabricação
+
+### RPG 4K
+- Aplicação: AINDA NÃO DISPONÍVEL para venda. Não indicar, não descrever propriedades e não dizer que o cliente pode comprar. Se perguntarem, dizer que ainda não está disponível e, para miniaturas/RPG, indicar ALCHEMIST ou PYROBLAST.
 
 ## PROBLEMAS COMUNS E SOLUÇÕES TÉCNICAS
 
