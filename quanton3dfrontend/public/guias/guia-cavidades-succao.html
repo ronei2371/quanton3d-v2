@@ -12,7 +12,8 @@
     <style>
       .drainage-illustration {
         width: 100%;
-        height: 120px;
+        height: auto;
+        aspect-ratio: 1 / 1;
         margin-bottom: 12px;
         border-radius: 9px;
         background-image: url("images/sucao-drenagem-guia.png");
@@ -34,6 +35,18 @@
       }
       .drainage-illustration--small {
         background-position: 100% 100%;
+      }
+      /* Diagramas em corte (desenho nitido) e fotos com faixa de texto cortada */
+      .compare-card img.cav-diagrama {
+        height: auto;
+        aspect-ratio: 2 / 1;
+        object-fit: contain;
+        background: #060b16;
+      }
+      .compare-card img.cav-foto-recorte {
+        height: auto;
+        aspect-ratio: 2.4 / 1;
+        object-fit: cover;
       }
       /* ===== Cenas de animação específicas deste guia ===== */
 
@@ -602,8 +615,9 @@
           <div class="compare-grid">
             <article class="compare-card ok">
               <img
-                src="images/sucao-cav-aberta.jpg"
-                alt="Cavidade aberta ou conectada ao exterior"
+                class="cav-diagrama"
+                src="images/sucao-cavidade-aberta.svg"
+                alt="Corte de peça oca com respiro na parede: a resina entra na cavidade, a pressão se iguala e não há efeito ventosa"
               />
               <div class="compare-body">
                 <h3>Cavidade aberta</h3>
@@ -615,9 +629,9 @@
             </article>
             <article class="compare-card bad">
               <img
-                src="images/sucao-elev-pressao.jpg"
-                alt="Cavidade selada contra o fundo do tanque: a pressão puxa a peça como uma ventosa"
-                loading="lazy"
+                class="cav-diagrama"
+                src="images/sucao-cavidade-selada.svg"
+                alt="Corte de peça oca sem respiro: ao subir a plataforma, o volume preso vira uma ventosa e puxa a peça contra o filme FEP"
               />
               <div class="compare-body">
                 <h3>Cavidade selada</h3>
@@ -822,6 +836,7 @@
           <div class="compare-grid">
             <article class="compare-card bad">
               <img
+                class="cav-foto-recorte"
                 src="images/sucao-sem-furo.jpg"
                 alt="Peça oca sem respiro, com risco de deformação e retenção de resina"
               />
@@ -835,6 +850,7 @@
             </article>
             <article class="compare-card ok">
               <img
+                class="cav-foto-recorte"
                 src="images/sucao-com-furo.jpg"
                 alt="Peça oca com abertura funcional para ventilação e drenagem"
               />
