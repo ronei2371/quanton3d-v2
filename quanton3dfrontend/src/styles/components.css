@@ -307,3 +307,5 @@
 .comunidade-redes { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 8px; }
 .comunidade-filtro { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 14px; font-size: 0.8rem; }
 .comunidade-filtro .q-badge { cursor: pointer; font: inherit; font-size: 0.75rem; }
+.comunidade-credito { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: var(--r-sm); background: rgba(150, 80, 245, 0.06); border: 1px solid var(--border-accent); font-size: 0.8rem; }
+.comunidade-credito a { display: inline-flex; align-items: center; gap: 4px; color: var(--primary); font-weight: 700; font-size: 0.78rem; }
