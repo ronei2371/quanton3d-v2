@@ -145,7 +145,8 @@ export const KNOWLEDGE_BASE = `
 - Validade: 12 meses a partir da data de fabricação
 
 ### LOW SMELL
-- Aplicação: Ambientes sem ventilação adequada, uso doméstico, escritórios
+- Aplicação: Para quem se incomoda com cheiro de resina (uso doméstico, escritório), com odor reduzido
+- Segurança: odor baixo NÃO significa ausência de vapores. Não dispensa ventilação/renovação de ar, luvas nitrílicas, óculos nem a FDS. Não indicar uso em quarto fechado sem ventilação.
 - Características: Baixo odor, similar à Alchemist em desempenho
 - Cores: Grey, Skin, Clear
 - Lavagem: Álcool isopropílico 95%+
@@ -537,10 +538,13 @@ Sempre filtre a resina (peneira/filtro de café) depois de uma impressão que fa
 
 ## CALIBRAÇÃO E TESTES
 
-### Gabarito Quanton3D
-- Imprima o gabarito de calibração disponível em quanton3d.com.br
-- Avalie: adesão, detalhes, tolerância e acabamento
-- Ajuste parâmetros baseado nos resultados
+### Gabarito Quanton3D (teste do pino — método Quanton3D, guia de calibração do site)
+- Imprima o gabarito (base com posições 1 a 5 + pino). Lave, seque, faça a pós-cura e espere esfriar antes de testar.
+- Alinhe o pino na posição 3, sem forçar, torcer ou usar ferramenta. Se não entrar, teste as outras posições.
+- O alvo é a posição 3. Regra Quanton3D: cada número contado até chegar no 3 vale 0,1 s na exposição NORMAL.
+- Encaixou no 1: adicionar 0,3 s (1→2→3). No 2: adicionar 0,2 s. No 3: não alterar. No 4: retirar 0,2 s. No 5: retirar 0,3 s (5→4→3).
+- Ajuste só a exposição normal nesse ensaio, reimprima e teste de novo até encaixar no 3. Anote resina, cor, impressora, altura de camada, temperatura e exposição usada.
+- Termos: "pino encaixou no 5", "gabarito", "teste do pino", "encaixe no número", "calibrador Quanton".
 
 ### Compensação XY (tolerância)
 - Peça saiu maior: compensação externa negativa (campo "a" no Chitubox)
@@ -563,6 +567,33 @@ Termos relacionados: peça menor, impressão encolheu, contração da resina, di
 - Meça com paquímetro
 - Ajuste exposição base se não aderir ou aderir demais
 - Ajuste exposição normal se a peça estiver frágil ou difícil de remover suporte
+
+### Misturar resinas (Quanton3D com Quanton3D ou com outra marca)
+- Mistura validada pela equipe: SPIN+ com IRON, para miniaturas mais resistentes. A proporção validada é 30% de IRON na SPIN+. Evite em peças com asas grandes ou partes inclinadas (podem entortar).
+- Outras misturas entre resinas Quanton3D não são validadas: cura, resistência e acabamento ficam imprevisíveis e o perfil oficial deixa de valer. Para outra característica intermediária, fale com a equipe pelo WhatsApp (31) 3271-6935.
+- Misturar com resina de outra marca: não recomendado (fotoiniciador, pigmento e viscosidade diferentes).
+- Termos: posso misturar duas resinas Quanton, misturar resina, mistura, juntar duas resinas, sobra de resina, blend.
+
+### Troquei a tela LCD da impressora: preciso recalibrar?
+- No Brasil "tela" quase sempre é o LCD. O filme do fundo da cuba é o FEP (filme/membrana). Não confunda os dois.
+- Tela nova pode ter potência UV diferente da antiga: refaça o nivelamento da plataforma, rode o teste de tela da impressora para ver se acende por igual e refaça a calibração da exposição com o gabarito Quanton3D antes de imprimir peça de verdade.
+- Se trocou só o FEP (filme): confira a tensão do filme e o nivelamento; a exposição normalmente não muda.
+- Termos: troquei a tela, tela nova, LCD novo, troca de LCD, trocar display.
+
+### Falha sempre no mesmo lugar da plataforma (mesmo lado, mesma região)
+- Primeiro separe se o problema é do LUGAR ou da PEÇA: imprima a mesma peça em outra posição da plataforma.
+- Se a falha continua no mesmo lugar: olhe a tela LCD (pixel fraco, mancha), o FEP (riscado, opaco ou sujo naquela área) e resina curada/sujeira no fundo da cuba. Faça o teste de tela da impressora e filtre a resina.
+- Se a falha acompanha a peça: é suporte, orientação ou geometria.
+- Nivelamento só entra quando o lado falha logo nas primeiras camadas (a base não gruda de um lado).
+- Termos: só o lado esquerdo falha, só o lado direito, sempre no mesmo canto, sempre no mesmo lugar, mesma posição.
+
+### Como a Calculadora de Custos do site faz a conta
+- Custo da resina = volume da peça (mL) × quantidade × 1,05 (margem de perda já embutida) ÷ 1000 × preço do litro.
+- Energia = potência (W) ÷ 1000 × horas de impressão × preço do kWh.
+- Subtotal = resina + energia + consumíveis + pós-processo. Impacto da falha = subtotal × taxa de falha ÷ 100.
+- Custo total = subtotal + impacto da falha. Custo por peça = total ÷ quantidade.
+- Se parecer errado: confira se o volume está em mL (não em gramas) e se o preço é do litro.
+- Termos: meu cálculo de custo parece errado, mostre a fórmula do custo, como calcula o custo, calculadora de custos.
 
 ## FISIQUEPE — FICHAS DE SEGURANÇA
 Disponíveis em quanton3d.com.br/docs:
@@ -595,7 +626,7 @@ P: Qual a diferença entre IRON e PYROBLAST?
 R: IRON é focada em resistência mecânica e impacto — ideal para peças funcionais que sofrem esforço. PYROBLAST é para prototipagem rápida com alta precisão de detalhes, mas não tem o mesmo reforço mecânico da IRON.
 
 P: Posso misturar duas resinas Quanton3D diferentes?
-R: Não recomendamos. Cada resina tem uma formulação otimizada para suas propriedades específicas — misturar pode gerar resultados imprevisíveis de cura, resistência e acabamento. Se precisar de uma característica intermediária, fale com a equipe pelo WhatsApp (31) 3271-6935 para avaliar uma formulação personalizada.
+R: Existe uma mistura validada pela equipe: SPIN+ com IRON (miniaturas mais resistentes). Outras misturas não são validadas. Detalhes na seção "Misturar resinas".
 
 P: Minha resina venceu, ainda posso usar?
 R: Resinas fotopolimerizáveis têm validade porque os fotoiniciadores perdem reatividade com o tempo. Resina vencida cura mal, fica pegajosa ou frágil mesmo com parâmetros corretos. Evite usar após a validade — o resultado não é confiável.
@@ -624,7 +655,7 @@ Joalheria (fundição): VULCAN CAST — queima limpa, sem resíduo
 Modelos odontológicos: ATHOM DENTAL ou ATHOM WASHABLE
 Alinhadores transparentes: ATHOM ALINHADORES
 Produção em lote/velocidade: SPARK — cura rápida
-Ambiente sem ventilação: LOW SMELL ou POSEIDON (water washable)
+Quem se incomoda com o cheiro: LOW SMELL (odor reduzido) ou POSEIDON (lavável em água) — mesmo assim mantenha o local ventilado, use luvas e óculos e siga a FDS
 Bustos e peças com efeito de pele: VELVET SKIN
 
 ## CONTATO E SUPORTE
