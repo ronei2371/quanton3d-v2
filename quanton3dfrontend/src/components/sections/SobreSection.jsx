@@ -1,4 +1,5 @@
-import { Factory, Target, Microscope, Users, Shield, MapPin, ShoppingCart, MessageCircle, Handshake } from "lucide-react";
+import { useState } from "react";
+import { Factory, Target, Microscope, Users, Shield, MapPin, ShoppingCart, MessageCircle, Handshake, Flag, X } from "lucide-react";
 import { WHATSAPP_VENDAS_URL } from "../../data/contact";
 
 const VALORES = [
@@ -7,7 +8,20 @@ const VALORES = [
   { icon: Shield, titulo: "Responsabilidade e Segurança", texto: "Indústria totalmente regularizada: Certificado IBAMA, Licença Ambiental, AVCB Bombeiros e certificação CRQ – 2ª Região." },
 ];
 
+// Patrocinio: Nelsinho Piquet, carro 33 da Stock Car (fotos enviadas pelo fundador)
+const FOTOS_PISTA = [
+  { src: "/images/sobre/stock-car-33-pista.webp", legenda: "Carro 33 da Stock Car com a marca Quanton3D no para-choque" },
+  { src: "/images/sobre/nelsinho-podio.webp", legenda: "Nelsinho Piquet no pódio, com a Quanton3D no macacão", pos: "center 15%" },
+  { src: "/images/sobre/stock-car-33-curva.webp", legenda: "Carro 33 na pista" },
+  { src: "/images/sobre/stock-car-33-logo.webp", legenda: "Marca Quanton3D na traseira do carro 33" },
+  { src: "/images/sobre/stock-car-33-rosa.webp", legenda: "Carro 33 com a pintura rosa" },
+  { src: "/images/sobre/nelsinho-macacao.webp", legenda: "Macacão do piloto com a marca Quanton3D", pos: "center 30%" },
+  { src: "/images/sobre/nelsinho-box.webp", legenda: "Nelsinho Piquet no box", pos: "center 25%" },
+  { src: "/images/sobre/stock-car-33-box.webp", legenda: "Equipe no box com o carro 33" },
+];
+
 function SobreSection({ onAbrirParceiroModal }) {
+  const [fotoAberta, setFotoAberta] = useState(null);
   const fundadores = [
     { nome: "Ronei Martins", cargo: "Fundador e Desenvolvimento", foto: "/images/sobre/Ronei Martins.png" },
     { nome: "Gislene Peixoto", cargo: "Cofundadora e Gestão", foto: "/images/sobre/Gislene.png" },
@@ -62,6 +76,29 @@ function SobreSection({ onAbrirParceiroModal }) {
           );
         })}
       </div>
+
+      <div className="sobre-pista">
+        <h3 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1rem", margin: "0 0 8px" }}><Flag size={16} /> Quanton3D nas pistas</h3>
+        <p style={{ fontSize: "0.88rem", maxWidth: "80ch", margin: "0 0 14px" }}>
+          A Quanton3D patrocina o piloto <strong style={{ color: "var(--text-primary)" }}>Nelson Piquet Jr. (Nelsinho)</strong> na <strong style={{ color: "var(--text-primary)" }}>Stock Car</strong>.
+          Nossa marca está no carro 33 e no macacão do piloto: uma resina brasileira acompanhando o automobilismo brasileiro.
+        </p>
+        <div className="sobre-pista-grade">
+          {FOTOS_PISTA.map((foto) => (
+            <button key={foto.src} type="button" className="sobre-pista-foto" onClick={() => setFotoAberta(foto)} aria-label={`Ampliar: ${foto.legenda}`}>
+              <img src={foto.src} alt={foto.legenda} loading="lazy" style={foto.pos ? { objectPosition: foto.pos } : undefined} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {fotoAberta && (
+        <div role="dialog" aria-modal="true" aria-label="Foto ampliada" onClick={() => setFotoAberta(null)} className="sobre-pista-zoom">
+          <button type="button" className="q-btn q-btn--ghost q-btn--sm" onClick={() => setFotoAberta(null)}><X size={16} /> Fechar</button>
+          <img src={fotoAberta.src} alt={fotoAberta.legenda} onClick={(e) => e.stopPropagation()} />
+          <p>{fotoAberta.legenda}</p>
+        </div>
+      )}
 
       <div style={{ maxWidth: "960px" }}>
         <h3 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1rem", margin: "26px 0 8px" }}><MapPin size={16} /> Onde Estamos</h3>
