@@ -321,3 +321,21 @@
 .sobre-pista-zoom img { max-width: min(96vw, 1400px); max-height: calc(100dvh - 130px); object-fit: contain; border-radius: var(--r-sm); cursor: default; }
 .sobre-pista-zoom p { margin: 0; color: #d8e2f2; font-size: 0.9rem; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .sobre-pista-foto img { transition: none; } }
+/* Home: carrossel "Feito com resina Quanton3D" (pecas aprovadas da Galeria) */
+.carrossel-comunidade { display: flex; flex-direction: column; gap: 22px; }
+.carrossel-topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.carrossel-controles { display: flex; gap: 8px; }
+.carrossel-seta { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border-strong); background: rgba(255, 255, 255, 0.04); color: var(--text-primary); cursor: pointer; }
+.carrossel-seta:hover { background: rgba(47, 123, 255, 0.16); }
+.carrossel-seta:focus-visible, .carrossel-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.carrossel-trilho { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 3 * 14px) / 4); gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; }
+.carrossel-trilho::-webkit-scrollbar { display: none; }
+.carrossel-card { position: relative; display: block; padding: 0; border: 1px solid var(--border-soft); border-radius: var(--r-md); overflow: hidden; background: #05070d; aspect-ratio: 3 / 4; scroll-snap-align: start; cursor: pointer; text-align: left; }
+.carrossel-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; transition: transform 0.4s ease; }
+.carrossel-card:hover img { transform: scale(1.04); }
+.carrossel-legenda { position: absolute; inset: auto 0 0 0; display: flex; flex-direction: column; gap: 2px; padding: 34px 14px 12px; background: linear-gradient(to top, rgba(3, 5, 10, 0.92), rgba(3, 5, 10, 0)); color: #d8e2f2; font-size: 0.8rem; line-height: 1.4; }
+.carrossel-legenda strong { color: #fff; font-size: 0.92rem; }
+.carrossel-cta { align-self: flex-start; }
+@media (max-width: 980px) { .carrossel-trilho { grid-auto-columns: calc((100% - 2 * 14px) / 3); } }
+@media (max-width: 640px) { .carrossel-trilho { grid-auto-columns: 72%; } .carrossel-controles { display: none; } }
+@media (prefers-reduced-motion: reduce) { .carrossel-card img { transition: none; } }
