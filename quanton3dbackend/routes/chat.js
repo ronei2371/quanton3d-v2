@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import { transitionLayerAnswer } from '../services/transitionLayers.js';
 import { gabaritoAnswer } from '../services/gabaritoQuanton.js';
+import { misturaAnswer, custoFormulaAnswer } from '../services/regrasSuporte.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
@@ -130,6 +131,7 @@ REGRAS FISICAS DE DIAGNOSTICO (use para nao se contradizer):
 - Exposicao ALTA: medidas externas maiores, furos e encaixes internos MENORES (fecham), perda de detalhe fino, suporte dificil de remover.
 - Peca INTEIRA menor por igual (externo E furos menores): pense em escala/unidade do fatiador, compensacao XY ativa ou contracao na pos-cura, nao em exposicao.
 - Impressoras de resina nao tem correia, bico nem cama aquecida: deslocamento de camada vem de eixo Z, fuso, plataforma solta, peca soltando ou sucção.
+- Falha sempre no MESMO LUGAR da plataforma: o primeiro passo e imprimir a mesma peca em outra posicao. Se a falha fica no lugar: tela LCD, FEP ou sujeira/resina curada na cuba (teste de tela + filtrar resina). Se acompanha a peca: suporte, orientacao ou geometria. Nivelamento so quando a base nao gruda de um lado nas primeiras camadas.
 
 SUGESTAO DE FERRAMENTAS DO SITE:
 - Custo de impressao: sugira Calculadora de Custos.
@@ -149,7 +151,7 @@ router.post('/', async (req, res) => {
 
         // Camadas de transicao: regra do fundador + conta linear com os numeros do cliente.
         // Nao depende de perfil oficial (os parametros oficiais nao tem transicao).
-        const respostaTransicao = transitionLayerAnswer(text) || gabaritoAnswer(text);
+        const respostaTransicao = transitionLayerAnswer(text) || gabaritoAnswer(text) || misturaAnswer(text) || custoFormulaAnswer(text);
         if (respostaTransicao) {
             let conversaId = null;
             try {
