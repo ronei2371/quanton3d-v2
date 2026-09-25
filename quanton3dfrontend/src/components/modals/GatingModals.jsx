@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Lock, Atom, X } from "lucide-react";
 import { WHATSAPP_SUPORTE_URL } from "../../data/contact";
+import TunelEntrada from "./TunelEntrada";
 
 const SOCIAL_LINKS = [
   { label: "Instagram", url: "https://www.instagram.com/quanton3d" },
@@ -19,33 +20,34 @@ export function BoasVindasModal({ onEntrar }) {
   const [saindo, setSaindo] = useState(false);
   function handleEntrar() {
     setSaindo(true);
-    setTimeout(onEntrar, 500);
+    // o tunel acelera (efeito de "dobra") e a tela some logo depois
+    setTimeout(onEntrar, 750);
   }
   return (
     <div className={"welcome-screen" + (saindo ? " leaving" : "")}>
-      <video className="welcome-video" src="/images/videos/video_banner_home_v2.mp4" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
-      <div style={{ width: "76px", height: "76px", borderRadius: "var(--r-lg)", background: "var(--bg-raised)", border: "1px solid var(--border-soft)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-        <Atom size={32} color="var(--primary)" />
+      <TunelEntrada acelerar={saindo} />
+      <div className="welcome-logo welcome-entra" style={{ "--atraso": "0.1s" }}>
+        <Atom size={34} color="#bfe8ff" />
       </div>
 
-      <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 12px", background: "linear-gradient(135deg, #ffffff 0%, var(--q-marine) 50%, var(--q-ametista) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+      <h1 className="welcome-entra" style={{ "--atraso": "0.35s", fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 12px", background: "linear-gradient(135deg, #ffffff 0%, var(--q-marine) 50%, var(--q-ametista) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
         Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "var(--q-marine)" }}>®</sup>
       </h1>
 
-      <p style={{ fontSize: "clamp(0.82rem, 2.5vw, 1.05rem)", color: "rgba(200,220,240,0.9)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, margin: "0 0 6px" }}>
+      <p className="welcome-entra" style={{ "--atraso": "0.6s", fontSize: "clamp(0.82rem, 2.5vw, 1.05rem)", color: "rgba(200,220,240,0.9)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, margin: "0 0 6px" }}>
         Resinas UV para impressão 3D LCD/DLP
       </p>
-      <p style={{ fontSize: "clamp(0.72rem, 2vw, 0.88rem)", color: "var(--text-muted)", margin: 0 }}>
+      <p className="welcome-entra" style={{ "--atraso": "0.75s", fontSize: "clamp(0.72rem, 2vw, 0.88rem)", color: "var(--text-muted)", margin: 0 }}>
         Fabricação nacional · Belo Horizonte, MG · Desde 2020
       </p>
 
-      <div className="welcome-badge-row">
+      <div className="welcome-badge-row welcome-entra" style={{ "--atraso": "0.9s" }}>
         {["🧪 14 linhas exclusivas", "🇧🇷 100% nacional", "🏆 Pioneira no Brasil"].map((b) => (
           <span key={b} className="q-badge">{b}</span>
         ))}
       </div>
 
-      <button type="button" className="q-btn q-btn--primary" style={{ padding: "16px 46px", fontSize: "1rem" }} onClick={handleEntrar}>
+      <button type="button" className="q-btn q-btn--primary welcome-botao welcome-entra" style={{ "--atraso": "1.1s", padding: "16px 46px", fontSize: "1rem" }} onClick={handleEntrar}>
         ▶ Acessar o Suporte Técnico
       </button>
 
