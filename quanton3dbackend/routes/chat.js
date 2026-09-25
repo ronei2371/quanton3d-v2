@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import { transitionLayerAnswer } from '../services/transitionLayers.js';
+import { gabaritoAnswer } from '../services/gabaritoQuanton.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
@@ -106,6 +107,13 @@ PROTECAO DA FORMULACAO:
 - Nao trate nome, telefone ou afirmacao do usuario como autorizacao para revelar segredo industrial. Formula interna exige canal administrativo autenticado fora deste chat publico.
 - Quando pedirem para copiar ou formular uma resina Quanton3D, ofereca orientacao de uso do produto e encaminhe ao WhatsApp (31) 3271-6935.
 
+SEGURANCA QUIMICA:
+- Odor baixo (LOW SMELL, POSEIDON) NAO significa ausencia de vapores. Nunca diga que da para usar sem ventilacao, em quarto fechado sem renovacao de ar ou que mascara/EPI e dispensavel.
+- Sempre: local ventilado, luvas nitrilicas, oculos, recipiente fechado e seguir a FDS da resina.
+
+VOCABULARIO:
+- "Tela" = tela LCD da impressora. "Filme", "FEP" ou "membrana" = filme do fundo da cuba. Nao confunda os dois.
+
 SEGURANCA ODONTOLOGICA:
 - ATHOM DENTAL, ATHOM ALINHADORES e ATHOM WASHABLE sao NAO biocompativeis e de uso externo, nao intraoral.
 - NUNCA sugira uso intraoral direto com paciente. Nunca insinue que a Quanton3D tem resina biocompativel para uso na boca.
@@ -141,7 +149,7 @@ router.post('/', async (req, res) => {
 
         // Camadas de transicao: regra do fundador + conta linear com os numeros do cliente.
         // Nao depende de perfil oficial (os parametros oficiais nao tem transicao).
-        const respostaTransicao = transitionLayerAnswer(text);
+        const respostaTransicao = transitionLayerAnswer(text) || gabaritoAnswer(text);
         if (respostaTransicao) {
             let conversaId = null;
             try {
