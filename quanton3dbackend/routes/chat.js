@@ -2,6 +2,7 @@ import express from 'express';
 import OpenAI from 'openai';
 import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
+import { transitionLayerAnswer } from '../services/transitionLayers.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
@@ -136,6 +137,18 @@ router.post('/', async (req, res) => {
 
         if (!text) {
             return res.status(400).json({ success: false, error: 'Mensagem obrigatoria' });
+        }
+
+        // Camadas de transicao: regra do fundador + conta linear com os numeros do cliente.
+        // Nao depende de perfil oficial (os parametros oficiais nao tem transicao).
+        const respostaTransicao = transitionLayerAnswer(text);
+        if (respostaTransicao) {
+            let conversaId = null;
+            try {
+                const conv = await Conversa.create({ clienteId, clienteNome, pergunta: text, resposta: respostaTransicao, fonte: 'rules' });
+                conversaId = conv._id;
+            } catch (_) {}
+            return res.json({ success: true, reply: respostaTransicao, source: 'rules', ragUsado: false, conversaId });
         }
 
         const rag = await retrieveRagContext(text, historico);
