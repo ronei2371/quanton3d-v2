@@ -1,4 +1,5 @@
 import { useState } from "react";
+import CarrosselComunidade from "./CarrosselComunidade";
 import {
   ArrowRight,
   BookOpen,
@@ -141,6 +142,8 @@ function HomeSection({ onNavegar }) {
           </div>
         </div>
       </section>
+
+      <CarrosselComunidade onNavegar={onNavegar} />
 
       <section className="home-product-banner" aria-labelledby="product-banner-title">
         <img src="/images/linha-resinas-quanton3d.png" alt="Linha de resinas Quanton3D" />
