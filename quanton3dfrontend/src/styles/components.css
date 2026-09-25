@@ -353,3 +353,8 @@
 @media (prefers-reduced-motion: reduce) {
   .carrossel-card img, .carrossel-seta { transition: none; }
 }
+
+/* Aviso de privacidade nos envios de foto (chat, chamado, galeria, parceiros) */
+.aviso-foto { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; padding: 9px 12px; border: 1px solid rgba(255, 196, 92, 0.35); border-radius: var(--r-sm); background: rgba(255, 196, 92, 0.07); color: var(--text-secondary); font-size: 0.76rem; line-height: 1.5; text-align: left; }
+.aviso-foto svg { flex-shrink: 0; margin-top: 2px; color: #ffc45c; }
+.aviso-foto strong { color: var(--text-primary); }
