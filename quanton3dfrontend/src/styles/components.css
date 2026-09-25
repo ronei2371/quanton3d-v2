@@ -309,3 +309,14 @@
 .comunidade-filtro .q-badge { cursor: pointer; font: inherit; font-size: 0.75rem; }
 .comunidade-credito { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: var(--r-sm); background: rgba(150, 80, 245, 0.06); border: 1px solid var(--border-accent); font-size: 0.8rem; }
 .comunidade-credito a { display: inline-flex; align-items: center; gap: 4px; color: var(--primary); font-weight: 700; font-size: 0.78rem; }
+/* Sobre: Quanton3D nas pistas (patrocinio Stock Car) */
+.sobre-pista { margin: 26px 0 0; padding: 18px; border: 1px solid var(--border-soft); border-radius: var(--r-md); background: rgba(224, 70, 75, 0.04); }
+.sobre-pista-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 10px; }
+.sobre-pista-foto { display: block; padding: 0; border: 1px solid var(--border-soft); border-radius: var(--r-sm); overflow: hidden; background: #05070d; cursor: zoom-in; aspect-ratio: 4 / 3; }
+.sobre-pista-foto img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s ease; }
+.sobre-pista-foto:hover img, .sobre-pista-foto:focus-visible img { transform: scale(1.04); }
+.sobre-pista-zoom { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; background: rgba(0, 0, 0, 0.88); cursor: zoom-out; }
+.sobre-pista-zoom > button { align-self: flex-end; }
+.sobre-pista-zoom img { max-width: min(96vw, 1400px); max-height: calc(100dvh - 130px); object-fit: contain; border-radius: var(--r-sm); cursor: default; }
+.sobre-pista-zoom p { margin: 0; color: #d8e2f2; font-size: 0.9rem; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .sobre-pista-foto img { transition: none; } }
