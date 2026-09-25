@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle, Upload, ShieldCheck, Megaphone, SlidersHorizontal, Plus } from "lucide-react";
 import api from "../../lib/api";
 
 const RESINAS_QUANTON = [
@@ -8,7 +8,11 @@ const RESINAS_QUANTON = [
   "ATHOM DENTAL", "ATHOM ALINHADORES", "ATHOM WASHABLE",
 ];
 
-const IMPRESSORAS_COMUNS = [
+// Nome usado na pagina de Parametros quando e diferente do nome da galeria
+const NOME_NOS_PARAMETROS = { SPIN: "SPIN+", "LOW SMELL": "LOWSMELL", "IRON 70/30": "70/30" };
+
+// Usada so se a lista completa (a mesma da pagina de Parametros) nao carregar
+const IMPRESSORAS_RESERVA = [
   "Anycubic Photon Mono", "Anycubic Photon Mono X", "Anycubic Photon Mono X 6K",
   "Anycubic Photon M3", "Anycubic Photon M3 Max", "Anycubic Photon M3 Plus",
   "Anycubic Photon M5", "Anycubic Photon M5s", "Anycubic Photon M7",
@@ -17,7 +21,6 @@ const IMPRESSORAS_COMUNS = [
   "Elegoo Jupiter", "Elegoo Jupiter SE",
   "Creality Halot One", "Creality Halot Mage", "Creality Halot Mage Pro",
   "Phrozen Sonic Mini 8K", "Phrozen Sonic Mighty 8K",
-  "Bambu Lab",
 ];
 
 const CAMPOS_CONFIGURACAO_GALERIA = [
@@ -41,6 +44,10 @@ function criarConfiguracaoVazia() {
   return CAMPOS_CONFIGURACAO_GALERIA.reduce((acc, campo) => { acc[campo.name] = ""; return acc; }, {});
 }
 
+function formularioVazio() {
+  return { resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia(), redes: { instagram: "", tiktok: "", facebook: "", youtube: "" }, autorizaDivulgacao: false };
+}
+
 function pareceLink(texto) {
   if (!texto) return false;
   const t = texto.trim();
@@ -52,6 +59,40 @@ function montarLink(texto) {
   return t.startsWith("http") ? t : `https://${t}`;
 }
 
+function linkParametroOficial(resina) {
+  const nome = String(resina || "").trim().toUpperCase();
+  if (!RESINAS_QUANTON.includes(nome)) return "";
+  return `/parametros?resina=${encodeURIComponent(NOME_NOS_PARAMETROS[nome] || nome)}`;
+}
+
+function PassosComoFunciona({ passos }) {
+  return (
+    <ol className="comunidade-passos">
+      {passos.map(({ icon: Icon, titulo, texto }, i) => (
+        <li key={titulo}>
+          <span className="comunidade-passo-num" aria-hidden="true">{i + 1}</span>
+          <div>
+            <strong><Icon size={15} /> {titulo}</strong>
+            <p>{texto}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const PASSOS_GALERIA = [
+  { icon: Upload, titulo: "Envie sua peça", texto: "Uma foto, a resina e a impressora. Os parâmetros são opcionais." },
+  { icon: ShieldCheck, titulo: "A Quanton3D confere", texto: "Cada envio é revisado antes de aparecer aqui." },
+  { icon: Megaphone, titulo: "Sua peça aparece", texto: "Fica na galeria e, se você autorizar, pode ir para o Instagram oficial com o seu crédito." },
+];
+
+const PASSOS_PROFISSIONAIS = [
+  { icon: Briefcase, titulo: "Cadastre seu trabalho", texto: "Impressão sob encomenda, pintura, modelagem, cursos ou projetos." },
+  { icon: ShieldCheck, titulo: "A Quanton3D confere", texto: "O cadastro é revisado antes de ser publicado." },
+  { icon: MessageCircle, titulo: "Receba contatos", texto: "Seu cartão aparece aqui com botão de orçamento direto no seu WhatsApp. Divulgação gratuita." },
+];
+
 function ParceirosLista({ onAbrirParceiroModal }) {
   const [parceiros, setParceiros] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -60,22 +101,31 @@ function ParceirosLista({ onAbrirParceiroModal }) {
   useEffect(() => {
     api.get("/partner-requests/public/aprovados")
       .then((res) => setParceiros(Array.isArray(res.data?.partners) ? res.data.partners : []))
-      .catch(() => setErro("Não foi possível carregar os parceiros agora. Tente novamente em instantes."))
+      .catch(() => setErro("Não foi possível carregar os profissionais agora. Tente novamente em instantes."))
       .finally(() => setCarregando(false));
   }, []);
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px", flexWrap: "wrap", gap: "10px" }}>
-        <p style={{ margin: 0, fontSize: "0.85rem" }}>Conheça profissionais e serviços da comunidade Quanton3D.</p>
+      <div className="comunidade-intro">
+        <div>
+          <h3>Profissionais que trabalham com resina</h3>
+          <p>Precisa de alguém para imprimir, pintar ou modelar uma peça? Encontre aqui. Trabalha com isso? Divulgue seu serviço de graça.</p>
+        </div>
         <button type="button" className="q-btn q-btn--primary" onClick={onAbrirParceiroModal}><Users size={15} /> Divulgar meu trabalho</button>
       </div>
 
-      {carregando && <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Carregando parceiros...</p>}
+      <PassosComoFunciona passos={PASSOS_PROFISSIONAIS} />
+
+      {carregando && <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Carregando profissionais...</p>}
       {erro && <div className="q-alert q-alert--error">{erro}</div>}
 
       {!carregando && !erro && parceiros.length === 0 && (
-        <div className="q-empty"><h3>Ainda não há trabalhos divulgados</h3><p>Seja o primeiro. Publique seu trabalho e receba contatos de interessados.</p></div>
+        <div className="q-empty comunidade-vazio">
+          <h3>A lista de profissionais está começando</h3>
+          <p>Seja um dos primeiros a aparecer aqui. Quem procura impressão, pintura ou modelagem em resina vai ver o seu trabalho.</p>
+          <button type="button" className="q-btn q-btn--primary" onClick={onAbrirParceiroModal}><Users size={15} /> Quero divulgar meu trabalho</button>
+        </div>
       )}
 
       {!carregando && parceiros.length > 0 && (
@@ -83,8 +133,8 @@ function ParceirosLista({ onAbrirParceiroModal }) {
           {parceiros.map((p) => (
             <div key={p._id} className="q-card" style={{ padding: "0", display: "flex", flexDirection: "column", gap: "0", overflow: "hidden", border: "1px solid var(--border-strong)", boxShadow: "0 18px 42px rgba(0,0,0,0.2)" }}>
               {p.fotos?.[0]?.url && (
-                <div style={{ width: "100%", height: "480px", borderRadius: 0, background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                  <img src={p.fotos[0].url} alt={p.titulo} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                <div style={{ width: "100%", height: "min(480px, 70vw)", borderRadius: 0, background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                  <img src={p.fotos[0].url} alt={p.titulo} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </div>
               )}
               <div style={{ padding: "22px 24px 10px" }}>
@@ -115,27 +165,26 @@ function ParceirosLista({ onAbrirParceiroModal }) {
   );
 }
 
-function GaleriaTab({ cliente }) {
-  const [aba, setAba] = useState("enviar");
-  const [form, setForm] = useState({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia(), redes: { instagram: "", tiktok: "", facebook: "", youtube: "" }, autorizaDivulgacao: false });
+function FormularioEnvio({ cliente, onFechar }) {
+  const [form, setForm] = useState(formularioVazio);
   const [foto, setFoto] = useState(null);
-  const [itens, setItens] = useState([]);
-  const [carregandoItens, setCarregandoItens] = useState(false);
-  const [erroItens, setErroItens] = useState("");
+  const [impressoras, setImpressoras] = useState(IMPRESSORAS_RESERVA);
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
   const [erroEnvio, setErroEnvio] = useState("");
-  const [itemSelecionado, setItemSelecionado] = useState(null);
 
+  // Mesma lista de impressoras da pagina de Parametros
   useEffect(() => {
-    if (aba !== "ver") return undefined;
     let ativo = true;
-    api.get("/gallery").then((res) => { if (ativo) setItens(Array.isArray(res.data?.data) ? res.data.data : []); })
-      .catch(() => { if (ativo) setErroItens("Não foi possível carregar as fotos aprovadas agora."); })
-      .finally(() => { if (ativo) setCarregandoItens(false); });
-    setCarregandoItens(true);
+    api.get("/parametros/impressoras")
+      .then((res) => {
+        const nomes = res.data?.data || res.data?.impressoras || [];
+        const limpos = Array.from(new Set(nomes.map((n) => String(n || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+        if (ativo && limpos.length > 10) setImpressoras(limpos);
+      })
+      .catch(() => {});
     return () => { ativo = false; };
-  }, [aba]);
+  }, []);
 
   function alterar(campo, valor) { setForm((a) => ({ ...a, [campo]: valor })); }
   function alterarParametro(campo, valor) { setForm((a) => ({ ...a, parametros: { ...a.parametros, [campo]: valor } })); }
@@ -146,7 +195,7 @@ function GaleriaTab({ cliente }) {
     setErroEnvio("");
     const resinaFinal = form.resina === "outra" ? form.resinaCustom : form.resina;
     const impressoraFinal = form.impressora === "outra" ? form.impressoraCustom : form.impressora;
-    if (!resinaFinal?.trim() || !impressoraFinal?.trim() || !foto) { setErroEnvio("Preencha a resina, a impressora e envie uma foto."); return; }
+    if (!resinaFinal?.trim() || !impressoraFinal?.trim() || !foto) { setErroEnvio("Preencha a resina, a impressora e escolha uma foto."); return; }
     try {
       setEnviando(true);
       const formData = new FormData();
@@ -163,107 +212,185 @@ function GaleriaTab({ cliente }) {
       Object.entries(form.redes).forEach(([campo, valor]) => formData.append(`redesSociais.${campo}`, valor));
       await api.post("/gallery", formData);
       setSucesso(true);
-      setForm({ resina: "", impressora: "", observacao: "", parametros: criarConfiguracaoVazia(), redes: { instagram: "", tiktok: "", facebook: "", youtube: "" }, autorizaDivulgacao: false });
+      setForm(formularioVazio());
       setFoto(null);
-    } catch (err) { console.error("Erro ao enviar para galeria:", err); setErroEnvio("Erro ao enviar para galeria. Tente novamente."); }
+    } catch (err) { console.error("Erro ao enviar para galeria:", err); setErroEnvio("Erro ao enviar a foto. Tente novamente."); }
     finally { setEnviando(false); }
+  }
+
+  if (sucesso) {
+    return (
+      <div className="comunidade-form">
+        <div className="q-alert q-alert--success" style={{ marginBottom: 12 }}>Recebemos sua peça! Ela aparece na galeria assim que a Quanton3D conferir.</div>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <button type="button" className="q-btn q-btn--primary" onClick={() => setSucesso(false)}><Plus size={15} /> Enviar outra peça</button>
+          <button type="button" className="q-btn q-btn--ghost" onClick={onFechar}>Voltar para a galeria</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form className="comunidade-form" onSubmit={enviar}>
+      <div className="comunidade-form-topo">
+        <h3>Enviar minha peça</h3>
+        <button type="button" className="q-btn q-btn--ghost q-btn--sm" onClick={onFechar}><X size={15} /> Fechar</button>
+      </div>
+      {erroEnvio && <div className="q-alert q-alert--error">{erroEnvio}</div>}
+      <div className="q-form-grid" style={{ marginBottom: "16px" }}>
+        <label className="q-field"><span>Resina usada *</span>
+          <select className="q-select" value={form.resina} onChange={(e) => alterar("resina", e.target.value)}>
+            <option value="">Selecione a resina...</option>
+            {RESINAS_QUANTON.map((r) => <option key={r} value={r}>{r}</option>)}
+            <option value="outra">Outra (não listada)</option>
+          </select>
+          {form.resina === "outra" && <input className="q-input" style={{ marginTop: "6px" }} value={form.resinaCustom || ""} onChange={(e) => alterar("resinaCustom", e.target.value)} placeholder="Digite o nome da resina" />}
+        </label>
+        <label className="q-field"><span>Impressora *</span>
+          <select className="q-select" value={form.impressora} onChange={(e) => alterar("impressora", e.target.value)}>
+            <option value="">Selecione a impressora...</option>
+            {impressoras.map((i) => <option key={i} value={i}>{i}</option>)}
+            <option value="outra">Outra (não listada)</option>
+          </select>
+          {form.impressora === "outra" && <input className="q-input" style={{ marginTop: "6px" }} value={form.impressoraCustom || ""} onChange={(e) => alterar("impressoraCustom", e.target.value)} placeholder="Digite o modelo da impressora" />}
+        </label>
+        <label className="q-field q-field-full"><span>Foto da peça *</span><input type="file" accept="image/*" onChange={(e) => setFoto(e.target.files?.[0] || null)} /></label>
+      </div>
+
+      <label className="q-field" style={{ marginBottom: "16px" }}><span>Conte como foi (opcional)</span>
+        <textarea className="q-textarea" rows="3" value={form.observacao} onChange={(e) => alterar("observacao", e.target.value)} placeholder="Ex.: temperatura ambiente, suporte usado, pintura, ajustes que fez..." />
+      </label>
+
+      <details className="comunidade-detalhes">
+        <summary><SlidersHorizontal size={15} /> Adicionar parâmetros do Chitubox (opcional)</summary>
+        <p style={{ fontSize: "0.78rem", margin: "10px 0 12px" }}>Preencha só o que souber. Ajuda outros clientes com a mesma impressora.</p>
+        <div className="q-form-grid">
+          {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => (
+            <label key={campo.name} className="q-field"><span>{campo.label}</span>
+              <input className="q-input" value={form.parametros[campo.name]} onChange={(e) => alterarParametro(campo.name, e.target.value)} placeholder={campo.placeholder} />
+            </label>
+          ))}
+        </div>
+      </details>
+
+      <div style={{ padding: "14px", borderRadius: "var(--r-md)", background: "rgba(150,80,245,0.05)", border: "1px solid var(--border-accent)", margin: "16px 0" }}>
+        <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer" }}>
+          <input type="checkbox" checked={form.autorizaDivulgacao} onChange={(e) => alterar("autorizaDivulgacao", e.target.checked)} style={{ marginTop: "3px" }} />
+          <span style={{ fontSize: "0.85rem" }}>Autorizo a Quanton3D a divulgar essa peça nas redes sociais oficiais, dando os créditos a mim.</span>
+        </label>
+        {form.autorizaDivulgacao && (
+          <div className="comunidade-redes">
+            <input className="q-input" value={form.redes.instagram} onChange={(e) => alterarRede("instagram", e.target.value)} placeholder="@ do Instagram" />
+            <input className="q-input" value={form.redes.tiktok} onChange={(e) => alterarRede("tiktok", e.target.value)} placeholder="@ do TikTok" />
+            <input className="q-input" value={form.redes.facebook} onChange={(e) => alterarRede("facebook", e.target.value)} placeholder="Facebook" />
+            <input className="q-input" value={form.redes.youtube} onChange={(e) => alterarRede("youtube", e.target.value)} placeholder="Canal do YouTube" />
+          </div>
+        )}
+      </div>
+
+      <button type="submit" className="q-btn q-btn--primary q-btn--block" disabled={enviando}>{enviando ? "Enviando..." : "Enviar para a Quanton3D conferir"}</button>
+    </form>
+  );
+}
+
+function GaleriaTab({ cliente }) {
+  const [itens, setItens] = useState([]);
+  const [carregandoItens, setCarregandoItens] = useState(true);
+  const [erroItens, setErroItens] = useState("");
+  const [filtroResina, setFiltroResina] = useState("");
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [itemSelecionado, setItemSelecionado] = useState(null);
+
+  useEffect(() => {
+    let ativo = true;
+    api.get("/gallery").then((res) => { if (ativo) setItens(Array.isArray(res.data?.data) ? res.data.data : []); })
+      .catch(() => { if (ativo) setErroItens("Não foi possível carregar as fotos agora."); })
+      .finally(() => { if (ativo) setCarregandoItens(false); });
+    return () => { ativo = false; };
+  }, []);
+
+  const resinasNaGaleria = useMemo(
+    () => Array.from(new Set(itens.map((i) => String(i.resina || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
+    [itens],
+  );
+  const itensVisiveis = filtroResina ? itens.filter((i) => String(i.resina || "").trim() === filtroResina) : itens;
+
+  function abrirForm() {
+    setMostrarForm(true);
+    setTimeout(() => document.getElementById("comunidade-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
   return (
     <div>
-      <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)" }}>
-        <button type="button" onClick={() => setAba("enviar")} style={{ display: "flex", alignItems: "center", gap: "7px", padding: "12px 8px", background: "none", border: "none", borderBottom: aba === "enviar" ? "2px solid var(--primary)" : "2px solid transparent", color: aba === "enviar" ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}><Camera size={16} /> Enviar configuração</button>
-        <button type="button" onClick={() => setAba("ver")} style={{ padding: "12px 8px", background: "none", border: "none", borderBottom: aba === "ver" ? "2px solid var(--primary)" : "2px solid transparent", color: aba === "ver" ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}>Ver fotos de clientes</button>
+      <div className="comunidade-intro">
+        <div>
+          <h3>Peças impressas com resinas Quanton3D</h3>
+          <p>Veja o que a comunidade está imprimindo, com a resina, a impressora e os parâmetros usados. Imprimiu algo legal? Mostre aqui.</p>
+        </div>
+        {!mostrarForm && <button type="button" className="q-btn q-btn--primary" onClick={abrirForm}><Camera size={15} /> Enviar minha peça</button>}
       </div>
 
-      {aba === "enviar" ? (
-        <form onSubmit={enviar}>
-          {sucesso && <div className="q-alert q-alert--success">Enviado! Aguarda aprovação para aparecer para outros clientes.</div>}
-          {erroEnvio && <div className="q-alert q-alert--error">{erroEnvio}</div>}
-          <div className="q-form-grid" style={{ marginBottom: "16px" }}>
-            <label className="q-field"><span>Resina usada *</span>
-              <select className="q-select" value={form.resina} onChange={(e) => alterar("resina", e.target.value)}>
-                <option value="">Selecione a resina...</option>
-                {RESINAS_QUANTON.map((r) => <option key={r} value={r}>{r}</option>)}
-                <option value="outra">Outra (não listada)</option>
-              </select>
-              {form.resina === "outra" && <input className="q-input" style={{ marginTop: "6px" }} value={form.resinaCustom || ""} onChange={(e) => alterar("resinaCustom", e.target.value)} placeholder="Digite o nome da resina" />}
-            </label>
-            <label className="q-field"><span>Impressora *</span>
-              <select className="q-select" value={form.impressora} onChange={(e) => alterar("impressora", e.target.value)}>
-                <option value="">Selecione a impressora...</option>
-                {IMPRESSORAS_COMUNS.map((i) => <option key={i} value={i}>{i}</option>)}
-                <option value="outra">Outra (não listada)</option>
-              </select>
-              {form.impressora === "outra" && <input className="q-input" style={{ marginTop: "6px" }} value={form.impressoraCustom || ""} onChange={(e) => alterar("impressoraCustom", e.target.value)} placeholder="Digite o modelo da impressora" />}
-            </label>
-            <label className="q-field q-field-full"><span>Foto do trabalho *</span><input type="file" accept="image/*" onChange={(e) => setFoto(e.target.files?.[0] || null)} /></label>
-          </div>
+      <PassosComoFunciona passos={PASSOS_GALERIA} />
 
-          <div style={{ background: "rgba(0,146,255,0.04)", border: "1px solid var(--border-soft)", borderRadius: "var(--r-md)", padding: "16px", marginBottom: "16px" }}>
-            <h4 style={{ fontSize: "0.9rem", margin: "0 0 4px" }}>Configurações do Chitubox</h4>
-            <p style={{ fontSize: "0.78rem", margin: "0 0 12px" }}>Preencha o que souber. Deixe em branco o que não souber.</p>
-            <div className="q-form-grid">
-              {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => (
-                <label key={campo.name} className="q-field"><span>{campo.label}</span>
-                  <input className="q-input" value={form.parametros[campo.name]} onChange={(e) => alterarParametro(campo.name, e.target.value)} placeholder={campo.placeholder} />
-                </label>
-              ))}
-            </div>
-          </div>
+      {mostrarForm && <div id="comunidade-form"><FormularioEnvio cliente={cliente} onFechar={() => setMostrarForm(false)} /></div>}
 
-          <label className="q-field" style={{ marginBottom: "16px" }}><span>Observações para o próximo cliente</span>
-            <textarea className="q-textarea" rows="4" value={form.observacao} onChange={(e) => alterar("observacao", e.target.value)} placeholder="Ex.: temperatura ambiente, suporte usado, ajustes que fez..." />
-          </label>
+      {carregandoItens && <div className="q-empty">Carregando fotos...</div>}
+      {erroItens && <div className="q-alert q-alert--error">{erroItens}</div>}
 
-          <div style={{ padding: "14px", borderRadius: "var(--r-md)", background: "rgba(150,80,245,0.05)", border: "1px solid var(--border-accent)", marginBottom: "16px" }}>
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer" }}>
-              <input type="checkbox" checked={form.autorizaDivulgacao} onChange={(e) => alterar("autorizaDivulgacao", e.target.checked)} style={{ marginTop: "3px" }} />
-              <span style={{ fontSize: "0.85rem" }}>Autorizo a Quanton3D a divulgar essa peça nas redes sociais oficiais, dando os créditos a mim.</span>
-            </label>
-            {form.autorizaDivulgacao && (
-              <div style={{ marginTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                <input className="q-input" value={form.redes.instagram} onChange={(e) => alterarRede("instagram", e.target.value)} placeholder="@ do Instagram" />
-                <input className="q-input" value={form.redes.tiktok} onChange={(e) => alterarRede("tiktok", e.target.value)} placeholder="@ do TikTok" />
-                <input className="q-input" value={form.redes.facebook} onChange={(e) => alterarRede("facebook", e.target.value)} placeholder="Facebook" />
-                <input className="q-input" value={form.redes.youtube} onChange={(e) => alterarRede("youtube", e.target.value)} placeholder="Canal do YouTube" />
-              </div>
-            )}
-          </div>
+      {!carregandoItens && !erroItens && itens.length === 0 && !mostrarForm && (
+        <div className="q-empty comunidade-vazio">
+          <h3>A galeria está começando</h3>
+          <p>Mande a foto de uma peça que você imprimiu com resina Quanton3D. Miniatura, peça técnica, modelo odontológico, vale tudo.</p>
+          <button type="button" className="q-btn q-btn--primary" onClick={abrirForm}><Camera size={15} /> Enviar a primeira peça</button>
+        </div>
+      )}
 
-          <button type="submit" className="q-btn q-btn--primary q-btn--block" disabled={enviando}>{enviando ? "Enviando..." : "Enviar para aprovação"}</button>
-        </form>
-      ) : (
-        <div>
-          {carregandoItens && <div className="q-empty">Carregando fotos aprovadas...</div>}
-          {erroItens && <div className="q-alert q-alert--error">{erroItens}</div>}
-          {!carregandoItens && !erroItens && itens.length === 0 && <div className="q-empty">Ainda não há fotos aprovadas.</div>}
-          <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 600px), 1fr))" }}>
-            {itens.map((item) => (
-              <article key={item._id || item.imagem} className="q-card" style={{ overflow: "hidden" }}>
-                {item.imagem && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} style={{ width: "100%", height: "380px", objectFit: "contain", display: "block" }} /></button>}
-                <div style={{ padding: "14px" }}>
-                  <h3 style={{ margin: "0 0 4px", fontSize: "0.95rem" }}>{item.resina || "Resina não informada"}</h3>
-                  <p style={{ margin: "0 0 8px", fontSize: "0.8rem" }}>{item.impressora || "Impressora não informada"}</p>
-                  {item.observacao && <p style={{ fontSize: "0.8rem", fontStyle: "italic", margin: "0 0 8px" }}>{item.observacao}</p>}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-                    {CAMPOS_CONFIGURACAO_GALERIA.map((campo) => {
-                      const valor = item.parametros?.[campo.name];
-                      return valor ? <span key={campo.name} className="q-badge" style={{ fontSize: "0.68rem" }}><strong>{campo.label}:</strong> {valor}</span> : null;
-                    })}
+      {itens.length > 0 && resinasNaGaleria.length > 1 && (
+        <div className="comunidade-filtro">
+          <span>Filtrar por resina:</span>
+          <button type="button" className={`q-badge${filtroResina === "" ? " q-badge--accent" : ""}`} onClick={() => setFiltroResina("")}>Todas ({itens.length})</button>
+          {resinasNaGaleria.map((r) => (
+            <button key={r} type="button" className={`q-badge${filtroResina === r ? " q-badge--accent" : ""}`} onClick={() => setFiltroResina(r)}>{r}</button>
+          ))}
+        </div>
+      )}
+
+      {itensVisiveis.length > 0 && (
+        <div className="q-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))" }}>
+          {itensVisiveis.map((item) => {
+            const link = linkParametroOficial(item.resina);
+            const params = CAMPOS_CONFIGURACAO_GALERIA.filter((campo) => item.parametros?.[campo.name]);
+            return (
+              <article key={item._id || item.imagem} className="q-card" style={{ overflow: "hidden", padding: 0, display: "flex", flexDirection: "column" }}>
+                {item.imagem && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} loading="lazy" style={{ width: "100%", height: "300px", objectFit: "contain", display: "block" }} /></button>}
+                <div style={{ padding: "14px 16px 16px", display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
+                  <div>
+                    <h3 style={{ margin: "0 0 2px", fontSize: "1rem" }}>{item.resina || "Resina não informada"}</h3>
+                    <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>{item.impressora || "Impressora não informada"}</p>
                   </div>
+                  {item.observacao && <p style={{ fontSize: "0.82rem", fontStyle: "italic", margin: 0 }}>{item.observacao}</p>}
+                  {params.length > 0 && (
+                    <details className="comunidade-detalhes comunidade-detalhes--card">
+                      <summary>Parâmetros usados ({params.length})</summary>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginTop: "8px" }}>
+                        {params.map((campo) => <span key={campo.name} className="q-badge" style={{ fontSize: "0.68rem" }}><strong>{campo.label}:</strong> {item.parametros[campo.name]}</span>)}
+                      </div>
+                    </details>
+                  )}
+                  {link && <a href={link} className="q-btn q-btn--ghost q-btn--sm" style={{ marginTop: "auto", alignSelf: "flex-start" }}><SlidersHorizontal size={14} /> Ver parâmetro oficial da {item.resina}</a>}
                 </div>
               </article>
-            ))}
+            );
+          })}
+        </div>
+      )}
+
+      {itemSelecionado && (
+        <div role="dialog" aria-modal="true" aria-label="Foto ampliada da peça" onClick={() => setItemSelecionado(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", background: "rgba(0, 0, 0, 0.86)", cursor: "zoom-out" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", maxWidth: "96vw", maxHeight: "92dvh", padding: "12px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", boxShadow: "0 24px 70px rgba(0,0,0,0.6)", cursor: "default" }}>
+            <button type="button" onClick={() => setItemSelecionado(null)} aria-label="Fechar foto ampliada" className="q-btn q-btn--ghost q-btn--sm" style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1, background: "rgba(5,7,13,0.82)" }}><X size={18} /> Fechar</button>
+            <img src={itemSelecionado.imagem} alt={`Peça impressa com ${itemSelecionado.resina || "resina"}`} style={{ display: "block", maxWidth: "calc(96vw - 48px)", maxHeight: "calc(92dvh - 48px)", objectFit: "contain", borderRadius: "var(--r-sm)" }} />
           </div>
-          {itemSelecionado && (
-            <div role="dialog" aria-modal="true" aria-label="Foto ampliada da peça" onClick={() => setItemSelecionado(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", background: "rgba(0, 0, 0, 0.86)", cursor: "zoom-out" }}>
-              <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", maxWidth: "96vw", maxHeight: "92dvh", padding: "12px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", boxShadow: "0 24px 70px rgba(0,0,0,0.6)", cursor: "default" }}>
-                <button type="button" onClick={() => setItemSelecionado(null)} aria-label="Fechar foto ampliada" className="q-btn q-btn--ghost q-btn--sm" style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1, background: "rgba(5,7,13,0.82)" }}><X size={18} /> Fechar</button>
-                <img src={itemSelecionado.imagem} alt={`Peça impressa com ${itemSelecionado.resina || "resina"}`} style={{ display: "block", maxWidth: "calc(96vw - 48px)", maxHeight: "calc(92dvh - 48px)", objectFit: "contain", borderRadius: "var(--r-sm)" }} />
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -271,32 +398,32 @@ function GaleriaTab({ cliente }) {
 }
 
 const ABAS = [
-  { id: "parceiros", label: "Divulgue seu Trabalho", icon: Users },
-  { id: "galeria", label: "Fotos e Peças", icon: Camera },
+  { id: "galeria", label: "Galeria de peças", icon: Camera },
+  { id: "parceiros", label: "Profissionais", icon: Users },
 ];
 
 function ComunidadeSection({ cliente, onAbrirParceiroModal }) {
-  const [aba, setAba] = useState("parceiros");
+  const [aba, setAba] = useState("galeria");
   return (
     <section className="q-card q-panel">
       <span className="q-eyebrow">Rede Quanton3D</span>
       <h2 className="q-section-title">Comunidade</h2>
-      <p className="q-section-desc">Profissionais, serviços e as peças que a comunidade está criando.</p>
+      <p className="q-section-desc">O espaço de quem imprime com resina Quanton3D: veja peças reais com os parâmetros usados, mostre o seu trabalho e encontre profissionais.</p>
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)" }}>
+      <div className="comunidade-abas" role="tablist">
         {ABAS.map((a) => {
           const Icon = a.icon;
           return (
-            <button key={a.id} type="button" onClick={() => setAba(a.id)}
-              style={{ display: "flex", alignItems: "center", gap: "7px", padding: "12px 8px", background: "none", border: "none", borderBottom: aba === a.id ? "2px solid var(--primary)" : "2px solid transparent", color: aba === a.id ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}>
+            <button key={a.id} type="button" role="tab" aria-selected={aba === a.id} onClick={() => setAba(a.id)}
+              className={`comunidade-aba${aba === a.id ? " is-ativa" : ""}`}>
               <Icon size={16} /> {a.label}
             </button>
           );
         })}
       </div>
 
-      {aba === "parceiros" && <ParceirosLista onAbrirParceiroModal={onAbrirParceiroModal} />}
       {aba === "galeria" && <GaleriaTab cliente={cliente} />}
+      {aba === "parceiros" && <ParceirosLista onAbrirParceiroModal={onAbrirParceiroModal} />}
     </section>
   );
 }
