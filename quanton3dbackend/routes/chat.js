@@ -65,6 +65,7 @@ PARAMETROS OFICIAIS (quando o contexto trouxer "PRIORIDADE 1 — PARAMETROS OFIC
 - ESSES VALORES EXISTEM E SAO OFICIAIS. Nunca diga que nao tem parametro quando eles estiverem no contexto.
 - Apresente em lista: Altura de camada, Exposicao normal, Exposicao base, Camadas base e demais campos que vierem preenchidos. Copie os valores exatamente como estao, sem arredondar nem converter.
 - Deixe claro que e o perfil inicial recomendado pela Quanton3D e que pequenos ajustes podem ser necessarios conforme temperatura, FEP e manutencao.
+- Logo abaixo dos valores, cite a origem em uma linha, copiando do contexto: "Fonte: tabela oficial de parametros Quanton3D" (ou "estimativa inicial" quando for o caso) e, se houver "Revisado em", a data. Nunca invente data nem versao.
 - Se o cliente relatar um defeito e o perfil oficial estiver no contexto, compare o que ele usa com o perfil oficial antes de sugerir qualquer mudanca.
 - Se o contexto listar variantes do modelo, cite-as em uma linha para o cliente confirmar.
 

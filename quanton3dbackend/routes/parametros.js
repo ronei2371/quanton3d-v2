@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { criarParametro, listarParametros, listarResinas, listarImpressoras, listarImpressorasComFoto, buscarPerfil } from '../controllers/parametrosController.js';
+import { criarParametro, listarParametros, listarResinas, listarImpressoras, listarImpressorasComFoto, buscarPerfil, camposTecnicosMudaram } from '../controllers/parametrosController.js';
 import Parametro from '../models/Parametro.js';
 
 const router = express.Router();
@@ -27,9 +27,15 @@ router.get('/perfil', buscarPerfil);
 /* Editar parametro */
 router.patch('/:id', authAdmin, async (req, res) => {
   try {
+    const atual = await Parametro.findById(req.params.id).lean();
+    if (!atual) return res.status(404).json({ success: false, error: 'Nao encontrado' });
+    const dados = { ...req.body };
+    delete dados._id; delete dados.createdAt; delete dados.updatedAt; delete dados.revisadoEm;
+    // Mudou exposicao/camadas/altura: registra a data da revisao tecnica (mostrada no site e no bot)
+    if (camposTecnicosMudaram(atual, dados)) dados.revisadoEm = new Date();
     const parametro = await Parametro.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: dados },
       { new: true, runValidators: false }
     );
     if (!parametro) return res.status(404).json({ success: false, error: 'Nao encontrado' });
