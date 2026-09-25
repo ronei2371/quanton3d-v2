@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle, Upload, ShieldCheck, Megaphone, SlidersHorizontal, Plus } from "lucide-react";
+import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle, Upload, ShieldCheck, Megaphone, SlidersHorizontal, Plus, Play } from "lucide-react";
 import api from "../../lib/api";
 
 const RESINAS_QUANTON = [
@@ -63,6 +63,39 @@ function linkParametroOficial(resina) {
   const nome = String(resina || "").trim().toUpperCase();
   if (!RESINAS_QUANTON.includes(nome)) return "";
   return `/parametros?resina=${encodeURIComponent(NOME_NOS_PARAMETROS[nome] || nome)}`;
+}
+
+// Credito do autor da peca (so vem da API quando ele autorizou a divulgacao)
+function linkRede(rede, valor) {
+  const v = String(valor || "").trim();
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  const handle = v.replace(/^@/, "");
+  if (rede === "tiktok") return `https://www.tiktok.com/@${handle}`;
+  if (rede === "instagram") return `https://instagram.com/${handle}`;
+  return "";
+}
+function nomeRede(valor) {
+  const v = String(valor || "").trim();
+  const m = v.match(/(?:tiktok\.com|instagram\.com)\/@?([^/?#]+)/i);
+  return m ? `@${m[1]}` : (v.startsWith("@") ? v : `@${v}`);
+}
+
+function CreditoAutor({ item }) {
+  const redes = item.redesSociais || {};
+  const tiktok = linkRede("tiktok", redes.tiktok);
+  const instagram = linkRede("instagram", redes.instagram);
+  if (!item.autor && !tiktok && !instagram) return null;
+  const videoTiktok = /\/video\//.test(tiktok);
+  return (
+    <div className="comunidade-credito">
+      <span>Peça de <strong>{item.autor || nomeRede(redes.tiktok || redes.instagram)}</strong></span>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+        {tiktok && <a href={tiktok} target="_blank" rel="noreferrer"><Play size={13} /> {videoTiktok ? "Ver o vídeo no TikTok" : `TikTok ${nomeRede(redes.tiktok)}`}</a>}
+        {instagram && <a href={instagram} target="_blank" rel="noreferrer"><AtSign size={13} /> Instagram</a>}
+      </div>
+    </div>
+  );
 }
 
 function PassosComoFunciona({ passos }) {
@@ -368,6 +401,7 @@ function GaleriaTab({ cliente }) {
                     <h3 style={{ margin: "0 0 2px", fontSize: "1rem" }}>{item.resina || "Resina não informada"}</h3>
                     <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>{item.impressora || "Impressora não informada"}</p>
                   </div>
+                  <CreditoAutor item={item} />
                   {item.observacao && <p style={{ fontSize: "0.82rem", fontStyle: "italic", margin: 0 }}>{item.observacao}</p>}
                   {params.length > 0 && (
                     <details className="comunidade-detalhes comunidade-detalhes--card">
