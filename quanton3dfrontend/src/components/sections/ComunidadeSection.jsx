@@ -398,8 +398,8 @@ function GaleriaTab({ cliente }) {
                 {item.imagem && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} loading="lazy" style={{ width: "100%", height: "300px", objectFit: "contain", display: "block" }} /></button>}
                 <div style={{ padding: "14px 16px 16px", display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
                   <div>
-                    <h3 style={{ margin: "0 0 2px", fontSize: "1rem" }}>{item.resina || "Resina não informada"}</h3>
-                    <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>{item.impressora || "Impressora não informada"}</p>
+                    <h3 style={{ margin: "0 0 2px", fontSize: "1rem" }}>{item.resina || "Resina Quanton3D"}</h3>
+                    {item.impressora && <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>{item.impressora}</p>}
                   </div>
                   <CreditoAutor item={item} />
                   {item.observacao && <p style={{ fontSize: "0.82rem", fontStyle: "italic", margin: 0 }}>{item.observacao}</p>}
