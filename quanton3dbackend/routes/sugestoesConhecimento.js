@@ -2,23 +2,16 @@ import express from "express";
 import authAdmin from "../middlewares/authAdmin.js";
 import { authAdminOuAtendente } from "../middlewares/authAtendente.js";
 import SugestaoConhecimento from "../models/SugestaoConhecimento.js";
+import { dadosNovaSugestao, dadosAtualizacaoSugestao } from "../services/sugestaoConhecimento.js";
 
 const router = express.Router();
 
-// Atendente cria sugestão
+// Atendente cria sugestão (fica pendente). Admin pode criar já aprovada (aprovarDireto).
 router.post("/", authAdminOuAtendente, async (req, res) => {
   try {
-    const { categoria, titulo, conteudo, codigoAtendente, nomeAtendente } = req.body;
-    if (!titulo?.trim() || !conteudo?.trim()) {
-      return res.status(400).json({ success: false, message: "Título e conteúdo são obrigatórios." });
-    }
-    const sugestao = await SugestaoConhecimento.create({
-      codigoAtendente: codigoAtendente || "ADMIN",
-      nomeAtendente: nomeAtendente || "Administrador",
-      categoria: categoria || "outro",
-      titulo: titulo.trim(),
-      conteudo: conteudo.trim(),
-    });
+    const { erro, dados } = dadosNovaSugestao(req.body, { tipo: req.usuarioTipo, cod: req.usuarioCod, nome: req.usuarioNome });
+    if (erro) return res.status(400).json({ success: false, message: erro });
+    const sugestao = await SugestaoConhecimento.create(dados);
     return res.status(201).json({ success: true, sugestao });
   } catch (error) {
     console.error("Erro ao criar sugestão:", error);
@@ -45,18 +38,12 @@ router.get("/", authAdminOuAtendente, async (req, res) => {
   }
 });
 
-// Admin aprova/rejeita
+// Admin aprova/rejeita (e pode editar título/conteúdo/categoria junto)
 router.patch("/:id/status", authAdmin, async (req, res) => {
   try {
-    const { status, observacaoAdmin } = req.body;
-    if (!["aprovado", "rejeitado"].includes(status)) {
-      return res.status(400).json({ success: false, message: "Status inválido." });
-    }
-    const sugestao = await SugestaoConhecimento.findByIdAndUpdate(
-      req.params.id,
-      { status, observacaoAdmin: observacaoAdmin || "" },
-      { new: true }
-    );
+    const { erro, dados } = dadosAtualizacaoSugestao(req.body);
+    if (erro) return res.status(400).json({ success: false, message: erro });
+    const sugestao = await SugestaoConhecimento.findByIdAndUpdate(req.params.id, dados, { new: true, runValidators: true });
     if (!sugestao) return res.status(404).json({ success: false, message: "Sugestão não encontrada." });
     return res.json({ success: true, sugestao });
   } catch (error) {
