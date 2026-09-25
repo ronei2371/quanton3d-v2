@@ -210,7 +210,10 @@ function ParametrosSection({ onAbrirExposicao }) {
     if (carregando || !parametros.length || !_pendingURL.current) return;
     const { resina, impressora } = _pendingURL.current;
     _pendingURL.current = null;
-    selecionarResina(resina);
+    // Aceita o nome em qualquer caixa (ex.: link da Comunidade com "IRON" ou "PYROBLAST")
+    const alvo = chaveResina(resina).replace(/\s+/g, "");
+    const opcao = resinas.find((r) => chaveResina(r).replace(/\s+/g, "") === alvo) || resina;
+    selecionarResina(opcao);
     if (impressora) setTimeout(() => selecionarImpressora(impressora), 80);
   }, [carregando, parametros]); // eslint-disable-line
 
