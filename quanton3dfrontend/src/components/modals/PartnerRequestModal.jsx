@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { X, Handshake } from "lucide-react";
 import api from "../../lib/api";
 import "./PartnerRequestModal.css";
+import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 
 const TIPOS = [
   "Quero ser parceiro",
@@ -245,6 +246,7 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
               <input type="file" accept="image/*" multiple onChange={selecionarFotos} />
               <small>Envie até 6 fotos. A primeira será a imagem principal do seu cartão.</small>
             </label>
+            <div className="partner-grid-full"><AvisoFotoPrivacidade publica style={{ margin: 0 }} /></div>
           </div>
 
           {nomesFotos.length > 0 && (

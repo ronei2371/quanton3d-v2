@@ -4,6 +4,7 @@ import api from "../../lib/api";
 import IAQ3DAvatar from "../IAQ3DAvatar";
 import { linkWhatsappComResumo } from "../../utils/resumoWhatsapp";
 import { trackEvent } from "../../utils/analytics";
+import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 
 const RESINAS_BOT = [
   "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "ATHOM DENTAL", "ATHOM ALINHADORES",
@@ -349,6 +350,7 @@ function BotChat({ cliente }) {
                   <input className="q-input" value={paramsFeedback.exposicaoNormal} onChange={(e) => setParamsFeedback((p) => ({ ...p, exposicaoNormal: e.target.value }))} placeholder="Exposição normal (s)" style={{ fontSize: "0.78rem", padding: "7px 9px" }} />
                   <input className="q-input" value={paramsFeedback.exposicaoBase} onChange={(e) => setParamsFeedback((p) => ({ ...p, exposicaoBase: e.target.value }))} placeholder="Exposição base (s)" style={{ fontSize: "0.78rem", padding: "7px 9px" }} />
                 </div>
+                <AvisoFotoPrivacidade style={{ marginBottom: "8px" }} />
                 <label style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px", borderRadius: "var(--r-sm)", border: "1px dashed var(--border-soft)", cursor: "pointer", marginBottom: "8px", fontSize: "0.76rem", color: fotoFeedback ? "var(--q-verde)" : "var(--text-muted)" }}>
                   <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => setFotoFeedback(e.target.files?.[0] || null)} />
                   <Camera size={13} /> {fotoFeedback ? fotoFeedback.name : "Anexar foto (opcional)"}
