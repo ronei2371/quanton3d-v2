@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle, Upload, ShieldCheck, Megaphone, SlidersHorizontal, Plus, Play } from "lucide-react";
 import api from "../../lib/api";
 import CarrosselComunidade from "./CarrosselComunidade";
+import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 
 const RESINAS_QUANTON = [
   "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "POSEIDON",
@@ -290,6 +291,7 @@ function FormularioEnvio({ cliente, onFechar }) {
         </label>
         <label className="q-field q-field-full"><span>Foto da peça *</span><input type="file" accept="image/*" onChange={(e) => setFoto(e.target.files?.[0] || null)} /></label>
       </div>
+      <AvisoFotoPrivacidade publica />
 
       <label className="q-field" style={{ marginBottom: "16px" }}><span>Conte como foi (opcional)</span>
         <textarea className="q-textarea" rows="3" value={form.observacao} onChange={(e) => alterar("observacao", e.target.value)} placeholder="Ex.: temperatura ambiente, suporte usado, pintura, ajustes que fez..." />

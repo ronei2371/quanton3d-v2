@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Search, Settings2, Thermometer, Camera, Wrench, FlaskConical, MessageCircle, Phone, CheckCircle2, FolderOpen, Stethoscope, ArrowRight, X } from "lucide-react";
 import api from "../../lib/api";
 import { WHATSAPP_SUPORTE_URL, HORARIO_ATENDIMENTO } from "../../data/contact";
+import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 
 const PROBLEMAS = [
   "Peça não adere à plataforma",
@@ -212,6 +213,7 @@ function ChamadoTecnico({ cliente }) {
           </div>
 
           <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Camera size={13} /> Fotos do problema (até 4)</h4>
+          <AvisoFotoPrivacidade />
           <label style={{ display: "block", padding: "16px", borderRadius: "var(--r-md)", border: "2px dashed var(--border-soft)", background: "rgba(0,146,255,0.04)", cursor: "pointer", textAlign: "center", marginBottom: "18px" }}>
             <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => setFotos(Array.from(e.target.files || []).slice(0, 4))} />
             {fotos.length > 0
