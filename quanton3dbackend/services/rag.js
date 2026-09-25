@@ -1,6 +1,7 @@
 import Conversa from '../models/Conversa.js';
 import Parametro from '../models/Parametro.js';
 import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
+import { problemasPerfil } from '../controllers/parametrosController.js';
 import EXTERNAL_KNOWLEDGE from './externalKnowledge.js';
 import KNOWLEDGE_BASE from './knowledge.js';
 import {
@@ -366,10 +367,23 @@ if (!resin && printer) {
   };
 }
 
-const all = await findResinParameters(resin);
+const allRows = await findResinParameters(resin);
+// Perfis com campo trocado na digitacao (ex.: camadas de base "1,50s") ficam fora ate o ADM corrigir.
+const all = allRows.filter((p) => problemasPerfil(p).length === 0);
 const key = printerKey(printer);
 const exact = all.filter((p) => printerKey(p.impressora) === key);
 const variants = displayNames(all.filter((p) => printerKey(p.impressora).startsWith(key + ' ')));
+const emRevisao = allRows.some((p) => printerKey(p.impressora) === key && problemasPerfil(p).length > 0);
+
+if (!exact.length && emRevisao) {
+  return {
+    context: '',
+    guardInstruction: wantsParameters
+      ? 'O perfil oficial de ' + resin + ' + ' + printer.toUpperCase() + ' esta em revisao pela equipe (cadastro com valor inconsistente). Nao passe nenhum valor de exposicao, base ou camadas. Diga isso com naturalidade e indique o WhatsApp de suporte (31) 3271-6935 para receber o perfil conferido.'
+      : '',
+    found: false,
+  };
+}
 
 if (!exact.length) {
   if (variants.length) {
