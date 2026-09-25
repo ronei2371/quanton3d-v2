@@ -321,23 +321,35 @@
 .sobre-pista-zoom img { max-width: min(96vw, 1400px); max-height: calc(100dvh - 130px); object-fit: contain; border-radius: var(--r-sm); cursor: default; }
 .sobre-pista-zoom p { margin: 0; color: #d8e2f2; font-size: 0.9rem; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .sobre-pista-foto img { transition: none; } }
-/* Home: carrossel "Feito com resina Quanton3D" (pecas aprovadas da Galeria) */
-/* Faixa que anda sozinha sem parar; pausa com o mouse em cima. */
+/* Carrossel da comunidade (Home e topo da Galeria). Movido por JS: anda sozinho, */
+/* tem setas, arrasta com dedo/mouse, pausa com o mouse em cima e tem botao de pausa. */
 .carrossel-comunidade { display: flex; flex-direction: column; gap: 22px; }
-.carrossel-janela { overflow: hidden; margin-inline: -4px; padding: 4px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
-.carrossel-pista { display: flex; width: max-content; animation: carrosselRolar var(--carrossel-duracao, 40s) linear infinite; }
-.carrossel-janela:hover .carrossel-pista, .carrossel-janela:focus-within .carrossel-pista { animation-play-state: paused; }
-@keyframes carrosselRolar { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.carrossel-comunidade--galeria { gap: 12px; margin: 6px 0 26px; }
+.carrossel-titulo-galeria { margin: 0; font-size: 1rem; }
+.carrossel-moldura { position: relative; }
+.carrossel-janela { overflow: hidden; margin-inline: -4px; padding: 4px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.carrossel-janela:active { cursor: grabbing; }
+.carrossel-pista { display: flex; width: max-content; will-change: transform; }
 .carrossel-card { position: relative; display: block; flex: none; width: clamp(200px, 21vw, 300px); margin-right: 14px; padding: 0; border: 1px solid var(--border-soft); border-radius: var(--r-md); overflow: hidden; background: #05070d; aspect-ratio: 3 / 4; cursor: pointer; text-align: left; }
+.carrossel-comunidade--galeria .carrossel-card { width: clamp(170px, 17vw, 230px); }
 .carrossel-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
-.carrossel-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; transition: transform 0.4s ease; }
+.carrossel-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; transition: transform 0.4s ease; pointer-events: none; }
 .carrossel-card:hover img { transform: scale(1.04); }
-.carrossel-legenda { position: absolute; inset: auto 0 0 0; display: flex; flex-direction: column; gap: 2px; padding: 34px 14px 12px; background: linear-gradient(to top, rgba(3, 5, 10, 0.92), rgba(3, 5, 10, 0)); color: #d8e2f2; font-size: 0.8rem; line-height: 1.4; }
+.carrossel-legenda { position: absolute; inset: auto 0 0 0; display: flex; flex-direction: column; gap: 2px; padding: 34px 14px 12px; background: linear-gradient(to top, rgba(3, 5, 10, 0.92), rgba(3, 5, 10, 0)); color: #d8e2f2; font-size: 0.8rem; line-height: 1.4; pointer-events: none; }
 .carrossel-legenda strong { color: #fff; font-size: 0.92rem; }
+.carrossel-seta { position: absolute; top: 50%; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; margin-top: -22px; padding: 0; border: 1px solid rgba(95, 208, 255, 0.45); border-radius: 50%; background: rgba(4, 8, 20, 0.82); color: #e6f4ff; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45); transition: background 0.2s ease, transform 0.2s ease; }
+.carrossel-seta:hover { background: rgba(0, 146, 255, 0.55); transform: scale(1.06); }
+.carrossel-seta:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.carrossel-seta--esq { left: 6px; }
+.carrossel-seta--dir { right: 6px; }
+.carrossel-rodape { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .carrossel-cta { align-self: flex-start; }
-@media (max-width: 640px) { .carrossel-card { width: 62vw; } }
+.carrossel-pausa { margin-left: auto; }
+@media (max-width: 640px) {
+  .carrossel-card { width: 62vw; }
+  .carrossel-comunidade--galeria .carrossel-card { width: 52vw; }
+  .carrossel-seta { width: 38px; height: 38px; margin-top: -19px; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .carrossel-janela { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
-  .carrossel-pista { animation: none; }
-  .carrossel-card img { transition: none; }
+  .carrossel-card img, .carrossel-seta { transition: none; }
 }
