@@ -23,6 +23,24 @@ const CAMPOS_CONFIGURACAO_GALERIA = [
 // Perfil sem exposicao normal ou de base (0s) fica escondido do site ate ser corrigido.
 function numeroParametro(v) { const m = String(v ?? "").replace(",", ".").match(/\d+(?:\.\d+)?/); return m ? Number(m[0]) : 0; }
 function parametroZerado(p) { return !(numeroParametro(p?.exposicaoNormal) > 0 && numeroParametro(p?.exposicaoBase) > 0); }
+// Campo trocado na digitacao (ex.: camadas de base "1,50s"): escondido do site e do bot ate corrigir.
+// Mesma regra de quanton3dbackend/controllers/parametrosController.js (problemasPerfil).
+function problemasParametro(p) {
+  if (parametroZerado(p)) return [];
+  const problemas = [];
+  const camadasTxt = String(p?.camadasBase ?? "").trim();
+  const camadas = numeroParametro(camadasTxt);
+  if (camadasTxt && (/[±]|seg/i.test(camadasTxt) || /\d[.,]\d/.test(camadasTxt) || !Number.isInteger(camadas) || camadas < 1 || camadas > 20)) problemas.push("camadas de base");
+  const alturaTxt = String(p?.alturaCamada ?? "").trim();
+  const altura = numeroParametro(alturaTxt);
+  if (alturaTxt && (/\d\s*s\b/i.test(alturaTxt) || (altura > 0 && altura < 0.01) || altura > 0.3)) problemas.push("altura de camada");
+  const normal = numeroParametro(p?.exposicaoNormal); const base = numeroParametro(p?.exposicaoBase);
+  if (normal > 0 && normal < 0.5) problemas.push("exposição normal");
+  if (normal > 0 && base > 0 && normal >= base) problemas.push("exposição normal maior que a de base");
+  return problemas;
+}
+function parametroPrecisaCorrigir(p) { return parametroZerado(p) || problemasParametro(p).length > 0; }
+function alturaNaoInformada(p) { return !parametroZerado(p) && numeroParametro(p?.alturaCamada) === 0; }
 
 function formatarDataHora(data) {
   if (!data) return "-";
@@ -1994,21 +2012,21 @@ export function AdminContent({ tokenAtendente }) {
               placeholder="Buscar por resina ou impressora..."
               style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(79,209,255,0.2)", background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.88rem" }}
             />
-            {parametrosAdm.some(parametroZerado) && (
+            {parametrosAdm.some(parametroPrecisaCorrigir) && (
               <label style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px", fontSize: "0.8rem", color: "#ffb4b4", cursor: "pointer" }}>
                 <input type="checkbox" checked={soZerados} onChange={e => setSoZerados(e.target.checked)} style={{ accentColor: "#d73c3c" }} />
-                Mostrar só os perfis zerados ({parametrosAdm.filter(parametroZerado).length}) — eles ficam escondidos do site até serem corrigidos
+                Mostrar só os perfis que precisam de correção ({parametrosAdm.filter(parametroZerado).length} zerados, {parametrosAdm.filter(p => problemasParametro(p).length > 0).length} com campo trocado) — ficam escondidos do site e do bot até serem corrigidos
               </label>
             )}
           </div>
 
           <p style={{ color: "#9fb4c7", fontSize: "0.78rem", marginBottom: "10px" }}>
-            {parametrosAdm.filter(p => (!soZerados || parametroZerado(p)) && (!buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase()))).length} parâmetro(s) encontrado(s)
+            {parametrosAdm.filter(p => (!soZerados || parametroPrecisaCorrigir(p)) && (!buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase()))).length} parâmetro(s) encontrado(s)
           </p>
 
           <div style={{ display: "grid", gap: "8px", maxHeight: "450px", overflowY: "auto" }}>
             {parametrosAdm
-              .filter(p => (!soZerados || parametroZerado(p)) && (!buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase())))
+              .filter(p => (!soZerados || parametroPrecisaCorrigir(p)) && (!buscaParam || p.resina?.toLowerCase().includes(buscaParam.toLowerCase()) || p.impressora?.toLowerCase().includes(buscaParam.toLowerCase())))
               .map((p) => (
                 <div key={p._id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(113,159,219,0.15)", borderRadius: "10px", padding: "10px 12px" }}>
                   {editandoParam === p._id ? (
@@ -2068,6 +2086,16 @@ export function AdminContent({ tokenAtendente }) {
                           {parametroZerado(p) && (
                             <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800, background: "rgba(255,107,107,0.15)", color: "#ff8a8a", border: "1px solid rgba(255,107,107,0.4)" }}>
                               ⛔ 0s — escondido do site
+                            </span>
+                          )}
+                          {problemasParametro(p).length > 0 && (
+                            <span title="Corrija o campo e salve: o perfil volta sozinho para o site e para o bot" style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800, background: "rgba(255,170,60,0.15)", color: "#ffb45c", border: "1px solid rgba(255,170,60,0.45)" }}>
+                              ⚠️ Em revisão ({problemasParametro(p).join(", ")}) — escondido do site e do bot
+                            </span>
+                          )}
+                          {alturaNaoInformada(p) && (
+                            <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 700, background: "rgba(159,180,199,0.12)", color: "#9fb4c7", border: "1px solid rgba(159,180,199,0.3)" }}>
+                              altura de camada não informada
                             </span>
                           )}
                           <span style={{ fontSize: "0.68rem", padding: "1px 8px", borderRadius: "999px", fontWeight: 800,
