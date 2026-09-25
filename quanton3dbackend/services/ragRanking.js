@@ -251,7 +251,11 @@ export function formatParameter(parameter = {}) {
   const parts = [];
   if (parameter.resina) parts.push(`Resina: ${parameter.resina}`);
   if (parameter.impressora) parts.push(`Impressora: ${parameter.impressora}`);
-  if (parameter.confianca) parts.push(`Confianca: ${parameter.confianca}`);
+  parts.push(parameter.confianca === 'estimado' ? 'Fonte: estimativa inicial da Quanton3D (ainda sem teste completo)' : 'Fonte: tabela oficial de parametros Quanton3D');
+  if (parameter.revisadoEm) {
+    const d = new Date(parameter.revisadoEm);
+    if (!Number.isNaN(d.getTime())) parts.push(`Revisado em: ${d.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`);
+  }
   if (parameter.exposicaoNormal) parts.push(`Exposicao normal: ${withUnit(parameter.exposicaoNormal, 's')}`);
   if (parameter.exposicaoBase) parts.push(`Exposicao base: ${withUnit(parameter.exposicaoBase, 's')}`);
   if (parameter.alturaCamada) parts.push(`Altura de camada: ${withUnit(parameter.alturaCamada, 'mm')}`);
