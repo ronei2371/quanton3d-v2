@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Factory, Target, Microscope, Users, Shield, MapPin, ShoppingCart, MessageCircle, Handshake, Flag, X } from "lucide-react";
+import { Factory, Target, Microscope, Users, Shield, MapPin, ShoppingCart, MessageCircle, Flag, X } from "lucide-react";
 import { WHATSAPP_VENDAS_URL } from "../../data/contact";
 
 const VALORES = [
@@ -20,7 +20,7 @@ const FOTOS_PISTA = [
   { src: "/images/sobre/stock-car-33-box.webp", legenda: "Equipe no box com o carro 33" },
 ];
 
-function SobreSection({ onAbrirParceiroModal }) {
+function SobreSection() {
   const [fotoAberta, setFotoAberta] = useState(null);
   const fundadores = [
     { nome: "Ronei Martins", cargo: "Fundador e Desenvolvimento", foto: "/images/sobre/Ronei Martins.png" },
@@ -112,7 +112,6 @@ function SobreSection({ onAbrirParceiroModal }) {
       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "22px" }}>
         <a href="https://quanton3d.com.br" target="_blank" rel="noreferrer" className="q-btn q-btn--primary"><ShoppingCart size={15} /> Visite nossa loja</a>
         <a href={WHATSAPP_VENDAS_URL} target="_blank" rel="noreferrer" className="q-btn q-btn--whatsapp"><MessageCircle size={15} /> WhatsApp Vendas</a>
-        <button type="button" className="q-btn q-btn--primary" onClick={onAbrirParceiroModal}><Handshake size={15} /> Quero ser parceiro</button>
       </div>
     </section>
   );
