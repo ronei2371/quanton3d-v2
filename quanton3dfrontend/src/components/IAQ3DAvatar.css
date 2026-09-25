@@ -64,3 +64,8 @@
 /* Mensagens do bot com o mascote ao lado */
 .iaq3d-msg-bot { position: relative; padding-left: 38px; }
 .iaq3d-msg-avatar { position: absolute; left: 0; top: 0; }
+
+/* Faixa "Continuar no WhatsApp" do chat: leva o resumo da conversa para a equipe */
+.iaq3d-handoff { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 6px; border-top: 1px solid var(--border-soft); font-size: 0.74rem; color: var(--text-muted); flex-shrink: 0; }
+.iaq3d-handoff span { flex: 1 1 200px; min-width: 0; line-height: 1.4; }
+.iaq3d-handoff .q-btn { flex-shrink: 0; }
