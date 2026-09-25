@@ -1,4 +1,5 @@
 import GalleryItem from '../models/GalleryItem.js';
+import { itemPublicoGaleria } from '../services/galleryPublic.js';
 
 export async function criarGalleryItem(req, res) {
   const item = await GalleryItem.create({
@@ -15,7 +16,8 @@ export async function listarGalleryItems(_req, res) {
     .limit(200)
     .lean();
 
-  return res.json({ success: true, data: items });
+  // Nunca expor telefone/e-mail de quem enviou; credito so com autorizacao
+  return res.json({ success: true, data: items.map(itemPublicoGaleria) });
 }
 
 export async function listarGalleryItemsAdmin(req, res) {
