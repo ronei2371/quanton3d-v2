@@ -232,9 +232,11 @@ function BotChat({ cliente }) {
   const ultimoBot = mensagens.reduce((ultimo, m, i) => (m.isBot ? i : ultimo), -1);
   const clienteJaPerguntou = mensagens.some((m) => !m.isBot);
 
-  function abrirWhatsappComResumo() {
+  // Link comum (<a>) em vez de window.open: celular e navegador dentro do Instagram/Facebook
+  // bloqueiam janela aberta por script, mas sempre abrem um link tocado pelo cliente.
+  const linkWhatsapp = clienteJaPerguntou ? linkWhatsappComResumo({ cliente, ctx, mensagens }) : "";
+  function registrarWhatsapp() {
     trackEvent("handoff_whatsapp", { resin_name: ctx.resina || "", printer_name: ctx.impressora || "" });
-    window.open(linkWhatsappComResumo({ cliente, ctx, mensagens }), "_blank", "noopener,noreferrer");
   }
 
   if (carregandoHistorico) return (
@@ -381,9 +383,9 @@ function BotChat({ cliente }) {
       {clienteJaPerguntou && (
         <div className="iaq3d-handoff">
           <span>Prefere falar com a equipe? Mandamos o resumo desta conversa, você não precisa repetir nada.</span>
-          <button type="button" className="q-btn q-btn--sm q-btn--whatsapp" onClick={abrirWhatsappComResumo}>
+          <a className="q-btn q-btn--sm q-btn--whatsapp" href={linkWhatsapp} target="_blank" rel="noopener noreferrer" onClick={registrarWhatsapp}>
             <MessageCircle size={14} /> Continuar no WhatsApp
-          </button>
+          </a>
         </div>
       )}
 
