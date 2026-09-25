@@ -382,11 +382,12 @@ function ParametrosSection({ onAbrirExposicao }) {
 
           <span className={"q-badge " + (resultado.confianca === "estimado" ? "q-badge--warning" : "q-badge--success")} style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginBottom: "4px" }}>
             {resultado.confianca === "estimado" ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} />}
-            {resultado.confianca === "estimado" ? "Estimativa inicial" : "Testado pela Quanton3D"}
+            {resultado.confianca === "estimado" ? "Estimativa inicial" : "Perfil oficial Quanton3D"}
           </span>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "14px", fontSize: "0.71rem", color: "var(--text-muted)", lineHeight: 1.4 }}>
-            {resultado.updatedAt && (
-              <span>Atualizado: {new Date(resultado.updatedAt).toLocaleDateString("pt-BR")}</span>
+            <span>Fonte: tabela oficial de parâmetros Quanton3D</span>
+            {resultado.revisadoEm && (
+              <span>&#xB7; revisado em {new Date(resultado.revisadoEm).toLocaleDateString("pt-BR")}</span>
             )}
             {resultado.versao && (
               <span>&#xB7; v{resultado.versao}</span>
