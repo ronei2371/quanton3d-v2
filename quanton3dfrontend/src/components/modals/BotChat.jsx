@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Send, ThumbsUp, ThumbsDown, Camera, ArrowRight, SkipForward } from "lucide-react";
+import { Send, ThumbsUp, ThumbsDown, Camera, ArrowRight, SkipForward, MessageCircle } from "lucide-react";
 import api from "../../lib/api";
 import IAQ3DAvatar from "../IAQ3DAvatar";
+import { linkWhatsappComResumo } from "../../utils/resumoWhatsapp";
+import { trackEvent } from "../../utils/analytics";
 
 const RESINAS_BOT = [
   "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "ATHOM DENTAL", "ATHOM ALINHADORES",
@@ -228,6 +230,12 @@ function BotChat({ cliente }) {
   }
 
   const ultimoBot = mensagens.reduce((ultimo, m, i) => (m.isBot ? i : ultimo), -1);
+  const clienteJaPerguntou = mensagens.some((m) => !m.isBot);
+
+  function abrirWhatsappComResumo() {
+    trackEvent("handoff_whatsapp", { resin_name: ctx.resina || "", printer_name: ctx.impressora || "" });
+    window.open(linkWhatsappComResumo({ cliente, ctx, mensagens }), "_blank", "noopener,noreferrer");
+  }
 
   if (carregandoHistorico) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "var(--text-muted)", fontSize: "0.86rem" }}>
@@ -369,6 +377,15 @@ function BotChat({ cliente }) {
           </div>
         )}
       </div>
+
+      {clienteJaPerguntou && (
+        <div className="iaq3d-handoff">
+          <span>Prefere falar com a equipe? Mandamos o resumo desta conversa, você não precisa repetir nada.</span>
+          <button type="button" className="q-btn q-btn--sm q-btn--whatsapp" onClick={abrirWhatsappComResumo}>
+            <MessageCircle size={14} /> Continuar no WhatsApp
+          </button>
+        </div>
+      )}
 
       <ChatInput onEnviar={enviar} pensando={pensando} modo={modo} onModoChange={setModo} />
     </div>
