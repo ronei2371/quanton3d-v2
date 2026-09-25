@@ -655,6 +655,13 @@ export function AdminContent({ tokenAtendente }) {
     }
   }
 
+  async function recarregarSugestoes() {
+    try {
+      const r = await api.get("/sugestoes-conhecimento", { headers: { Authorization: "Bearer " + token } });
+      setSugestoesIaq3d(r.data?.sugestoes || []);
+    } catch (_) {}
+  }
+
   async function aprovarSugestao(id) {
     try {
       setSalvandoSugestao(id);
@@ -790,6 +797,7 @@ export function AdminContent({ tokenAtendente }) {
     { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
     { id: "atendentes", label: "Atendentes", icon: "👨‍💼", count: null },
     { id: "logs", label: "Logs", icon: "📋", count: null },
+    { id: "conhecimento", label: "Adicionar conhecimento", icon: "📚", count: sugestoesIaq3d.filter(s => s.status === "aprovado").length },
     { id: "sugestoes_iaq3d", label: "Sugestões IAQ3D", icon: "💡", count: sugestoesIaq3d.filter(s => s.status === "pendente").length },
     { id: "limpeza", label: "Limpeza", icon: "🧹", count: null },
   ];
@@ -3012,8 +3020,183 @@ export function AdminContent({ tokenAtendente }) {
         </div>
       )}
 
+      {aba === "conhecimento" && <AdicionarConhecimentoContent token={token} sugestoes={sugestoesIaq3d} onAtualizar={recarregarSugestoes} />}
+
       {aba === "limpeza" && <LimpezaContent token={token} />}
 
+    </div>
+  );
+}
+
+// Aba "Adicionar conhecimento": o ADM escreve e o texto entra direto na base do IAQ3D
+// (SugestaoConhecimento com status "aprovado", usada pela busca do bot em services/rag.js).
+const CATEGORIAS_CONHECIMENTO = [
+  { id: "resina", label: "🧪 Resina" },
+  { id: "impressora", label: "🖨️ Impressora" },
+  { id: "problema", label: "⚠️ Problema e solução" },
+  { id: "dica", label: "💡 Dica técnica" },
+  { id: "outro", label: "📝 Outro" },
+];
+const ROTULO_CATEGORIA = Object.fromEntries(CATEGORIAS_CONHECIMENTO.map((c) => [c.id, c.label]));
+const LIMITE_CONTEUDO_CONHECIMENTO = 8000;
+const estiloCampoConhecimento = { width: "100%", boxSizing: "border-box", padding: "10px 12px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(0,0,0,0.3)", color: "#eaf3ff", fontFamily: "inherit", fontSize: "0.86rem" };
+const estiloBotaoConhecimento = (cor) => ({ padding: "7px 14px", borderRadius: "8px", border: `1px solid ${cor}66`, background: `${cor}1a`, color: cor, cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" });
+
+function AdicionarConhecimentoContent({ token, sugestoes, onAtualizar }) {
+  const [form, setForm] = useState({ categoria: "problema", titulo: "", conteudo: "" });
+  const [enviando, setEnviando] = useState(false);
+  const [aviso, setAviso] = useState(null);
+  const [busca, setBusca] = useState("");
+  const [editando, setEditando] = useState({});
+  const [confirmarRemover, setConfirmarRemover] = useState("");
+  const [salvandoId, setSalvandoId] = useState("");
+  const headers = { Authorization: "Bearer " + token };
+
+  const aprovados = sugestoes
+    .filter((s) => s.status === "aprovado")
+    .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+  const termo = busca.trim().toLowerCase();
+  const visiveis = termo ? aprovados.filter((s) => `${s.titulo} ${s.conteudo}`.toLowerCase().includes(termo)) : aprovados;
+
+  async function adicionar(e) {
+    e.preventDefault();
+    const titulo = form.titulo.trim();
+    const conteudo = form.conteudo.trim();
+    if (titulo.length < 5) { setAviso({ tipo: "erro", texto: "Escreva um título com pelo menos 5 letras (de preferência a pergunta que o cliente faria)." }); return; }
+    if (conteudo.length < 20) { setAviso({ tipo: "erro", texto: "Explique um pouco mais no conteúdo (pelo menos 20 letras)." }); return; }
+    setEnviando(true); setAviso(null);
+    try {
+      const resp = await api.post("/sugestoes-conhecimento", { categoria: form.categoria, titulo, conteudo, aprovarDireto: true }, { headers });
+      setForm((f) => ({ ...f, titulo: "", conteudo: "" }));
+      const entrouDireto = resp.data?.sugestao?.status === "aprovado";
+      setAviso({ tipo: "ok", texto: entrouDireto ? "Pronto! O IAQ3D já usa esse conhecimento nas próximas perguntas parecidas." : "Enviado! Fica na aba Sugestões IAQ3D esperando a aprovação do administrador." });
+      await onAtualizar();
+    } catch (err) {
+      setAviso({ tipo: "erro", texto: err?.response?.data?.message || "Não foi possível salvar agora. Tente de novo em instantes." });
+    } finally { setEnviando(false); }
+  }
+
+  async function salvarEdicao(s) {
+    const ed = editando[s._id];
+    if (!ed?.titulo?.trim() || !ed?.conteudo?.trim()) { setAviso({ tipo: "erro", texto: "Título e conteúdo não podem ficar vazios." }); return; }
+    setSalvandoId(s._id);
+    try {
+      await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "aprovado", titulo: ed.titulo, conteudo: ed.conteudo, categoria: ed.categoria }, { headers });
+      setEditando((prev) => { const n = { ...prev }; delete n[s._id]; return n; });
+      setAviso({ tipo: "ok", texto: "Conhecimento atualizado." });
+      await onAtualizar();
+    } catch (err) {
+      setAviso({ tipo: "erro", texto: err?.response?.data?.message || "Não foi possível salvar a edição." });
+    } finally { setSalvandoId(""); }
+  }
+
+  async function remover(s) {
+    setSalvandoId(s._id);
+    try {
+      // Nao apaga: marca como rejeitado (sai do bot, fica no histórico da aba Sugestões)
+      await api.patch("/sugestoes-conhecimento/" + s._id + "/status", { status: "rejeitado", observacaoAdmin: "Removido do bot pelo ADM" }, { headers });
+      setConfirmarRemover("");
+      setAviso({ tipo: "ok", texto: `"${s.titulo}" saiu da base do IAQ3D.` });
+      await onAtualizar();
+    } catch (err) {
+      setAviso({ tipo: "erro", texto: "Não foi possível remover agora." });
+    } finally { setSalvandoId(""); }
+  }
+
+  return (
+    <div>
+      <div style={{ border: "1px solid rgba(79,209,255,0.22)", borderRadius: "12px", padding: "14px 16px", background: "rgba(79,209,255,0.05)", marginBottom: "16px" }}>
+        <p style={{ margin: "0 0 6px", fontWeight: 900, color: "#0092ff", fontSize: "0.92rem" }}>📚 Adicionar conhecimento ao IAQ3D</p>
+        <p style={{ margin: 0, fontSize: "0.83rem", color: "#c3d4e6", lineHeight: 1.55 }}>
+          O que você escrever aqui entra <strong style={{ color: "#eaf3ff" }}>direto na base do bot</strong>, sem precisar aprovar.
+          Dica: no título, escreva a pergunta do jeito que o cliente faria (ex.: <em>"Peça descolando da plataforma na IRON"</em>). No conteúdo, a resposta completa e prática, como você explicaria no WhatsApp.
+          Números de parâmetro (tempos, camadas) continuam vindo da tabela oficial de Parâmetros.
+        </p>
+      </div>
+
+      <form onSubmit={adicionar} style={{ display: "grid", gap: "10px", border: "1px solid rgba(113,159,219,0.2)", borderRadius: "12px", padding: "16px", background: "rgba(255,255,255,0.03)", marginBottom: "12px" }}>
+        <label style={{ display: "grid", gap: "5px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>
+          Assunto
+          <select id="conhecimento-categoria" value={form.categoria} onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))} style={estiloCampoConhecimento}>
+            {CATEGORIAS_CONHECIMENTO.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+          </select>
+        </label>
+        <label style={{ display: "grid", gap: "5px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>
+          Título (a pergunta do cliente)
+          <input id="conhecimento-titulo" value={form.titulo} maxLength={200} onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
+            placeholder="Escreva aqui a pergunta. Ex.: quantas camadas de transição usar?" style={estiloCampoConhecimento} />
+        </label>
+        <label style={{ display: "grid", gap: "5px", fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>
+          Conteúdo (a resposta que o bot deve dar)
+          <textarea id="conhecimento-conteudo" rows={8} value={form.conteudo} maxLength={LIMITE_CONTEUDO_CONHECIMENTO} onChange={(e) => setForm((f) => ({ ...f, conteudo: e.target.value }))}
+            placeholder="Explique o que o cliente deve fazer, passo a passo, e por quê." style={{ ...estiloCampoConhecimento, resize: "vertical", lineHeight: 1.5 }} />
+          <span style={{ justifySelf: "end", fontWeight: 600, fontSize: "0.72rem", color: "#6b8aad" }}>{form.conteudo.length}/{LIMITE_CONTEUDO_CONHECIMENTO}</span>
+        </label>
+        <button type="submit" disabled={enviando}
+          style={{ padding: "11px", borderRadius: "8px", border: "none", background: "linear-gradient(135deg,#1565c0,#0092ff)", color: "#fff", fontWeight: 800, cursor: enviando ? "wait" : "pointer", fontFamily: "inherit", fontSize: "0.88rem", opacity: enviando ? 0.7 : 1 }}>
+          {enviando ? "Salvando..." : "➕ Adicionar ao conhecimento do bot"}
+        </button>
+      </form>
+
+      {aviso && (
+        <div role="status" style={{ padding: "10px 14px", borderRadius: "10px", marginBottom: "16px", fontSize: "0.84rem", fontWeight: 700, border: `1px solid ${aviso.tipo === "ok" ? "rgba(10,255,135,0.35)" : "rgba(215,60,60,0.45)"}`, background: aviso.tipo === "ok" ? "rgba(10,255,135,0.08)" : "rgba(215,60,60,0.1)", color: aviso.tipo === "ok" ? "#0aff87" : "#ff8a8a" }}>
+          {aviso.tipo === "ok" ? "✅ " : "⚠️ "}{aviso.texto}
+        </div>
+      )}
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", flexWrap: "wrap", margin: "22px 0 10px" }}>
+        <p style={{ margin: 0, fontWeight: 900, color: "#eaf3ff", fontSize: "0.9rem" }}>Conhecimento que o bot já usa ({aprovados.length})</p>
+        <input id="conhecimento-busca" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="🔍 Procurar..." style={{ ...estiloCampoConhecimento, width: "min(100%, 260px)", padding: "7px 12px" }} />
+      </div>
+
+      {visiveis.length === 0 && <div className="gallery-empty">{termo ? "Nada encontrado com essa busca." : "Nenhum conhecimento adicionado ainda."}</div>}
+
+      {visiveis.map((s) => {
+        const ed = editando[s._id];
+        return (
+          <div key={s._id} style={{ border: "1px solid rgba(113,159,219,0.15)", borderRadius: "12px", padding: "14px", background: "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
+            {ed ? (
+              <div style={{ display: "grid", gap: "8px" }}>
+                <select value={ed.categoria} onChange={(e) => setEditando((p) => ({ ...p, [s._id]: { ...ed, categoria: e.target.value } }))} style={estiloCampoConhecimento}>
+                  {CATEGORIAS_CONHECIMENTO.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                </select>
+                <input value={ed.titulo} maxLength={200} onChange={(e) => setEditando((p) => ({ ...p, [s._id]: { ...ed, titulo: e.target.value } }))} style={estiloCampoConhecimento} />
+                <textarea rows={7} value={ed.conteudo} maxLength={LIMITE_CONTEUDO_CONHECIMENTO} onChange={(e) => setEditando((p) => ({ ...p, [s._id]: { ...ed, conteudo: e.target.value } }))} style={{ ...estiloCampoConhecimento, resize: "vertical", lineHeight: 1.5 }} />
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button type="button" disabled={salvandoId === s._id} onClick={() => salvarEdicao(s)} style={estiloBotaoConhecimento("#0aff87")}>{salvandoId === s._id ? "Salvando..." : "💾 Salvar"}</button>
+                  <button type="button" onClick={() => setEditando((p) => { const n = { ...p }; delete n[s._id]; return n; })} style={estiloBotaoConhecimento("#9fb4c7")}>Cancelar</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", alignItems: "flex-start" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <strong style={{ color: "#eaf3ff", fontSize: "0.92rem" }}>{s.titulo}</strong>
+                    <div style={{ fontSize: "0.72rem", color: "#9fb4c7", marginTop: "3px" }}>
+                      {ROTULO_CATEGORIA[s.categoria] || "📝 " + s.categoria} · {s.nomeAtendente || s.codigoAtendente} · {new Date(s.updatedAt || s.createdAt).toLocaleDateString("pt-BR")}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                    <button type="button" onClick={() => setEditando((p) => ({ ...p, [s._id]: { titulo: s.titulo, conteudo: s.conteudo, categoria: s.categoria } }))} style={estiloBotaoConhecimento("#0092ff")}>✏️ Editar</button>
+                    {confirmarRemover === s._id ? (
+                      <>
+                        <button type="button" disabled={salvandoId === s._id} onClick={() => remover(s)} style={estiloBotaoConhecimento("#d73c3c")}>{salvandoId === s._id ? "Removendo..." : "Confirmar remoção"}</button>
+                        <button type="button" onClick={() => setConfirmarRemover("")} style={estiloBotaoConhecimento("#9fb4c7")}>Cancelar</button>
+                      </>
+                    ) : (
+                      <button type="button" onClick={() => setConfirmarRemover(s._id)} style={estiloBotaoConhecimento("#d73c3c")}>🗑️ Tirar do bot</button>
+                    )}
+                  </div>
+                </div>
+                <details style={{ marginTop: "8px" }}>
+                  <summary style={{ cursor: "pointer", fontSize: "0.78rem", color: "#7dd3fc", fontWeight: 700 }}>Ver conteúdo</summary>
+                  <p style={{ margin: "8px 0 0", fontSize: "0.84rem", color: "#c3d4e6", whiteSpace: "pre-wrap", lineHeight: 1.55 }}>{s.conteudo}</p>
+                </details>
+              </>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
