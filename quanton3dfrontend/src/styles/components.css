@@ -311,7 +311,8 @@
 .comunidade-credito a { display: inline-flex; align-items: center; gap: 4px; color: var(--primary); font-weight: 700; font-size: 0.78rem; }
 /* Sobre: Quanton3D nas pistas (patrocinio Stock Car) */
 .sobre-pista { margin: 26px 0 0; padding: 18px; border: 1px solid var(--border-soft); border-radius: var(--r-md); background: rgba(224, 70, 75, 0.04); }
-.sobre-pista-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 10px; }
+.sobre-pista-grade { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 720px) { .sobre-pista-grade { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
 .sobre-pista-foto { display: block; padding: 0; border: 1px solid var(--border-soft); border-radius: var(--r-sm); overflow: hidden; background: #05070d; cursor: zoom-in; aspect-ratio: 4 / 3; }
 .sobre-pista-foto img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s ease; }
 .sobre-pista-foto:hover img, .sobre-pista-foto:focus-visible img { transform: scale(1.04); }
