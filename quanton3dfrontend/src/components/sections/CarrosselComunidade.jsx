@@ -1,16 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import api from "../../lib/api";
 
 // Carrossel da Home com as pecas aprovadas na Galeria da Comunidade.
 // Toda peca aprovada no ADM entra aqui sozinha. Com menos de 3 pecas, nao aparece.
+// A faixa anda sozinha e sem parar (animacao CSS), pausa com o mouse em cima
+// e fica parada (rolagem manual) para quem pediu "reduzir movimento" no sistema.
 const MINIMO_PECAS = 3;
-const INTERVALO_MS = 4500;
+const SEGUNDOS_POR_PECA = 7;
+const MINIMO_CARTOES_POR_VOLTA = 8;
 
 function CarrosselComunidade({ onNavegar }) {
   const [pecas, setPecas] = useState([]);
-  const [pausado, setPausado] = useState(false);
-  const trilhoRef = useRef(null);
 
   useEffect(() => {
     let ativo = true;
@@ -23,66 +24,46 @@ function CarrosselComunidade({ onNavegar }) {
     return () => { ativo = false; };
   }, []);
 
-  const passo = useCallback((direcao) => {
-    const trilho = trilhoRef.current;
-    if (!trilho) return;
-    const cartao = trilho.querySelector(".carrossel-card");
-    const largura = cartao ? cartao.getBoundingClientRect().width + 14 : trilho.clientWidth;
-    const fim = trilho.scrollLeft + trilho.clientWidth >= trilho.scrollWidth - 4;
-    if (direcao > 0 && fim) trilho.scrollTo({ left: 0, behavior: "smooth" });
-    else trilho.scrollBy({ left: direcao * largura, behavior: "smooth" });
-  }, []);
-
-  // Passa sozinho; para quando o mouse esta em cima, quando a aba nao esta visivel
-  // ou quando a pessoa pediu menos movimento no sistema.
-  useEffect(() => {
-    if (pausado || pecas.length < MINIMO_PECAS) return undefined;
-    const reduzir = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduzir) return undefined;
-    const id = setInterval(() => { if (!document.hidden) passo(1); }, INTERVALO_MS);
-    return () => clearInterval(id);
-  }, [pausado, pecas.length, passo]);
-
   if (pecas.length < MINIMO_PECAS) return null;
+
+  // Repete a lista ate encher a tela e duplica a volta inteira: a animacao anda
+  // exatamente meia faixa (-50%) e recomeca sem emenda aparente.
+  const repeticoes = Math.max(1, Math.ceil(MINIMO_CARTOES_POR_VOLTA / pecas.length));
+  const volta = Array.from({ length: repeticoes }, () => pecas).flat();
+  const faixa = [...volta, ...volta];
+  const duracao = `${volta.length * SEGUNDOS_POR_PECA}s`;
 
   return (
     <section className="carrossel-comunidade" aria-labelledby="carrossel-titulo">
-      <div className="home-section-heading carrossel-topo">
-        <div>
-          <span className="q-eyebrow">Comunidade Quanton3D</span>
-          <h2 id="carrossel-titulo">Feito com resina Quanton3D</h2>
-          <p>Peças de parceiros e clientes que imprimem com as nossas resinas.</p>
-        </div>
-        <div className="carrossel-controles">
-          <button type="button" className="carrossel-seta" onClick={() => passo(-1)} aria-label="Peça anterior"><ChevronLeft size={20} /></button>
-          <button type="button" className="carrossel-seta" onClick={() => passo(1)} aria-label="Próxima peça"><ChevronRight size={20} /></button>
-        </div>
+      <div className="home-section-heading">
+        <span className="q-eyebrow">Comunidade Quanton3D</span>
+        <h2 id="carrossel-titulo">Feito com resina Quanton3D</h2>
+        <p>Peças de parceiros e clientes que imprimem com as nossas resinas.</p>
       </div>
 
-      <div
-        className="carrossel-trilho"
-        ref={trilhoRef}
-        onMouseEnter={() => setPausado(true)}
-        onMouseLeave={() => setPausado(false)}
-        onFocus={() => setPausado(true)}
-        onBlur={() => setPausado(false)}
-        onTouchStart={() => setPausado(true)}
-      >
-        {pecas.map((peca) => (
-          <button
-            key={peca._id || peca.imagem}
-            type="button"
-            className="carrossel-card"
-            onClick={() => onNavegar("comunidade")}
-            aria-label={`${peca.observacao || "Peça da comunidade"}${peca.autor ? ` — peça de ${peca.autor}` : ""}. Abrir a galeria`}
-          >
-            <img src={peca.imagem} alt={peca.observacao || `Peça impressa com ${peca.resina || "resina Quanton3D"}`} loading="lazy" />
-            <span className="carrossel-legenda">
-              {peca.autor && <strong>{peca.autor}</strong>}
-              {peca.observacao && <span>{peca.observacao}</span>}
-            </span>
-          </button>
-        ))}
+      <div className="carrossel-janela">
+        <div className="carrossel-pista" style={{ "--carrossel-duracao": duracao }}>
+          {faixa.map((peca, i) => {
+            const repetida = i >= pecas.length;
+            return (
+              <button
+                key={`${peca._id || peca.imagem}-${i}`}
+                type="button"
+                className="carrossel-card"
+                onClick={() => onNavegar("comunidade")}
+                tabIndex={repetida ? -1 : 0}
+                aria-hidden={repetida ? "true" : undefined}
+                aria-label={`${peca.observacao || "Peça da comunidade"}${peca.autor ? `, peça de ${peca.autor}` : ""}. Abrir a galeria`}
+              >
+                <img src={peca.imagem} alt="" loading={i < 6 ? "eager" : "lazy"} />
+                <span className="carrossel-legenda">
+                  {peca.autor && <strong>{peca.autor}</strong>}
+                  {peca.observacao && <span>{peca.observacao}</span>}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <button type="button" className="q-btn q-btn--primary carrossel-cta" onClick={() => onNavegar("comunidade")}>
