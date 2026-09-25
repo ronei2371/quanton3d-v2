@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import { transitionLayerAnswer } from '../services/transitionLayers.js';
 import { gabaritoAnswer } from '../services/gabaritoQuanton.js';
-import { misturaAnswer, custoFormulaAnswer } from '../services/regrasSuporte.js';
+import { misturaAnswer, custoFormulaAnswer, handoffAnswer } from '../services/regrasSuporte.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
@@ -151,7 +151,7 @@ router.post('/', async (req, res) => {
 
         // Camadas de transicao: regra do fundador + conta linear com os numeros do cliente.
         // Nao depende de perfil oficial (os parametros oficiais nao tem transicao).
-        const respostaTransicao = transitionLayerAnswer(text) || gabaritoAnswer(text) || misturaAnswer(text) || custoFormulaAnswer(text);
+        const respostaTransicao = transitionLayerAnswer(text) || gabaritoAnswer(text) || misturaAnswer(text) || custoFormulaAnswer(text) || handoffAnswer(text);
         if (respostaTransicao) {
             let conversaId = null;
             try {
