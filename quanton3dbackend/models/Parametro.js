@@ -23,6 +23,9 @@ default: 'oficial', // Se cadastrado manualmente pela Quanton3D, assume oficial 
 },
 // Índice de confiança detalhado (p2-3)
 versao: { type: String, default: null }, // ex: "1.0", "1.2" — versão do perfil
+// Data da ultima revisao TECNICA (valores de exposicao/camadas mudaram pelo ADM).
+// Diferente de updatedAt, que muda ate quando so a foto da impressora e trocada.
+revisadoEm: { type: Date, default: null },
 metodoValidacao: {
 type: String,
 enum: ['teste-fisico', 'calculado', 'fornecedor', null],
