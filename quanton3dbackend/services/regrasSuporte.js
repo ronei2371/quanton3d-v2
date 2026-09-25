@@ -47,3 +47,14 @@ export function custoFormulaAnswer(message = '') {
     + '5. **Custo total** = subtotal + impacto da falha. **Por peça** = total ÷ quantidade.\n\n'
     + 'Os erros mais comuns: colocar o peso em gramas no campo de volume (mL), usar o preço do frasco em vez do preço do litro ou esquecer a quantidade de peças. Se quiser, me passa os valores que você usou que eu confiro com você.';
 }
+
+// Cliente pede uma pessoa ou pede para "mandar pro WhatsApp": o chat do site tem o botao
+// "Continuar no WhatsApp", que abre o WhatsApp da equipe com o resumo da conversa pronto.
+const PEDE_HUMANO = /\b(falar|conversar|atendimento)\s+(com\s+)?(uma?\s+)?(pessoa|humano|atendente|alguem|tecnico|equipe|gente de verdade)\b|\batendente humano\b|\b(manda|mandar|envia|enviar|passa|passar|encaminha|encaminhar|transfere|transferir)\b.{0,25}\b(whats\w*|zap|equipe|atendente|suporte)\b/;
+
+export function handoffAnswer(message = '') {
+  const t = normalizar(message);
+  if (!PEDE_HUMANO.test(t)) return null;
+  return 'Claro! Toque em **Continuar no WhatsApp**, logo abaixo da conversa: ele abre o WhatsApp do suporte da Quanton3D, (31) 3271-6935, já com o resumo do que conversamos (resina, impressora e suas perguntas). É só enviar, você não precisa repetir nada.\n\n'
+    + 'Atendimento da equipe: segunda a sexta, das 9h às 18h. Se tiver foto da peça ou da plataforma, mande junto: ajuda muito no diagnóstico.';
+}
