@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle, Upload, ShieldCheck, Megaphone, SlidersHorizontal, Plus, Play } from "lucide-react";
 import api from "../../lib/api";
+import CarrosselComunidade from "./CarrosselComunidade";
 
 const RESINAS_QUANTON = [
   "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "POSEIDON",
@@ -377,6 +378,8 @@ function GaleriaTab({ cliente }) {
           <button type="button" className="q-btn q-btn--primary" onClick={abrirForm}><Camera size={15} /> Enviar a primeira peça</button>
         </div>
       )}
+
+      {!carregandoItens && !erroItens && <CarrosselComunidade variante="galeria" pecas={itens} onAbrirPeca={setItemSelecionado} />}
 
       {itens.length > 0 && resinasNaGaleria.length > 1 && (
         <div className="comunidade-filtro">
