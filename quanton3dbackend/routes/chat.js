@@ -155,6 +155,11 @@ router.post('/', async (req, res) => {
 
         // Camadas de transicao: regra do fundador + conta linear com os numeros do cliente.
         // Nao depende de perfil oficial (os parametros oficiais nao tem transicao).
+        // O chat do site so abre com cadastro; sem cliente identificado nao gasta IA.
+        if (!String(clienteId || '').trim()) {
+            return res.json({ success: true, reply: 'Para conversar com a IAQ3D, faça seu cadastro rápido no site (botão "Área do cliente", no topo). Leva menos de 1 minuto e libera o suporte técnico.', source: 'cadastro', ragUsado: false, conversaId: null, precisaCadastro: true });
+        }
+
         const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip || '';
 
         // Telefone vem somente do cadastro do cliente no banco (nome ou telefone digitado nao provam identidade).
