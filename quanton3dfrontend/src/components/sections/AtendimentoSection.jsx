@@ -3,6 +3,7 @@ import { Search, Settings2, Thermometer, Camera, Wrench, FlaskConical, MessageCi
 import api from "../../lib/api";
 import { WHATSAPP_SUPORTE_URL, HORARIO_ATENDIMENTO } from "../../data/contact";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
+import { comprimirImagens } from "../../utils/comprimirImagem";
 
 const PROBLEMAS = [
   "Peça não adere à plataforma",
@@ -85,7 +86,7 @@ function ChamadoTecnico({ cliente }) {
       formData.append("resina", form.resina === "outra" ? (form.resinaCustom || "Outra") : form.resina);
       formData.append("impressora", form.impressora === "outra" ? (form.impressoraCustom || "Outra") : form.impressora);
       formData.append("descricao", descricao);
-      fotos.forEach((foto) => formData.append("fotos", foto));
+      (await comprimirImagens(fotos)).forEach((foto) => formData.append("fotos", foto));
       await api.post("/bot-tickets", formData);
       setSucesso(true);
     } catch (err) {
@@ -212,10 +213,10 @@ function ChamadoTecnico({ cliente }) {
             </label>
           </div>
 
-          <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Camera size={13} /> Fotos do problema (até 4)</h4>
+          <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Camera size={13} /> Fotos do problema (até 2)</h4>
           <AvisoFotoPrivacidade />
           <label style={{ display: "block", padding: "16px", borderRadius: "var(--r-md)", border: "2px dashed var(--border-soft)", background: "rgba(0,146,255,0.04)", cursor: "pointer", textAlign: "center", marginBottom: "18px" }}>
-            <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => setFotos(Array.from(e.target.files || []).slice(0, 4))} />
+            <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => setFotos(Array.from(e.target.files || []).slice(0, 2))} />
             {fotos.length > 0
               ? <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--q-verde)", fontWeight: 700 }}><CheckCircle2 size={14} /> {fotos.length} foto(s): {fotos.map((f) => f.name).join(", ")}</span>
               : <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--text-muted)", fontSize: "0.85rem" }}><FolderOpen size={14} /> Clique para selecionar fotos da peça com problema</span>}

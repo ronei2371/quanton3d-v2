@@ -3,6 +3,7 @@ import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle, Uplo
 import api from "../../lib/api";
 import CarrosselComunidade from "./CarrosselComunidade";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
+import { comprimirImagem } from "../../utils/comprimirImagem";
 
 const RESINAS_QUANTON = [
   "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "POSEIDON",
@@ -241,7 +242,7 @@ function FormularioEnvio({ cliente, onFechar }) {
       formData.append("impressora", form.impressora === "outra" ? (form.impressoraCustom || "Outra") : form.impressora);
       formData.append("observacao", form.observacao);
       formData.append("clienteId", cliente?._id || "");
-      formData.append("fotos", foto);
+      formData.append("fotos", await comprimirImagem(foto));
       formData.append("autorizaDivulgacao", form.autorizaDivulgacao ? "true" : "false");
       Object.entries(form.parametros).forEach(([campo, valor]) => formData.append(`parametros.${campo}`, valor));
       Object.entries(form.redes).forEach(([campo, valor]) => formData.append(`redesSociais.${campo}`, valor));
