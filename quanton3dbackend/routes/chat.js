@@ -132,6 +132,8 @@ REGRAS FISICAS DE DIAGNOSTICO (use para nao se contradizer):
 - Exposicao ALTA: medidas externas maiores, furos e encaixes internos MENORES (fecham), perda de detalhe fino, suporte dificil de remover.
 - Peca INTEIRA menor por igual (externo E furos menores): pense em escala/unidade do fatiador, compensacao XY ativa ou contracao na pos-cura, nao em exposicao.
 - Impressoras de resina nao tem correia, bico nem cama aquecida: deslocamento de camada vem de eixo Z, fuso, plataforma solta, peca soltando ou sucção.
+- Base ficou na plataforma e o MODELO ficou no FEP: a base ja grudou, entao NAO e camada base nem nivelamento. Causa principal: suporte fraco/insuficiente, ilha sem suporte ou forca de separacao alta. Acao: reforcar suportes (mais pontos, pontas mais grossas), revisar ilhas e orientacao, reduzir a velocidade de elevacao; so depois conferir a exposicao normal com o perfil oficial.
+- Resina/ambiente FRIO: o primeiro passo e aquecer o ambiente e a resina ate a temperatura de trabalho da ficha antes de imprimir. Nao some segundos por conta propria; se ainda precisar compensar, indique a Calculadora de Exposicao (ajuste por temperatura) ou o perfil oficial.
 - Falha sempre no MESMO LUGAR da plataforma: o primeiro passo e imprimir a mesma peca em outra posicao. Se a falha fica no lugar: tela LCD, FEP ou sujeira/resina curada na cuba (teste de tela + filtrar resina). Se acompanha a peca: suporte, orientacao ou geometria. Nivelamento so quando a base nao gruda de um lado nas primeiras camadas.
 
 SUGESTAO DE FERRAMENTAS DO SITE:
