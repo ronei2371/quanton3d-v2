@@ -8,7 +8,7 @@ const router = express.Router();
 // Memória — converte pra Base64, não depende de disco (Render não persiste disco entre deploys)
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { files: 6, fileSize: 8 * 1024 * 1024 },
+  limits: { files: 2, fileSize: 8 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype && file.mimetype.startsWith("image/")) return cb(null, true);
     cb(new Error("Apenas imagens são permitidas."));
@@ -33,7 +33,7 @@ function limparTexto(valor) {
 
 // Envio do formulário "Quero ser parceiro" — público
 router.post("/", (req, res) => {
-  upload.array("fotos", 6)(req, res, async (erroUpload) => {
+  upload.array("fotos", 2)(req, res, async (erroUpload) => {
     if (erroUpload) {
       return res.status(400).json({ success: false, message: erroUpload.message || "Erro ao enviar imagens." });
     }

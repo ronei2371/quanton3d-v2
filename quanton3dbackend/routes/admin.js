@@ -10,6 +10,7 @@ import Visita from '../models/Visita.js';
 import ContactMessage from '../models/ContactMessage.js';
 import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
 import ImpressoraCatalogo from '../models/ImpressoraCatalogo.js';
+import { resumoCustoIA, inicioDoDiaBrasil, inicioDoMesBrasil, PRECOS, LIMITE_DIARIO } from '../services/usoIA.js';
 
 const router = express.Router();
 
@@ -331,6 +332,13 @@ router.get('/metrics', auth, async (_req, res) => {
       Conversa.countDocuments({ aprovado: false }),
     ]);
 
+    // Custo estimado da IA (tokens gravados em cada conversa x preco por milhao, em services/usoIA.js)
+    let iaCusto = null;
+    try {
+      const [iaHoje, iaMes] = await Promise.all([resumoCustoIA(inicioDoDiaBrasil()), resumoCustoIA(inicioDoMesBrasil())]);
+      iaCusto = { hoje: iaHoje, mes: iaMes, precos: PRECOS, limiteDiario: LIMITE_DIARIO };
+    } catch (e) { console.error('[IA-CUSTO]', e.message); }
+
     res.json({
       success: true,
       totals: { clientes: totalClientes, formulacoes: totalFormulacoes, parametros: totalParametros, gallery: totalGallery },
@@ -338,6 +346,7 @@ router.get('/metrics', auth, async (_req, res) => {
       formulacoes,
       parametros,
       gallery,
+      iaCusto,
       botMetrics: {
         totalConversas,
         conversasHoje,

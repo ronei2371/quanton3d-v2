@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import { transitionLayerAnswer } from '../services/transitionLayers.js';
 import { gabaritoAnswer } from '../services/gabaritoQuanton.js';
-import { misturaAnswer, custoFormulaAnswer, handoffAnswer } from '../services/regrasSuporte.js';
+import { misturaAnswer, custoFormulaAnswer, handoffAnswer, saudacaoAnswer, validadeAnswer } from '../services/regrasSuporte.js';
+import { LIMITE_DIARIO, LIMITE_POR_IP, perguntasHoje, usoDoIp, registrarUsoIp, mensagemLimite, somarUso } from '../services/usoIA.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
@@ -154,14 +155,40 @@ router.post('/', async (req, res) => {
 
         // Camadas de transicao: regra do fundador + conta linear com os numeros do cliente.
         // Nao depende de perfil oficial (os parametros oficiais nao tem transicao).
-        const respostaTransicao = transitionLayerAnswer(text) || gabaritoAnswer(text) || misturaAnswer(text) || custoFormulaAnswer(text) || handoffAnswer(text);
+        const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip || '';
+
+        // Telefone vem somente do cadastro do cliente no banco (nome ou telefone digitado nao provam identidade).
+        let clienteTelefone = '';
+        if (mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24) {
+            try {
+                const cad = await Cliente.findById(clienteId).select('telefone').lean();
+                clienteTelefone = cad?.telefone || '';
+            } catch (_) {}
+        }
+        const ehFundador = isFounderPhone(clienteTelefone);
+
+        // Limite diario de perguntas respondidas pela IA (respostas fixas nao contam). Fundador nao tem limite.
+        let usadasHoje = 0;
+        try { usadasHoje = await perguntasHoje(clienteId); } catch (_) {}
+        const infoLimite = (usadas) => ({ usadas: Math.min(usadas, LIMITE_DIARIO), max: LIMITE_DIARIO, restantes: Math.max(0, LIMITE_DIARIO - usadas), semLimite: ehFundador });
+
+        // Respostas fixas: nao passam pela IA, nao gastam e nao contam no limite.
+        const respostaTransicao = transitionLayerAnswer(text) || gabaritoAnswer(text) || misturaAnswer(text) || custoFormulaAnswer(text) || handoffAnswer(text) || saudacaoAnswer(text) || validadeAnswer(text);
         if (respostaTransicao) {
             let conversaId = null;
             try {
                 const conv = await Conversa.create({ clienteId, clienteNome, pergunta: text, resposta: respostaTransicao, fonte: 'rules' });
                 conversaId = conv._id;
             } catch (_) {}
-            return res.json({ success: true, reply: respostaTransicao, source: 'rules', ragUsado: false, conversaId });
+            return res.json({ success: true, reply: respostaTransicao, source: 'rules', ragUsado: false, conversaId, limite: infoLimite(usadasHoje) });
+        }
+
+        if (!ehFundador) {
+            const usoIp = usoDoIp(ip);
+            const passouCliente = clienteId ? usadasHoje >= LIMITE_DIARIO : usoIp >= LIMITE_DIARIO;
+            if (passouCliente || usoIp >= LIMITE_POR_IP) {
+                return res.json({ success: true, reply: mensagemLimite(), source: 'limite', ragUsado: false, conversaId: null, limiteAtingido: true, limite: infoLimite(LIMITE_DIARIO) });
+            }
         }
 
         const rag = await retrieveRagContext(text, historico);
@@ -176,7 +203,7 @@ router.post('/', async (req, res) => {
                     const conv = await Conversa.create({ clienteId, clienteNome, pergunta: text, resposta: rule, fonte: 'rules' });
                     conversaId = conv._id;
                 } catch (_) {}
-                return res.json({ success: true, reply: rule, source: 'rules', ragUsado: false, conversaId });
+                return res.json({ success: true, reply: rule, source: 'rules', ragUsado: false, conversaId, limite: infoLimite(usadasHoje) });
             }
         }
 
@@ -206,15 +233,6 @@ router.post('/', async (req, res) => {
             systemFinal += `\n\n--- CONTEXTO DETECTADO NA CONVERSA ---\nResina: ${resinaAtual || 'nao informada'} | Impressora: ${impressoraAtual ? impressoraAtual.toUpperCase() : 'nao informada'}\nUse isso para nao perguntar de novo o que o cliente ja disse.`;
         }
 
-        // Telefone vem somente do cadastro do cliente no banco (nome ou telefone digitado nao provam identidade).
-        let clienteTelefone = '';
-        if (mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24) {
-            try {
-                const cad = await Cliente.findById(clienteId).select('telefone').lean();
-                clienteTelefone = cad?.telefone || '';
-            } catch (_) {}
-        }
-        const ehFundador = isFounderPhone(clienteTelefone);
         if (ehFundador) {
             systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVoce esta falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir voce (a IAQ3D) junto com a IA Claude. Reconheca isso de forma natural quando fizer sentido. Trate-o com mais informalidade e proximidade tecnica.`;
         }
@@ -254,6 +272,7 @@ router.post('/', async (req, res) => {
             }
         );
 
+        const usosIA = [completion.usage];
         let firstChoice = completion.choices?.[0];
         let providerReply = firstChoice?.message?.content?.trim();
         let numericRewrite = false;
@@ -279,6 +298,7 @@ router.post('/', async (req, res) => {
                 max_tokens: maxTokens,
                 messages: safeMessages,
             });
+            usosIA.push(completion.usage);
             firstChoice = completion.choices?.[0];
             providerReply = firstChoice?.message?.content?.trim();
 
@@ -316,12 +336,14 @@ router.post('/', async (req, res) => {
                 impressoraDetectada: impressoraAtual || '',
                 ragUsado: rag.used,
                 fonte: rag.used ? 'rag+deepseek' : 'deepseek',
+                ...somarUso(...usosIA),
             });
             conversaId = conv._id;
         } catch (err) {
             console.error('[SALVAR CONVERSA]', err.message);
         }
 
+        registrarUsoIp(ip);
         res.json({
             success: true,
             reply,
@@ -329,12 +351,23 @@ router.post('/', async (req, res) => {
             ragUsado: rag.used,
             ragFontes: rag.sources,
             conversaId,
+            limite: infoLimite(usadasHoje + 1),
         });
 
     } catch (e) {
         console.error('[CHAT ERROR]', e);
         const { status, error } = chatErrorResponse(e);
         res.status(status).json({ success: false, error });
+    }
+});
+
+// Quantas perguntas o cliente ja fez hoje (o chat mostra "Perguntas hoje: X de 15").
+router.get('/limite/:clienteId', async (req, res) => {
+    try {
+        const usadas = await perguntasHoje(req.params.clienteId);
+        res.json({ success: true, limite: { usadas: Math.min(usadas, LIMITE_DIARIO), max: LIMITE_DIARIO, restantes: Math.max(0, LIMITE_DIARIO - usadas) } });
+    } catch (e) {
+        res.json({ success: true, limite: { usadas: 0, max: LIMITE_DIARIO, restantes: LIMITE_DIARIO } });
     }
 });
 

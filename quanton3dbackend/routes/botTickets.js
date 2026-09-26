@@ -9,14 +9,14 @@ const router = express.Router();
 // Salva em memória — converte para Base64, não depende de disco
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024, files: 4 },
+  limits: { fileSize: 5 * 1024 * 1024, files: 2 },
 });
 
 function limparTexto(valor) {
   return String(valor || "").trim();
 }
 
-router.post("/", upload.array("fotos", 4), async (req, res) => {
+router.post("/", upload.array("fotos", 2), async (req, res) => {
   try {
     const payload = {
       clienteId: limparTexto(req.body.clienteId),
