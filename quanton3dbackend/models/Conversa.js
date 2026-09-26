@@ -19,11 +19,16 @@ const ConversaSchema = new mongoose.Schema(
     fotoProblema: { type: String, default: '' }, // Base64
     configuracaoCliente: { type: String, default: '' }, // resina/impressora/altura no momento do feedback
     revisadoFeedback: { type: Boolean, default: false }, // admin já viu esse feedback negativo
+    // Uso da IA nesta resposta (para o custo estimado no ADM > Métricas)
+    tokensEntrada: { type: Number, default: 0 },
+    tokensCache: { type: Number, default: 0 },
+    tokensSaida: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
 ConversaSchema.index({ createdAt: -1 });
+ConversaSchema.index({ clienteId: 1, createdAt: -1 });
 ConversaSchema.index({ aprovado: 1, resinaDetectada: 1 });
 ConversaSchema.index({ aprovado: 1, updatedAt: -1 });
 ConversaSchema.index({ feedback: 1, revisadoFeedback: 1 });
