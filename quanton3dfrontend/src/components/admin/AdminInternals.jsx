@@ -294,6 +294,7 @@ export function AdminContent({ tokenAtendente }) {
   const [paramEdit, setParamEdit] = useState({}); // dados sendo editados
   const [sugestoesIaq3d, setSugestoesIaq3d] = useState([]);
   const [botMetrics, setBotMetrics] = useState(null);
+  const [iaCusto, setIaCusto] = useState(null);
   const [ticketMetrics, setTicketMetrics] = useState(null);
   const [clienteMetrics, setClienteMetrics] = useState(null);
   const [visitaMetrics, setVisitaMetrics] = useState(null);
@@ -351,6 +352,7 @@ export function AdminContent({ tokenAtendente }) {
       carregarLogs();
       try { const sResp = await api.get("/sugestoes-conhecimento", { headers }); setSugestoesIaq3d(sResp.data?.sugestoes || []); } catch(_) {}
       setBotMetrics(m.botMetrics || null);
+      setIaCusto(m.iaCusto || null);
       setTicketMetrics(m.ticketMetrics || null);
       setClienteMetrics(m.clienteMetrics || null);
       setVisitaMetrics(m.visitaMetrics || null);
@@ -1057,6 +1059,31 @@ export function AdminContent({ tokenAtendente }) {
             );
           })()}
 
+
+          {/* ── BLOCO 0: Custo estimado da IA (tokens x preço) ── */}
+          {iaCusto && (
+            <div style={{ background: "rgba(10,255,135,0.04)", border: "1px solid rgba(10,255,135,0.2)", borderRadius: "14px", padding: "16px", marginBottom: "16px" }}>
+              <p style={{ margin: "0 0 12px", fontWeight: 800, color: "#0aff87", fontSize: "0.85rem" }}>💰 CUSTO DA IA (ESTIMADO)</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px,1fr))", gap: "10px", marginBottom: "10px" }}>
+                {[
+                  { label: "Respostas da IA hoje", valor: iaCusto.hoje?.mensagens ?? 0 },
+                  { label: "Custo hoje", valor: "R$ " + Number(iaCusto.hoje?.custoBRL || 0).toFixed(2).replace(".", ",") },
+                  { label: "Respostas da IA no mês", valor: iaCusto.mes?.mensagens ?? 0 },
+                  { label: "Custo no mês", valor: "R$ " + Number(iaCusto.mes?.custoBRL || 0).toFixed(2).replace(".", ",") },
+                ].map(item => (
+                  <div key={item.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px", textAlign: "center", border: "1px solid rgba(10,255,135,0.15)" }}>
+                    <strong style={{ fontSize: "1.35rem", color: "#0aff87", display: "block", lineHeight: 1.1 }}>{item.valor}</strong>
+                    <span style={{ fontSize: "0.68rem", color: "#9fb4c7", fontWeight: 600 }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+              <p style={{ margin: 0, fontSize: "0.72rem", color: "#9fb4c7", lineHeight: 1.5 }}>
+                Conta feita com os tokens de cada resposta × preço da DeepSeek (US$ {iaCusto.precos?.entrada} entrada / US$ {iaCusto.precos?.saida} saída por milhão, dólar a R$ {String(iaCusto.precos?.dolar).replace(".", ",")}).
+                Saudações e respostas rápidas não gastam IA. Limite atual: {iaCusto.limiteDiario} perguntas por dia por cliente.
+                O valor exato cobrado está no painel da DeepSeek (platform.deepseek.com → Usage).
+              </p>
+            </div>
+          )}
 
           {/* ── BLOCO 1: Métricas do Bot IAQ3D ── */}
           {botMetrics && (
