@@ -62,7 +62,7 @@ const RESINAS_COMP = [
     shoreD: null,           densidade: "—",
     odor: "Baixo",          lavagem: "Álcool IPA",
     flexibilidade: "Rígida — resistência térmica",
-    aplicacoes: ["Alinhadores", "Contenções", "Placas de bruxismo"],
+    aplicacoes: ["Modelos p/ alinhadores", "Modelos p/ contenções", "Modelos p/ placas"],
     url: "https://quanton3d.com.br/produtos/resina-quanton-athom-alinhadores/",
     img: "/images/resinas/athom-alinhadores.webp",
   },

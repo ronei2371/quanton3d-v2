@@ -42,7 +42,7 @@ export function BoasVindasModal({ onEntrar }) {
       </p>
 
       <div className="welcome-badge-row welcome-entra" style={{ "--atraso": "0.9s" }}>
-        {["🧪 14 linhas exclusivas", "🇧🇷 100% nacional", "🏆 Pioneira no Brasil"].map((b) => (
+        {["🧪 14 linhas exclusivas", "🇧🇷 100% nacional", "🏆 Pioneira em resina acessível"].map((b) => (
           <span key={b} className="q-badge">{b}</span>
         ))}
       </div>
