@@ -60,8 +60,8 @@ const CASOS = [
   { id: 35, q: 'Preciso misturar a resina antes de imprimir?', deve: [], nunca: [/30% de IRON/i], tema: 'agitar ≠ misturar resinas' },
 ];
 
-async function perguntar(q) {
-  const body = { message: q, historico: [{ role: 'user', content: q }], clienteId: 'homologacao-iaq3d', clienteNome: 'Homologacao IAQ3D' };
+async function perguntar(q, idCaso = 0) {
+  const body = { message: q, historico: [{ role: 'user', content: q }], clienteId: `homologacao-iaq3d-${idCaso}`, clienteNome: 'Homologacao IAQ3D' };
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 90000);
   try {
@@ -88,7 +88,7 @@ const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 const resultados = [];
 console.log(`Homologação IAQ3D em ${URL_CHAT} — ${CASOS.length} casos\n`);
 for (const caso of CASOS) {
-  const resp = await perguntar(caso.q);
+  const resp = await perguntar(caso.q, caso.id);
   const falhas = avaliar(caso, resp);
   resultados.push({ ...caso, deve: caso.deve.map(String), nunca: caso.nunca.map(String), resposta: resp.reply, fonte: resp.fonte, falhas });
   console.log(`${falhas.length ? 'FALHOU' : 'ok    '}  #${String(caso.id).padStart(2)}  ${caso.tema}${falhas.length ? `  -> ${falhas.join('; ')}` : ''}`);
