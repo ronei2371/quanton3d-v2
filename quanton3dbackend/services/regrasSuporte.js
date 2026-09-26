@@ -50,11 +50,41 @@ export function custoFormulaAnswer(message = '') {
 
 // Cliente pede uma pessoa ou pede para "mandar pro WhatsApp": o chat do site tem o botao
 // "Continuar no WhatsApp", que abre o WhatsApp da equipe com o resumo da conversa pronto.
-const PEDE_HUMANO = /\b(falar|conversar|atendimento)\s+(com\s+)?(uma?\s+)?(pessoa|humano|atendente|alguem|tecnico|equipe|gente de verdade)\b|\batendente humano\b|\b(manda|mandar|envia|enviar|passa|passar|encaminha|encaminhar|transfere|transferir)\b.{0,25}\b(whats\w*|zap|equipe|atendente|suporte)\b/;
+const PEDE_HUMANO = /\b(falar|conversar|atendimento)\s+(com\s+)?(uma?\s+)?(pessoa|humano|atendente|alguem|tecnico|equipe|gente de verdade)\b|\batendente humano\b|\b(manda|mandar|envia|enviar|passa|passar|encaminha|encaminhar|transfere|transferir)\b.{0,25}\b(whats\w*|zap|equipe|atendente|suporte)\b|\b(qual|me passa|tem)\b.{0,20}\b(whats\w*|zap|telefone|contato)\b/;
 
 export function handoffAnswer(message = '') {
   const t = normalizar(message);
   if (!PEDE_HUMANO.test(t)) return null;
   return 'Claro! Toque em **Continuar no WhatsApp**, logo abaixo da conversa: ele abre o WhatsApp do suporte da Quanton3D, (31) 3271-6935, já com o resumo do que conversamos (resina, impressora e suas perguntas). É só enviar, você não precisa repetir nada.\n\n'
     + 'Atendimento da equipe: segunda a sexta, das 9h às 18h. Se tiver foto da peça ou da plataforma, mande junto: ajuda muito no diagnóstico.';
+}
+
+// Mensagens curtas muito comuns que nao precisam de IA (economia: nao gastam tokens nem
+// contam no limite diario). So disparam quando a mensagem inteira e so isso.
+const SO_SAUDACAO = /^(oi+e?|ol[aá]|opa|eai|e a[ií]|bom dia|boa tarde|boa noite|hello|hi|salve)[\s,!.]*(tudo (bem|bom)|como vai|iaq3d|quanton)?[\s,!.?]*$/;
+const SO_AGRADECIMENTO = /^(muito )?(obrigad[oa]|brigad[oa]|valeu|vlw|obg|agrade[cç]o|show|top|perfeito|beleza|blz|ok|certo|entendi|entendido)[\s,!.]*(obrigad[oa]|valeu|pela ajuda|iaq3d)?[\s,!.]*$/;
+
+export function saudacaoAnswer(message = '') {
+  const t = normalizar(message).trim();
+  if (t.length > 40) return null;
+  if (SO_SAUDACAO.test(t)) {
+    return 'Olá! Sou a IAQ3D, assistente técnica da Quanton3D. 😊\n\n'
+      + 'Me conta o que você precisa: parâmetros de impressão, uma falha na peça, lavagem e pós-cura ou qual resina usar. '
+      + 'Se for sobre impressão, já me diga a **resina** e a **impressora** que eu vou direto ao ponto.';
+  }
+  if (SO_AGRADECIMENTO.test(t)) {
+    return 'Por nada! Fico feliz em ajudar. Se aparecer outra dúvida, é só perguntar. Boas impressões! 🖨️';
+  }
+  return null;
+}
+
+const FALA_VALIDADE = /\b(validade|vence|vencimento|venceu|vencida|prazo de validade|quanto tempo (a resina dura|dura a resina|dura o frasco|dura fechad\w*))\b/;
+
+export function validadeAnswer(message = '') {
+  const t = normalizar(message);
+  if (!FALA_VALIDADE.test(t)) return null;
+  // "minha resina venceu, posso usar?" tambem cabe aqui
+  return 'Todas as resinas Quanton3D têm **validade de 12 meses a partir da data de fabricação** (está no rótulo do frasco).\n\n'
+    + 'Para a resina durar bem: guarde o frasco bem fechado, longe da luz do sol e de calor, e agite antes de usar. '
+    + 'Resina vencida perde reatividade: tende a curar mal, ficar pegajosa ou frágil mesmo com o parâmetro certo, então o resultado não é confiável.';
 }
