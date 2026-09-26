@@ -4,6 +4,7 @@ import api from "../../lib/api";
 import CarrosselComunidade from "./CarrosselComunidade";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 import { comprimirImagem } from "../../utils/comprimirImagem";
+import PedirCadastro from "../PedirCadastro";
 
 const RESINAS_QUANTON = [
   "ALCHEMIST", "IRON", "IRON 70/30", "FLEXFORM", "POSEIDON",
@@ -330,7 +331,7 @@ function FormularioEnvio({ cliente, onFechar }) {
   );
 }
 
-function GaleriaTab({ cliente }) {
+function GaleriaTab({ cliente, onPedirCadastro }) {
   const [itens, setItens] = useState([]);
   const [carregandoItens, setCarregandoItens] = useState(true);
   const [erroItens, setErroItens] = useState("");
@@ -369,7 +370,9 @@ function GaleriaTab({ cliente }) {
 
       <PassosComoFunciona passos={PASSOS_GALERIA} />
 
-      {mostrarForm && <div id="comunidade-form"><FormularioEnvio cliente={cliente} onFechar={() => setMostrarForm(false)} /></div>}
+      {mostrarForm && <div id="comunidade-form">{cliente
+        ? <FormularioEnvio cliente={cliente} onFechar={() => setMostrarForm(false)} />
+        : <PedirCadastro texto="Para enviar sua peça para a galeria, faça seu cadastro rápido." onPedirCadastro={onPedirCadastro} />}</div>}
 
       {carregandoItens && <div className="q-empty">Carregando fotos...</div>}
       {erroItens && <div className="q-alert q-alert--error">{erroItens}</div>}
@@ -442,7 +445,7 @@ const ABAS = [
   { id: "parceiros", label: "Profissionais", icon: Users },
 ];
 
-function ComunidadeSection({ cliente, onAbrirParceiroModal }) {
+function ComunidadeSection({ cliente, onAbrirParceiroModal, onPedirCadastro }) {
   const [aba, setAba] = useState("galeria");
   return (
     <section className="q-card q-panel">
@@ -462,7 +465,7 @@ function ComunidadeSection({ cliente, onAbrirParceiroModal }) {
         })}
       </div>
 
-      {aba === "galeria" && <GaleriaTab cliente={cliente} />}
+      {aba === "galeria" && <GaleriaTab cliente={cliente} onPedirCadastro={onPedirCadastro} />}
       {aba === "parceiros" && <ParceirosLista onAbrirParceiroModal={onAbrirParceiroModal} />}
     </section>
   );

@@ -4,6 +4,7 @@ import api from "../../lib/api";
 import { WHATSAPP_SUPORTE_URL, HORARIO_ATENDIMENTO } from "../../data/contact";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 import { comprimirImagens } from "../../utils/comprimirImagem";
+import PedirCadastro from "../PedirCadastro";
 
 const PROBLEMAS = [
   "Peça não adere à plataforma",
@@ -283,7 +284,7 @@ const ABAS = [
   { id: "formulacao", label: "Formulação Personalizada", icon: FlaskConical },
 ];
 
-function AtendimentoSection({ cliente, onAbrirContato }) {
+function AtendimentoSection({ cliente, onAbrirContato, onPedirCadastro }) {
   const [aba, setAba] = useState("chamado");
 
   return (
@@ -311,8 +312,8 @@ function AtendimentoSection({ cliente, onAbrirContato }) {
         })}
       </div>
 
-      {aba === "chamado" && <ChamadoTecnico cliente={cliente} />}
-      {aba === "formulacao" && <FormulacaoPersonalizada cliente={cliente} />}
+      {aba === "chamado" && (cliente ? <ChamadoTecnico cliente={cliente} /> : <PedirCadastro texto="Para abrir um chamado técnico, faça seu cadastro rápido: assim a equipe tem seu nome e WhatsApp para te responder." onPedirCadastro={onPedirCadastro} />)}
+      {aba === "formulacao" && (cliente ? <FormulacaoPersonalizada cliente={cliente} /> : <PedirCadastro texto="Para pedir uma formulação personalizada, faça seu cadastro rápido: assim a equipe consegue falar com você." onPedirCadastro={onPedirCadastro} />)}
     </section>
   );
 }
