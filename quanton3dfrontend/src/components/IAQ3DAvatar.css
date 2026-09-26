@@ -69,3 +69,8 @@
 .iaq3d-handoff { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 6px; border-top: 1px solid var(--border-soft); font-size: 0.74rem; color: var(--text-muted); flex-shrink: 0; }
 .iaq3d-handoff span { flex: 1 1 200px; min-width: 0; line-height: 1.4; }
 .iaq3d-handoff .q-btn { flex-shrink: 0; }
+
+/* Contador de perguntas do dia (limite de uso da IA) */
+.iaq3d-limite { padding: 6px 6px 0; font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; flex-shrink: 0; }
+.iaq3d-limite strong { color: var(--text-secondary); }
+.iaq3d-limite--alerta, .iaq3d-limite--alerta strong { color: #ffb45c; }
