@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { UserCog, Check } from "lucide-react";
 import IAQ3DAvatar from "./components/IAQ3DAvatar";
 import api from "./lib/api";
@@ -74,6 +74,10 @@ function App() {
   const [formCliente, setFormCliente] = useState({ nome: "", telefone: "", email: "", origem: "Instagram" });
   const [salvandoCliente, setSalvandoCliente] = useState(false);
   const [erroCadastro, setErroCadastro] = useState("");
+  // Recursos de suporte (IAQ3D, chamado, formulação, envio de peça) exigem cadastro.
+  // Se a pessoa fechou o cadastro, pedimos de novo na hora de usar e depois seguimos para o que ela queria.
+  const [motivoCadastro, setMotivoCadastro] = useState("");
+  const acaoAposCadastro = useRef(null);
 
   const [activeGuide, setActiveGuide] = useState(null);
   const [mostrarBot, setMostrarBot] = useState(false);
@@ -172,7 +176,13 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
 
   function aceitarPrivacidade() { localStorage.setItem("quanton3d_privacidade_aceita", "true"); setMostrarPrivacidade(false); setMostrarCadastro(!cliente); }
   function abrirCadastro() { setErroCadastro(""); if (!getPrivacidadeAceita()) { setMostrarPrivacidade(true); return; } setMostrarCadastro(true); }
-  function fecharCadastro() { setMostrarCadastro(false); setErroCadastro(""); }
+  function fecharCadastro() { setMostrarCadastro(false); setErroCadastro(""); setMotivoCadastro(""); acaoAposCadastro.current = null; }
+  function exigirCadastro(motivo, acao) {
+    if (cliente) { if (acao) acao(); return; }
+    acaoAposCadastro.current = acao || null;
+    setMotivoCadastro(motivo || "");
+    abrirCadastro();
+  }
   function alterarCliente(campo, valor) { setFormCliente((a) => ({ ...a, [campo]: valor })); }
 
   function validarTelefone(tel) {
@@ -207,6 +217,10 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
       setCliente(novoCliente);
       localStorage.setItem("quanton3d_cliente", JSON.stringify(novoCliente));
       setMostrarCadastro(false);
+      setMotivoCadastro("");
+      const acao = acaoAposCadastro.current;
+      acaoAposCadastro.current = null;
+      if (acao) setTimeout(acao, 50);
     } catch (err) { console.error("Erro ao salvar cliente:", err); setErroCadastro("Erro ao realizar cadastro."); }
     finally { setSalvandoCliente(false); }
   }
@@ -251,8 +265,8 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     calculadoras: <CalculadorasSection calculadoraInicial={calcInicial} onNavegar={navegar} />,
     guias: <GuiasSection abrirGuia={(g) => setActiveGuide(g)} />,
     academy: <AcademySection abrirAcademy={(g) => setActiveGuide({ ...g, returnLabel: "Voltar à Quanton Academy" })} />,
-    atendimento: <AtendimentoSection cliente={cliente} onAbrirContato={() => setMostrarContatoMensagem(true)} />,
-    comunidade: <ComunidadeSection cliente={cliente} onAbrirParceiroModal={() => setMostrarParceiroModal(true)} />,
+    atendimento: <AtendimentoSection cliente={cliente} onAbrirContato={() => setMostrarContatoMensagem(true)} onPedirCadastro={() => exigirCadastro("Para abrir um chamado técnico ou pedir formulação, faça seu cadastro rápido: assim a equipe consegue te responder.")} />,
+    comunidade: <ComunidadeSection cliente={cliente} onAbrirParceiroModal={() => setMostrarParceiroModal(true)} onPedirCadastro={() => exigirCadastro("Para enviar sua peça para a galeria, faça seu cadastro rápido.")} />,
     catalogo: <CatalogoSection />,
     sobre: <SobreSection onAbrirParceiroModal={() => setMostrarParceiroModal(true)} />,
     naoEncontrada: (
@@ -275,7 +289,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
       )}
       {!mostrarBoasVindas && mostrarPrivacidade && <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />}
       {mostrarCadastro && !mostrarPrivacidade && (
-        <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} onFechar={fecharCadastro} onAcessoEquipe={abrirAcessoEquipe} />
+        <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} onFechar={fecharCadastro} onAcessoEquipe={abrirAcessoEquipe} motivo={motivoCadastro} />
       )}
 
       {mostrarBot && <BotModal cliente={cliente} onClose={() => setMostrarBot(false)} />}
@@ -334,7 +348,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
       </footer>
 
       {!mostrarBot && (
-        <button type="button" className="iaq3d-fab iaq3d-fab--avatar" onClick={() => setMostrarBot(true)} aria-label="Converse com a IAQ3D">
+        <button type="button" className="iaq3d-fab iaq3d-fab--avatar" onClick={() => exigirCadastro("Para conversar com a IAQ3D, faça seu cadastro rápido. Leva menos de 1 minuto e deixa o suporte liberado.", () => setMostrarBot(true))} aria-label="Converse com a IAQ3D">
           <span className="iaq3d-fab-avatar"><IAQ3DAvatar size={42} compact /></span> <span className="iaq3d-fab-label">Converse com a IAQ3D</span>
         </button>
       )}
