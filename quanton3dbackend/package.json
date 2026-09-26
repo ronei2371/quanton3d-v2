@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "homologacao": "node scripts/homologacao-iaq3d.mjs",
     "test": "node --test tests/*.test.js && node -c server.js && node -c controllers/formulacoesController.js && node -c routes/gallery.js && node -c routes/botTickets.js && node -c routes/contactMessages.js && node -c routes/partnerRequests.js && node -c routes/admin.js && node -c routes/chat.js && node -c services/rag.js && node -c services/ragRanking.js"
   },
   "dependencies": {
