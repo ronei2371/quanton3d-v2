@@ -3,6 +3,7 @@ import { X, Handshake } from "lucide-react";
 import api from "../../lib/api";
 import "./PartnerRequestModal.css";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
+import { comprimirImagens } from "../../utils/comprimirImagem";
 
 const TIPOS = [
   "Quero ser parceiro",
@@ -79,7 +80,7 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
   }
 
   function selecionarFotos(event) {
-    const arquivos = Array.from(event.target.files || []).slice(0, 6);
+    const arquivos = Array.from(event.target.files || []).slice(0, 2);
     setFotos(arquivos);
   }
 
@@ -112,7 +113,7 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
         dados.append(chave, String(valor || ""));
       });
 
-      fotos.forEach((foto) => {
+      (await comprimirImagens(fotos)).forEach((foto) => {
         dados.append("fotos", foto);
       });
 
@@ -244,7 +245,7 @@ function PartnerRequestModal({ aberto, aoFechar, cliente }) {
             <label className="partner-grid-full">
               <span>Fotos do seu trabalho</span>
               <input type="file" accept="image/*" multiple onChange={selecionarFotos} />
-              <small>Envie até 6 fotos. A primeira será a imagem principal do seu cartão.</small>
+              <small>Envie até 2 fotos. A primeira será a imagem principal do seu cartão.</small>
             </label>
             <div className="partner-grid-full"><AvisoFotoPrivacidade publica style={{ margin: 0 }} /></div>
           </div>

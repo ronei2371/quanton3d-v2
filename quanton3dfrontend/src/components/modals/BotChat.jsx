@@ -4,6 +4,7 @@ import api from "../../lib/api";
 import IAQ3DAvatar from "../IAQ3DAvatar";
 import { linkWhatsappComResumo } from "../../utils/resumoWhatsapp";
 import { trackEvent } from "../../utils/analytics";
+import { comprimirImagem } from "../../utils/comprimirImagem";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 
 const RESINAS_BOT = [
@@ -98,7 +99,19 @@ function BotChat({ cliente }) {
   const [enviandoFeedback, setEnviandoFeedback] = useState(false);
   const [erroFeedback, setErroFeedback] = useState("");
   const [paramsFeedback, setParamsFeedback] = useState({ alturaCamada: "", exposicaoNormal: "", exposicaoBase: "", camadasBase: "" });
+  const [limite, setLimite] = useState(null);
   const scrollRef = useRef(null);
+
+  // Limite diário de perguntas respondidas pela IA (o servidor conta; aqui só mostramos).
+  useEffect(() => {
+    const clienteId = cliente?._id || cliente?.id;
+    if (!clienteId) return undefined;
+    let ativo = true;
+    api.get(`/chat/limite/${encodeURIComponent(clienteId)}`)
+      .then((res) => { if (ativo && res.data?.limite) setLimite(res.data.limite); })
+      .catch(() => {});
+    return () => { ativo = false; };
+  }, [cliente?._id, cliente?.id]);
 
   useEffect(() => {
     const clienteId = cliente?._id || cliente?.id;
@@ -178,6 +191,8 @@ function BotChat({ cliente }) {
       const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "", modo });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
       const conversaId = res.data.data?.conversaId || res.data.conversaId || null;
+      const novoLimite = res.data.data?.limite || res.data.limite;
+      if (novoLimite) setLimite(novoLimite);
       setMensagens((prev) => [...prev, { text: reply, isBot: true, conversaId }]);
     } catch (err) {
       console.error("Erro ao conversar com bot:", err);
@@ -211,7 +226,7 @@ function BotChat({ cliente }) {
     setErroFeedback("");
     try {
       let foto = "";
-      if (fotoFeedback) foto = await fotoParaBase64(fotoFeedback);
+      if (fotoFeedback) foto = await fotoParaBase64(await comprimirImagem(fotoFeedback));
       const partesConfig = [
         `Resina: ${ctx.resina || "não informada"}`,
         `Impressora: ${ctx.impressora || "não informada"}`,
@@ -388,6 +403,14 @@ function BotChat({ cliente }) {
           <a className="q-btn q-btn--sm q-btn--whatsapp" href={linkWhatsapp} target="_blank" rel="noopener noreferrer" onClick={registrarWhatsapp}>
             <MessageCircle size={14} /> Continuar no WhatsApp
           </a>
+        </div>
+      )}
+
+      {limite && !limite.semLimite && (
+        <div className={"iaq3d-limite" + (limite.restantes <= 3 ? " iaq3d-limite--alerta" : "")} role="status">
+          {limite.restantes > 0
+            ? <>Perguntas para a IA hoje: <strong>{limite.usadas} de {limite.max}</strong>{limite.restantes <= 3 ? ` · restam ${limite.restantes}` : ""}. Saudações e respostas rápidas não contam.</>
+            : <>Você usou as <strong>{limite.max} perguntas</strong> de hoje. Amanhã libera de novo, ou continue no WhatsApp com o resumo.</>}
         </div>
       )}
 
