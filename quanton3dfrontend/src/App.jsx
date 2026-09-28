@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { UserCog, Check } from "lucide-react";
 import IAQ3DAvatar from "./components/IAQ3DAvatar";
 import api from "./lib/api";
+import { trackOpenAssistant, trackSignUp } from "./utils/analytics";
 import NavBar from "./components/layout/NavBar";
 import { BoasVindasModal, PrivacidadeModal, CadastroInicial, SOCIAL_LINKS } from "./components/modals/GatingModals";
 import ContactMessageModal from "./components/modals/ContactMessageModal";
@@ -81,6 +82,7 @@ function App() {
 
   const [activeGuide, setActiveGuide] = useState(null);
   const [mostrarBot, setMostrarBot] = useState(false);
+  useEffect(() => { if (mostrarBot) trackOpenAssistant(); }, [mostrarBot]);
   const [mostrarBusca, setMostrarBusca] = useState(false);
   const [mostrarContatoMensagem, setMostrarContatoMensagem] = useState(false);
   const [mostrarParceiroModal, setMostrarParceiroModal] = useState(false);
@@ -216,6 +218,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
       const novoCliente = res.data.data;
       setCliente(novoCliente);
       localStorage.setItem("quanton3d_cliente", JSON.stringify(novoCliente));
+      trackSignUp();
       setMostrarCadastro(false);
       setMotivoCadastro("");
       const acao = acaoAposCadastro.current;
