@@ -34,6 +34,15 @@ export const GA_EVENTS = {
 
   /** Usuário é redirecionado para finalizar compra na loja (equivalente a purchase intent). */
   PURCHASE_INTENT: 'purchase',
+
+  /** Usuário abre qualquer calculadora (parâmetro calculator_name = qual). */
+  OPEN_CALCULATOR: 'open_calculator',
+
+  /** Usuário abre a conversa com a IAQ3D. */
+  OPEN_ASSISTANT: 'open_assistant',
+
+  /** Cliente conclui o cadastro no site (evento recomendado do GA4). */
+  SIGN_UP: 'sign_up',
 };
 
 /**
@@ -75,4 +84,16 @@ export function trackPurchaseIntent({ resin_name, resin_id, value }) {
     value: value || undefined,
     items: [{ item_name: resin_name, item_id: resin_id }],
   });
+}
+
+export function trackOpenCalculator(calculator_name) {
+  trackEvent(GA_EVENTS.OPEN_CALCULATOR, { calculator_name });
+}
+
+export function trackOpenAssistant() {
+  trackEvent(GA_EVENTS.OPEN_ASSISTANT, {});
+}
+
+export function trackSignUp() {
+  trackEvent(GA_EVENTS.SIGN_UP, { method: 'cadastro_site' });
 }
