@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { trackStartCalibration } from "../../utils/analytics";
+import { useEffect, useState } from "react";
+import { trackStartCalibration, trackOpenCalculator } from "../../utils/analytics";
 import { Zap, Microscope, Ruler, Timer, Wrench, Compass, Maximize2, Layers, X } from "lucide-react";
 import CalculadoraExposicao from "../calculators/CalculadoraExposicao";
 import CalculadoraVolume from "../calculators/CalculadoraVolume";
@@ -24,6 +24,14 @@ const CALCULADORAS = [
 function CalculadorasSection({ calculadoraInicial, onNavegar }) {
   const [ativa, setAtiva] = useState(calculadoraInicial || null);
 
+  // Conta no Google Analytics cada calculadora aberta (pelo cartao, por link ou pela
+  // Tempo -> Compensacao). A de Exposicao continua mandando tambem o start_calibration.
+  useEffect(() => {
+    if (!ativa) return;
+    trackOpenCalculator(ativa);
+    if (ativa === "exposicao") trackStartCalibration({ resin_name: undefined });
+  }, [ativa]);
+
   const conteudo = {
     custo_simples: <CalculadoraVolume />,
     custo_avancado: <CalculadoraCustos />,
@@ -46,7 +54,7 @@ function CalculadorasSection({ calculadoraInicial, onNavegar }) {
 
       <div className="q-grid">
         {CALCULADORAS.map(({ id, icon: Icon, titulo, desc, tags }) => (
-          <button key={id} className="q-card q-card--calc" onClick={() => { setAtiva(id); if (id === "exposicao") trackStartCalibration({ resin_name: undefined }); }}>
+          <button key={id} className="q-card q-card--calc" onClick={() => setAtiva(id)}>
             <div className="q-card-icon"><Icon size={22} /></div>
             <div className="q-card-body">
               <h3 className="q-card-title">{titulo}</h3>
