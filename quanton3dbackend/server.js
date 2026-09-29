@@ -23,7 +23,7 @@ import atendentesRoutes from "./routes/atendentes.js";
 import sugestoesConhecimentoRoutes from "./routes/sugestoesConhecimento.js";
 import feedbackParametrosRoutes from "./routes/feedbackParametros.js";
 import { auditLog } from "./services/auditLog.js";
-import { limiteLogin, limiteFormulario, limiteUpload } from "./middlewares/limiteTaxa.js";
+import { limiteLogin, limiteFormulario, limiteUpload, limiteChave } from "./middlewares/limiteTaxa.js";
 
 dotenv.config();
 
@@ -70,6 +70,7 @@ app.use(auditLog);
 app.post("/api/admin/login", limiteLogin);
 app.post("/api/atendentes/login", limiteLogin);
 app.post("/api/clientes", limiteFormulario);
+app.post("/api/clientes/:id/chave", limiteChave); // impede tentar adivinhar o telefone
 app.post("/api/contact-messages", limiteFormulario);
 app.post("/api/formulacoes", limiteFormulario);
 app.post("/api/feedback-parametros", limiteFormulario);
