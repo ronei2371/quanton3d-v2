@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import Cliente from '../models/Cliente.js';
@@ -14,6 +15,7 @@ import { resumoCustoIA, inicioDoDiaBrasil, inicioDoMesBrasil, PRECOS, LIMITE_DIA
 import { periodoSemana, ranking, nomeImpressora, nomeResina, temasDasPerguntas, variacao } from '../services/relatorioSemanal.js';
 import { motivoDaConversa } from '../services/lacunas.js';
 import EventoSite from '../models/EventoSite.js';
+import { escreverBackup, nomeArquivoBackup } from '../services/backup.js';
 
 const router = express.Router();
 
@@ -211,6 +213,50 @@ function auth(req, res, next) {
   try { jwt.verify(token, process.env.ADMIN_JWT_SECRET); next(); }
   catch { return res.status(401).json({ success: false, error: 'Token inválido' }); }
 }
+
+// Só o administrador (login do ADM). Atendente não passa.
+function soAdmin(req, res, next) {
+  const h = req.headers.authorization || '';
+  const token = h.startsWith('Bearer ') ? h.slice(7) : null;
+  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
+  try {
+    const dados = jwt.verify(token, process.env.ADMIN_JWT_SECRET);
+    if (dados?.role !== 'superadmin') return res.status(403).json({ success: false, error: 'Só o administrador pode fazer isso.' });
+    req.admin = dados;
+    return next();
+  } catch { return res.status(401).json({ success: false, error: 'Token inválido' }); }
+}
+
+// ── COPIA DE SEGURANCA ────────────────────────────────────────────────────────
+// Baixa o banco inteiro compactado (.ndjson.gz). Registra a data para o ADM lembrar.
+router.get('/backup', soAdmin, async (_req, res) => {
+  try {
+    res.setHeader('Content-Type', 'application/gzip');
+    res.setHeader('Content-Disposition', `attachment; filename="${nomeArquivoBackup()}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    const r = await escreverBackup(res);
+    EventoSite.create({ tipo: 'backup', sintoma: 'download', resultado: String(r.documentos) }).catch(() => {});
+  } catch (err) {
+    console.error('[BACKUP]', err);
+    if (!res.headersSent) res.status(500).json({ success: false, error: 'Erro ao gerar a cópia de segurança.' });
+    else res.end();
+  }
+});
+
+router.get('/backup/status', soAdmin, async (_req, res) => {
+  try {
+    const ultimo = await EventoSite.findOne({ tipo: 'backup' }).sort({ createdAt: -1 }).lean();
+    const db = mongoose.connection.db;
+    const nomes = (await db.listCollections({}, { nameOnly: true }).toArray()).map((c) => c.name).filter((n) => !n.startsWith('system.'));
+    let documentos = 0;
+    for (const n of nomes) documentos += await db.collection(n).estimatedDocumentCount();
+    const stats = await db.stats().catch(() => null);
+    res.json({ success: true, ultimo: ultimo ? { em: ultimo.createdAt, documentos: Number(ultimo.resultado) || 0 } : null, colecoes: nomes.length, documentos, tamanhoMB: stats ? Number((stats.dataSize / 1048576).toFixed(1)) : null });
+  } catch (err) {
+    console.error('[BACKUP STATUS]', err);
+    res.status(500).json({ success: false, error: 'Erro ao ler o status da cópia.' });
+  }
+});
 
 router.post('/login', (req, res) => {
   const { user, password } = req.body || {};
