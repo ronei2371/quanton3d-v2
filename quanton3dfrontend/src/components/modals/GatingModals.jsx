@@ -58,37 +58,54 @@ export function BoasVindasModal({ onEntrar }) {
   );
 }
 
-export function PrivacidadeModal({ aceitarPrivacidade }) {
+// Termo de Privacidade (LGPD - Lei 13.709/2018). Se mudar o texto, atualize TERMO_VERSAO.
+const TERMO_VERSAO = "29/09/2026";
+const TERMO_PRIVACIDADE = [
+  ["1. Quem cuida dos seus dados", "A Quanton 3D LTDA (CNPJ 11.165.962/0001-17), fabricante de resinas UV de Belo Horizonte (MG), é a responsável pelos dados coletados neste site. Para qualquer assunto sobre seus dados, fale com a gente pelo WhatsApp (31) 3271-6935."],
+  ["2. Dados que podem ser coletados", "Nome, WhatsApp, e-mail e como nos conheceu (no cadastro); as mensagens e dúvidas enviadas ao suporte e à IAQ3D; resina, impressora e parâmetros de impressão informados; pedidos de formulação; e imagens enviadas por você."],
+  ["3. Para que usamos", "Para liberar e prestar o suporte técnico, responder suas dúvidas, manter o histórico do seu atendimento, lembrar sua resina e impressora na próxima conversa, organizar pedidos de formulação e melhorar as respostas da base de conhecimento da Quanton3D."],
+  ["4. Assistente com inteligência artificial (IAQ3D)", "As perguntas que você digita no chat, junto com a resina e a impressora informadas, são enviadas para processamento a um provedor de inteligência artificial (DeepSeek), que pode processá-las em servidores fora do Brasil. Seu nome, telefone e e-mail não são enviados à IA. Não escreva no chat dados pessoais ou sigilosos que não sejam necessários para o suporte."],
+  ["5. Estatísticas de uso (Google Analytics)", "Usamos o Google Analytics para saber, de forma estatística, quais páginas e ferramentas do site são mais usadas. Os cookies do Google Analytics só são ativados depois que você aceita este termo. Não enviamos seu nome, telefone ou e-mail ao Google e não usamos esses dados para anúncios."],
+  ["6. Imagens enviadas", "Fotos de peças e falhas são usadas para a análise técnica. Não são publicadas sem a sua autorização específica (por exemplo, ao enviar para a galeria da Comunidade)."],
+  ["7. Compartilhamento e segurança", "A Quanton3D não vende seus dados. Eles ficam em serviços de hospedagem e banco de dados contratados pela Quanton3D e só são compartilhados com os provedores citados neste termo, na medida necessária para o site funcionar. Adotamos medidas de segurança como senha e controle de acesso para a equipe e uma chave secreta que protege o seu histórico do chat."],
+  ["8. Por quanto tempo guardamos", "Os dados de cadastro, o histórico do chat e os chamados ficam guardados enquanto forem úteis para o seu atendimento, ou até você pedir a exclusão. Os registros de uso das ferramentas do site são apagados automaticamente após 12 meses."],
+  ["9. Seus direitos", "Você pode pedir, a qualquer momento, para ver, corrigir ou apagar seus dados, ou retirar este consentimento. Basta chamar a Quanton3D pelo WhatsApp (31) 3271-6935 informando o nome e o telefone do cadastro. Você também pode reclamar à ANPD (Autoridade Nacional de Proteção de Dados)."],
+  ["10. Consentimento", "Ao marcar a opção abaixo, você confirma que leu este termo e autoriza a Quanton3D a tratar seus dados como descrito aqui."],
+];
+
+// somenteLeitura: aberto pelo rodape do site, so para consultar (sem o aceite).
+export function PrivacidadeModal({ aceitarPrivacidade, somenteLeitura = false, onFechar }) {
   const [confirmouAceite, setConfirmouAceite] = useState(false);
   return (
-    <div className="q-modal-backdrop">
-      <section className="q-modal q-modal--narrow">
+    <div className="q-modal-backdrop" onClick={(event) => somenteLeitura && event.target === event.currentTarget && onFechar?.()}>
+      <section className="q-modal q-modal--narrow" role="dialog" aria-label="Termo de Privacidade">
         <div style={{ textAlign: "center", marginBottom: "10px" }}>
           <div style={{ display: "flex", justifyContent: "center" }}><Lock size={30} /></div>
           <h2 style={{ fontSize: "1.15rem" }}>Termo de Privacidade e Consentimento</h2>
-          <p style={{ fontSize: "0.85rem" }}>Antes de acessar o suporte técnico da Quanton3D, leia com atenção este termo.</p>
+          <p style={{ fontSize: "0.85rem" }}>{somenteLeitura ? "Como a Quanton3D trata os seus dados neste site." : "Antes de acessar o suporte técnico da Quanton3D, leia com atenção este termo."}</p>
         </div>
         <div style={{ maxHeight: "40vh", overflowY: "auto", padding: "4px 4px 4px 0", marginBottom: "16px", textAlign: "left" }}>
-          <h3 style={{ fontSize: "0.88rem", color: "var(--primary)", margin: "14px 0 6px" }}>1. Dados que poderão ser coletados</h3>
-          <p style={{ fontSize: "0.82rem" }}>A Quanton3D poderá coletar nome, WhatsApp, e-mail, origem do contato, mensagens enviadas, dúvidas técnicas, resina/impressora utilizada, parâmetros de impressão, pedidos de formulação e imagens enviadas voluntariamente.</p>
-          <h3 style={{ fontSize: "0.88rem", color: "var(--primary)", margin: "14px 0 6px" }}>2. Finalidade do uso dos dados</h3>
-          <p style={{ fontSize: "0.82rem" }}>Os dados serão utilizados para liberar o acesso ao suporte técnico, responder dúvidas, manter histórico de atendimento, organizar pedidos de formulação e melhorar a base de conhecimento da Quanton3D.</p>
-          <h3 style={{ fontSize: "0.88rem", color: "var(--primary)", margin: "14px 0 6px" }}>3. Uso de imagens enviadas</h3>
-          <p style={{ fontSize: "0.82rem" }}>Imagens poderão ser usadas para análise técnica. Não serão publicadas sem autorização específica.</p>
-          <h3 style={{ fontSize: "0.88rem", color: "var(--primary)", margin: "14px 0 6px" }}>4. Compartilhamento e segurança</h3>
-          <p style={{ fontSize: "0.82rem" }}>A Quanton3D não vende seus dados. Medidas razoáveis serão adotadas para proteger as informações.</p>
-          <h3 style={{ fontSize: "0.88rem", color: "var(--primary)", margin: "14px 0 6px" }}>5. Direitos do usuário</h3>
-          <p style={{ fontSize: "0.82rem" }}>Você poderá solicitar acesso, correção ou exclusão dos seus dados pessoais a qualquer momento.</p>
-          <h3 style={{ fontSize: "0.88rem", color: "var(--primary)", margin: "14px 0 6px" }}>6. Consentimento</h3>
-          <p style={{ fontSize: "0.82rem" }}>Ao marcar a opção abaixo, você confirma que leu este termo e autoriza a Quanton3D a tratar seus dados.</p>
+          {TERMO_PRIVACIDADE.map(([titulo, texto]) => (
+            <div key={titulo}>
+              <h3 style={{ fontSize: "0.88rem", color: "var(--primary)", margin: "14px 0 6px" }}>{titulo}</h3>
+              <p style={{ fontSize: "0.82rem" }}>{texto}</p>
+            </div>
+          ))}
+          <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "14px" }}>Versão de {TERMO_VERSAO}.</p>
         </div>
-        <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.85rem", marginBottom: "16px", cursor: "pointer" }}>
-          <input type="checkbox" checked={confirmouAceite} onChange={(e) => setConfirmouAceite(e.target.checked)} />
-          <span>Li e aceito o Termo de Privacidade e autorizo o uso dos meus dados.</span>
-        </label>
-        <button type="button" className="q-btn q-btn--primary q-btn--block" disabled={!confirmouAceite} onClick={aceitarPrivacidade}>
-          Aceitar e continuar
-        </button>
+        {somenteLeitura ? (
+          <button type="button" className="q-btn q-btn--primary q-btn--block" onClick={onFechar}>Fechar</button>
+        ) : (
+          <>
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.85rem", marginBottom: "16px", cursor: "pointer" }}>
+              <input type="checkbox" checked={confirmouAceite} onChange={(e) => setConfirmouAceite(e.target.checked)} />
+              <span>Li e aceito o Termo de Privacidade e autorizo o uso dos meus dados.</span>
+            </label>
+            <button type="button" className="q-btn q-btn--primary q-btn--block" disabled={!confirmouAceite} onClick={aceitarPrivacidade}>
+              Aceitar e continuar
+            </button>
+          </>
+        )}
       </section>
     </div>
   );
