@@ -23,6 +23,9 @@ const ConversaSchema = new mongoose.Schema(
     tokensEntrada: { type: Number, default: 0 },
     tokensCache: { type: Number, default: 0 },
     tokensSaida: { type: Number, default: 0 },
+    // Lacuna: o bot nao achou resposta na base (services/lacunas.js). Aparece no ADM ate ser resolvida.
+    lacuna: { type: String, default: '' }, // '' | 'sem_base' | 'sem_valor_oficial' | 'nao_soube'
+    lacunaResolvida: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -32,5 +35,6 @@ ConversaSchema.index({ clienteId: 1, createdAt: -1 });
 ConversaSchema.index({ aprovado: 1, resinaDetectada: 1 });
 ConversaSchema.index({ aprovado: 1, updatedAt: -1 });
 ConversaSchema.index({ feedback: 1, revisadoFeedback: 1 });
+ConversaSchema.index({ lacuna: 1, lacunaResolvida: 1, createdAt: -1 });
 
 export default mongoose.model('Conversa', ConversaSchema);
