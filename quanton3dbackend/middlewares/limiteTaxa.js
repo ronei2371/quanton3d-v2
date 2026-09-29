@@ -1,0 +1,41 @@
+// Limite de tentativas por IP (em memoria: zera a cada deploy; e uma rede de seguranca).
+// Protege o login do ADM contra tentativa de senha sem parar e os formularios publicos
+// contra envio em massa (que encheria o banco de 512 MB).
+
+// IP de quem fez o pedido. Com app.set('trust proxy', 1) no server.js, o Express usa o IP
+// que o proxy do Render anotou (o ultimo do X-Forwarded-For). O primeiro valor desse
+// cabecalho vem do proprio visitante e pode ser inventado, entao nao e usado.
+export function ipDoPedido(req) {
+  return req.ip || req.socket?.remoteAddress || 'sem-ip';
+}
+
+export function criarLimite({ max, janelaMs, mensagem, nome = 'geral' }) {
+  const registros = new Map(); // chave -> [instantes]
+  const middleware = (req, res, next) => {
+    const agora = Date.now();
+    const chave = `${nome}:${ipDoPedido(req)}`;
+    const recentes = (registros.get(chave) || []).filter((t) => agora - t < janelaMs);
+    if (recentes.length >= max) {
+      const esperarS = Math.ceil((janelaMs - (agora - recentes[0])) / 1000);
+      res.setHeader('Retry-After', String(esperarS));
+      return res.status(429).json({ success: false, error: mensagem || 'Muitas tentativas. Aguarde alguns minutos e tente de novo.' });
+    }
+    recentes.push(agora);
+    registros.set(chave, recentes);
+    if (registros.size > 50000) registros.clear();
+    return next();
+  };
+  middleware.limpar = () => registros.clear();
+  return middleware;
+}
+
+const MIN = 60 * 1000;
+
+// Login da equipe (ADM e atendentes): 10 tentativas a cada 15 minutos por IP.
+export const limiteLogin = criarLimite({ nome: 'login', max: 10, janelaMs: 15 * MIN, mensagem: 'Muitas tentativas de login. Aguarde 15 minutos e tente de novo.' });
+
+// Formularios publicos (cadastro, chamado, parceiro, galeria, contato, formulacao, feedback).
+export const limiteFormulario = criarLimite({ nome: 'form', max: 30, janelaMs: 60 * MIN, mensagem: 'Muitos envios seguidos. Aguarde um pouco e tente de novo.' });
+
+// Envio com foto (pesa no banco/disco): 10 por hora por IP.
+export const limiteUpload = criarLimite({ nome: 'upload', max: 10, janelaMs: 60 * MIN, mensagem: 'Muitos envios com foto seguidos. Aguarde um pouco e tente de novo.' });
