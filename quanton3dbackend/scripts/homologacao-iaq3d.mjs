@@ -9,7 +9,7 @@
 // As conversas ficam no ADM > Conversas Bot com o cliente "Homologacao IAQ3D"
 // (podem ser apagadas pela aba Limpeza). Sai com codigo 1 se algum caso falhar.
 
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, appendFileSync } from 'node:fs';
 
 const args = process.argv.slice(2);
 const jsonIdx = args.indexOf('--json');
@@ -99,4 +99,13 @@ const falhou = resultados.filter((r) => r.falhas.length);
 console.log(`\nResultado: ${resultados.length - falhou.length}/${resultados.length} ok${falhou.length ? `, ${falhou.length} com problema` : ''}.`);
 for (const r of falhou) console.log(`\n#${r.id} ${r.q}\n  ${r.falhas.join('; ')}\n  Resposta: ${r.resposta.replace(/\s+/g, ' ').slice(0, 400)}`);
 if (jsonPath) writeFileSync(jsonPath, JSON.stringify({ data: new Date().toISOString(), url: URL_CHAT, resultados }, null, 1));
+// No GitHub Actions: resumo legivel na pagina da execucao (e no e-mail de falha).
+if (process.env.GITHUB_STEP_SUMMARY) {
+  const linhas = [`## Homologação IAQ3D — ${resultados.length - falhou.length}/${resultados.length} ok`, ''];
+  if (!falhou.length) linhas.push('Todas as respostas do bot passaram. ✅');
+  for (const r of falhou) {
+    linhas.push(`### ❌ #${r.id} — ${r.tema}`, `**Pergunta:** ${r.q}`, `**Problema:** ${r.falhas.join('; ')}`, `**Resposta do bot:** ${r.resposta.replace(/\s+/g, ' ').slice(0, 600)}`, '');
+  }
+  appendFileSync(process.env.GITHUB_STEP_SUMMARY, linhas.join('\n') + '\n');
+}
 process.exit(falhou.length ? 1 : 0);
