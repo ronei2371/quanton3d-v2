@@ -1,11 +1,13 @@
 import GalleryItem from '../models/GalleryItem.js';
 import { itemPublicoGaleria } from '../services/galleryPublic.js';
+import { avisarEquipe } from '../services/avisoEquipe.js';
 
 export async function criarGalleryItem(req, res) {
   const item = await GalleryItem.create({
     ...(req.body || {}),
     status: 'pendente',
   });
+  avisarEquipe('galeria', [item.resina, item.impressora].filter(Boolean).join(' · ') || 'Aguardando aprovação'); // celular da equipe (se configurado)
 
   return res.status(201).json({ success: true, data: item });
 }

@@ -1,4 +1,5 @@
 import Formulacao from '../models/Formulacao.js';
+import { avisarEquipe } from '../services/avisoEquipe.js';
 
 export async function criarFormulacao(req, res) {
   const { nome, telefone, email, caracteristica, cor, detalhes } = req.body || {};
@@ -19,6 +20,7 @@ export async function criarFormulacao(req, res) {
     detalhes,
   });
 
+  avisarEquipe('formulacao', [caracteristica, cor].filter(Boolean).join(' · ')); // celular da equipe (se configurado)
   return res.status(201).json({ success: true, data: formulacao });
 }
 
