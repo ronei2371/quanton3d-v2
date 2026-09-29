@@ -1,6 +1,7 @@
 import express from "express";
-import authAdmin from "../middlewares/authAdmin.js";
+import { authAdminOuAtendente } from "../middlewares/authAtendente.js";
 import ContactMessage from "../models/ContactMessage.js";
+import { avisarEquipe } from "../services/avisoEquipe.js";
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router.post("/", async (req, res) => {
     }
 
     const novaMensagem = await ContactMessage.create(payload);
+    avisarEquipe("mensagem", payload.assunto); // celular da equipe (se configurado)
 
     return res.status(201).json({
       success: true,
@@ -45,7 +47,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", authAdmin, async (req, res) => {
+// Equipe: administrador ou atendente (igual aos chamados). Antes so o administrador e o painel do atendente nao carregava.
+router.get("/", authAdminOuAtendente, async (req, res) => {
   try {
     const status = limparTexto(req.query.status);
     const limite = Math.min(
@@ -78,7 +81,7 @@ router.get("/", authAdmin, async (req, res) => {
   }
 });
 
-router.patch("/:id/status", authAdmin, async (req, res) => {
+router.patch("/:id/status", authAdminOuAtendente, async (req, res) => {
   try {
     const { id } = req.params;
 

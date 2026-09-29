@@ -2,6 +2,7 @@ import express from "express";
 import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import multer from "multer";
 import PartnerRequest from "../models/PartnerRequest.js";
+import { avisarEquipe } from "../services/avisoEquipe.js";
 
 const router = express.Router();
 
@@ -61,6 +62,7 @@ router.post("/", (req, res) => {
       }
 
       const novaSolicitacao = await PartnerRequest.create(payload);
+      avisarEquipe("parceria", payload.titulo); // celular da equipe (se configurado)
       return res.status(201).json({ success: true, message: "Solicitação de parceria enviada com sucesso.", partnerRequest: novaSolicitacao });
     } catch (error) {
       console.error("Erro ao criar solicitação de parceiro:", error);

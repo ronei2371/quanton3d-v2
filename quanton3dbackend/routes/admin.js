@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { authAdminCompleto } from '../middlewares/authAdmin.js';
+import { authAdminOuAtendente } from '../middlewares/authAtendente.js';
 import Cliente from '../models/Cliente.js';
 import Formulacao from '../models/Formulacao.js';
 import Parametro from '../models/Parametro.js';
@@ -443,6 +444,33 @@ router.get('/metrics', auth, async (_req, res) => {
 
 // ── RELATORIO DA SEMANA ───────────────────────────────────────────────────────
 // ?semana=0 -> ultimos 7 dias; 1 -> os 7 dias anteriores; ... (compara com a semana antes)
+// ── NOVIDADES (aviso de chamado novo no ADM) ──────────────────────────────────
+// O painel (administrador e atendentes) pergunta a cada minuto o que chegou desde a
+// ultima olhada. Devolve so contagens (nada de dado pessoal). Ver services/avisoEquipe.js.
+router.get('/novidades', authAdminOuAtendente, async (req, res) => {
+  try {
+    const agora = new Date();
+    let desde = new Date(String(req.query?.desde || ''));
+    const limite = new Date(agora.getTime() - 7 * 86400000);
+    if (Number.isNaN(desde.getTime()) || desde < limite) desde = limite;
+    if (desde > agora) desde = agora;
+    const { default: PartnerRequest } = await import('../models/PartnerRequest.js');
+    const f = { createdAt: { $gt: desde } };
+    const [chamados, mensagens, formulacoes, galeria, parceiros] = await Promise.all([
+      BotTicket.countDocuments(f),
+      ContactMessage.countDocuments(f),
+      Formulacao.countDocuments(f),
+      GalleryItem.countDocuments({ ...f, status: 'pendente' }),
+      PartnerRequest.countDocuments(f),
+    ]);
+    const novidades = { chamados, mensagens, formulacoes, galeria, parceiros };
+    const total = chamados + mensagens + formulacoes + galeria + parceiros;
+    res.json({ success: true, desde, agora, novidades, total });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Erro ao consultar novidades.' });
+  }
+});
+
 router.get('/relatorio-semanal', auth, async (req, res) => {
   try {
     const { inicio, fim, semana } = periodoSemana(req.query.semana);

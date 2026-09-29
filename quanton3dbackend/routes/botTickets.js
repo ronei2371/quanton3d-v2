@@ -3,6 +3,7 @@ import multer from "multer";
 import authAdmin from "../middlewares/authAdmin.js";
 import { authAdminOuAtendente } from "../middlewares/authAtendente.js";
 import BotTicket from "../models/BotTicket.js";
+import { avisarEquipe, detalheChamado } from "../services/avisoEquipe.js";
 
 const router = express.Router();
 
@@ -52,6 +53,7 @@ router.post("/", upload.array("fotos", 2), async (req, res) => {
     payload.precisaHumano = true;
 
     const novoTicket = await BotTicket.create(payload);
+    avisarEquipe("chamado", detalheChamado(payload)); // celular da equipe (se configurado)
 
     return res.status(201).json({
       success: true,
