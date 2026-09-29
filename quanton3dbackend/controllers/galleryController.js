@@ -3,8 +3,10 @@ import { itemPublicoGaleria } from '../services/galleryPublic.js';
 import { avisarEquipe } from '../services/avisoEquipe.js';
 
 export async function criarGalleryItem(req, res) {
+  // O visitante nao escolhe id, datas nem status (tudo entra como pendente para o ADM aprovar).
+  const { _id, createdAt, updatedAt, status, ...dados } = req.body || {}; // eslint-disable-line no-unused-vars
   const item = await GalleryItem.create({
-    ...(req.body || {}),
+    ...dados,
     status: 'pendente',
   });
   avisarEquipe('galeria', [item.resina, item.impressora].filter(Boolean).join(' · ') || 'Aguardando aprovação'); // celular da equipe (se configurado)
