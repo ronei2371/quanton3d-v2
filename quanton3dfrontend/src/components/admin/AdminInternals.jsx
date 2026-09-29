@@ -4,6 +4,7 @@ import api from "../../lib/api";
 import "./admin-legacy.css";
 import RelatorioSemanal from "./RelatorioSemanal";
 import CopiaSeguranca from "./CopiaSeguranca";
+import AvisoNovidades from "./AvisoNovidades";
 
 const CAMPOS_CONFIGURACAO_GALERIA = [
   { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
@@ -881,6 +882,7 @@ export function AdminContent({ tokenAtendente }) {
           <button type="button" onClick={sair} style={{ padding: "7px 13px", borderRadius: "10px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#d73c3c", cursor: "pointer", fontSize: "0.82rem" }}>Sair</button>
         </div>
       </div>
+      <AvisoNovidades token={token} onVer={(abaAlvo) => { carregarDados(); if (abaAlvo) setAba(abaAlvo); }} />
       {erro && <div className="modal-error">{erro}</div>}
       {carregando && <div style={{ textAlign: "center", color: "#9fb4c7", padding: "20px" }}>Carregando...</div>}
 
@@ -3811,27 +3813,30 @@ export function PainelAtendente({ atendente, onClose }) {
   const [dados, setDados] = useState({ chamados: [], mensagens: [], clientes: [] });
   const [carregando, setCarregando] = useState(true);
   const token = localStorage.getItem("quanton3d_atendente_token");
+  const [recarregar, setRecarregar] = useState(0); // o aviso de novidades pede para recarregar
 
   useEffect(() => {
     async function carregar() {
       try {
         setCarregando(true);
         const headers = { Authorization: "Bearer " + token };
-        const [ch, msg, cl] = await Promise.all([
+        // allSettled: se uma lista falhar, as outras continuam aparecendo.
+        const [ch, msg, cl] = await Promise.allSettled([
           api.get("/bot-tickets", { headers }),
           api.get("/contact-messages", { headers }),
           api.get("/clientes", { headers }),
         ]);
+        const ok = (r) => (r.status === "fulfilled" ? r.value.data || {} : {});
         setDados({
-          chamados: ch.data?.botTickets || ch.data?.tickets || [],
-          mensagens: msg.data?.contactMessages || [],
-          clientes: cl.data?.clientes || cl.data?.data || [],
+          chamados: ok(ch).botTickets || ok(ch).tickets || [],
+          mensagens: ok(msg).contactMessages || [],
+          clientes: ok(cl).clientes || ok(cl).data || [],
         });
       } catch (err) { console.error(err); }
       finally { setCarregando(false); }
     }
     carregar();
-  }, []);
+  }, [token, recarregar]);
 
   const [sugestoes, setSugestoes] = useState([]);
   const [formSugestao, setFormSugestao] = useState({ categoria: "dica", titulo: "", conteudo: "" });
@@ -3888,6 +3893,9 @@ export function PainelAtendente({ atendente, onClose }) {
           Fechar
         </button>
       </div>
+
+      <AvisoNovidades token={token} abasPermitidas={[p.verChamados !== false && "chamados", p.verMensagens !== false && "mensagens"].filter(Boolean)}
+        onVer={(abaAlvo) => { setRecarregar((n) => n + 1); if (abaAlvo) setAba(abaAlvo); }} />
 
       {/* Abas */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
