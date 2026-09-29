@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import Visita from '../models/Visita.js';
+import EventoSite from '../models/EventoSite.js';
 
 const router = express.Router();
 
@@ -35,6 +36,31 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error('[REGISTRAR VISITA]', err);
     res.status(500).json({ success: false, error: 'Erro ao registrar visita' });
+  }
+});
+
+// Evento do site (publico): resultado do Diagnostico rapido, para o relatorio da semana no ADM.
+// Aceita so ids curtos conhecidos no formato; limite simples por IP para nao encher o banco.
+const eventosPorIp = new Map();
+router.post('/evento', async (req, res) => {
+  try {
+    const { tipo = '', sintoma = '', resultado = '' } = req.body || {};
+    const idValido = (v) => /^[a-z_]{1,40}$/.test(String(v));
+    if (tipo !== 'diagnostico' || !idValido(sintoma) || !idValido(resultado)) {
+      return res.status(400).json({ success: false, error: 'Evento inválido' });
+    }
+    const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip || '';
+    const hora = new Date().toISOString().slice(0, 13);
+    const reg = eventosPorIp.get(ip);
+    if (reg && reg.hora === hora && reg.total >= 60) return res.json({ success: true });
+    eventosPorIp.set(ip, reg && reg.hora === hora ? { hora, total: reg.total + 1 } : { hora, total: 1 });
+    if (eventosPorIp.size > 20000) eventosPorIp.clear();
+
+    await EventoSite.create({ tipo, sintoma, resultado });
+    res.status(201).json({ success: true });
+  } catch (err) {
+    console.error('[EVENTO SITE]', err.message);
+    res.status(500).json({ success: false });
   }
 });
 

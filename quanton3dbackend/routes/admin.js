@@ -10,7 +10,10 @@ import Visita from '../models/Visita.js';
 import ContactMessage from '../models/ContactMessage.js';
 import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
 import ImpressoraCatalogo from '../models/ImpressoraCatalogo.js';
-import { resumoCustoIA, inicioDoDiaBrasil, inicioDoMesBrasil, PRECOS, LIMITE_DIARIO } from '../services/usoIA.js';
+import { resumoCustoIA, inicioDoDiaBrasil, inicioDoMesBrasil, PRECOS, LIMITE_DIARIO, custoEmDolar, FONTES_SEM_IA } from '../services/usoIA.js';
+import { periodoSemana, ranking, nomeImpressora, nomeResina, temasDasPerguntas, variacao } from '../services/relatorioSemanal.js';
+import { motivoDaConversa } from '../services/lacunas.js';
+import EventoSite from '../models/EventoSite.js';
 
 const router = express.Router();
 
@@ -393,6 +396,70 @@ router.get('/metrics', auth, async (_req, res) => {
   } catch (err) {
     console.error('Erro em /admin/metrics:', err);
     res.status(500).json({ success: false, error: 'Erro interno ao carregar métricas.' });
+  }
+});
+
+// ── RELATORIO DA SEMANA ───────────────────────────────────────────────────────
+// ?semana=0 -> ultimos 7 dias; 1 -> os 7 dias anteriores; ... (compara com a semana antes)
+router.get('/relatorio-semanal', auth, async (req, res) => {
+  try {
+    const { inicio, fim, semana } = periodoSemana(req.query.semana);
+    const anterior = periodoSemana(semana + 1);
+    const noPeriodo = (p) => ({ createdAt: { $gte: p.inicio, $lt: p.fim } });
+    const semTeste = { clienteId: { $not: /^homologacao-/ } };
+
+    const [conversas, conversasAntes, chamados, chamadosAntes, novosClientes, novosClientesAntes, diagnosticos, diagnosticosAntes] = await Promise.all([
+      Conversa.find({ ...noPeriodo({ inicio, fim }), ...semTeste })
+        .select('pergunta resposta fonte lacuna lacunaResolvida aprovado feedback resinaDetectada impressoraDetectada clienteId tokensEntrada tokensCache tokensSaida createdAt')
+        .sort({ createdAt: -1 }).limit(5000).lean(),
+      Conversa.countDocuments({ ...noPeriodo(anterior), ...semTeste, fonte: { $nin: FONTES_SEM_IA } }),
+      BotTicket.find(noPeriodo({ inicio, fim })).select('problema resina impressora status').lean(),
+      BotTicket.countDocuments(noPeriodo(anterior)),
+      Cliente.countDocuments(noPeriodo({ inicio, fim })),
+      Cliente.countDocuments(noPeriodo(anterior)),
+      EventoSite.find({ tipo: 'diagnostico', ...noPeriodo({ inicio, fim }) }).select('sintoma resultado').lean(),
+      EventoSite.countDocuments({ tipo: 'diagnostico', ...noPeriodo(anterior) }),
+    ]);
+
+    const daIA = conversas.filter((c) => !FONTES_SEM_IA.includes(c.fonte));
+    const lacunas = daIA.filter((c) => motivoDaConversa(c));
+    const tokens = daIA.reduce((a, c) => ({
+      tokensEntrada: a.tokensEntrada + (c.tokensEntrada || 0),
+      tokensCache: a.tokensCache + (c.tokensCache || 0),
+      tokensSaida: a.tokensSaida + (c.tokensSaida || 0),
+    }), { tokensEntrada: 0, tokensCache: 0, tokensSaida: 0 });
+    const usd = custoEmDolar(tokens);
+
+    res.json({
+      success: true,
+      periodo: { inicio, fim, semana },
+      resumo: {
+        perguntasIA: daIA.length,
+        perguntasIAVariacao: variacao(daIA.length, conversasAntes),
+        respostasFixas: conversas.length - daIA.length,
+        clientesAtivos: new Set(conversas.map((c) => c.clienteId).filter(Boolean)).size,
+        novosClientes,
+        novosClientesVariacao: variacao(novosClientes, novosClientesAntes),
+        chamados: chamados.length,
+        chamadosVariacao: variacao(chamados.length, chamadosAntes),
+        diagnosticos: diagnosticos.length,
+        diagnosticosVariacao: variacao(diagnosticos.length, diagnosticosAntes),
+        ajudou: conversas.filter((c) => c.feedback === 'satisfatoria').length,
+        naoAjudou: conversas.filter((c) => c.feedback === 'nao_satisfatoria').length,
+        botNaoSoube: lacunas.length,
+        botNaoSoubePendentes: lacunas.filter((c) => !c.lacunaResolvida && !c.aprovado).length,
+        custoIABRL: Number((usd * PRECOS.dolar).toFixed(2)),
+      },
+      temas: temasDasPerguntas(daIA),
+      resinas: ranking([...conversas.map((c) => c.resinaDetectada), ...chamados.map((t) => t.resina)], 8, nomeResina),
+      impressoras: ranking([...conversas.map((c) => c.impressoraDetectada), ...chamados.map((t) => t.impressora)], 8, nomeImpressora),
+      chamadosPorProblema: ranking(chamados.map((t) => t.problema), 8),
+      diagnosticosPorSintoma: ranking(diagnosticos.map((d) => d.sintoma), 8),
+      diagnosticosPorResultado: ranking(diagnosticos.map((d) => d.resultado), 8),
+    });
+  } catch (err) {
+    console.error('[RELATORIO SEMANAL]', err);
+    res.status(500).json({ success: false, error: 'Erro ao montar o relatório da semana.' });
   }
 });
 
