@@ -74,3 +74,7 @@
 .iaq3d-limite { padding: 6px 6px 0; font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; flex-shrink: 0; }
 .iaq3d-limite strong { color: var(--text-secondary); }
 .iaq3d-limite--alerta, .iaq3d-limite--alerta strong { color: #ffb45c; }
+/* Barra das perguntas que restam no dia (diminui a cada pergunta a IA) */
+.iaq3d-limite-barra { display: block; height: 4px; margin-top: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.iaq3d-limite-barra i { display: block; height: 100%; border-radius: 999px; background: var(--primary, #2f7bff); transition: width 0.4s ease; }
+.iaq3d-limite--alerta .iaq3d-limite-barra i { background: #ffb45c; }
