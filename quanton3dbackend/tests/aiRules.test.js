@@ -9,6 +9,9 @@ test('responde sobre peca menor mesmo se o provedor de IA vier vazio', () => {
   assert.match(answer, /causa mais provável.*exposição normal baixa/is);
   assert.match(answer, /aumentando em passos pequenos/i);
   assert.match(answer, /correta antes da pós-cura.*diminuir somente depois/is);
+  // Exposicao baixa so quando o furo fica folgado; tudo menor por igual aponta escala/XY.
+  assert.match(answer, /furo mais folgado.*exposição normal baixa/is);
+  assert.match(answer, /Tudo menor por igual.*não é exposição.*escala e unidade/is);
 });
 
 test('mantem diagnosticos fixos sem parametros universais improvisados', () => {
