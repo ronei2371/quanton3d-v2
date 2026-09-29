@@ -1,4 +1,5 @@
 import express from 'express';
+import { ipDoPedido } from '../middlewares/limiteTaxa.js';
 import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import Visita from '../models/Visita.js';
 import EventoSite from '../models/EventoSite.js';
@@ -40,7 +41,7 @@ router.post('/evento', async (req, res) => {
     if (tipo !== 'diagnostico' || !idValido(sintoma) || !idValido(resultado)) {
       return res.status(400).json({ success: false, error: 'Evento inválido' });
     }
-    const ip = req.ip || '';
+    const ip = ipDoPedido(req); // IP real (middlewares/limiteTaxa.js)
     const hora = new Date().toISOString().slice(0, 13);
     const reg = eventosPorIp.get(ip);
     if (reg && reg.hora === hora && reg.total >= 60) return res.json({ success: true });

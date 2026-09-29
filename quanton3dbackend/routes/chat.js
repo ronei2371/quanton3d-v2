@@ -1,4 +1,5 @@
 import express from 'express';
+import { ipDoPedido } from '../middlewares/limiteTaxa.js';
 import OpenAI from 'openai';
 import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
@@ -172,7 +173,7 @@ router.post('/', async (req, res) => {
             return res.json({ success: true, reply: 'Para conversar com a IAQ3D, faça seu cadastro rápido no site (botão "Área do cliente", no topo). Leva menos de 1 minuto e libera o suporte técnico.', source: 'cadastro', ragUsado: false, conversaId: null, precisaCadastro: true });
         }
 
-        const ip = req.ip || ''; // IP real (trust proxy no server.js); o X-Forwarded-For vem do visitante e pode ser inventado
+        const ip = ipDoPedido(req); // IP real (middlewares/limiteTaxa.js)
 
         const clienteTelefone = await telefoneDoCadastro(clienteId);
         const ehFundador = isFounderPhone(clienteTelefone);

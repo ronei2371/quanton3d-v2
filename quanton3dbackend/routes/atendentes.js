@@ -1,5 +1,6 @@
 // routes/atendentes.js — Gerenciamento de atendentes (só superadmin)
 import express from 'express';
+import { ipDoPedido } from '../middlewares/limiteTaxa.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import authAdmin from '../middlewares/authAdmin.js';
@@ -51,7 +52,7 @@ router.post('/login', async (req, res) => {
     );
 
     // IP real (considerando proxy/Render)
-    const ip = req.ip || ''; // IP real (trust proxy no server.js)
+    const ip = ipDoPedido(req); // IP real (middlewares/limiteTaxa.js)
     const ua = req.headers['user-agent'] || '';
     const dispositivo = resumirDispositivo(ua);
 
