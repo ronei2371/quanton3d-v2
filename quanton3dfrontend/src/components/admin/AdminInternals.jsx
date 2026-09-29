@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import api from "../../lib/api";
 import "./admin-legacy.css";
+import RelatorioSemanal from "./RelatorioSemanal";
 
 const CAMPOS_CONFIGURACAO_GALERIA = [
   { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
@@ -826,6 +827,7 @@ export function AdminContent({ tokenAtendente }) {
   const ABAS_ADM = [
     { id: "dashboard",    label: "Dashboard",    icon: "🏠", count: null },
     { id: "metricas",     label: "Métricas",     icon: "📊", count: null },
+    { id: "relatorio",    label: "Relatório da semana", icon: "📈", count: null },
     { id: "clientes", label: "Clientes", icon: "👥", count: dados.clientes.length },
     { id: "chamados", label: "Chamados", icon: "🔧", count: dados.chamados.length },
     { id: "mensagens", label: "Mensagens", icon: "✉️", count: dados.mensagens.length },
@@ -3138,6 +3140,8 @@ export function AdminContent({ tokenAtendente }) {
           })}
         </div>
       )}
+
+      {aba === "relatorio" && <RelatorioSemanal token={token} onVerLacunas={() => { setAba("conversas"); setFiltroConversas("lacunas"); }} />}
 
       {aba === "conhecimento" && <AdicionarConhecimentoContent token={token} sugestoes={sugestoesIaq3d} onAtualizar={recarregarSugestoes} />}
 
