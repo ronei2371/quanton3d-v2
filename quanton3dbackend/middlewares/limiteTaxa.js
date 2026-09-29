@@ -2,11 +2,13 @@
 // Protege o login do ADM contra tentativa de senha sem parar e os formularios publicos
 // contra envio em massa (que encheria o banco de 512 MB).
 
-// IP de quem fez o pedido. Com app.set('trust proxy', 1) no server.js, o Express usa o IP
-// que o proxy do Render anotou (o ultimo do X-Forwarded-For). O primeiro valor desse
-// cabecalho vem do proprio visitante e pode ser inventado, entao nao e usado.
+// IP de quem fez o pedido. O site passa pelo Cloudflare antes do Render: o Cloudflare grava o
+// IP real em CF-Connecting-IP e apaga o que o visitante mandar nesse cabecalho, entao ele nao
+// pode ser inventado. O X-Forwarded-For NAO serve: o visitante coloca o valor que quiser
+// (testado no ar em 29/09: com ele, trocar o IP falso a cada pedido furava o limite).
 export function ipDoPedido(req) {
-  return req.ip || req.socket?.remoteAddress || 'sem-ip';
+  const cf = String(req.headers?.['cf-connecting-ip'] || '').trim();
+  return cf || req.ip || req.socket?.remoteAddress || 'sem-ip';
 }
 
 export function criarLimite({ max, janelaMs, mensagem, nome = 'geral' }) {
