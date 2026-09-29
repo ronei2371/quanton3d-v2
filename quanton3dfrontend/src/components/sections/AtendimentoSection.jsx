@@ -5,6 +5,7 @@ import { WHATSAPP_SUPORTE_URL, HORARIO_ATENDIMENTO } from "../../data/contact";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 import { comprimirImagens } from "../../utils/comprimirImagem";
 import PedirCadastro from "../PedirCadastro";
+import DiagnosticoGuiado from "../DiagnosticoGuiado";
 
 const PROBLEMAS = [
   "Peça não adere à plataforma",
@@ -35,13 +36,13 @@ const DIAGNOSTICO_ANCORA = {
   "Peça amarelada após cura UV": "problema-4",
 };
 
-function ChamadoTecnico({ cliente }) {
+function ChamadoTecnico({ cliente, inicial }) {
   const [resinas, setResinas] = useState([]);
   const [impressoras, setImpressoras] = useState([]);
   const [form, setForm] = useState({
-    problema: "", resina: "", impressora: "",
+    problema: inicial?.problema || "", resina: "", impressora: "",
     alturaCamada: "", exposicaoNormal: "", exposicaoBase: "",
-    camadasBase: "", temperatura: "", tentativas: "", observacao: "",
+    camadasBase: "", temperatura: "", tentativas: inicial?.resumo ? `Diagnóstico rápido do site: ${inicial.resumo}` : "", observacao: "",
   });
   const [fotos, setFotos] = useState([]);
   const [enviando, setEnviando] = useState(false);
@@ -127,12 +128,12 @@ function ChamadoTecnico({ cliente }) {
       {mostrarTriagem && (
         <div className="q-alert q-alert--info" style={{ padding: "18px" }}>
           <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.85rem", color: "var(--text-primary)", margin: "0 0 6px" }}>
-            <Stethoscope size={15} /> Diagnóstico rápido para este sintoma
+            <Stethoscope size={15} /> Este sintoma tem explicação no guia
           </h4>
           <p style={{ fontSize: "0.82rem", margin: "0 0 14px" }}>Veja a causa provável e a solução no guia técnico antes de abrir um chamado — pode resolver na hora.</p>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <button type="button" className="q-btn q-btn--primary" onClick={() => setMostrarDiagnosticoModal(true)}>
-              <Stethoscope size={15} /> Ver diagnóstico rápido
+              <Stethoscope size={15} /> Ver no guia de falhas
             </button>
             <button type="button" className="q-btn q-btn--ghost" onClick={() => setMostrarFormularioCompleto(true)}>
               Não resolveu — Abrir chamado técnico <ArrowRight size={15} />
@@ -146,13 +147,13 @@ function ChamadoTecnico({ cliente }) {
           <section className="q-modal q-modal--wide calculator-modal" style={{ display: "flex", flexDirection: "column" }}>
             <div className="q-modal-head">
               <h2 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.05rem" }}>
-                <Stethoscope size={17} color="var(--primary)" /> Diagnóstico rápido — {form.problema}
+                <Stethoscope size={17} color="var(--primary)" /> Guia de falhas — {form.problema}
               </h2>
               <button type="button" className="q-modal-close" onClick={() => setMostrarDiagnosticoModal(false)}><X size={13} /> Fechar</button>
             </div>
             <div className="calculator-shell" style={{ flex: 1, display: "flex", padding: 0 }}>
               <iframe
-                title="Diagnóstico rápido"
+                title="Guia de falhas"
                 src={`/guias/guia-diagnostico-problemas.html#${ancoraDiagnostico}`}
                 style={{ flex: 1, width: "100%", border: "none", background: "#fff" }}
               />
@@ -280,18 +281,21 @@ function FormulacaoPersonalizada({ cliente }) {
 }
 
 const ABAS = [
+  { id: "diagnostico", label: "Diagnóstico rápido", icon: Stethoscope },
   { id: "chamado", label: "Chamado Técnico", icon: Wrench },
   { id: "formulacao", label: "Formulação Personalizada", icon: FlaskConical },
 ];
 
-function AtendimentoSection({ cliente, onAbrirContato, onPedirCadastro }) {
-  const [aba, setAba] = useState("chamado");
+function AtendimentoSection({ cliente, onAbrirContato, onPedirCadastro, onAbrirGuia, onAbrirCalculadora, onIrParametros, onAbrirBot }) {
+  const [aba, setAba] = useState("diagnostico");
+  // Diagnostico rapido -> "Abrir chamado com este diagnostico" ja preenche o chamado
+  const [chamadoInicial, setChamadoInicial] = useState(null);
 
   return (
     <section className="q-card q-panel">
       <span className="q-eyebrow">Suporte</span>
       <h2 className="q-section-title">Atendimento</h2>
-      <p className="q-section-desc">Fale com a Quanton3D, abra um chamado técnico ou peça uma formulação sob medida.</p>
+      <p className="q-section-desc">Faça o diagnóstico rápido da sua falha, abra um chamado técnico ou peça uma formulação sob medida.</p>
 
       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
         <button type="button" className="q-btn q-btn--primary" onClick={onAbrirContato}><MessageCircle size={15} /> Fale Conosco</button>
@@ -299,20 +303,29 @@ function AtendimentoSection({ cliente, onAbrirContato, onPedirCadastro }) {
       </div>
           <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginTop: "4px" }}>Horário: {HORARIO_ATENDIMENTO}</p>
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)" }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)", overflowX: "auto" }}>
         {ABAS.map((a) => {
           const Icon = a.icon;
           return (
             <button key={a.id} type="button"
               onClick={() => setAba(a.id)}
-              style={{ display: "flex", alignItems: "center", gap: "7px", padding: "12px 8px", background: "none", border: "none", borderBottom: aba === a.id ? "2px solid var(--primary)" : "2px solid transparent", color: aba === a.id ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}>
+              style={{ display: "flex", alignItems: "center", gap: "7px", padding: "12px 8px", whiteSpace: "nowrap", flexShrink: 0, background: "none", border: "none", borderBottom: aba === a.id ? "2px solid var(--primary)" : "2px solid transparent", color: aba === a.id ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, fontSize: "0.95rem" }}>
               <Icon size={16} /> {a.label}
             </button>
           );
         })}
       </div>
 
-      {aba === "chamado" && (cliente ? <ChamadoTecnico cliente={cliente} /> : <PedirCadastro texto="Para abrir um chamado técnico, faça seu cadastro rápido: assim a equipe tem seu nome e WhatsApp para te responder." onPedirCadastro={onPedirCadastro} />)}
+      {aba === "diagnostico" && (
+        <DiagnosticoGuiado
+          onAbrirGuia={onAbrirGuia}
+          onAbrirCalculadora={onAbrirCalculadora}
+          onIrParametros={onIrParametros}
+          onAbrirBot={onAbrirBot}
+          onAbrirChamado={(dados) => { setChamadoInicial(dados); setAba("chamado"); }}
+        />
+      )}
+      {aba === "chamado" && (cliente ? <ChamadoTecnico key={chamadoInicial?.resumo || "novo"} cliente={cliente} inicial={chamadoInicial} /> : <PedirCadastro texto="Para abrir um chamado técnico, faça seu cadastro rápido: assim a equipe tem seu nome e WhatsApp para te responder." onPedirCadastro={onPedirCadastro} />)}
       {aba === "formulacao" && (cliente ? <FormulacaoPersonalizada cliente={cliente} /> : <PedirCadastro texto="Para pedir uma formulação personalizada, faça seu cadastro rápido: assim a equipe consegue falar com você." onPedirCadastro={onPedirCadastro} />)}
     </section>
   );

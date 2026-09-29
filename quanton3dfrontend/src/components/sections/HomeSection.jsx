@@ -25,7 +25,7 @@ const CAMINHOS = [
     icon: Wrench,
     label: "Minha peça apresentou falha",
     title: "Transforme o sintoma em um próximo passo claro.",
-    desc: "Use os guias de diagnóstico ou abra um chamado com as informações que ajudam nossa equipe a entender o caso.",
+    desc: "Faça o diagnóstico rápido (uma ou duas perguntas) ou abra um chamado com as informações que ajudam nossa equipe a entender o caso.",
     action: "Resolver uma falha",
     page: "atendimento",
     imagem: "/images/sessao_o_que_voce_quer_resolver_agora/caminho-corrigir.png",
