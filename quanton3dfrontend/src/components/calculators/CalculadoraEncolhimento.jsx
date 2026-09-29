@@ -27,7 +27,7 @@ function Guia() {
         </p>
       </div>
 
-      <button type="button" className="q-btn q-btn--ghost q-btn--block" style={{ marginTop: "12px" }} onClick={() => setExpandido(v => !v)}>
+      <button type="button" className="q-btn q-btn--ghost q-btn--block" style={{ marginTop: "12px", whiteSpace: "normal", lineHeight: 1.3, height: "auto", minHeight: "40px" }} onClick={() => setExpandido(v => !v)}>
         {expandido ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         {expandido ? "Ocultar guia completo de uso" : "Ver guia completo — como medir e usar a calculadora"}
       </button>
