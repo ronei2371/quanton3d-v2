@@ -4,6 +4,7 @@ import { SINTOMAS, RESULTADOS, GABARITO_QUANTON } from "../data/diagnostico";
 import { GUIDES } from "../data/guides";
 import { WHATSAPP_SUPORTE_URL } from "../data/contact";
 import { trackEvent } from "../utils/analytics";
+import api from "../lib/api";
 
 const NOMES_CALCULADORA = {
   exposicao: "Calculadora de Exposição",
@@ -27,6 +28,8 @@ function DiagnosticoGuiado({ onAbrirGuia, onAbrirCalculadora, onIrParametros, on
     setResultadoId(idResultado);
     setRespostas(historico);
     trackEvent("diagnostico_resultado", { sintoma: s.id, resultado: idResultado });
+    // Conta no ADM > Relatório da semana (sem dado pessoal)
+    api.post("/visitas/evento", { tipo: "diagnostico", sintoma: s.id, resultado: idResultado }).catch(() => {});
   }
 
   function escolherSintoma(s) {
