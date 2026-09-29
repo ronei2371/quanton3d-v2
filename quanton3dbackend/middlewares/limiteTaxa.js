@@ -41,3 +41,6 @@ export const limiteFormulario = criarLimite({ nome: 'form', max: 30, janelaMs: 6
 
 // Envio com foto (pesa no banco/disco): 10 por hora por IP.
 export const limiteUpload = criarLimite({ nome: 'upload', max: 10, janelaMs: 60 * MIN, mensagem: 'Muitos envios com foto seguidos. Aguarde um pouco e tente de novo.' });
+
+// Cliente antigo pedindo a chave secreta (codigo + telefone): 10 tentativas a cada 15 minutos por IP.
+export const limiteChave = criarLimite({ nome: 'chave', max: 10, janelaMs: 15 * MIN, mensagem: 'Muitas tentativas. Aguarde 15 minutos e tente de novo.' });
