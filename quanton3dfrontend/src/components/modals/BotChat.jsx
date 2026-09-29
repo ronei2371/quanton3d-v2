@@ -123,20 +123,28 @@ function BotChat({ cliente }) {
       .then((res) => {
         if (!ativo) return;
         const conversas = Array.isArray(res.data?.conversas) ? res.data.conversas : [];
+        // Configuracao da ultima conversa (resina, impressora, camada) guardada no cadastro.
+        const equip = res.data?.equipamento || null;
+        if (equip) {
+          setCtx((atual) => ({
+            ...atual,
+            resina: atual.resina || equip.resina || "",
+            impressora: atual.impressora || equip.impressora || "",
+            altura: equip.altura || atual.altura,
+            lembrado: true,
+          }));
+        }
         if (!conversas.length) return;
 
         const restauradas = conversas.flatMap((conversa) => [
           { text: conversa.pergunta, isBot: false },
           { text: conversa.resposta, isBot: true, conversaId: conversa._id },
         ]).filter((mensagem) => mensagem.text);
-        const ultima = conversas[conversas.length - 1];
-        setCtx((atual) => ({
-          ...atual,
-          resina: atual.resina || ultima.resinaDetectada || "",
-          impressora: atual.impressora || ultima.impressoraDetectada || "",
-        }));
+        const lembrete = equip && (equip.resina || equip.impressora)
+          ? `\n\nDa última vez você estava com: **${[equip.resina, equip.impressora, equip.altura && `${equip.altura} mm`].filter(Boolean).join(" · ")}**. Se mudou alguma coisa, toque em **Alterar** lá em cima.`
+          : "";
         setMensagens([
-          { text: `Bem-vindo de volta, ${cliente?.nome || ""}! Aqui está seu histórico com a IAQ3D. Pode continuar de onde parou.`, isBot: true },
+          { text: `Bem-vindo de volta, ${cliente?.nome || ""}! Aqui está seu histórico com a IAQ3D. Pode continuar de onde parou.${lembrete}`, isBot: true },
           ...restauradas,
         ]);
         setEtapa("chat");
@@ -181,7 +189,7 @@ function BotChat({ cliente }) {
     setPensando(true);
     try {
       const ctxMsg = ctx.resina || ctx.impressora
-        ? [{ role: "user", content: `Contexto: resina ${ctx.resina || "não informada"}, impressora ${ctx.impressora || "não informada"}, altura camada ${ctx.altura || "0.05"}mm` },
+        ? [{ role: "user", content: `Contexto: resina ${ctx.resina || "não informada"}, impressora ${ctx.impressora || "não informada"}, altura camada ${ctx.altura || "0.05"}mm${ctx.lembrado ? " (configuração da última conversa; se o cliente citar outra resina ou impressora, vale a nova)" : ""}` },
            { role: "assistant", content: "Contexto registrado. Pode me contar o problema." }]
         : [];
       const historico = [
@@ -266,12 +274,16 @@ function BotChat({ cliente }) {
       <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "18px" }}>
         Para respostas precisas, informe sua configuração antes de começar. É rápido — ou pule direto pro chat.
       </p>
+      {ctx.lembrado && (ctx.resina || ctx.impressora) && (
+        <p className="q-alert q-alert--info" style={{ fontSize: "0.82rem", margin: "-6px 0 16px" }}>Preenchemos com a configuração da sua última conversa. Se mudou, é só trocar.</p>
+      )}
 
       <div style={{ display: "grid", gap: "14px" }}>
         <label className="q-field">
           <span>Resina Quanton3D</span>
-          <select className="q-select" value={ctx.resina} onChange={(e) => setCtx((c) => ({ ...c, resina: e.target.value }))}>
+          <select className="q-select" value={ctx.resina} onChange={(e) => setCtx((c) => ({ ...c, resina: e.target.value, lembrado: false }))}>
             <option value="">Selecione a resina (opcional)</option>
+            {ctx.resina && !RESINAS_BOT.includes(ctx.resina) && <option value={ctx.resina}>{ctx.resina}</option>}
             {RESINAS_BOT.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
         </label>
@@ -279,19 +291,20 @@ function BotChat({ cliente }) {
         <label className="q-field">
           <span>Impressora</span>
           {impressorasBot.length > 0 ? (
-            <select className="q-select" value={ctx.impressora} onChange={(e) => setCtx((c) => ({ ...c, impressora: e.target.value }))}>
+            <select className="q-select" value={ctx.impressora} onChange={(e) => setCtx((c) => ({ ...c, impressora: e.target.value, lembrado: false }))}>
               <option value="">Selecione a impressora (opcional)</option>
+              {ctx.impressora && !impressorasBot.includes(ctx.impressora) && ctx.impressora !== "Não sei / Outra" && <option value={ctx.impressora}>{ctx.impressora}</option>}
               {impressorasBot.map((i) => <option key={i} value={i}>{i}</option>)}
               <option value="Não sei / Outra">Não sei / Outra</option>
             </select>
           ) : (
-            <input className="q-input" value={ctx.impressora} onChange={(e) => setCtx((c) => ({ ...c, impressora: e.target.value }))} placeholder="Ex: Elegoo Mars 4 Ultra, Anycubic Photon M3..." />
+            <input className="q-input" value={ctx.impressora} onChange={(e) => setCtx((c) => ({ ...c, impressora: e.target.value, lembrado: false }))} placeholder="Ex: Elegoo Mars 4 Ultra, Anycubic Photon M3..." />
           )}
         </label>
 
         <label className="q-field">
           <span>Altura de camada que está usando</span>
-          <select className="q-select" value={ctx.altura} onChange={(e) => setCtx((c) => ({ ...c, altura: e.target.value }))}>
+          <select className="q-select" value={ctx.altura} onChange={(e) => setCtx((c) => ({ ...c, altura: e.target.value, lembrado: false }))}>
             <option value="0.01">0.01mm — máxima resolução</option>
             <option value="0.02">0.02mm — alta resolução</option>
             <option value="0.03">0.03mm — alta resolução</option>
