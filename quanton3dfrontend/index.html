@@ -41,6 +41,11 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    // LGPD: cookies do Google Analytics so depois de aceitar o Termo de Privacidade.
+    // Antes disso o Google recebe so contagem sem cookie (Consent Mode). Nada de anuncios.
+    var q3dAceitou = false;
+    try { q3dAceitou = localStorage.getItem('quanton3d_privacidade_aceita') === 'true'; } catch (e) {}
+    gtag('consent', 'default', { analytics_storage: q3dAceitou ? 'granted' : 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
     gtag('js', new Date());
     gtag('config', '%VITE_GA4_ID%', { send_page_view: true });
   </script>
