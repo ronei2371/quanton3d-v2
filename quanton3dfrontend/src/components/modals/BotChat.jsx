@@ -419,13 +419,16 @@ function BotChat({ cliente }) {
         </div>
       )}
 
-      {limite && !limite.semLimite && (
+      {limite && (limite.semLimite ? (
+        <div className="iaq3d-limite" role="status">Modo fundador: <strong>sem limite</strong> de perguntas.</div>
+      ) : (
         <div className={"iaq3d-limite" + (limite.restantes <= 3 ? " iaq3d-limite--alerta" : "")} role="status">
           {limite.restantes > 0
-            ? <>Perguntas para a IA hoje: <strong>{limite.usadas} de {limite.max}</strong>{limite.restantes <= 3 ? ` · restam ${limite.restantes}` : ""}. Saudações e respostas rápidas não contam.</>
+            ? <>Perguntas para a IA hoje: restam <strong>{limite.restantes} de {limite.max}</strong>. Saudações e respostas rápidas não contam.</>
             : <>Você usou as <strong>{limite.max} perguntas</strong> de hoje. Amanhã libera de novo, ou continue no WhatsApp com o resumo.</>}
+          <span className="iaq3d-limite-barra" aria-hidden="true"><i style={{ width: `${Math.max(0, Math.min(100, (limite.restantes / limite.max) * 100))}%` }} /></span>
         </div>
-      )}
+      ))}
 
       <ChatInput onEnviar={enviar} pensando={pensando} modo={modo} onModoChange={setModo} />
     </div>
