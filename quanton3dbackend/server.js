@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
@@ -94,10 +95,13 @@ message: "Quanton3D Final Backend online",
 });
 });
 
+// Monitor do site (UptimeRobot / Render): 200 so se o servidor E o banco estiverem ok.
+// Se o MongoDB cair, responde 503 e o monitor avisa (antes dizia "ok" mesmo sem banco).
 app.get("/health", (_req, res) => {
-res.json({
-success: true,
-status: "ok",
+const bancoOk = mongoose.connection.readyState === 1;
+res.status(bancoOk ? 200 : 503).json({
+success: bancoOk,
+status: bancoOk ? "ok" : "sem-banco",
 timestamp: new Date().toISOString(),
 });
 });
