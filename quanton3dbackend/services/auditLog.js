@@ -108,7 +108,7 @@ export function auditLog(req, res, next) {
   const quem = identificar(req);
   if (!quem && !isLogin) return next();
 
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '';
+  const ip = req.ip || ''; // IP real (trust proxy no server.js)
   const userAgent = req.headers['user-agent'] || '';
 
   res.on('finish', async () => {
