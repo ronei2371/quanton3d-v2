@@ -658,8 +658,8 @@
             <p class="section-note">No modo lote, informe o consumo total do job inteiro. A calculadora mostra custo total e custo unitário por peça.</p>
             <div class="grid">
               <div class="field required" data-required="true"><label for="resinSelect">Produto / Resina</label><select id="resinSelect"></select></div>
-              <div class="field required" data-required="true"><label for="priceKg">Preço por quilo (R$/kg)</label><input autocomplete="off" id="priceKg" type="text" inputmode="decimal" placeholder="Ex: 175,00" /></div>
-              <div class="field required" data-required="true"><label for="resinGrams">Quantidade de resina usada no job (g)</label><input autocomplete="off" id="resinGrams" type="text" inputmode="decimal" placeholder="Ex: 1580" /><small>Use o consumo total do lote, já considerando suportes e base.</small></div>
+              <div class="field required" data-required="true"><label for="priceKg">Preço por quilo (R$/kg)</label><input autocomplete="off" id="priceKg" type="text" inputmode="decimal" placeholder="Ex: 175,00" /><small>Ao escolher a resina entra um preço de referência. Troque pelo valor que você pagou (preço do frasco ÷ kg do frasco).</small></div>
+              <div class="field required" data-required="true"><label for="resinGrams">Quantidade de resina usada no job (g)</label><input autocomplete="off" id="resinGrams" type="text" inputmode="decimal" placeholder="Ex: 1580" /><small>Consumo total do lote em gramas, com suportes e base (o fatiador mostra). Se ele só mostrar ml, multiplique pela densidade que está na ficha da resina.</small></div>
               <div class="field required" data-required="true"><label for="piecesQty">Quantidade de peças no lote</label><input autocomplete="off" id="piecesQty" type="number" min="1" step="1" /><small>Divide custo fixo e total para chegar no custo unitário real.</small></div>
               <div class="field">
                 <label for="wastePct">Perda técnica de resina (%) <span style="font-size:11px;color:var(--muted);font-weight:400">(dica)</span></label>
@@ -694,7 +694,7 @@
             <p class="section-note">Agora o gasto de luz fica separado: impressora, cura/lavadora e custo extra de ambiente.</p>
             <div class="grid">
               <div class="field">
-                <label for="printerModel">Modelo da impressora <span style="font-size:11px;color:var(--muted);font-weight:400">(médias oficiais)</span></label>
+                <label for="printerModel">Modelo da impressora <span style="font-size:11px;color:var(--muted);font-weight:400">(valores aproximados)</span></label>
                 <select id="printerModel" style="width:100%;padding:.5rem .75rem;border-radius:8px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-family:inherit;font-size:.875rem">
                   <option value="">-- Preencha o consumo manualmente --</option>
                   <optgroup label="Anycubic">
@@ -730,7 +730,7 @@
                     <option value="75" data-valor="9500" data-vida="3000" data-fep="70" data-fep-jobs="28" data-lcd="420" data-lcd-h="2500">Phrozen Sonic Mighty 8K</option>
                   </optgroup>
                   <optgroup label="Bambu Lab">
-                    <option value="50" data-valor="5500" data-vida="2000" data-fep="50" data-fep-jobs="30" data-lcd="220" data-lcd-h="2000">Bambu Lab</option>
+
                   </optgroup>
                 </select>
               </div>
@@ -751,7 +751,7 @@
                 <small style="margin-top:4px;display:block">Ex: 12 horas e 30 minutos = 750 minutos totais</small>
               </div>
               <div class="field">
-                <label for="washCureModel">Modelo lavadora/câmara UV <span style="font-size:11px;color:var(--muted);font-weight:400">(médias oficiais)</span></label>
+                <label for="washCureModel">Modelo lavadora/câmara UV <span style="font-size:11px;color:var(--muted);font-weight:400">(valores aproximados)</span></label>
                 <select id="washCureModel" style="width:100%;padding:.5rem .75rem;border-radius:8px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-family:inherit;font-size:.875rem">
                   <option value="">-- Preencha o consumo manualmente --</option>
                   <optgroup label="Anycubic Wash & Cure">
@@ -906,19 +906,19 @@
   <script>
     const RESINS = [
       { name: "— Selecione ou preencha manualmente —", price: 0 },
-      { name: "Quanton3D Alchemist", price: 175 },
-      { name: "Quanton3D Athom Dental", price: 179 },
-      { name: "Quanton3D Athom Alinhadores", price: 249 },
-      { name: "Quanton3D Athom Alinhadores OD", price: 210 },
-      { name: "Quanton3D Flexform", price: 309 },
-      { name: "Quanton3D Iron", price: 263 },
-      { name: "Quanton3D 70/30", price: 259 },
-      { name: "Quanton3D Low Smell", price: 242 },
-      { name: "Quanton3D Poseidon", price: 255 },
-      { name: "Quanton3D Pyroblast", price: 150 },
-      { name: "Quanton3D Spark", price: 168 },
-      { name: "Quanton3D Spin", price: 200 },
-      { name: "Quanton3D Vulcan Cast", price: 539 }
+      { name: "ALCHEMIST", price: 175 },
+      { name: "ATHOM DENTAL", price: 179 },
+      { name: "ATHOM ALINHADORES", price: 249 },
+      { name: "ATHOM ALINHADORES OD", price: 210 },
+      { name: "FLEXFORM", price: 309 },
+      { name: "IRON", price: 263 },
+      { name: "IRON 70/30", price: 259 },
+      { name: "LOW SMELL", price: 242 },
+      { name: "POSEIDON", price: 255 },
+      { name: "PYROBLAST", price: 150 },
+      { name: "SPARK", price: 168 },
+      { name: "SPIN", price: 200 },
+      { name: "VULCAN CAST", price: 539 }
     ];
 
     const APP_BRAND = "Quanton3D Cost Lab";
@@ -936,11 +936,21 @@
     let lastResult = null;
     let scenarios = loadJSON(SCENARIO_KEY, { A: null, B: null });
 
+    // Aceita numero no jeito brasileiro (1.580,50) e com ponto decimal digitado no celular (0.95).
+    // Sem virgula: ponto com 3 digitos depois e parte inteira diferente de 0 e milhar (1.580);
+    // senao e decimal (0.95, 2.5, 0.950).
     function parseBR(value) {
       if (value === null || value === undefined) return 0;
       if (typeof value === "number") return isFinite(value) ? value : 0;
-      const cleaned = String(value).trim().replace(/R\$/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
-      const n = Number(cleaned);
+      let t = String(value).trim().replace(/R\$/g, "").replace(/\s/g, "");
+      if (t.includes(",")) {
+        t = t.replace(/\./g, "").replace(",", ".");
+      } else {
+        const partes = t.split(".");
+        const ehMilhar = partes.length > 2 || (partes.length === 2 && partes[1].length === 3 && !/^-?0*$/.test(partes[0]));
+        if (ehMilhar) t = t.replace(/\./g, "");
+      }
+      const n = Number(t);
       return isFinite(n) ? n : 0;
     }
     function money(n) {
@@ -971,9 +981,11 @@
       if (mode === "up5") return Math.ceil(value / 5) * 5;
       if (mode === "up10") return Math.ceil(value / 10) * 10;
       if (mode === "psych") {
+        // Final ,90 sem nunca ficar abaixo do valor calculado (ex.: 10,95 -> 11,90).
         if (value <= 0) return 0;
-        const base = Math.ceil(value);
-        return Math.max(0, base - 0.10);
+        let preco = Math.ceil(value) - 0.10;
+        if (preco < value) preco += 1;
+        return Math.round(preco * 100) / 100;
       }
       return value;
     }
