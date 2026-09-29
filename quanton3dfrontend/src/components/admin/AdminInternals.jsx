@@ -874,8 +874,10 @@ export function AdminContent({ tokenAtendente }) {
             </button>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <button type="button" onClick={carregarDados} disabled={carregando} style={{ padding: "7px 13px", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(255,255,255,0.05)", color: "white", cursor: "pointer", fontSize: "0.82rem" }}>{carregando ? "..." : "Atualizar"}</button>
+          {/* Atalho para o Google Analytics (abre em outra aba; entra com a conta Google dona do GA) */}
+          <a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener noreferrer" title="Abrir o Google Analytics em outra aba" style={{ padding: "7px 13px", borderRadius: "10px", border: "1px solid rgba(10,255,135,0.35)", background: "rgba(10,255,135,0.08)", color: "#0aff87", fontSize: "0.82rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>📊 Google Analytics</a>
           <button type="button" onClick={sair} style={{ padding: "7px 13px", borderRadius: "10px", border: "1px solid rgba(255,107,107,0.4)", background: "rgba(255,107,107,0.1)", color: "#d73c3c", cursor: "pointer", fontSize: "0.82rem" }}>Sair</button>
         </div>
       </div>
