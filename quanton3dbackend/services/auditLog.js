@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { ipDoPedido } from '../middlewares/limiteTaxa.js';
 import Atendente from '../models/Atendente.js';
 import LogAcao from '../models/LogAcao.js';
 
@@ -108,7 +109,7 @@ export function auditLog(req, res, next) {
   const quem = identificar(req);
   if (!quem && !isLogin) return next();
 
-  const ip = req.ip || ''; // IP real (trust proxy no server.js)
+  const ip = ipDoPedido(req); // IP real (middlewares/limiteTaxa.js)
   const userAgent = req.headers['user-agent'] || '';
 
   res.on('finish', async () => {
