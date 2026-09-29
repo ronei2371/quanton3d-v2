@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import api from "../../lib/api";
 import "./admin-legacy.css";
 import RelatorioSemanal from "./RelatorioSemanal";
+import CopiaSeguranca from "./CopiaSeguranca";
 
 const CAMPOS_CONFIGURACAO_GALERIA = [
   { name: "alturaCamada", label: "Altura camada", placeholder: "Ex.: 0,050 mm" },
@@ -840,6 +841,7 @@ export function AdminContent({ tokenAtendente }) {
     { id: "logs", label: "Logs", icon: "📋", count: null },
     { id: "conhecimento", label: "Adicionar conhecimento", icon: "📚", count: sugestoesIaq3d.filter(s => s.status === "aprovado").length },
     { id: "sugestoes_iaq3d", label: "Sugestões IAQ3D", icon: "💡", count: sugestoesIaq3d.filter(s => s.status === "pendente").length },
+    { id: "backup", label: "Cópia de segurança", icon: "💾", count: null },
     { id: "limpeza", label: "Limpeza", icon: "🧹", count: null },
   ];
 
@@ -3145,7 +3147,9 @@ export function AdminContent({ tokenAtendente }) {
 
       {aba === "conhecimento" && <AdicionarConhecimentoContent token={token} sugestoes={sugestoesIaq3d} onAtualizar={recarregarSugestoes} />}
 
-      {aba === "limpeza" && <LimpezaContent token={token} />}
+      {aba === "backup" && <CopiaSeguranca token={token} />}
+
+      {aba === "limpeza" && <LimpezaContent token={token} onIrBackup={() => setAba("backup")} />}
 
     </div>
   );
@@ -3324,7 +3328,7 @@ function AdicionarConhecimentoContent({ token, sugestoes, onAtualizar }) {
   );
 }
 
-function LimpezaContent({ token }) {
+function LimpezaContent({ token, onIrBackup }) {
   const COLECOES = [
     { id: "clientes",        label: "👥 Clientes",          desc: "Cadastros de entrada do site" },
     { id: "visitas",         label: "👁️ Visitas",           desc: "Registros de visitas ao site" },
@@ -3369,6 +3373,11 @@ function LimpezaContent({ token }) {
       <div style={{ background: "rgba(255,107,107,0.05)", border: "1px solid rgba(255,107,107,0.2)", borderRadius: "12px", padding: "16px 18px", marginBottom: "20px" }}>
         <p style={{ fontWeight: 900, color: "#d73c3c", fontSize: "0.9rem", margin: "0 0 6px" }}>⚠️ Limpeza de Dados</p>
         <p style={{ fontSize: "0.82rem", color: "#c49aab", margin: 0 }}>Selecione as coleções que deseja limpar. <strong style={{ color: "#d73c3c" }}>Esta ação é irreversível!</strong> Os parâmetros do Assistente, sugestões aprovadas e o administrador principal do Render nunca são afetados.</p>
+        {onIrBackup && (
+          <button type="button" onClick={onIrBackup} style={{ marginTop: "10px", padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(79,209,255,0.4)", background: "rgba(79,209,255,0.1)", color: "#0092ff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+            💾 Antes de limpar, baixe uma cópia de segurança →
+          </button>
+        )}
       </div>
 
       {resultado && (
