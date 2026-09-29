@@ -15,7 +15,7 @@ export function ruleBasedAnswer(message) {
 
   // Peça saindo menor / encolhendo
   if (/(peca|peças|peça|impressao|modelo).*(menor|pequena|encolh|contra[cç][aã]o)|(?:menor|encolh).*(peca|peças|peça|impressao|modelo)/i.test(t)) {
-    return 'A causa mais provável de a peça sair menor nas dimensões externas é **exposição normal baixa**: a borda não polimeriza até o contorno nominal e perde medida. Primeiro calibre a exposição aumentando em passos pequenos e repetindo o mesmo corpo de prova; não use escala ou compensação XY para esconder exposição descalibrada. Se a medida estiver correta antes da pós-cura e diminuir somente depois, aí investigue contração, dose UV e temperatura da pós-cura.\n\nQual exposição normal, altura de camada, resina e impressora você está usando?';
+    return 'Para achar a causa, meça também um **furo ou encaixe interno** da peça:\n\n- **Medida externa menor e furo mais folgado (maior):** a causa mais provável é **exposição normal baixa**: a borda não polimeriza até o contorno nominal. Calibre a exposição aumentando em passos pequenos e repetindo o mesmo corpo de prova; não use escala ou compensação XY para esconder exposição descalibrada.\n- **Tudo menor por igual (externo menor e furo apertado):** não é exposição. Confira **escala e unidade** entre o arquivo e o fatiador e se há **compensação XY** já ativa.\n\nSe a medida estiver correta antes da pós-cura e diminuir somente depois, aí investigue contração, dose UV e temperatura da pós-cura.\n\nComo ficou o furo? E qual exposição normal, altura de camada, resina e impressora você está usando?';
   }
 
   // Suporte difícil de remover
