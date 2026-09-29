@@ -78,3 +78,9 @@ test('cadastro nao devolve o cadastro de outra pessoa so pelo e-mail', () => {
   assert.doesNotMatch(fonte, /\$regex/);
   assert.match(fonte, /soDigitos\(existente\.telefone\) === soDigitos\(telefone\)/);
 });
+
+test('IP: usa o CF-Connecting-IP (Cloudflare) e ignora o X-Forwarded-For do visitante', async () => {
+  const { ipDoPedido } = await import('../middlewares/limiteTaxa.js');
+  assert.equal(ipDoPedido({ headers: { 'cf-connecting-ip': '200.1.1.1', 'x-forwarded-for': '9.9.9.9' }, ip: '10.0.0.1' }), '200.1.1.1');
+  assert.equal(ipDoPedido({ headers: { 'x-forwarded-for': '9.9.9.9' }, ip: '10.0.0.1' }), '10.0.0.1');
+});
