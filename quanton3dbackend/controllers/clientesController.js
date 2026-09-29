@@ -39,22 +39,24 @@ export async function criarCliente(req, res) {
     return res.status(400).json({ success: false, error: 'E-mail inválido.' });
   }
 
-  /* Upsert por email — se ja existe, retorna o cliente com o _id original */
-  /* Assim o historico de conversas nao se perde quando o cliente limpa o cache */
+  /* Cliente que ja se cadastrou (limpou o cache ou trocou de aparelho): se o e-mail E o
+     telefone baterem com o cadastro, devolve o mesmo cadastro (o historico do chat continua).
+     So o e-mail nao basta: antes, quem digitasse o e-mail de outra pessoa trocava o nome e o
+     telefone dela e passava a ver as conversas dela. A busca e pelo texto exato (sem regex). */
   const emailNormalizado = email ? String(email).trim().toLowerCase() : null;
+  const soDigitos = (t) => String(t || '').replace(/\D/g, '');
 
   if (emailNormalizado) {
     try {
-      const existente = await Cliente.findOne({ email: { $regex: `^${emailNormalizado}$`, $options: 'i' } });
-      if (existente) {
-        existente.nome = nome.trim();
-        existente.telefone = telefone;
+      const existente = await Cliente.findOne({ email: emailNormalizado });
+      if (existente && soDigitos(existente.telefone) === soDigitos(telefone)) {
+        existente.nome = String(nome).trim();
         if (origem) existente.origem = origem;
         await existente.save();
         return res.status(200).json({ success: true, data: existente });
       }
     } catch (err) {
-      console.error('[UPSERT CLIENTE]', err.message);
+      console.error('[CADASTRO CLIENTE]', err.message);
     }
   }
 
