@@ -7,6 +7,7 @@ import { gabaritoAnswer } from '../services/gabaritoQuanton.js';
 import { misturaAnswer, custoFormulaAnswer, handoffAnswer, saudacaoAnswer, validadeAnswer } from '../services/regrasSuporte.js';
 import { LIMITE_DIARIO, LIMITE_POR_IP, perguntasHoje, usoDoIp, registrarUsoIp, mensagemLimite, somarUso } from '../services/usoIA.js';
 import { detectarLacuna } from '../services/lacunas.js';
+import { lerContexto, dadosEquipamento, equipamentoParaResposta } from '../services/equipamentoCliente.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
@@ -201,6 +202,12 @@ router.post('/', async (req, res) => {
         const rag = await retrieveRagContext(text, historico);
         const { resin: resinaAtual, printer: impressoraAtual } = rag;
 
+        // Lembra a configuracao do cliente para a proxima conversa (nao trava o chat se falhar).
+        if (mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24) {
+            const setEquip = dadosEquipamento({ contexto: lerContexto(historico), resinaDetectada: resinaAtual, impressoraDetectada: impressoraAtual });
+            if (Object.keys(setEquip).length) Cliente.updateOne({ _id: clienteId }, { $set: setEquip }).catch(() => {});
+        }
+
         // Regras fixas sao fallback. Conhecimento oficial/aprovado sempre tem prioridade.
         if (!rag.used && !rag.guardInstruction) {
             const rule = ruleBasedAnswer(text);
@@ -394,8 +401,14 @@ router.get('/historico/:clienteId', async (req, res) => {
         .limit(20)
         .lean();
 
+        let cadastro = null;
+        if (isObjectId) {
+            try { cadastro = await Cliente.findById(clienteId).select('resinaAtual impressoraAtual alturaAtual').lean(); } catch (_) {}
+        }
+
         res.json({
             success: true,
+            equipamento: equipamentoParaResposta(cadastro || {}, conversas),
             conversas: conversas.map(c => ({
                 _id: c._id,
                 pergunta: c.pergunta,
