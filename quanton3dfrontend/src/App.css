@@ -531,6 +531,9 @@
 
 /* Rodapé */
 .site-footer { border-top: 1px solid var(--border-soft); padding: 30px 16px 44px; display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+/* Link do Termo de Privacidade no rodape (LGPD) */
+.site-footer-termo { background: none; border: none; padding: 4px 8px; color: var(--text-muted); font: inherit; font-size: 0.76rem; text-decoration: underline; cursor: pointer; }
+.site-footer-termo:hover, .site-footer-termo:focus-visible { color: var(--primary); }
 .footer-social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .footer-social-links a { padding: 6px 12px; border: 1px solid var(--border-soft); border-radius: var(--r-sm); color: var(--text-secondary); font-size: 0.72rem; font-weight: 600; }
 .footer-social-links a:hover { border-color: var(--border-strong); color: var(--text-primary); }

@@ -92,6 +92,7 @@ function App() {
   }, [cliente]);
   const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!clienteSalvoInicial && !privacidadeAceitaInicial);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
+  const [lerTermo, setLerTermo] = useState(false); // termo aberto pelo rodape (so leitura)
   const [mostrarCadastro, setMostrarCadastro] = useState(!clienteSalvoInicial && privacidadeAceitaInicial);
   const [formCliente, setFormCliente] = useState({ nome: "", telefone: "", email: "", origem: "Instagram" });
   const [salvandoCliente, setSalvandoCliente] = useState(false);
@@ -197,7 +198,11 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     setShowLoginAtendente(true);
   }
 
-  function aceitarPrivacidade() { localStorage.setItem("quanton3d_privacidade_aceita", "true"); setMostrarPrivacidade(false); setMostrarCadastro(!cliente); }
+  function aceitarPrivacidade() {
+    localStorage.setItem("quanton3d_privacidade_aceita", "true");
+    try { if (typeof window.gtag === "function") window.gtag("consent", "update", { analytics_storage: "granted" }); } catch { /* sem GA */ }
+    setMostrarPrivacidade(false); setMostrarCadastro(!cliente);
+  }
   function abrirCadastro() { setErroCadastro(""); if (!getPrivacidadeAceita()) { setMostrarPrivacidade(true); return; } setMostrarCadastro(true); }
   function fecharCadastro() { setMostrarCadastro(false); setErroCadastro(""); setMotivoCadastro(""); acaoAposCadastro.current = null; }
   function exigirCadastro(motivo, acao) {
@@ -316,6 +321,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
         <BoasVindasModal onEntrar={() => { setMostrarBoasVindas(false); setMostrarPrivacidade(true); }} />
       )}
       {!mostrarBoasVindas && mostrarPrivacidade && <PrivacidadeModal aceitarPrivacidade={aceitarPrivacidade} />}
+      {lerTermo && !mostrarPrivacidade && <PrivacidadeModal somenteLeitura onFechar={() => setLerTermo(false)} />}
       {mostrarCadastro && !mostrarPrivacidade && (
         <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} onFechar={fecharCadastro} onAcessoEquipe={abrirAcessoEquipe} motivo={motivoCadastro} />
       )}
@@ -373,6 +379,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
             <a key={link.label} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
           ))}
         </div>
+        <button type="button" className="site-footer-termo" onClick={() => setLerTermo(true)}>Termo de Privacidade (LGPD)</button>
       </footer>
 
       {!mostrarBot && (
