@@ -1,0 +1,32 @@
+# Homologacao semanal da IAQ3D: manda as 35 perguntas de teste para o bot no ar e confere
+# as respostas (quanton3dbackend/scripts/homologacao-iaq3d.mjs).
+# Se alguma falhar, a execucao fica vermelha e o GitHub avisa por e-mail o dono do repositorio.
+# Para rodar na hora: aba Actions > "Homologacao semanal IAQ3D" > Run workflow.
+name: Homologacao semanal IAQ3D
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'   # toda segunda, 8h de Brasilia (11h UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  homologacao:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Testar as respostas do bot no site
+        run: node quanton3dbackend/scripts/homologacao-iaq3d.mjs --json resultado-homologacao.json
+      - name: Guardar o relatorio completo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultado-homologacao
+          path: resultado-homologacao.json
+          retention-days: 30
