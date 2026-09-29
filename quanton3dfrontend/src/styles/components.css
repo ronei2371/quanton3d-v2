@@ -365,3 +365,42 @@
 .pedir-cadastro > div { flex: 1 1 220px; min-width: 0; }
 .pedir-cadastro strong { display: block; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 2px; }
 .pedir-cadastro p { margin: 0; font-size: 0.84rem; color: var(--text-secondary); }
+
+/* Diagnostico rapido (Atendimento) - arvore de perguntas sem IA */
+.diag { display: flex; flex-direction: column; gap: 14px; }
+.diag-intro { margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; max-width: 68ch; }
+.diag-sintomas { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.diag-sintoma, .diag-opcao {
+  text-align: left; padding: 14px 16px; border-radius: var(--r-md);
+  border: 1px solid var(--border-strong); background: var(--bg-raised-strong);
+  color: var(--text-primary); font: inherit; font-weight: 650; font-size: 0.93rem; line-height: 1.4;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.diag-sintoma:hover, .diag-opcao:hover, .diag-sintoma:focus-visible, .diag-opcao:focus-visible {
+  border-color: var(--primary); background: rgba(47, 123, 255, 0.1); outline: none;
+}
+.diag-voltar {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; padding: 4px 0; color: var(--primary-strong);
+  font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+}
+.diag-sintoma-atual { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+.diag-pergunta { margin: 0; font-size: 1.2rem; color: var(--text-primary); text-wrap: balance; }
+.diag-opcoes { display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
+.diag-resultado {
+  border: 1px solid var(--border-accent); border-radius: var(--r-lg);
+  background: var(--bg-raised-strong); padding: 18px clamp(14px, 3vw, 22px);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.diag-rotulo { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-strong); }
+.diag-causa { margin: 0; font-size: 1.25rem; color: var(--text-primary); text-wrap: balance; }
+.diag-passos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.diag-passos li { display: flex; gap: 8px; align-items: flex-start; color: var(--text-secondary); line-height: 1.55; }
+.diag-passos li svg { flex-shrink: 0; margin-top: 3px; color: var(--success); }
+.diag-gabarito { margin: 0; padding: 10px 12px; border-radius: var(--r-md); background: rgba(0, 194, 224, 0.08); border: 1px solid rgba(0, 194, 224, 0.25); color: var(--text-primary); font-size: 0.88rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.diag-aviso { margin: 0; display: flex; gap: 8px; align-items: flex-start; color: var(--text-primary); font-size: 0.9rem; line-height: 1.5; }
+.diag-aviso svg { flex-shrink: 0; margin-top: 2px; color: var(--warning); }
+.diag-extra { margin: 0; color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; }
+.diag-ferramentas, .diag-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.diag-nao-resolveu { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+.diag-nao-resolveu strong { color: var(--text-primary); font-size: 0.95rem; }
