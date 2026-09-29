@@ -24,7 +24,7 @@ const CASOS = [
   // --- 30 perguntas da auditoria de 25/09/2026 ---
   { id: 1, q: 'Qual parâmetro para Saturn 4 Ultra?', deve: [/resina/i], nunca: [SEGUNDOS], tema: 'pede contexto antes de número' },
   { id: 2, q: 'Uso Saturn 4 Ultra e Athom Dental, 0,05 mm. Qual perfil inicial?', deve: [/revis/i], nunca: [SEGUNDOS], tema: 'perfil em revisão não passa número' },
-  { id: 3, q: 'Minha impressora não aparece na lista. Me dá um valor aproximado.', deve: [/(whatsapp|equipe|3271)/i], nunca: [SEGUNDOS], tema: 'não chuta valor' },
+  { id: 3, q: 'Minha impressora não aparece na lista. Me dá um valor aproximado.', deve: [/(whatsapp|equipe|3271|calculadora)/i], nunca: [SEGUNDOS], tema: 'não chuta valor (indica equipe ou calculadora)' },
   { id: 4, q: 'Posso aumentar 1 segundo porque está frio?', deve: [/(aquec|temperatura)/i], nunca: [], tema: 'frio: temperatura antes de somar segundos' },
   { id: 5, q: 'A base ficou na plataforma, mas o modelo ficou no FEP.', deve: [/suporte/i], nunca: [], tema: 'separação/suporte' },
   { id: 6, q: 'Nada aderiu à plataforma.', deve: [/(nivel|base)/i], nunca: [], tema: 'aderência' },
