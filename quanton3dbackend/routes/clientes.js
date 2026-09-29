@@ -1,7 +1,7 @@
 import express from 'express';
 import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import { authAdminOuAtendente } from '../middlewares/authAtendente.js';
-import { criarCliente, listarClientes, excluirCliente, excluirClientesEmLote } from '../controllers/clientesController.js';
+import { criarCliente, emitirChaveCliente, listarClientes, excluirCliente, excluirClientesEmLote } from '../controllers/clientesController.js';
 import Cliente from '../models/Cliente.js';
 
 const router = express.Router();
@@ -10,6 +10,7 @@ const router = express.Router();
 const authAdmin = authAdminCompleto;
 
 router.post('/', criarCliente); // cadastro do cliente continua público
+router.post('/:id/chave', emitirChaveCliente); // cliente antigo pega a chave (codigo + telefone)
 router.get('/', authAdminOuAtendente, listarClientes); // protegido — aceita superadmin e atendentes
 router.delete('/lote', authAdmin, excluirClientesEmLote); // precisa vir antes de /:id
 router.delete('/:id', authAdmin, excluirCliente);

@@ -13,6 +13,7 @@ import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
 import { isFounderPhone } from '../services/founderIdentity.js';
+import { clienteComChave, chaveDoPedido, ehIdDeCadastro } from '../services/chaveCliente.js';
 import {
     containsTechnicalQuantity,
     hasApprovedQuantitativeSource,
@@ -21,14 +22,10 @@ import {
 
 const router = express.Router();
 
-// Telefone vem somente do cadastro do cliente no banco (nome ou telefone digitado nao provam identidade).
-async function telefoneDoCadastro(clienteId) {
-    if (!(mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24)) return '';
-    try {
-        const cad = await Cliente.findById(clienteId).select('telefone').lean();
-        return cad?.telefone || '';
-    } catch (_) { return ''; }
-}
+// Codigo de cadastro (24 caracteres) so vale junto com a chave secreta que fica no navegador
+// do cliente (services/chaveCliente.js). Sem ela: nao le historico, nao gasta o limite dele e
+// nao vira "fundador". O telefone vem somente do cadastro no banco (nome digitado nao prova nada).
+const AVISO_CHAVE = 'Sua sessão do chat precisa ser atualizada. Recarregue a página (F5) e mande a pergunta de novo. Se continuar, faça o cadastro rápido de novo com o mesmo e-mail e telefone: seu histórico continua.';
 
 function client() {
     const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -175,7 +172,14 @@ router.post('/', async (req, res) => {
 
         const ip = ipDoPedido(req); // IP real (middlewares/limiteTaxa.js)
 
-        const clienteTelefone = await telefoneDoCadastro(clienteId);
+        let cadastro = null;
+        if (ehIdDeCadastro(clienteId)) {
+            cadastro = await clienteComChave(clienteId, chaveDoPedido(req));
+            if (!cadastro) {
+                return res.json({ success: true, reply: AVISO_CHAVE, source: 'chave', ragUsado: false, conversaId: null, chaveInvalida: true });
+            }
+        }
+        const clienteTelefone = cadastro?.telefone || '';
         const ehFundador = isFounderPhone(clienteTelefone);
 
         // Limite diario de perguntas respondidas pela IA (respostas fixas nao contam). Fundador nao tem limite.
@@ -206,7 +210,7 @@ router.post('/', async (req, res) => {
         const { resin: resinaAtual, printer: impressoraAtual } = rag;
 
         // Lembra a configuracao do cliente para a proxima conversa (nao trava o chat se falhar).
-        if (mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24) {
+        if (cadastro) {
             const setEquip = dadosEquipamento({ contexto: lerContexto(historico), resinaDetectada: resinaAtual, impressoraDetectada: impressoraAtual });
             if (Object.keys(setEquip).length) Cliente.updateOne({ _id: clienteId }, { $set: setEquip }).catch(() => {});
         }
@@ -382,8 +386,14 @@ router.post('/', async (req, res) => {
 // Quantas perguntas o cliente ja fez hoje (o chat mostra "Perguntas hoje: X de 15").
 router.get('/limite/:clienteId', async (req, res) => {
     try {
-        const [usadas, telefone] = await Promise.all([perguntasHoje(req.params.clienteId), telefoneDoCadastro(req.params.clienteId)]);
-        const semLimite = isFounderPhone(telefone);
+        const { clienteId } = req.params;
+        let semLimite = false;
+        if (ehIdDeCadastro(clienteId)) {
+            const cad = await clienteComChave(clienteId, chaveDoPedido(req));
+            if (!cad) return res.status(401).json({ success: false, error: AVISO_CHAVE, chaveInvalida: true });
+            semLimite = isFounderPhone(cad.telefone);
+        }
+        const usadas = await perguntasHoje(clienteId);
         res.json({ success: true, limite: { usadas: Math.min(usadas, LIMITE_DIARIO), max: LIMITE_DIARIO, restantes: Math.max(0, LIMITE_DIARIO - usadas), semLimite } });
     } catch (e) {
         res.json({ success: true, limite: { usadas: 0, max: LIMITE_DIARIO, restantes: LIMITE_DIARIO } });
@@ -395,7 +405,12 @@ router.get('/historico/:clienteId', async (req, res) => {
         const { clienteId } = req.params;
 
         /* Aceita tanto ObjectId quanto string pura no campo clienteId */
-        const isObjectId = mongoose.Types.ObjectId.isValid(clienteId) && clienteId.length === 24;
+        const isObjectId = ehIdDeCadastro(clienteId);
+        let cadastro = null;
+        if (isObjectId) {
+            cadastro = await clienteComChave(clienteId, chaveDoPedido(req));
+            if (!cadastro) return res.status(401).json({ success: false, error: AVISO_CHAVE, chaveInvalida: true });
+        }
         const query = isObjectId
             ? { $or: [{ clienteId: clienteId }, { clienteId: new mongoose.Types.ObjectId(clienteId) }] }
             : { clienteId: clienteId };
@@ -404,11 +419,6 @@ router.get('/historico/:clienteId', async (req, res) => {
         .sort({ createdAt: 1 })
         .limit(20)
         .lean();
-
-        let cadastro = null;
-        if (isObjectId) {
-            try { cadastro = await Cliente.findById(clienteId).select('resinaAtual impressoraAtual alturaAtual').lean(); } catch (_) {}
-        }
 
         res.json({
             success: true,
