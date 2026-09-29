@@ -1,4 +1,5 @@
 import Cliente from '../models/Cliente.js';
+import { emitirChave, ehIdDeCadastro } from '../services/chaveCliente.js';
 
 function validarTelefone(tel) {
   const digitos = String(tel || '').replace(/\D/g, '');
@@ -53,7 +54,8 @@ export async function criarCliente(req, res) {
         existente.nome = String(nome).trim();
         if (origem) existente.origem = origem;
         await existente.save();
-        return res.status(200).json({ success: true, data: existente });
+        const chave = await emitirChave(existente._id); // chave nova para este aparelho
+        return res.status(200).json({ success: true, data: { ...existente.toObject(), chave } });
       }
     } catch (err) {
       console.error('[CADASTRO CLIENTE]', err.message);
@@ -68,7 +70,31 @@ export async function criarCliente(req, res) {
     origem,
     observacao
   });
-  res.status(201).json({ success: true, data: cliente });
+  const chave = await emitirChave(cliente._id);
+  res.status(201).json({ success: true, data: { ...cliente.toObject(), chave } });
+}
+
+/* Cliente cadastrado antes da chave existir (o navegador guarda so o codigo e o telefone):
+   o site pede uma chave mandando o codigo + o telefone do cadastro. Quem so tem o codigo
+   (ou so o telefone) nao consegue. Tem limite de tentativas por IP (server.js). */
+export async function emitirChaveCliente(req, res) {
+  const { id } = req.params;
+  const soDigitos = (t) => String(t || '').replace(/\D/g, '');
+  const telefone = soDigitos(req.body?.telefone);
+  if (!ehIdDeCadastro(id) || telefone.length < 10) {
+    return res.status(400).json({ success: false, error: 'Dados incompletos. Faça o cadastro de novo.' });
+  }
+  try {
+    const cad = await Cliente.findById(id).select('telefone').lean();
+    if (!cad || soDigitos(cad.telefone) !== telefone) {
+      return res.status(403).json({ success: false, error: 'Cadastro não confere. Faça o cadastro de novo.' });
+    }
+    const chave = await emitirChave(id);
+    return res.json({ success: true, chave });
+  } catch (err) {
+    console.error('[CHAVE CLIENTE]', err.message);
+    return res.status(500).json({ success: false, error: 'Erro ao confirmar o cadastro.' });
+  }
 }
 
 export async function listarClientes(req, res) {
