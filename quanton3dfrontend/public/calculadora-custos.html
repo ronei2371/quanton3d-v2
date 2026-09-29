@@ -658,7 +658,7 @@
             <p class="section-note">No modo lote, informe o consumo total do job inteiro. A calculadora mostra custo total e custo unitário por peça.</p>
             <div class="grid">
               <div class="field required" data-required="true"><label for="resinSelect">Produto / Resina</label><select id="resinSelect"></select></div>
-              <div class="field required" data-required="true"><label for="priceKg">Preço por quilo (R$/kg)</label><input autocomplete="off" id="priceKg" type="text" inputmode="decimal" placeholder="Ex: 175,00" /><small>Ao escolher a resina entra um preço de referência. Troque pelo valor que você pagou (preço do frasco ÷ kg do frasco).</small></div>
+              <div class="field required" data-required="true"><label for="priceKg">Preço por quilo (R$/kg)</label><input autocomplete="off" id="priceKg" type="text" inputmode="decimal" placeholder="Ex: 175,00" /><small>Ao escolher a resina entra o preço de tabela da loja por kg (sem promoção). Se pagou outro valor, troque (preço do frasco ÷ kg do frasco).</small></div>
               <div class="field required" data-required="true"><label for="resinGrams">Quantidade de resina usada no job (g)</label><input autocomplete="off" id="resinGrams" type="text" inputmode="decimal" placeholder="Ex: 1580" /><small>Consumo total do lote em gramas, com suportes e base (o fatiador mostra). Se ele só mostrar ml, multiplique pela densidade que está na ficha da resina.</small></div>
               <div class="field required" data-required="true"><label for="piecesQty">Quantidade de peças no lote</label><input autocomplete="off" id="piecesQty" type="number" min="1" step="1" /><small>Divide custo fixo e total para chegar no custo unitário real.</small></div>
               <div class="field">
@@ -904,12 +904,14 @@
   <textarea autocomplete="off" id="internalSummary" class="hidden"></textarea>
 
   <script>
+    // Preco de tabela da loja quanton3d.com.br por kg, sem promocao (conferido em 29/09/2026).
+    // ALCHEMIST so e vendida em 500 g (R$ 102,70) -> R$ 205,40 por kg.
     const RESINS = [
       { name: "— Selecione ou preencha manualmente —", price: 0 },
-      { name: "ALCHEMIST", price: 175 },
+      { name: "ALCHEMIST", price: 205.40 },
+      { name: "ATHOM ALINHADORES", price: 210 },
       { name: "ATHOM DENTAL", price: 179 },
-      { name: "ATHOM ALINHADORES", price: 249 },
-      { name: "ATHOM ALINHADORES OD", price: 210 },
+      { name: "ATHOM WASHABLE", price: 215 },
       { name: "FLEXFORM", price: 309 },
       { name: "IRON", price: 263 },
       { name: "IRON 70/30", price: 259 },
@@ -918,6 +920,7 @@
       { name: "PYROBLAST", price: 150 },
       { name: "SPARK", price: 168 },
       { name: "SPIN", price: 200 },
+      { name: "VELVET SKIN", price: 190 },
       { name: "VULCAN CAST", price: 539 }
     ];
 
