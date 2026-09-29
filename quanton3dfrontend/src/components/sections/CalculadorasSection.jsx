@@ -46,22 +46,20 @@ function CalculadorasSection({ calculadoraInicial, onNavegar }) {
   const calcAtiva = CALCULADORAS.find((c) => c.id === ativa);
 
   return (
-    <section className="q-section" id="calculadoras">
-      <div className="q-section-header">
-        <h2 className="q-section-title">Calculadoras</h2>
-        <p className="q-section-sub">Ferramentas de precisão para sua impressão 3D em resina.</p>
-      </div>
+    <section className="q-card q-panel calculators-section" id="calculadoras">
+      {/* Mesmo visual dos cartoes da pagina Guias (antes as etiquetas ficavam sem estilo, encavaladas no texto) */}
+      <span className="q-eyebrow">Ferramentas</span>
+      <h2 className="q-section-title">Calculadoras</h2>
+      <p className="q-section-desc">Ferramentas de precisão para sua impressão 3D em resina.</p>
 
       <div className="q-grid">
         {CALCULADORAS.map(({ id, icon: Icon, titulo, desc, tags }) => (
-          <button key={id} className="q-card q-card--calc" onClick={() => setAtiva(id)}>
-            <div className="q-card-icon"><Icon size={22} /></div>
-            <div className="q-card-body">
-              <h3 className="q-card-title">{titulo}</h3>
-              <p className="q-card-desc">{desc}</p>
-              <div className="q-card-tags">
-                {tags.map((t) => <span key={t} className="q-tag">{t}</span>)}
-              </div>
+          <button key={id} type="button" className="q-card q-card--interactive calculator-launcher" style={{ padding: "18px", textAlign: "left", display: "flex", flexDirection: "column", gap: "8px" }} onClick={() => setAtiva(id)}>
+            <span className="q-icon-badge"><Icon size={17} /></span>
+            <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)" }}>{titulo}</strong>
+            <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{desc}</span>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "4px" }}>
+              {tags.map((t) => <span key={t} className="q-badge" style={{ fontSize: "0.64rem" }}>{t}</span>)}
             </div>
           </button>
         ))}
