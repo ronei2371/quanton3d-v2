@@ -69,6 +69,27 @@ function App() {
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
   const [privacidadeAceitaInicial] = useState(() => getPrivacidadeAceita());
   const [cliente, setCliente] = useState(clienteSalvoInicial);
+  // Cadastro feito antes da chave secreta existir: pede a chave uma vez (codigo + telefone).
+  // Se o cadastro nao confere mais (apagado ou telefone diferente), pede o cadastro de novo.
+  useEffect(() => {
+    const id = cliente?._id || cliente?.id;
+    if (!id || cliente?.chave) return;
+    let ativo = true;
+    api.post(`/clientes/${encodeURIComponent(id)}/chave`, { telefone: cliente?.telefone || "" })
+      .then((res) => {
+        if (!ativo || !res.data?.chave) return;
+        const atualizado = { ...cliente, chave: res.data.chave };
+        setCliente(atualizado);
+        try { localStorage.setItem("quanton3d_cliente", JSON.stringify(atualizado)); } catch { /* sem armazenamento */ }
+      })
+      .catch((err) => {
+        const st = err?.response?.status;
+        if (!ativo || ![400, 403, 404].includes(st)) return;
+        try { localStorage.removeItem("quanton3d_cliente"); } catch { /* sem armazenamento */ }
+        setCliente(null);
+      });
+    return () => { ativo = false; };
+  }, [cliente]);
   const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!clienteSalvoInicial && !privacidadeAceitaInicial);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
   const [mostrarCadastro, setMostrarCadastro] = useState(!clienteSalvoInicial && privacidadeAceitaInicial);
