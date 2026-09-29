@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Send, ThumbsUp, ThumbsDown, Camera, ArrowRight, SkipForward, MessageCircle } from "lucide-react";
-import api from "../../lib/api";
+import api, { cabecalhoCliente } from "../../lib/api";
 import IAQ3DAvatar from "../IAQ3DAvatar";
 import { linkWhatsappComResumo } from "../../utils/resumoWhatsapp";
 import { trackEvent } from "../../utils/analytics";
@@ -105,21 +105,21 @@ function BotChat({ cliente }) {
   // Limite diário de perguntas respondidas pela IA (o servidor conta; aqui só mostramos).
   useEffect(() => {
     const clienteId = cliente?._id || cliente?.id;
-    if (!clienteId) return undefined;
+    if (!clienteId || !cliente?.chave) return undefined;
     let ativo = true;
-    api.get(`/chat/limite/${encodeURIComponent(clienteId)}`)
+    api.get(`/chat/limite/${encodeURIComponent(clienteId)}`, { headers: cabecalhoCliente(cliente) })
       .then((res) => { if (ativo && res.data?.limite) setLimite(res.data.limite); })
       .catch(() => {});
     return () => { ativo = false; };
-  }, [cliente?._id, cliente?.id]);
+  }, [cliente?._id, cliente?.id, cliente?.chave]);
 
   useEffect(() => {
     const clienteId = cliente?._id || cliente?.id;
-    if (!clienteId) return;
+    if (!clienteId || !cliente?.chave) return;
 
     let ativo = true;
     setCarregandoHistorico(true);
-    api.get(`/chat/historico/${encodeURIComponent(clienteId)}`)
+    api.get(`/chat/historico/${encodeURIComponent(clienteId)}`, { headers: cabecalhoCliente(cliente) })
       .then((res) => {
         if (!ativo) return;
         const conversas = Array.isArray(res.data?.conversas) ? res.data.conversas : [];
@@ -153,7 +153,7 @@ function BotChat({ cliente }) {
       .finally(() => { if (ativo) setCarregandoHistorico(false); });
 
     return () => { ativo = false; };
-  }, [cliente?._id, cliente?.id, cliente?.nome]);
+  }, [cliente?._id, cliente?.id, cliente?.nome, cliente?.chave]);
 
   useEffect(() => {
     if (!scrollRef.current) return;
@@ -196,7 +196,7 @@ function BotChat({ cliente }) {
         ...ctxMsg,
         ...novasMensagens.slice(-8).filter((m) => m.text).map((m) => ({ role: m.isBot ? "assistant" : "user", content: m.text })),
       ];
-      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "", modo });
+      const res = await api.post("/chat", { message: userMsg, historico, clienteId: cliente?._id, clienteNome: cliente?.nome || "", modo }, { headers: cabecalhoCliente(cliente) });
       const reply = res.data.data?.reply || res.data.reply || "Não consegui processar sua dúvida agora.";
       const conversaId = res.data.data?.conversaId || res.data.conversaId || null;
       const novoLimite = res.data.data?.limite || res.data.limite;
