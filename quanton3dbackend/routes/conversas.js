@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import Conversa from '../models/Conversa.js';
+import { filtroLacunas, motivoDaConversa } from '../services/lacunas.js';
 
 const router = express.Router();
 
@@ -84,6 +85,34 @@ router.get('/', authAdmin, async (req, res) => {
   }
 });
 
+// Perguntas que o bot nao soube responder (ADM > Conversas Bot > "Bot não soube")
+router.get('/lacunas', authAdmin, async (req, res) => {
+  try {
+    const limite = Math.min(300, Math.max(1, Number.parseInt(req.query.limit, 10) || 100));
+    const filtro = filtroLacunas();
+    const [conversas, total] = await Promise.all([
+      Conversa.find(filtro).sort({ createdAt: -1 }).limit(limite).select('-fotoProblema').lean(),
+      Conversa.countDocuments(filtro),
+    ]);
+    res.json({ success: true, data: conversas.map((c) => ({ ...c, lacuna: motivoDaConversa(c) })), total });
+  } catch (err) {
+    console.error('[LISTAR LACUNAS]', err);
+    res.status(500).json({ success: false, error: 'Erro ao listar perguntas sem resposta' });
+  }
+});
+
+// Tirar da lista sem virar conhecimento (pergunta fora do assunto, teste, repetida...)
+router.patch('/:id/ignorar-lacuna', authAdmin, async (req, res) => {
+  try {
+    const conversa = await Conversa.findByIdAndUpdate(req.params.id, { lacunaResolvida: true }, { new: true });
+    if (!conversa) return res.status(404).json({ success: false, error: 'Conversa não encontrada' });
+    res.json({ success: true, data: conversa });
+  } catch (err) {
+    console.error('[IGNORAR LACUNA]', err);
+    res.status(500).json({ success: false, error: 'Erro ao tirar da lista' });
+  }
+});
+
 // Salvar melhoria SEM aprovar — fica como rascunho, ainda não é usado pelo RAG
 router.patch('/:id/salvar-melhoria', authAdmin, async (req, res) => {
   try {
@@ -116,6 +145,7 @@ router.patch('/:id/aprovar', authAdmin, async (req, res) => {
         aprovado: true,
         respostaMelhorada: respostaMelhorada.trim(),
         revisadoPor: revisadoPor || 'Admin',
+        lacunaResolvida: true,
       },
       { new: true }
     );

@@ -6,6 +6,7 @@ import { transitionLayerAnswer } from '../services/transitionLayers.js';
 import { gabaritoAnswer } from '../services/gabaritoQuanton.js';
 import { misturaAnswer, custoFormulaAnswer, handoffAnswer, saudacaoAnswer, validadeAnswer } from '../services/regrasSuporte.js';
 import { LIMITE_DIARIO, LIMITE_POR_IP, perguntasHoje, usoDoIp, registrarUsoIp, mensagemLimite, somarUso } from '../services/usoIA.js';
+import { detectarLacuna } from '../services/lacunas.js';
 import Conversa from '../models/Conversa.js';
 import Cliente from '../models/Cliente.js';
 import { retrieveRagContext, RESIN_CATALOG_SHORT } from '../services/rag.js';
@@ -341,6 +342,7 @@ router.post('/', async (req, res) => {
                 impressoraDetectada: impressoraAtual || '',
                 ragUsado: rag.used,
                 fonte: rag.used ? 'rag+deepseek' : 'deepseek',
+                lacuna: detectarLacuna({ ragUsado: rag.used, guarda: Boolean(rag.guardInstruction), reescritaNumerica: numericRewrite, resposta: reply }),
                 ...somarUso(...usosIA),
             });
             conversaId = conv._id;
