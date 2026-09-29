@@ -347,6 +347,7 @@ export function AdminContent({ tokenAtendente }) {
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
         conversasTotal = Number.isFinite(cResp.data?.total) ? cResp.data.total : null;
       } catch (_) {}
+      carregarLacunas();
       const clientesCarregados = Array.isArray(m.clientes) ? m.clientes : [];
       carregarAtendentes();
       carregarLogs();
@@ -429,6 +430,24 @@ export function AdminContent({ tokenAtendente }) {
   const [salvandoConversa, setSalvandoConversa] = useState("");
   const [filtroConversas, setFiltroConversas] = useState("todas");
   const [sugerindoMelhoria, setSugerindoMelhoria] = useState("");
+  // Perguntas que o bot nao soube responder (GET /conversas/lacunas)
+  const [lacunas, setLacunas] = useState({ lista: [], total: 0 });
+
+  async function carregarLacunas() {
+    try {
+      const r = await api.get("/conversas/lacunas", { headers: { Authorization: "Bearer " + token }, params: { limit: 100 } });
+      setLacunas({ lista: Array.isArray(r.data?.data) ? r.data.data : [], total: Number(r.data?.total) || 0 });
+    } catch (_) {}
+  }
+
+  async function ignorarLacuna(id) {
+    try {
+      setSalvandoConversa(id);
+      await api.patch("/conversas/" + id + "/ignorar-lacuna", {}, { headers: { Authorization: "Bearer " + token } });
+      setLacunas((l) => ({ lista: l.lista.filter((c) => c._id !== id), total: Math.max(0, l.total - 1) }));
+    } catch (err) { alert("Erro ao tirar da lista."); }
+    finally { setSalvandoConversa(""); }
+  }
 
   const [atendentes, setAtendentes] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -1737,7 +1756,27 @@ export function AdminContent({ tokenAtendente }) {
             );
           })()}
 
-          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "14px 16px", marginBottom: "12px" }}>
+          {lacunas.total > 0 && filtroConversas !== "lacunas" && (
+            <div style={{ background: "rgba(255,209,102,0.08)", border: "1px solid rgba(255,209,102,0.4)", borderRadius: "12px", padding: "12px 16px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+              <span style={{ color: "#dc913c", fontSize: "0.88rem", fontWeight: 800 }}>
+                🕳️ <strong>{lacunas.total}</strong> pergunta{lacunas.total > 1 ? "s" : ""} que o bot não soube responder
+              </span>
+              <button type="button" onClick={() => setFiltroConversas("lacunas")}
+                style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid rgba(255,209,102,0.5)", background: "rgba(255,209,102,0.15)", color: "#dc913c", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800, fontFamily: "inherit" }}>
+                Ensinar o bot →
+              </button>
+            </div>
+          )}
+
+          {filtroConversas === "lacunas" && (
+            <div style={{ background: "rgba(255,209,102,0.06)", border: "1px solid rgba(255,209,102,0.3)", borderRadius: "14px", padding: "14px 16px", marginBottom: "12px" }}>
+              <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.6 }}>
+                🕳️ Perguntas em que a IAQ3D <strong>não achou resposta na base da Quanton3D</strong>. Escreva a resposta certa no campo e clique em <strong style={{ color: "#0aff87" }}>📚 Ensinar ao bot</strong>: na próxima vez que alguém perguntar algo parecido, o bot já responde com o seu texto. Pergunta fora do assunto, teste ou repetida: <strong>🙈 Tirar da lista</strong>.
+              </p>
+            </div>
+          )}
+
+          <div style={{ background: "rgba(79,209,255,0.06)", border: "1px solid rgba(79,209,255,0.2)", borderRadius: "14px", padding: "14px 16px", marginBottom: "12px", display: filtroConversas === "lacunas" ? "none" : "block" }}>
             <p style={{ margin: 0, color: "#b8cfe8", fontSize: "0.85rem", lineHeight: 1.6 }}>
               💡 Veja as perguntas dos clientes e as respostas do Assistente. Edite e clique em <strong style={{ color: "#0092ff" }}>Aprovar</strong> para transformar em conhecimento validado. Casos marcados <strong style={{ color: "#d73c3c" }}>👎 Não ajudou</strong> pelo cliente aparecem destacados. Use <strong style={{ color: "#9650f5" }}>🤖 Sugerir com IA</strong> para gerar uma resposta melhorada automaticamente.
             </p>
@@ -1746,6 +1785,7 @@ export function AdminContent({ tokenAtendente }) {
           <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
             {[
               { id: "todas", label: "Todas" },
+              { id: "lacunas", label: `🕳️ Bot não soube (${lacunas.total})` },
               { id: "nao_satisfatoria", label: "👎 Não ajudou" },
               { id: "nao_revisado", label: "🔔 Não revisados" },
               { id: "aprovadas", label: "✅ Aprovadas" },
@@ -1781,28 +1821,35 @@ export function AdminContent({ tokenAtendente }) {
             );
           })()}
 
-          {(!dados.conversas || dados.conversas.length === 0) && !carregando && (
+          {filtroConversas !== "lacunas" && (!dados.conversas || dados.conversas.length === 0) && !carregando && (
             <div className="gallery-empty">Nenhuma conversa registrada ainda.</div>
           )}
+          {filtroConversas === "lacunas" && lacunas.lista.length === 0 && (
+            <div className="gallery-empty">Nenhuma pergunta sem resposta. O bot está dando conta de tudo. 👏</div>
+          )}
 
-          {(dados.conversas || [])
+          {(filtroConversas === "lacunas" ? lacunas.lista : (dados.conversas || []))
             .filter(c => {
               const passaFiltro =
-                filtroConversas === "todas" ? true :
+                filtroConversas === "todas" || filtroConversas === "lacunas" ? true :
                 filtroConversas === "nao_satisfatoria" ? c.feedback === "nao_satisfatoria" :
                 filtroConversas === "nao_revisado" ? (c.feedback === "nao_satisfatoria" && !c.revisadoFeedback) :
                 filtroConversas === "aprovadas" ? c.aprovado : true;
               return passaFiltro && (filtroClienteConv ? c.clienteId === filtroClienteConv : true);
             })
             .map((c) => {
-            const textoEditado = edicaoConversa[c._id] !== undefined ? edicaoConversa[c._id] : (c.respostaMelhorada || c.resposta);
+            // Em "Bot não soube" o campo começa vazio: a resposta do bot não serve como conhecimento.
+            const textoEditado = edicaoConversa[c._id] !== undefined ? edicaoConversa[c._id] : (filtroConversas === "lacunas" ? (c.respostaMelhorada || "") : (c.respostaMelhorada || c.resposta));
             const foiEditado = textoEditado !== c.resposta;
             const naoAjudou = c.feedback === "nao_satisfatoria";
+            const modoLacuna = filtroConversas === "lacunas";
+            const MOTIVOS_LACUNA = { sem_base: "Nada na base sobre isso", sem_valor_oficial: "Pediu número sem perfil oficial", nao_soube: "Bot disse que não sabia" };
             return (
               <div key={c._id} style={{ border: naoAjudou && !c.revisadoFeedback ? "1px solid rgba(255,107,107,0.5)" : "1px solid rgba(113,159,219,0.2)", borderRadius: "14px", padding: "14px", background: naoAjudou && !c.revisadoFeedback ? "rgba(255,107,107,0.05)" : "rgba(255,255,255,0.04)", marginBottom: "10px" }}>
                 {/* Cabeçalho */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
                   <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                    {modoLacuna && c.lacuna && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(255,209,102,0.12)", border: "1px solid rgba(255,209,102,0.35)", color: "#dc913c", fontWeight: 800 }}>🕳️ {MOTIVOS_LACUNA[c.lacuna] || "Sem resposta"}</span>}
                     {naoAjudou && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(255,107,107,0.15)", border: "1px solid rgba(255,107,107,0.35)", color: "#d73c3c", fontWeight: 800 }}>👎 Não ajudou {c.revisadoFeedback ? "(revisado)" : ""}</span>}
                     {c.feedback === "satisfatoria" && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(73,230,139,0.1)", border: "1px solid rgba(73,230,139,0.25)", color: "#0aff87", fontWeight: 700 }}>👍 Ajudou</span>}
                     {c.aprovado && <span style={{ fontSize: "0.72rem", padding: "2px 10px", borderRadius: "999px", background: "rgba(73,230,139,0.15)", border: "1px solid rgba(73,230,139,0.3)", color: "#0aff87", fontWeight: 800 }}>✅ Aprovado</span>}
@@ -1846,12 +1893,13 @@ export function AdminContent({ tokenAtendente }) {
                 {/* Campo de edição / melhoria */}
                 <div style={{ marginBottom: "10px" }}>
                   <span style={{ fontSize: "0.7rem", fontWeight: 800, color: foiEditado ? "#dc913c" : "#0aff87", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "4px" }}>
-                    {foiEditado ? "✏️ Resposta melhorada (editada)" : "✏️ Editar / refinar resposta (opcional)"}
+                    {foiEditado ? "✏️ Resposta melhorada (editada)" : modoLacuna ? "✏️ Escreva aqui a resposta certa" : "✏️ Editar / refinar resposta (opcional)"}
                   </span>
                   <textarea
                     value={textoEditado}
                     onChange={e => setEdicaoConversa(prev => ({ ...prev, [c._id]: e.target.value }))}
-                    rows={3}
+                    placeholder={modoLacuna ? "Ex.: resposta completa como você daria ao cliente (a IAQ3D vai usar este texto nas próximas perguntas parecidas)" : undefined}
+                    rows={modoLacuna ? 4 : 3}
                     style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid " + (foiEditado ? "rgba(255,209,102,0.35)" : "rgba(73,230,139,0.25)"), background: "rgba(4,10,24,0.7)", color: "#ffffff", fontSize: "0.82rem", lineHeight: 1.5, resize: "vertical", fontFamily: "inherit" }}
                   />
                 </div>
@@ -1867,6 +1915,19 @@ export function AdminContent({ tokenAtendente }) {
                 )}
 
                 {/* Botões de ação */}
+                {modoLacuna ? (
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button type="button" onClick={() => aprovarConversa(c._id)} disabled={salvandoConversa === c._id || !String(textoEditado).trim()}
+                    title={String(textoEditado).trim() ? "" : "Escreva a resposta certa antes de ensinar"}
+                    style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(73,230,139,0.5)", background: "rgba(73,230,139,0.18)", color: "#0aff87", cursor: String(textoEditado).trim() ? "pointer" : "not-allowed", fontSize: "0.8rem", fontWeight: 800, opacity: String(textoEditado).trim() ? 1 : 0.45 }}>
+                    {salvandoConversa === c._id ? "Salvando..." : "📚 Ensinar ao bot"}
+                  </button>
+                  <button type="button" onClick={() => ignorarLacuna(c._id)} disabled={salvandoConversa === c._id}
+                    style={{ padding: "7px 14px", borderRadius: "8px", border: "1px solid rgba(184,156,255,0.35)", background: "rgba(184,156,255,0.08)", color: "#9650f5", cursor: "pointer", fontSize: "0.8rem", fontWeight: 800 }}>
+                    🙈 Tirar da lista
+                  </button>
+                </div>
+                ) : (
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   {naoAjudou && !c.revisadoFeedback && (
                     <button type="button" onClick={() => aprovarERevisar(c._id)} disabled={salvandoConversa === c._id}
@@ -1901,9 +1962,12 @@ export function AdminContent({ tokenAtendente }) {
                     🗑️ Excluir
                   </button>
                 </div>
+                )}
+                {!modoLacuna && (
                 <p style={{ margin: "8px 0 0", fontSize: "0.7rem", color: "#8ba3be", lineHeight: 1.5 }}>
                   💡 <strong>Salvar melhoria</strong> guarda rascunho. <strong>Aprovar e marcar revisado</strong> faz tudo de uma vez — libera para o Assistente e remove o alerta.
                 </p>
+                )}
               </div>
             );
           })}
