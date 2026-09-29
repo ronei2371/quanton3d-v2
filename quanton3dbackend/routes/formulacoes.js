@@ -1,21 +1,12 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
+import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import { criarFormulacao, listarFormulacoes } from '../controllers/formulacoesController.js';
 import Formulacao from '../models/Formulacao.js';
 
 const router = express.Router();
 
-function authAdmin(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
-  try {
-    jwt.verify(token, process.env.ADMIN_JWT_SECRET);
-    return next();
-  } catch {
-    return res.status(401).json({ success: false, error: 'Token inválido' });
-  }
-}
+// Rotas do ADM: administrador ou atendente com acesso completo (middlewares/authAdmin.js).
+const authAdmin = authAdminCompleto;
 
 router.post('/', criarFormulacao); // envio do cliente continua público
 router.get('/', authAdmin, listarFormulacoes); // protegido — evita vazar nome/telefone/email de clientes

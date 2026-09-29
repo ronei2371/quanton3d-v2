@@ -1,21 +1,12 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
+import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import Conversa from '../models/Conversa.js';
 import { filtroLacunas, motivoDaConversa } from '../services/lacunas.js';
 
 const router = express.Router();
 
-function authAdmin(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
-  try {
-    jwt.verify(token, process.env.ADMIN_JWT_SECRET);
-    return next();
-  } catch {
-    return res.status(401).json({ success: false, error: 'Token inválido' });
-  }
-}
+// Rotas do ADM: administrador ou atendente com acesso completo (middlewares/authAdmin.js).
+const authAdmin = authAdminCompleto;
 
 // Feedback do CLIENTE (rota pública, sem autenticação) — usada quando a resposta do bot não ajudou
 router.patch('/:id/feedback', async (req, res) => {

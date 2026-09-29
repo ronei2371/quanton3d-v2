@@ -1,21 +1,12 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
+import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import Visita from '../models/Visita.js';
 import EventoSite from '../models/EventoSite.js';
 
 const router = express.Router();
 
-function authAdmin(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
-  try {
-    jwt.verify(token, process.env.ADMIN_JWT_SECRET);
-    return next();
-  } catch {
-    return res.status(401).json({ success: false, error: 'Token inválido' });
-  }
-}
+// Rotas do ADM: administrador ou atendente com acesso completo (middlewares/authAdmin.js).
+const authAdmin = authAdminCompleto;
 
 // Registrar visita — rota pública, chamada uma vez por sessão pelo frontend
 router.post('/', async (req, res) => {
@@ -49,7 +40,7 @@ router.post('/evento', async (req, res) => {
     if (tipo !== 'diagnostico' || !idValido(sintoma) || !idValido(resultado)) {
       return res.status(400).json({ success: false, error: 'Evento inválido' });
     }
-    const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip || '';
+    const ip = req.ip || '';
     const hora = new Date().toISOString().slice(0, 13);
     const reg = eventosPorIp.get(ip);
     if (reg && reg.hora === hora && reg.total >= 60) return res.json({ success: true });

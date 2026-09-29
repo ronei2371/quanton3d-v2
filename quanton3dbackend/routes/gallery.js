@@ -1,6 +1,6 @@
 import express from 'express';
+import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import multer from 'multer';
-import jwt from 'jsonwebtoken';
 import {
   aprovarGalleryItem,
   criarGalleryItem,
@@ -11,17 +11,8 @@ import {
 
 const router = express.Router();
 
-function authAdmin(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
-  try {
-    jwt.verify(token, process.env.ADMIN_JWT_SECRET);
-    return next();
-  } catch {
-    return res.status(401).json({ success: false, error: 'Token inválido' });
-  }
-}
+// Rotas do ADM: administrador ou atendente com acesso completo (middlewares/authAdmin.js).
+const authAdmin = authAdminCompleto;
 
 // Salva em memória (não em disco) — converte para Base64 depois
 const upload = multer({

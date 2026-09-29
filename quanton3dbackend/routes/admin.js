@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import Cliente from '../models/Cliente.js';
 import Formulacao from '../models/Formulacao.js';
 import Parametro from '../models/Parametro.js';
@@ -206,13 +207,8 @@ const CATALOGO_PHOTOCURA = [
   { nome: "WanHao D8", fotoImpressora: "https://raw.githubusercontent.com/Photocura-hub/Photocura/main/Wanhao_WanHao_D8.png" },
 ];
 
-function auth(req, res, next) {
-  const h = req.headers.authorization || '';
-  const token = h.startsWith('Bearer ') ? h.slice(7) : null;
-  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
-  try { jwt.verify(token, process.env.ADMIN_JWT_SECRET); next(); }
-  catch { return res.status(401).json({ success: false, error: 'Token inválido' }); }
-}
+// Rotas do ADM: administrador ou atendente com acesso completo (middlewares/authAdmin.js).
+const auth = authAdminCompleto;
 
 // Só o administrador (login do ADM). Atendente não passa.
 function soAdmin(req, res, next) {
@@ -622,65 +618,6 @@ Não escreva "olá" genérico — use o nome do cliente se disponível. Não exc
   }
 });
 
-router.get('/relatorio-semanal', auth, async (_req, res) => {
-  try {
-    const agora = new Date();
-    const inicio7d = new Date(agora);
-    inicio7d.setDate(agora.getDate() - 7);
-    inicio7d.setHours(0, 0, 0, 0);
-
-    const [novosClientes, totalConversas, feedbacksNegativos, conversasAprovadas, novosTickets, conversas7d] = await Promise.all([
-      Cliente.countDocuments({ createdAt: { $gte: inicio7d } }),
-      Conversa.countDocuments({ createdAt: { $gte: inicio7d } }),
-      Conversa.countDocuments({ createdAt: { $gte: inicio7d }, feedback: 'nao_satisfatoria' }),
-      Conversa.countDocuments({ createdAt: { $gte: inicio7d }, aprovado: true }),
-      BotTicket.countDocuments({ createdAt: { $gte: inicio7d } }),
-      Conversa.find({ createdAt: { $gte: inicio7d } })
-        .select('pergunta resinaDetectada')
-        .sort({ createdAt: -1 })
-        .limit(500)
-        .lean(),
-    ]);
-
-    // Top perguntas (agrupa por texto similar - primeiras 80 chars)
-    const pergFreq = {};
-    for (const c of conversas7d) {
-      const chave = (c.pergunta || '').slice(0, 80).toLowerCase().trim();
-      if (chave) pergFreq[chave] = (pergFreq[chave] || 0) + 1;
-    }
-    const topPerguntas = Object.entries(pergFreq)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([pergunta, total]) => ({ pergunta, total }));
-
-    // Top resinas
-    const resinaFreq = {};
-    for (const c of conversas7d) {
-      if (c.resinaDetectada) {
-        resinaFreq[c.resinaDetectada] = (resinaFreq[c.resinaDetectada] || 0) + 1;
-      }
-    }
-    const topResinas = Object.entries(resinaFreq)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
-      .map(([resina, total]) => ({ resina, total }));
-
-    return res.json({
-      success: true,
-      periodo: { inicio: inicio7d.toISOString(), fim: agora.toISOString() },
-      novosClientes,
-      totalConversas,
-      feedbacksNegativos,
-      conversasAprovadas,
-      novosTickets,
-      topPerguntas,
-      topResinas,
-    });
-  } catch (err) {
-    console.error('Erro em /admin/relatorio-semanal:', err);
-    return res.status(500).json({ success: false, error: 'Erro ao gerar relatório.' });
-  }
-});
 
 // ── MIGRAÇÃO DE FOTOS DAS IMPRESSORAS ────────────────────────────────────────
 router.post('/migrar-fotos-impressoras', auth, async (_req, res) => {
@@ -1162,7 +1099,7 @@ router.post('/fix-fotos-catalogo', auth, async (_req, res) => {
 export default router;
 
 // ── LIMPEZA DE DADOS DE TESTE ─────────────────────────────────────────────────
-router.delete('/limpar-testes', auth, async (req, res) => {
+router.delete('/limpar-testes', soAdmin, async (req, res) => {
   try {
     const { colecoes } = req.body || {};
     if (!Array.isArray(colecoes) || colecoes.length === 0)

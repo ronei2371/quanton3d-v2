@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
     );
 
     // IP real (considerando proxy/Render)
-    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '';
+    const ip = req.ip || ''; // IP real (trust proxy no server.js)
     const ua = req.headers['user-agent'] || '';
     const dispositivo = resumirDispositivo(ua);
 

@@ -1,22 +1,13 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
+import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import { authAdminOuAtendente } from '../middlewares/authAtendente.js';
 import { criarCliente, listarClientes, excluirCliente, excluirClientesEmLote } from '../controllers/clientesController.js';
 import Cliente from '../models/Cliente.js';
 
 const router = express.Router();
 
-function authAdmin(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ success: false, error: 'Token ausente' });
-  try {
-    jwt.verify(token, process.env.ADMIN_JWT_SECRET);
-    return next();
-  } catch {
-    return res.status(401).json({ success: false, error: 'Token inválido' });
-  }
-}
+// Rotas do ADM: administrador ou atendente com acesso completo (middlewares/authAdmin.js).
+const authAdmin = authAdminCompleto;
 
 router.post('/', criarCliente); // cadastro do cliente continua público
 router.get('/', authAdminOuAtendente, listarClientes); // protegido — aceita superadmin e atendentes
@@ -24,7 +15,7 @@ router.delete('/lote', authAdmin, excluirClientesEmLote); // precisa vir antes d
 router.delete('/:id', authAdmin, excluirCliente);
 
 // ── ATUALIZAR PERFIL DO CLIENTE (CPF/CNPJ, nome empresa) ─────────────────────
-router.patch('/:id/perfil', async (req, res) => {
+router.patch('/:id/perfil', authAdmin, async (req, res) => { // so o ADM (antes qualquer um alterava e via o cadastro)
   try {
     const { cpfCnpj, tipoPessoa, nomeEmpresa } = req.body || {};
     const update = {
