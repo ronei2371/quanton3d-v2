@@ -260,7 +260,7 @@ export default function ComparadorResinas({ onClose }) {
                         src={r.img} alt={r.nome} loading="lazy"
                         style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "6px" }}
                       />
-                      <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text)", textAlign: "center" }}>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-primary)", textAlign: "center", textTransform: "uppercase" }}>
                         {r.nome}
                       </span>
                       <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{r.cat}</span>
@@ -300,7 +300,7 @@ export default function ComparadorResinas({ onClose }) {
                             src={r.img} alt={r.nome}
                             style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "8px" }}
                           />
-                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text)" }}>{r.nome}</span>
+                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-primary)", textTransform: "uppercase" }}>{r.nome}</span>
                           <span style={{
                             fontSize: "0.72rem", color: "var(--primary)",
                             background: "var(--primary-dim)", padding: "2px 8px",
@@ -384,7 +384,7 @@ function TrComp({ label, cols, render }) {
         <td key={r.nome} style={{
           padding: "12px 14px",
           textAlign: "center",
-          color: "var(--text)",
+          color: "var(--text-secondary)",
           verticalAlign: "middle",
         }}>
           {render(r)}

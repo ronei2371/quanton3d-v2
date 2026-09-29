@@ -320,7 +320,7 @@ function BotChat({ cliente }) {
       <button type="button" className="q-btn q-btn--primary q-btn--block" style={{ marginTop: "20px" }} onClick={iniciarChat}>
         Iniciar atendimento com a IAQ3D <ArrowRight size={15} />
       </button>
-      <button type="button" className="q-btn q-btn--ghost q-btn--block" style={{ marginTop: "8px" }} onClick={iniciarChat}>
+      <button type="button" className="q-btn q-btn--ghost q-btn--block" style={{ marginTop: "8px", whiteSpace: "normal", lineHeight: 1.3, height: "auto", minHeight: "40px" }} onClick={iniciarChat}>
         <SkipForward size={14} /> Pular e começar sem informar configuração
       </button>
     </div>
