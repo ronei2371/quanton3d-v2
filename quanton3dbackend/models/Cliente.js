@@ -15,6 +15,8 @@ const Schema = new mongoose.Schema({
   impressoraAtual: { type:String, trim:true, default:'' },
   alturaAtual:     { type:String, trim:true, default:'' },
   equipamentoEm:   { type:Date },
+  // Hash das chaves secretas do cliente (services/chaveCliente.js). Nunca sai nas listas.
+  chavesHash:      { type:[String], default:undefined, select:false },
 }, { timestamps:true });
 Schema.index({ createdAt: -1 });
 Schema.index({ cpfCnpj: 1 });
