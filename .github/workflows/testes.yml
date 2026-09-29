@@ -1,0 +1,54 @@
+# Testes automaticos a cada envio para o GitHub (commit na main ou pull request).
+# Roda os testes do backend (seguranca, regras do bot, calculos, RAG) e confere se o site compila.
+# Se ficar vermelho, o GitHub avisa por e-mail: veja o erro na aba Actions antes do proximo deploy.
+# Nao usa senha nem chave: nada aqui acessa o banco nem a IA.
+name: Testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: quanton3dbackend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: quanton3dbackend/package-lock.json
+      # npm install (e nao npm ci): o package-lock do backend esta desatualizado (falta o Sentry).
+      - run: npm install --no-audit --no-fund
+      - name: Testes do backend
+        run: npm test
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: quanton3dfrontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: quanton3dfrontend/package-lock.json
+      - run: npm ci
+      - name: Site compila
+        run: npm run build
