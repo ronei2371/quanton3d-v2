@@ -23,6 +23,7 @@ import atendentesRoutes from "./routes/atendentes.js";
 import sugestoesConhecimentoRoutes from "./routes/sugestoesConhecimento.js";
 import feedbackParametrosRoutes from "./routes/feedbackParametros.js";
 import { auditLog } from "./services/auditLog.js";
+import { limiteLogin, limiteFormulario, limiteUpload } from "./middlewares/limiteTaxa.js";
 
 dotenv.config();
 
@@ -32,6 +33,8 @@ tracesSampleRate: 1.0,
 });
 
 const app = express();
+// O Render fica na frente do app (1 proxy): assim req.ip e o IP real do visitante.
+app.set("trust proxy", 1);
 const PORT = Number(process.env.PORT || 10000);
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
@@ -56,11 +59,24 @@ credentials: true,
 })
 );
 
-app.use(express.json({ limit: "25mb" }));
-app.use(express.urlencoded({ extended: true, limit: "25mb" }));
+// 10 MB cobre a maior foto do site (feedback do chat, limite de ~7 MB em texto).
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Historico de acoes do ADM (admin e atendentes)
 app.use(auditLog);
+
+// Limite de tentativas por IP (middlewares/limiteTaxa.js): login da equipe e formularios publicos.
+app.post("/api/admin/login", limiteLogin);
+app.post("/api/atendentes/login", limiteLogin);
+app.post("/api/clientes", limiteFormulario);
+app.post("/api/contact-messages", limiteFormulario);
+app.post("/api/formulacoes", limiteFormulario);
+app.post("/api/feedback-parametros", limiteFormulario);
+app.post("/api/bot-tickets", limiteUpload);
+app.post("/api/gallery", limiteUpload);
+app.post("/api/partner-requests", limiteUpload);
+app.patch("/api/conversas/:id/feedback", limiteUpload);
 
 // O endereco quanton3d-v2.onrender.com e o endereco oficial do site: o Google pode indexar.
 app.use("/uploads", express.static("uploads"));
