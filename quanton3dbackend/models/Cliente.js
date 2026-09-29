@@ -10,6 +10,11 @@ const Schema = new mongoose.Schema({
   nomeEmpresa:    { type:String, trim:true, default:'' },
   codigoAtendente: { type:String, trim:true, default:'' },
   nomeAtendente:   { type:String, trim:true, default:'' },
+  // Ultima configuracao usada no chat (services/equipamentoCliente.js)
+  resinaAtual:     { type:String, trim:true, default:'' },
+  impressoraAtual: { type:String, trim:true, default:'' },
+  alturaAtual:     { type:String, trim:true, default:'' },
+  equipamentoEm:   { type:Date },
 }, { timestamps:true });
 Schema.index({ createdAt: -1 });
 Schema.index({ cpfCnpj: 1 });
