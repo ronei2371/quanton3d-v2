@@ -20,14 +20,15 @@ function Guia() {
   return (
     <div style={{ marginBottom: "20px" }}>
       <div className="q-alert q-alert--info">
-        <p style={{ margin: "0 0 10px", fontWeight: 700, fontSize: "0.82rem" }}>O que é tolerância em impressão 3D?</p>
+        <p style={{ margin: "0 0 10px", fontWeight: 700, fontSize: "0.82rem" }}>Para que serve esta calculadora?</p>
         <p style={{ margin: "0 0 10px", lineHeight: 1.7 }}>
-          Quando você imprime uma peça em resina, ela raramente sai com o tamanho exato do arquivo STL.
-          A luz UV espalha levemente para os lados durante a cura — isso faz as peças saírem <strong style={{ color: "var(--q-laranja)" }}>um pouco maiores</strong> do que o projetado.
+          Mesmo com a exposição certa, a luz UV espalha um pouco nas bordas: a parede externa tende a sair{" "}
+          <strong style={{ color: "var(--q-laranja)" }}>um pouco maior</strong> e o furo{" "}
+          <strong style={{ color: "var(--q-laranja)" }}>um pouco menor</strong> que o arquivo.
         </p>
         <p style={{ margin: 0, lineHeight: 1.7 }}>
-          A <strong style={{ color: "var(--primary)" }}>compensação X/Y</strong> (ou tolerância) é o ajuste que você faz no fatiador para corrigir esse erro antes de imprimir.
-          Esta calculadora descobre o valor exato que você precisa colocar.
+          A <strong style={{ color: "var(--primary)" }}>compensação de tolerância</strong> do fatiador corrige essa sobra fina.{" "}
+          <strong>Antes, calibre a exposição normal com o gabarito Quanton3D</strong> (teste do pino): compensação serve para o ajuste fino que sobra, não para esconder exposição errada.
         </p>
       </div>
 
@@ -39,111 +40,72 @@ function Guia() {
       {expandido && (
         <div style={{ marginTop: "12px", display: "grid", gap: "12px" }}>
           <div className="calc-guide-card">
-            <p className="calc-guide-card-title"><Printer size={15} /> Passo 1 — Imprima um cubo de calibração</p>
-            <p className="calc-step-text">Antes de compensar qualquer peça, você precisa de uma referência. Faça assim:</p>
+            <p className="calc-guide-card-title"><Printer size={15} /> Passo 1 — Imprima uma peça de teste com furo</p>
             <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.82rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>
-              <li>Imprima um cubo simples de <strong style={{ color: "var(--text-primary)" }}>20 × 20 × 20 mm</strong> (ou baixe o Gabarito Quanton3D nos guias do site)</li>
-              <li>Use os parâmetros normais da sua resina e impressora</li>
-              <li>Deixe curar completamente antes de medir</li>
+              <li>Use um bloco simples, por exemplo <strong style={{ color: "var(--text-primary)" }}>20 × 20 mm com um furo de 6 mm</strong> no meio</li>
+              <li>Use o perfil da sua resina já calibrado no gabarito Quanton3D</li>
+              <li>Lave, seque e faça a pós-cura completa antes de medir (a medida muda um pouco na cura)</li>
             </ul>
           </div>
 
           <div className="calc-guide-card">
             <p className="calc-guide-card-title"><Ruler size={15} /> Passo 2 — Meça com paquímetro</p>
-            <p className="calc-step-text">Com o cubo impresso e curado, use um paquímetro digital para medir:</p>
             <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.82rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>
-              <li><strong style={{ color: "var(--primary)" }}>Medida teórica</strong> = o valor no arquivo STL (ex: 20,000 mm)</li>
-              <li><strong style={{ color: "var(--q-laranja)" }}>Medida real</strong> = o que o paquímetro mostra na peça impressa (ex: 20,140 mm)</li>
-              <li>Meça em <strong>X e Y</strong> (largura e profundidade) — não precisa medir Z (altura)</li>
-              <li>Se X e Y derem valores diferentes, use a média dos dois</li>
+              <li><strong style={{ color: "var(--primary)" }}>Medida do arquivo</strong> = a do projeto (ex.: parede 20,000 mm; furo 6,000 mm)</li>
+              <li><strong style={{ color: "var(--q-laranja)" }}>Medida real</strong> = o que o paquímetro mostra na peça (ex.: 20,140 mm; furo 5,800 mm)</li>
+              <li>Meça <strong>no meio da altura</strong> da peça, longe da base (a base tem o "pé de elefante", que tem calculadora própria)</li>
+              <li>Meça 3 vezes em pontos diferentes e use a média</li>
             </ul>
-            <div className="calc-tip" style={{ marginTop: "10px" }}>
-              <span><strong>Dica:</strong> Meça 3 vezes e use a média para maior precisão. Varie os pontos de medição.</span>
-            </div>
           </div>
 
           <div className="calc-guide-card">
-            <p className="calc-guide-card-title"><Cog size={15} /> Passo 3 — Entenda Externo vs Interno</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "8px" }}>
+            <p className="calc-guide-card-title"><Cog size={15} /> Passo 3 — Externo ou interno?</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px", marginTop: "8px" }}>
               <div className="calc-highlight-box" style={{ marginBottom: 0 }}>
-                <p style={{ margin: "0 0 8px", fontWeight: 700, color: "var(--primary)", fontSize: "0.82rem" }}>EXTERNO (campo a)</p>
+                <p style={{ margin: "0 0 8px", fontWeight: 700, color: "var(--primary)", fontSize: "0.82rem" }}>EXTERNO — campo b no Chitubox</p>
                 <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.82rem", lineHeight: 1.6 }}>
-                  Usado para <strong>paredes externas</strong> da peça:<br />
-                  • Cubos e blocos<br />
-                  • Pinos macho<br />
-                  • Dentes e protuberâncias<br />
-                  • Qualquer dimensão de fora para dentro
-                </p>
-                <p style={{ margin: "8px 0 0", color: "var(--primary)", fontSize: "0.78rem", fontStyle: "italic" }}>
-                  → A peça saiu maior? O campo a encolhe o arquivo.
+                  Medidas por fora: largura de blocos, pinos macho, dentes, abas.
                 </p>
               </div>
               <div className="calc-highlight-box" style={{ marginBottom: 0, background: "rgba(150,80,245,0.06)", borderColor: "rgba(150,80,245,0.22)" }}>
-                <p style={{ margin: "0 0 8px", fontWeight: 700, color: "var(--q-ametista)", fontSize: "0.82rem" }}>INTERNO (campo b)</p>
+                <p style={{ margin: "0 0 8px", fontWeight: 700, color: "var(--q-ametista)", fontSize: "0.82rem" }}>INTERNO — campo a no Chitubox</p>
                 <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.82rem", lineHeight: 1.6 }}>
-                  Usado para <strong>dimensões internas</strong>:<br />
-                  • Furos e buracos<br />
-                  • Encaixes fêmea<br />
-                  • Canais e ranhuras<br />
-                  • Qualquer dimensão de dentro para fora
-                </p>
-                <p style={{ margin: "8px 0 0", color: "var(--q-ametista)", fontSize: "0.78rem", fontStyle: "italic" }}>
-                  → O furo fechou? O campo b reabre os furos.
+                  Medidas por dentro: furos, encaixes fêmea, canais e ranhuras.
                 </p>
               </div>
             </div>
           </div>
 
           <div className="calc-guide-card">
-            <p className="calc-guide-card-title"><Calculator size={15} /> Passo 4 — Como o cálculo funciona</p>
-            <p className="calc-step-text">A fórmula é simples: o erro acontece nos <strong>dois lados</strong> da parede, então dividimos por 2:</p>
+            <p className="calc-guide-card-title"><Calculator size={15} /> Passo 4 — Como a conta é feita</p>
+            <p className="calc-step-text">O fatiador aplica o valor em <strong>cada lado</strong> da parede, por isso a diferença é dividida por 2:</p>
             <div style={{ background: "var(--bg-void)", borderRadius: "var(--r-sm)", padding: "14px", fontFamily: "monospace", fontSize: "0.82rem", color: "var(--primary)", lineHeight: 2, marginTop: "8px" }}>
-              <div>Externo: compensação = −(real − teórica) ÷ 2</div>
-              <div>Interno: compensação = (teórica − real) ÷ 2</div>
+              <div>Externo (b) = (arquivo − real) ÷ 2</div>
+              <div>Interno (a) = (real − arquivo) ÷ 2</div>
             </div>
             <div className="calc-tip" style={{ marginTop: "10px", background: "rgba(220,145,60,0.07)", borderColor: "rgba(220,145,60,0.22)" }}>
               <div>
-                <strong style={{ color: "var(--q-laranja)" }}>Exemplo prático:</strong><br />
-                Arquivo: 20,000 mm → Peça impressa: 20,140 mm<br />
-                Erro = 20,140 − 20,000 = <strong style={{ color: "var(--text-primary)" }}>0,140 mm</strong> maior<br />
-                Compensação externa = −(0,140 ÷ 2) = <strong style={{ color: "var(--text-primary)" }}>−0,070 mm</strong><br />
-                <em>Digite −0,070 no campo "a" do fatiador</em>
+                <strong style={{ color: "var(--q-laranja)" }}>Exemplos:</strong><br />
+                Parede: arquivo 20,000 → real 20,140 (saiu maior) → b = −0,070 mm (diminui por fora)<br />
+                Furo: arquivo 6,000 → real 5,800 (saiu apertado) → a = −0,100 mm (abre o furo)
               </div>
             </div>
           </div>
 
           <div className="calc-guide-card">
             <p className="calc-guide-card-title"><MonitorCog size={15} /> Passo 5 — Onde colocar no fatiador</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "8px" }}>
-              <div style={{ background: "var(--bg-void)", borderRadius: "var(--r-sm)", padding: "12px" }}>
-                <p style={{ margin: "0 0 6px", fontWeight: 700, color: "var(--text-primary)", fontSize: "0.82rem" }}>CHITUBOX</p>
-                <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.82rem", lineHeight: 1.6 }}>
-                  Configurações → Impressora →<br />
-                  <strong>X/Y Compensation</strong><br />
-                  Campo a = Externo<br />
-                  Campo b = Interno
-                </p>
-              </div>
-              <div style={{ background: "var(--bg-void)", borderRadius: "var(--r-sm)", padding: "12px" }}>
-                <p style={{ margin: "0 0 6px", fontWeight: 700, color: "var(--text-primary)", fontSize: "0.82rem" }}>LYCHEE SLICER</p>
-                <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.82rem", lineHeight: 1.6 }}>
-                  Propriedades → Printer Settings →<br />
-                  <strong>XY Tolerance</strong><br />
-                  Inner / Outer<br />
-                  (mesmo conceito)
-                </p>
-              </div>
-            </div>
+            <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.82rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>
+              <li><strong style={{ color: "var(--text-primary)" }}>CHITUBOX:</strong> configurações de impressão → aba <strong>Avançado</strong> → ative <strong>Compensação de tolerância</strong> (Tolerance Compensation). <strong>a</strong> = diâmetro interno (furo): valor maior fecha o furo, menor abre. <strong>b</strong> = diâmetro externo: valor maior aumenta a peça, menor diminui.</li>
+              <li><strong style={{ color: "var(--text-primary)" }}>Outros fatiadores (Lychee e outros):</strong> o nome muda (ex.: compensação XY). Use o mesmo valor por lado e confira o sentido imprimindo a peça de teste de novo.</li>
+            </ul>
           </div>
 
           <div className="q-alert q-alert--warning" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
             <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: "2px" }} />
             <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.82rem", lineHeight: 1.9 }}>
-              <li>A compensação <strong>varia por resina</strong> — cada resina tem uma sensibilidade diferente ao UV</li>
-              <li>A compensação <strong>varia por impressora</strong> — potência do LED e qualidade do FEP influenciam</li>
-              <li>Sempre recalibre quando <strong>trocar de resina ou de FEP</strong></li>
-              <li>A pós-cura UV pode <strong>encolher levemente</strong> a peça — meça sempre após a pós-cura completa</li>
-              <li>Valores típicos ficam entre <strong>−0,050 e −0,150 mm</strong> para o campo externo</li>
+              <li>O valor muda com a <strong>resina</strong>, a <strong>impressora</strong> e a <strong>exposição</strong>: refaça quando trocar qualquer um deles (e ao trocar a tela LCD)</li>
+              <li>Se a peça saiu <strong>menor por fora E com o furo também menor</strong>, não é tolerância: veja escala/unidade no fatiador ou a Calculadora de Encolhimento</li>
+              <li>Diferença grande (mais de 0,5 mm) quase nunca é tolerância: confira exposição, escala e unidade primeiro</li>
             </ul>
           </div>
         </div>
@@ -164,11 +126,11 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
       <p style={{ margin: "0 0 16px", color: "var(--text-secondary)", fontSize: "0.82rem", lineHeight: 1.5 }}>{description}</p>
 
       <label htmlFor={teoricaId} className="calc-field" style={{ marginBottom: "12px" }}>
-        <span className="calc-label">Medida no arquivo STL (teórica)</span>
+        <span className="calc-label">Medida no arquivo (projeto)</span>
         <input
           id={teoricaId} type="text" inputMode="decimal" autoComplete="off" className="calc-input"
           value={valores.teorica} onChange={(e) => onChange(tipo, "teorica", e.target.value)}
-          placeholder="Ex.: 20,000"
+          placeholder={tipo === "externo" ? "Ex.: 20,000" : "Ex.: 6,000"}
         />
       </label>
 
@@ -177,7 +139,7 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
         <input
           id={realId} type="text" inputMode="decimal" autoComplete="off" className="calc-input"
           value={valores.real} onChange={(e) => onChange(tipo, "real", e.target.value)}
-          placeholder="Ex.: 20,140"
+          placeholder={tipo === "externo" ? "Ex.: 20,140" : "Ex.: 5,800"}
         />
       </label>
 
@@ -198,46 +160,53 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
           ? valores.erro
           : valores.resultado === null
             ? "O resultado aparecerá aqui após calcular"
-            : `Digite ${formatarMm(valores.resultado)} no campo ${tipo === "externo" ? '"a"' : '"b"'} do fatiador`}
+            : `Digite ${formatarMm(valores.resultado)} no campo ${tipo === "externo" ? '"b" (externo)' : '"a" (interno)'} do Chitubox`}
+        {valores.aviso && <span style={{ display: "block", marginTop: "8px", fontSize: "0.8rem", fontWeight: 600 }}>{valores.aviso}</span>}
       </div>
     </div>
   );
 }
 
 export default function CalculadoraTolerancia() {
-  const [externo, setExterno] = useState({ teorica: "", real: "", resultado: null, erro: "" });
-  const [interno, setInterno] = useState({ teorica: "", real: "", resultado: null, erro: "" });
+  const [externo, setExterno] = useState({ teorica: "", real: "", resultado: null, erro: "", aviso: "" });
+  const [interno, setInterno] = useState({ teorica: "", real: "", resultado: null, erro: "", aviso: "" });
 
   function alterar(tipo, campo, valor) {
     const setter = tipo === "externo" ? setExterno : setInterno;
     setter((atual) => ({ ...atual, [campo]: valor, erro: "" }));
   }
 
+  // Valida as duas medidas e devolve o aviso quando a diferenca e grande demais para ser tolerancia.
+  function lerMedidas(v) {
+    const vT = normalizarMedida(v.teorica);
+    const vR = normalizarMedida(v.real);
+    if (!(vT > 0) || !(vR > 0)) return { erro: "Informe as duas medidas em mm, maiores que zero (ex.: 20,140)." };
+    const dif = Math.abs(vR - vT);
+    const aviso = dif > 0.5 || dif / vT > 0.05
+      ? "Diferença grande para tolerância: confira exposição (gabarito), escala e unidade do fatiador antes de usar este valor."
+      : "";
+    return { vT, vR, aviso };
+  }
+
   function calcularExterno() {
-    const vT = normalizarMedida(externo.teorica);
-    const vR = normalizarMedida(externo.real);
-    if (isNaN(vT) || isNaN(vR)) {
-      setExterno(a => ({ ...a, resultado: null, erro: "Informe medidas válidas e positivas nos dois campos." }));
-      return;
-    }
-    const resultado = Number((-(vR - vT) / 2).toFixed(6));
-    setExterno(a => ({ ...a, resultado, erro: "" }));
+    const m = lerMedidas(externo);
+    if (m.erro) { setExterno(a => ({ ...a, resultado: null, erro: m.erro, aviso: "" })); return; }
+    // Chitubox campo b (diametro externo): valor menor diminui a peca. Peca maior -> b negativo.
+    const resultado = Number(((m.vT - m.vR) / 2).toFixed(6));
+    setExterno(a => ({ ...a, resultado, erro: "", aviso: m.aviso }));
   }
 
   function calcularInterno() {
-    const vT = normalizarMedida(interno.teorica);
-    const vR = normalizarMedida(interno.real);
-    if (isNaN(vT) || isNaN(vR)) {
-      setInterno(a => ({ ...a, resultado: null, erro: "Informe medidas válidas e positivas nos dois campos." }));
-      return;
-    }
-    const resultado = Number(((vT - vR) / 2).toFixed(6));
-    setInterno(a => ({ ...a, resultado, erro: "" }));
+    const m = lerMedidas(interno);
+    if (m.erro) { setInterno(a => ({ ...a, resultado: null, erro: m.erro, aviso: "" })); return; }
+    // Chitubox campo a (diametro interno): valor maior fecha o furo, menor abre. Furo apertado -> a negativo.
+    const resultado = Number(((m.vR - m.vT) / 2).toFixed(6));
+    setInterno(a => ({ ...a, resultado, erro: "", aviso: m.aviso }));
   }
 
   function limpar() {
-    setExterno({ teorica: "", real: "", resultado: null, erro: "" });
-    setInterno({ teorica: "", real: "", resultado: null, erro: "" });
+    setExterno({ teorica: "", real: "", resultado: null, erro: "", aviso: "" });
+    setInterno({ teorica: "", real: "", resultado: null, erro: "", aviso: "" });
   }
 
   return (
@@ -245,21 +214,21 @@ export default function CalculadoraTolerancia() {
       <div className="calc-header">
         <span className="calc-badge"><ScanLine size={12} /> Encaixe e calibração</span>
         <h2 className="calc-title">Calculadora de Tolerância X/Y</h2>
-        <p className="calc-subtitle">Descubra o valor exato de compensação para o seu fatiador e imprima peças que encaixam de primeira, sem tentativa e erro.</p>
+        <p className="calc-subtitle">Meça a peça de teste, informe a medida do arquivo e a real, e veja o valor de compensação para colocar no fatiador.</p>
       </div>
 
       <Guia />
 
       <div className="calc-grid-2" style={{ marginTop: "6px" }}>
         <ToleranceCard
-          title="Compensação externa — campo a"
-          description="Para paredes externas, pinos macho, cubos e qualquer dimensão de fora para dentro."
+          title="Compensação externa — campo b"
+          description="Medidas por fora: largura de blocos, pinos macho, dentes e abas."
           valores={externo} tipo="externo" onChange={alterar}
           onCalculate={calcularExterno} buttonLabel="Calcular Compensação Externa"
         />
         <ToleranceCard
-          title="Compensação interna — campo b"
-          description="Para furos, encaixes fêmea, canais e qualquer dimensão de dentro para fora."
+          title="Compensação interna — campo a"
+          description="Medidas por dentro: furos, encaixes fêmea, canais e ranhuras."
           valores={interno} tipo="interno" onChange={alterar}
           onCalculate={calcularInterno} buttonLabel="Calcular Compensação Interna"
         />

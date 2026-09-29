@@ -52,6 +52,9 @@ export default function CalculadoraCompensacao() {
   const [resultado, setResultado] = useState(null);
   const [erro, setErro] = useState("");
   const [fatiadorGuia, setFatiadorGuia] = useState("chitubox");
+  // Lychee pede o tempo da camada normal e o da camada de base separados.
+  const [camadasBaseL, setCamadasBaseL] = useState("");
+  const [expBaseL, setExpBaseL] = useState("");
 
   function calcular() {
     setErro(""); setResultado(null);
@@ -71,7 +74,19 @@ export default function CalculadoraCompensacao() {
     const fator = realSeg / prevSeg;
     const tempoMedioPorCamada = realSeg / cam;
 
-    setResultado({ compensacao, diferenca, fator, prevSeg, realSeg, cam, tempoMedioPorCamada });
+    // Lychee: camada de base ~ exposicao de base + 10 s (orientacao da propria Lychee);
+    // o resto do tempo real dividido pelas camadas normais da o "Time per layer".
+    const nBase = Math.max(0, parseInt(camadasBaseL) || 0);
+    const eb = parseFloat(expBaseL) || 0;
+    let tempoCamadaBaseLychee = null;
+    let tempoCamadaNormalLychee = tempoMedioPorCamada;
+    if (nBase > 0 && eb > 0 && nBase < cam) {
+      tempoCamadaBaseLychee = eb + 10;
+      const restante = realSeg - nBase * tempoCamadaBaseLychee;
+      if (restante > 0) tempoCamadaNormalLychee = restante / (cam - nBase);
+    }
+
+    setResultado({ compensacao, diferenca, fator, prevSeg, realSeg, cam, tempoMedioPorCamada, tempoCamadaNormalLychee, tempoCamadaBaseLychee });
   }
 
   function limpar() {
@@ -79,6 +94,8 @@ export default function CalculadoraCompensacao() {
     setTempoReal(["", "", ""]);
     setCamadas("");
     setAlturaTotalMm("");
+    setCamadasBaseL("");
+    setExpBaseL("");
     setResultado(null);
     setErro("");
   }
@@ -113,8 +130,8 @@ export default function CalculadoraCompensacao() {
         </div>
         <p className="calc-hint" style={{ marginTop: "8px" }}>
           {fatiadorGuia === "chitubox"
-            ? "Os campos abaixo seguem exatamente o modal \"Configuração de compensação\" do Chitubox."
-            : "Preencha os mesmos dados abaixo — no final, você verá o valor certo para colar no Lychee (Print Time Override)."}
+            ? "O CHITUBOX usa a mesma conta: (tempo real − tempo previsto) ÷ número de camadas."
+            : "No final você verá os valores para o Lychee (Print Time Override). Informe também as camadas de base, mais abaixo."}
         </p>
       </div>
 
@@ -163,11 +180,25 @@ export default function CalculadoraCompensacao() {
         )}
       </div>
 
+      {fatiadorGuia === "lychee" && (
+        <div className="calc-grid-2" style={{ marginTop: "12px" }}>
+          <div className="calc-field">
+            <label className="calc-label">Camadas de base (opcional)</label>
+            <input type="number" min="0" step="1" className="calc-input" value={camadasBaseL} onChange={e => setCamadasBaseL(e.target.value)} placeholder="Ex: 6" />
+          </div>
+          <div className="calc-field">
+            <label className="calc-label">Exposição de base em segundos (opcional)</label>
+            <input type="number" min="0" step="0.1" className="calc-input" value={expBaseL} onChange={e => setExpBaseL(e.target.value)} placeholder="Ex: 35" />
+          </div>
+          <span className="calc-hint" style={{ gridColumn: "1 / -1" }}>Com esses dois, a conta separa o tempo das camadas de base e o valor da camada normal fica mais certo.</span>
+        </div>
+      )}
+
       {erro && <div className="q-alert q-alert--error" style={{ marginTop: "12px" }}>{erro}</div>}
 
       <div style={{ display: "flex", gap: "10px", marginTop: "18px" }}>
-        <button type="button" className="q-btn q-btn--primary" style={{ flex: 1 }} onClick={calcular}>Aplicar</button>
-        <button type="button" className="q-btn q-btn--ghost" onClick={limpar}>Cancelar</button>
+        <button type="button" className="q-btn q-btn--primary" style={{ flex: 1 }} onClick={calcular}>Calcular</button>
+        <button type="button" className="q-btn q-btn--ghost" onClick={limpar}>Limpar</button>
       </div>
 
       {resultado && (
@@ -196,15 +227,14 @@ export default function CalculadoraCompensacao() {
               <p className="calc-guide-card-title" style={{ color: "var(--q-ametista)" }}>
                 <MapPin size={15} /> Onde colocar o valor <strong style={{ color: "var(--primary)" }}>{resultado.compensacao >= 0 ? "+" : ""}{resultado.compensacao.toFixed(2)}s</strong> no Chitubox
               </p>
-              <GuideStep n={1}>Abra o Chitubox e clique em <strong>Configurações</strong> (ícone de engrenagem) da sua impressora</GuideStep>
-              <GuideStep n={2}>Clique na aba <strong>Configurações de Resina</strong> (o perfil da resina que você usa)</GuideStep>
-              <GuideStep n={3}>Procure a aba <strong>Avançado</strong> no topo da janela</GuideStep>
-              <GuideStep n={4}>Ative o interruptor <strong>"Compensação de tempo de impressão"</strong></GuideStep>
-              <GuideStep n={5}>Vai aparecer um campo chamado <strong>"Compensação de tempo de impressão da camada"</strong> — cole exatamente <strong style={{ color: "var(--primary)" }}>{resultado.compensacao.toFixed(2)}</strong> ali (em segundos)</GuideStep>
-              <GuideStep n={6}>Clique em <strong>Salvar</strong>. Pronto — a partir da próxima impressão, o tempo estimado vai bater bem mais perto do real</GuideStep>
+              <GuideStep n={1}>No CHITUBOX, abra as <strong>configurações de impressão</strong> da sua impressora</GuideStep>
+              <GuideStep n={2}>Vá na aba <strong>Avançado</strong></GuideStep>
+              <GuideStep n={3}>Ative <strong>Compensação de tempo de impressão</strong> (Print Time Compensation) e escolha a entrada <strong>manual</strong></GuideStep>
+              <GuideStep n={4}>No campo <strong>Compensação de tempo de impressão da camada</strong>, coloque <strong style={{ color: "var(--primary)" }}>{resultado.compensacao.toFixed(2)}</strong> (segundos)</GuideStep>
+              <GuideStep n={5}>Salve. Nas próximas impressões com esse perfil, o tempo estimado fica bem mais perto do real</GuideStep>
               <div className="calc-tip" style={{ marginTop: "4px", background: "rgba(220,145,60,0.07)", borderColor: "rgba(220,145,60,0.22)" }}>
                 <Lightbulb size={15} />
-                <span>Se o número for negativo (ex: -1.50), o Chitubox aceita normalmente — significa que a impressora está mais rápida do que o previsto.</span>
+                <span>Número negativo (ex.: −1,50) é normal: a impressora está mais rápida que o previsto. O campo aceita de −99,99 a 99,99. Se mudar exposição ou velocidades no perfil, refaça a conta.</span>
               </div>
             </div>
           )}
@@ -215,22 +245,33 @@ export default function CalculadoraCompensacao() {
                 <MapPin size={15} /> No Lychee o processo é diferente — chama-se "Print Time Override"
               </p>
               <p className="calc-step-text" style={{ marginBottom: "14px" }}>
-                Em vez de comparar tempo estimado × real como no Chitubox, o Lychee pede o <strong>tempo médio de UMA camada completa</strong> (subida + cura + descida). Com os dados que você já colocou aqui, esse valor é:
+                O Lychee pede dois tempos: o de <strong>uma camada normal completa</strong> (subida, descida, pausa e exposição) e o de <strong>uma camada de base</strong>. Com os dados que você colocou:
               </p>
 
-              <div style={{ background: "rgba(23,201,130,0.08)", borderRadius: "var(--r-sm)", padding: "14px", textAlign: "center", marginBottom: "14px" }}>
-                <span className="calc-metric-label">Tempo médio por camada (use esse valor)</span>
-                <strong style={{ fontSize: "1.6rem", color: "var(--q-verde)" }}>{resultado.tempoMedioPorCamada.toFixed(2)}s</strong>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "14px" }}>
+                <div style={{ background: "rgba(23,201,130,0.08)", borderRadius: "var(--r-sm)", padding: "14px", textAlign: "center" }}>
+                  <span className="calc-metric-label">Time per layer (camada normal)</span>
+                  <strong style={{ fontSize: "1.6rem", color: "var(--q-verde)" }}>{resultado.tempoCamadaNormalLychee.toFixed(2)}s</strong>
+                </div>
+                {resultado.tempoCamadaBaseLychee !== null && (
+                  <div style={{ background: "rgba(23,201,130,0.08)", borderRadius: "var(--r-sm)", padding: "14px", textAlign: "center" }}>
+                    <span className="calc-metric-label">Time per burn-in layer (base)</span>
+                    <strong style={{ fontSize: "1.6rem", color: "var(--q-verde)" }}>{resultado.tempoCamadaBaseLychee.toFixed(2)}s</strong>
+                  </div>
+                )}
               </div>
+              {resultado.tempoCamadaBaseLychee === null && (
+                <p className="calc-hint" style={{ marginBottom: "12px" }}>Sem as camadas de base informadas, o valor acima é a média do job inteiro (fica um pouco alto). Para a camada de base, o Lychee sugere usar a exposição de base + 10 s.</p>
+              )}
 
-              <GuideStep n={1}>No Lychee, abra o perfil da sua resina em <strong>Configurações de Resina</strong></GuideStep>
-              <GuideStep n={2}>Procure a opção <strong>"Print Time Override"</strong> (Substituir tempo de impressão)</GuideStep>
-              <GuideStep n={3}>Ative essa opção e no campo <strong>"Time per layer"</strong> (tempo por camada) insira <strong style={{ color: "var(--q-verde)" }}>{resultado.tempoMedioPorCamada.toFixed(2)}</strong> segundos</GuideStep>
-              <GuideStep n={4}>Salve o perfil. O Lychee vai passar a mostrar o tempo total baseado nesse valor real por camada</GuideStep>
+              <GuideStep n={1}>No Lychee, abra as <strong>preferências da resina</strong> (perfil que você usa)</GuideStep>
+              <GuideStep n={2}>Ative <strong>Print Time Override</strong></GuideStep>
+              <GuideStep n={3}>Em <strong>Time per layer</strong> coloque <strong style={{ color: "var(--q-verde)" }}>{resultado.tempoCamadaNormalLychee.toFixed(2)}</strong> s{resultado.tempoCamadaBaseLychee !== null && <> e em <strong>Time per Burn-in layer</strong> coloque <strong style={{ color: "var(--q-verde)" }}>{resultado.tempoCamadaBaseLychee.toFixed(2)}</strong> s</>}</GuideStep>
+              <GuideStep n={4}>Salve. O Lychee não atualiza sozinho: se mudar exposição ou velocidades, refaça os valores</GuideStep>
 
               <div className="calc-tip" style={{ marginTop: "4px", background: "rgba(220,145,60,0.07)", borderColor: "rgba(220,145,60,0.22)" }}>
                 <Lightbulb size={15} />
-                <span><strong>Dica do próprio Lychee:</strong> pra um valor ainda mais preciso, cronometre com um relógio o tempo de UMA camada normal (do início da descida até o início da próxima) e ajuste esse número se notar diferença nas próximas impressões.</span>
+                <span><strong>Jeito mais preciso (orientação da Lychee):</strong> depois de umas 50 camadas, cronometre 10 ciclos completos (começa quando a plataforma sobe) e divida por 10. Esse é o Time per layer exato.</span>
               </div>
             </div>
           )}

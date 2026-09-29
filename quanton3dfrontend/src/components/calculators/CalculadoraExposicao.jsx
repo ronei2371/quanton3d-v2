@@ -13,10 +13,10 @@ const CAMADAS = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10];
 
 function tituloResina(nome = "") { return String(nome || "").trim() || "Sem nome"; }
 function tituloImpressora(nome = "") { return String(nome || "").trim() || "Sem impressora"; }
+// Nome de resina sempre em MAIUSCULAS, como no catalogo Quanton3D (IRON, SPIN+...).
 function displayNome(nome = "") {
   const s = String(nome || "").trim();
-  if (!s) return "—";
-  return s.toLowerCase().replace(/(?:^|\s)\S/g, c => c.toUpperCase());
+  return s ? s.toUpperCase() : "—";
 }
 function num(v, fb = 0) { const n = parseFloat(String(v || "").replace(",", ".")); return isFinite(n) ? n : fb; }
 
@@ -79,6 +79,7 @@ setCamadaIdx(idx >= 0 ? idx : 4);
 }, [base]);
 
 const tempObj = TEMPERATURAS.find(t => t.value === temperatura) || TEMPERATURAS[1];
+const perfilEstimado = base?.confianca === "estimado";
 const camadaSelecionada = CAMADAS[camadaIdx];
 
 const resultado = useMemo(() => {
@@ -115,9 +116,9 @@ Mostra os <strong style={{ color: "var(--primary)" }}>parâmetros reais testados
 Ajuste temperatura e camada para estimar variações — mas sempre faça o teste de calibração na sua máquina.
 {onIrParametros && (
 <>
-{" "}Quer a configuracao base completa da sua combinacao?{" "}
+{" "}Quer a configuração base completa da sua combinação?{" "}
 <button type="button" onClick={onIrParametros} style={{ padding: 0, border: 0, background: "transparent", color: "var(--primary)", fontWeight: 700, fontSize: "inherit", cursor: "pointer" }}>
-Veja a secao Parametros →
+Veja a seção Parâmetros →
 </button>
 </>
 )}
@@ -179,18 +180,23 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 <div style={{ marginBottom: "10px" }}>
 <span className="calc-badge" style={{ color: resultado.semAjuste ? "var(--q-verde)" : "var(--primary-strong)" }}>
 {resultado.semAjuste ? <CheckCircle2 size={13} /> : <Ruler size={13} />}
-{resultado.semAjuste ? "Parâmetros reais testados e aprovados" : "Parâmetros ajustados (estimativa)"}
+{resultado.semAjuste && perfilEstimado ? (
+<div className="q-alert q-alert--warning" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+<AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
+<div>Esta combinação (<strong>{displayNome(resina)}</strong> na <strong>{impressora}</strong>) ainda é uma <strong>estimativa inicial</strong>, sem teste completo. Use como ponto de partida e calibre com o gabarito Quanton3D antes de imprimir peças importantes.</div>
+</div>
+) : resultado.semAjuste ? (perfilEstimado ? "Estimativa inicial da Quanton3D" : "Perfil oficial Quanton3D") : "Parâmetros ajustados (estimativa)"}
 </span>
 </div>
 {resultado.semAjuste ? (
 <div className="q-alert q-alert--success" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
 <CheckCircle2 size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-<div>Mostrando os <strong>parâmetros reais testados</strong> para <strong style={{ color: "var(--primary)" }}>{displayNome(resina)}</strong> na <strong style={{ color: "var(--primary)" }}>{impressora}</strong>. Esses valores foram validados pela Quanton3D — use como ponto de partida confiável.</div>
+<div>Mostrando o <strong>perfil oficial</strong> da <strong style={{ color: "var(--primary)" }}>{displayNome(resina)}</strong> na <strong style={{ color: "var(--primary)" }}>{impressora}</strong>. É o ponto de partida recomendado pela Quanton3D; o ajuste fino é feito com o gabarito na sua máquina.</div>
 </div>
 ) : (
 <div className="q-alert q-alert--info" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
 <Ruler size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-<div>Estimativa calculada a partir do parâmetro base (camada {num(base.alturaCamada, 0.05).toFixed(2)}mm, temperatura normal). Fator camada: <strong>{resultado.fatorCamada}x</strong> | Fator temperatura: <strong>{resultado.fatorTemp}x</strong>.<strong> Sempre faça um teste de calibração antes de imprimir o job completo.</strong></div>
+<div>Estimativa calculada a partir do perfil base (camada {num(base.alturaCamada, 0.05).toFixed(2)} mm, temperatura normal). Fator camada: <strong>{resultado.fatorCamada}x</strong> | Fator temperatura: <strong>{resultado.fatorTemp}x</strong>. A conta da camada é proporcional (camada 2× mais grossa = 2× o tempo), uma aproximação.{Math.abs(resultado.camadaSelecionada - resultado.camadaBase) > 0.02 && <strong> Você mudou bastante a camada: a cura não muda de forma exatamente proporcional, então o erro dessa estimativa cresce.</strong>}<strong> Sempre confirme com o gabarito Quanton3D antes do job completo.</strong></div>
 </div>
 )}
 <div className="calc-metrics-grid">
@@ -218,7 +224,7 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 </div>
 </div>
 <div className="calc-guide-card">
-<p className="calc-guide-card-title"><ClipboardList size={15} /> Parametros completos cadastrados — {displayNome(resina)} + {impressora}</p>
+<p className="calc-guide-card-title"><ClipboardList size={15} /> Parâmetros completos cadastrados — {displayNome(resina)} + {impressora}</p>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "8px" }}>
 {[
 { label: "Exposição normal", value: base.exposicaoNormal || "-" },
@@ -240,12 +246,11 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 <div className="calc-guide-card">
 <p className="calc-guide-card-title" style={{ color: "var(--q-laranja)" }}><Lightbulb size={15} /> Como calibrar na sua máquina</p>
 <ol style={{ margin: 0, paddingLeft: "18px", color: "var(--text-secondary)", fontSize: "0.82rem", lineHeight: 1.8 }}>
-<li>Use os parâmetros acima como ponto de partida</li>
-<li>Imprima o <strong>Gabarito Quanton3D</strong> (disponível nos guias do site)</li>
-<li>Se a peça não adere: aumente a exposição base em 5s por vez</li>
-<li>Se a peça adere demais à plataforma: reduza a exposição base em 3s</li>
-<li>Se suporte difícil de remover: reduza exposição normal em 0,2s</li>
-<li>Temperatura abaixo de 20°C: ative o ajuste de temperatura acima</li>
+<li>Comece pelos parâmetros acima, com a resina e o ambiente na temperatura de trabalho (20 a 28°C). Se estiver frio, aqueça primeiro e só depois use o ajuste de temperatura.</li>
+<li>Imprima o <strong>gabarito Quanton3D</strong> (teste do pino, no guia de Calibração de Resina) e veja em qual posição o pino encaixa sem forçar.</li>
+<li>O alvo é a <strong>posição 3</strong>. Pino na 1: +0,3 s · na 2: +0,2 s · na 3: não mexa · na 4: −0,2 s · na 5: −0,3 s (sempre na exposição normal).</li>
+<li>Peça não grudou na plataforma: refaça o nivelamento e limpe a plataforma antes de mexer na exposição de base; confira se as camadas de base são as do perfil.</li>
+<li>Mude um parâmetro por vez e reimprima o mesmo teste.</li>
 </ol>
 </div>
 </div>

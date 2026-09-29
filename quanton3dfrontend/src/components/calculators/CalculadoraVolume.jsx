@@ -6,7 +6,8 @@ function tituloResina(nome = "") {
   return String(nome || "").trim() || "Sem nome";
 }
 
-// Lista de impressoras com potência média oficial
+// Potencia aproximada de cada impressora (consumo medio imprimindo; a etiqueta da fonte
+// mostra o maximo). Serve so para estimar a energia, que pesa pouco no custo.
 const IMPRESSORAS = [
   { grupo: "Anycubic", modelos: [
     { label: "Anycubic Photon Mono",       watts: 45 },
@@ -41,9 +42,6 @@ const IMPRESSORAS = [
   { grupo: "Phrozen", modelos: [
     { label: "Phrozen Sonic Mini 8K",      watts: 60 },
     { label: "Phrozen Sonic Mighty 8K",   watts: 75 },
-  ]},
-  { grupo: "Bambu Lab", modelos: [
-    { label: "Bambu Lab",                  watts: 50 },
   ]},
 ];
 
@@ -183,7 +181,7 @@ export default function CalculadoraVolume() {
       <div className="calc-header">
         <span className="calc-badge"><Zap size={12} /> Calculadora simples</span>
         <h2 className="calc-title">Custo Real de Impressão</h2>
-        <p className="calc-subtitle">Selecione sua impressora e resina — os valores típicos são preenchidos automaticamente. Ajuste o que precisar e veja o custo na hora.</p>
+        <p className="calc-subtitle">Escolha a impressora (a potência é preenchida sozinha), informe o volume que o fatiador mostra e o preço que você pagou na resina. O custo aparece na hora.</p>
       </div>
 
       <div className="calc-form-card">
@@ -199,7 +197,7 @@ export default function CalculadoraVolume() {
                 {IMPRESSORAS.map(g => (
                   <optgroup key={g.grupo} label={g.grupo}>
                     {g.modelos.map(m => (
-                      <option key={m.label} value={m.label}>{m.label} — {m.watts}W</option>
+                      <option key={m.label} value={m.label}>{m.label} — cerca de {m.watts} W</option>
                     ))}
                   </optgroup>
                 ))}
@@ -215,7 +213,7 @@ export default function CalculadoraVolume() {
               </div>
               {impressoraSelecionada && (
                 <span className="calc-hint" style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "var(--q-verde)" }}>
-                  <CheckCircle2 size={12} /> Preenchido automaticamente para {impressoraSelecionada}
+                  <CheckCircle2 size={12} /> Valor aproximado para {impressoraSelecionada}. Se souber o consumo real, pode trocar
                 </span>
               )}
               {!impressoraSelecionada && (
@@ -235,12 +233,17 @@ export default function CalculadoraVolume() {
           <NumberField label="Volume da peça" value={volumePecaMl}
             onChange={setVolumePecaMl} min={0.1} step={0.1} suffix="ml" />
         </div>
+        <p className="calc-hint" style={{ marginTop: "-6px", marginBottom: "14px" }}>
+          <strong>Preço por litro</strong> = o que você pagou no frasco ÷ litros do frasco (frasco de 500 ml por R$ 100 → R$ 200/L).{" "}
+          <strong>Volume</strong> = o valor em ml que o fatiador mostra, já com os suportes. Não use o peso em gramas.
+        </p>
 
         <div className="calc-grid-2">
           <NumberField label="Quantidade de cópias" value={quantidade}
             onChange={(v) => setQuantidade(Math.max(1, v))} min={1} step={1} suffix="peças" />
           <NumberField label="Horas totais de impressão" value={horasImpressao}
             onChange={setHorasImpressao} min={0} step={0.1} suffix="h" />
+          <span className="calc-hint" style={{ gridColumn: "1 / -1", marginTop: "-6px" }}>Quantidade de cópias: o volume da peça é multiplicado por ela. Horas: tempo da impressão inteira (todas as cópias juntas na plataforma).</span>
         </div>
 
         <p className="calc-mini-title">Custos adicionais</p>
@@ -255,12 +258,12 @@ export default function CalculadoraVolume() {
 
         <div className="calc-grid-2">
           <NumberField label="Taxa de falha / reimpressão" value={taxaFalha}
-            onChange={setTaxaFalha} min={0} step={1} suffix="%" />
+            onChange={(v) => setTaxaFalha(Math.min(100, Math.max(0, v)))} min={0} step={1} suffix="%" />
           <div className="calc-tip">
             <Info size={16} />
             <div>
-              Fórmula: <strong>(volume × quantidade) + 5% margem</strong>.<br />
-              Depois somamos energia, consumíveis, pós-processo e taxa de falha.
+              Resina = <strong>volume × quantidade + 5% de perda</strong> (resina que fica na cuba e nos suportes).<br />
+              Depois somamos energia, consumíveis e pós-processo, e a taxa de falha entra sobre esse total (reserva para reimpressão).
             </div>
           </div>
         </div>

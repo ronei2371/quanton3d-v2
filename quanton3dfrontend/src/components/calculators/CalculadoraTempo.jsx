@@ -39,6 +39,13 @@ function HMInput({ label, horas, minutos, onChangeHoras, onChangeMinutos, hint }
   );
 }
 
+// Camadas a partir da altura (arredonda para cima, sem erro de ponto flutuante: 120,5 / 0,05 = 2410).
+function camadasPorAltura(altura, camada) {
+  const a = parseFloat(altura), c = parseFloat(camada);
+  if (!(a > 0) || !(c > 0)) return 0;
+  return Math.ceil(a / c - 1e-6);
+}
+
 function hmParaMinutos(h, m) {
   return (parseFloat(h) || 0) * 60 + (parseFloat(m) || 0);
 }
@@ -51,6 +58,8 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
   const [alturaTotalMm, setAlturaTotalMm] = useState("");
   const [alturaCamadaMm, setAlturaCamadaMm] = useState("0.05");
   const [camadasBase, setCamadasBase] = useState("6");
+  const [camadasTransicao, setCamadasTransicao] = useState("6");
+  const [erro, setErro] = useState("");
   const [expBase, setExpBase] = useState("");
   const [expNormal, setExpNormal] = useState("");
   const [lightOffDelay, setLightOffDelay] = useState("0");
@@ -64,20 +73,29 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
   const [restNovo, setRestNovo] = useState("");
 
   function calcCamadas() {
-    const tot = modoCamadas === "numero" ? parseInt(totalCamadas) : Math.round(parseFloat(alturaTotalMm) / parseFloat(alturaCamadaMm));
-    const base = parseInt(camadasBase) || 6;
+    setErro("");
+    const tot = modoCamadas === "numero" ? parseInt(totalCamadas) : camadasPorAltura(alturaTotalMm, alturaCamadaMm);
+    const base = Math.max(0, parseInt(camadasBase) || 0);
+    const trans = Math.max(0, parseInt(camadasTransicao) || 0);
     const eb = parseFloat(expBase);
     const en = parseFloat(expNormal);
     const lod = parseFloat(lightOffDelay) || 0;
     const rt = parseFloat(restTime) || 0;
-    const lt = parseFloat(liftTime) || 3;
-    if (!tot || tot <= 0 || !eb || !en) return;
+    const lt = parseFloat(liftTime) || 0;
+    if (!tot || tot <= 0) { setResultado(null); setErro(modoCamadas === "numero" ? "Informe o total de camadas." : "Informe a altura do modelo e a altura de camada."); return; }
+    if (!(eb > 0) || !(en > 0)) { setResultado(null); setErro("Informe a exposição de base e a exposição normal (em segundos)."); return; }
+    if (base + trans >= tot) { setResultado(null); setErro("A soma de camadas de base e de transição precisa ser menor que o total de camadas."); return; }
 
-    const normais = tot - base;
-    const tBase = base * (eb + lod + lt);
-    const tNormal = normais * (en + lod + rt + lt);
-    const tTotal = tBase + tNormal;
-    const tSemRest = base * (eb + lt) + normais * (en + lt);
+    // Transicao linear (Chitubox/Lychee): a exposicao desce da base ate a normal,
+    // entao em media cada camada de transicao fica com (base + normal) / 2.
+    const expTransicaoMedia = (eb + en) / 2;
+    const normais = tot - base - trans;
+    const porCamada = (exp) => exp + lod + rt + lt;
+    const tBase = base * porCamada(eb);
+    const tTrans = trans * porCamada(expTransicaoMedia);
+    const tNormal = normais * porCamada(en);
+    const tTotal = tBase + tTrans + tNormal;
+    const tSemRest = base * (eb + lt) + trans * (expTransicaoMedia + lt) + normais * (en + lt);
 
     setResultado({
       tipo: "camadas",
@@ -86,6 +104,7 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
       semRestMin: tSemRest / 60,
       extras: (tTotal - tSemRest) / 60,
       tBase: tBase / 60,
+      tTrans: tTrans / 60,
       tNormal: tNormal / 60,
     });
   }
@@ -95,7 +114,8 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
     const cam = parseInt(camadas);
     const ra = parseFloat(restAtual) || 0;
     const rn = parseFloat(restNovo) || 0;
-    if (!ti || !cam) return;
+    if (!ti || !cam) { setResultado(null); setErro("Informe o tempo atual de impressão e o total de camadas."); return; }
+    setErro("");
 
     const diffPorCamada = (rn - ra);
     const diffTotal = (diffPorCamada * cam) / 60;
@@ -135,7 +155,7 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
           const Icon = a.icon;
           return (
             <button key={a.id} type="button" className={"calc-tab" + (aba === a.id ? " is-active" : "")}
-              onClick={() => { setAba(a.id); setResultado(null); }}>
+              onClick={() => { setAba(a.id); setResultado(null); setErro(""); }}>
               <Icon size={14} /> {a.label}
             </button>
           );
@@ -145,7 +165,7 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
       {aba === "camadas" && (
         <div>
           <div className="q-alert q-alert--info">
-            Calcule o tempo total de impressão baseado nos seus parâmetros do Chitubox. Inclui camadas base, normais, Light-off delay e Rest Time.
+            Copie os valores do perfil de impressão do seu fatiador (Chitubox, Lychee...). A conta inclui camadas de base, de transição, normais, Light-off delay, Rest Time e o tempo de subida e descida da plataforma.
           </div>
 
           <div className="calc-form-card" style={{ marginTop: "14px" }}>
@@ -181,7 +201,7 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
                 </div>
                 {alturaTotalMm && alturaCamadaMm && parseFloat(alturaCamadaMm) > 0 && (
                   <div style={{ gridColumn: "1/-1", padding: "8px 12px", borderRadius: "var(--r-sm)", background: "rgba(47,123,255,0.08)", fontSize: "0.82rem", color: "var(--primary)" }}>
-                    Camadas calculadas: <strong>{Math.round(parseFloat(alturaTotalMm) / parseFloat(alturaCamadaMm))}</strong>
+                    Camadas calculadas: <strong>{camadasPorAltura(alturaTotalMm, alturaCamadaMm)}</strong>
                   </div>
                 )}
               </div>
@@ -189,11 +209,16 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
           </div>
 
           <div className="calc-form-card">
-            <p className="calc-mini-title">Parâmetros do Chitubox</p>
+            <p className="calc-mini-title">Parâmetros do fatiador</p>
             <div className="calc-grid-3">
               <div className="calc-field">
                 <label className="calc-label">Camadas base</label>
                 <input type="number" min="1" className="calc-input" value={camadasBase} onChange={e => setCamadasBase(e.target.value)} placeholder="Ex: 6" />
+              </div>
+              <div className="calc-field">
+                <label className="calc-label">Camadas de transição</label>
+                <input type="number" min="0" className="calc-input" value={camadasTransicao} onChange={e => setCamadasTransicao(e.target.value)} placeholder="Ex: 6" />
+                <span className="calc-hint">Regra Quanton3D: mesmo número das camadas de base. Use 0 se não usa transição.</span>
               </div>
               <div className="calc-field">
                 <label className="calc-label">Exposição base (s)</label>
@@ -214,10 +239,11 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
               <div className="calc-field">
                 <label className="calc-label">Tempo de elevação (s)</label>
                 <input type="number" min="0" step="0.1" className="calc-input" value={liftTime} onChange={e => setLiftTime(e.target.value)} placeholder="Ex: 3" />
-                <span className="calc-hint">Lift + retraction combinados</span>
+                <span className="calc-hint">Tempo que a plataforma leva para subir e voltar em cada camada (cronometre uma camada na máquina se não souber)</span>
               </div>
             </div>
             <button type="button" className="q-btn q-btn--primary q-btn--block" style={{ marginTop: "4px" }} onClick={calcCamadas}>Calcular tempo total</button>
+            {erro && aba === "camadas" && <div className="q-alert q-alert--error" style={{ marginTop: "10px", marginBottom: 0 }}>{erro}</div>}
           </div>
 
           {resultado?.tipo === "camadas" && (
@@ -230,12 +256,13 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
                 <ResultCard cor="var(--q-verde)" label="Sem rest/delay" value={fmtTempo(resultado.semRestMin)} />
                 <ResultCard cor="var(--q-laranja)" label="Tempo em delays" value={fmtTempo(resultado.extras)} />
                 <ResultCard cor="var(--q-ametista)" label="Camadas base" value={fmtTempo(resultado.tBase)} />
+                {resultado.tTrans > 0 && <ResultCard cor="var(--q-ciano)" label="Camadas de transição" value={fmtTempo(resultado.tTrans)} />}
                 <ResultCard cor="var(--q-vermelho)" label="Camadas normais" value={fmtTempo(resultado.tNormal)} />
               </div>
               {resultado.extras > 30 && (
                 <div className="q-alert q-alert--warning" style={{ marginTop: "12px", marginBottom: 0, display: "flex", gap: "8px", alignItems: "flex-start" }}>
                   <AlertTriangle size={15} style={{ flexShrink: 0, marginTop: "1px" }} />
-                  <span>Os delays (Rest/Light-off) representam <strong>{fmtTempo(resultado.extras)}</strong> do total. Considere reduzir o Rest Time se a resina já estiver estabilizando bem.</span>
+                  <span>As pausas (Rest/Light-off) somam <strong>{fmtTempo(resultado.extras)}</strong>. Dá para reduzir o Rest Time, mas faça isso aos poucos e confira a peça: pausa curta demais pode causar falha em peças grandes ou resina mais grossa.</span>
                 </div>
               )}
             </div>
@@ -266,6 +293,7 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
               </div>
             </div>
             <button type="button" className="q-btn q-btn--primary q-btn--block" style={{ marginTop: "4px" }} onClick={calcRest}>Simular novo tempo</button>
+            {erro && aba === "rest" && <div className="q-alert q-alert--error" style={{ marginTop: "10px", marginBottom: 0 }}>{erro}</div>}
           </div>
 
           {resultado?.tipo === "rest" && (
