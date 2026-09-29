@@ -20,6 +20,15 @@ import {
 
 const router = express.Router();
 
+// Telefone vem somente do cadastro do cliente no banco (nome ou telefone digitado nao provam identidade).
+async function telefoneDoCadastro(clienteId) {
+    if (!(mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24)) return '';
+    try {
+        const cad = await Cliente.findById(clienteId).select('telefone').lean();
+        return cad?.telefone || '';
+    } catch (_) { return ''; }
+}
+
 function client() {
     const apiKey = process.env.DEEPSEEK_API_KEY;
     const baseURL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
@@ -165,14 +174,7 @@ router.post('/', async (req, res) => {
 
         const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip || '';
 
-        // Telefone vem somente do cadastro do cliente no banco (nome ou telefone digitado nao provam identidade).
-        let clienteTelefone = '';
-        if (mongoose.Types.ObjectId.isValid(clienteId) && String(clienteId).length === 24) {
-            try {
-                const cad = await Cliente.findById(clienteId).select('telefone').lean();
-                clienteTelefone = cad?.telefone || '';
-            } catch (_) {}
-        }
+        const clienteTelefone = await telefoneDoCadastro(clienteId);
         const ehFundador = isFounderPhone(clienteTelefone);
 
         // Limite diario de perguntas respondidas pela IA (respostas fixas nao contam). Fundador nao tem limite.
@@ -379,8 +381,9 @@ router.post('/', async (req, res) => {
 // Quantas perguntas o cliente ja fez hoje (o chat mostra "Perguntas hoje: X de 15").
 router.get('/limite/:clienteId', async (req, res) => {
     try {
-        const usadas = await perguntasHoje(req.params.clienteId);
-        res.json({ success: true, limite: { usadas: Math.min(usadas, LIMITE_DIARIO), max: LIMITE_DIARIO, restantes: Math.max(0, LIMITE_DIARIO - usadas) } });
+        const [usadas, telefone] = await Promise.all([perguntasHoje(req.params.clienteId), telefoneDoCadastro(req.params.clienteId)]);
+        const semLimite = isFounderPhone(telefone);
+        res.json({ success: true, limite: { usadas: Math.min(usadas, LIMITE_DIARIO), max: LIMITE_DIARIO, restantes: Math.max(0, LIMITE_DIARIO - usadas), semLimite } });
     } catch (e) {
         res.json({ success: true, limite: { usadas: 0, max: LIMITE_DIARIO, restantes: LIMITE_DIARIO } });
     }
