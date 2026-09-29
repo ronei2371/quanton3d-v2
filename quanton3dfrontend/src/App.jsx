@@ -268,7 +268,11 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     calculadoras: <CalculadorasSection calculadoraInicial={calcInicial} onNavegar={navegar} />,
     guias: <GuiasSection abrirGuia={(g) => setActiveGuide(g)} />,
     academy: <AcademySection abrirAcademy={(g) => setActiveGuide({ ...g, returnLabel: "Voltar à Quanton Academy" })} />,
-    atendimento: <AtendimentoSection cliente={cliente} onAbrirContato={() => setMostrarContatoMensagem(true)} onPedirCadastro={() => exigirCadastro("Para abrir um chamado técnico ou pedir formulação, faça seu cadastro rápido: assim a equipe consegue te responder.")} />,
+    atendimento: <AtendimentoSection cliente={cliente} onAbrirContato={() => setMostrarContatoMensagem(true)} onPedirCadastro={() => exigirCadastro("Para abrir um chamado técnico ou pedir formulação, faça seu cadastro rápido: assim a equipe consegue te responder.")}
+      onAbrirGuia={(g) => setActiveGuide({ ...g, returnLabel: "Voltar ao diagnóstico" })}
+      onAbrirCalculadora={abrirCalculadora}
+      onIrParametros={() => navegar("parametros")}
+      onAbrirBot={() => exigirCadastro("Para conversar com a IAQ3D, faça seu cadastro rápido. Leva menos de 1 minuto e deixa o suporte liberado.", () => setMostrarBot(true))} />,
     comunidade: <ComunidadeSection cliente={cliente} onAbrirParceiroModal={() => setMostrarParceiroModal(true)} onPedirCadastro={() => exigirCadastro("Para enviar sua peça para a galeria, faça seu cadastro rápido.")} />,
     catalogo: <CatalogoSection />,
     sobre: <SobreSection onAbrirParceiroModal={() => setMostrarParceiroModal(true)} />,
