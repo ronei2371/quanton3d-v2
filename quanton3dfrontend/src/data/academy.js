@@ -8,7 +8,7 @@ export const ACADEMY_CONTENTS = [
     desc: "Transforme sua impressora em uma operação mais previsível, com nichos, ofertas e próximos passos comerciais.",
     tags: ["Negócios", "Nichos", "Vendas"],
   },
-  {h
+  {
     title: "Galvanoplastia em peças impressas em resina",
     file: "/guias/academy/quanton3d_academy_galvanoplastia_resina_V7_premium_corrigida.html",
     icon: Sparkles,
