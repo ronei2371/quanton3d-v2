@@ -3,12 +3,12 @@ import { FlaskConical, GraduationCap, Sparkles } from "lucide-react";
 export const ACADEMY_CONTENTS = [
   {
     title: "Ganhar dinheiro com impressão 3D em resina",
-    file: "/guias/academy/quanton3d_academy_ganhar_dinheiro_resina_V2_premium.html",
+    file: "/guias/academy/quanton3d_academy_ganhar_dinheiro_resina_V3.html",
     icon: GraduationCap,
     desc: "Transforme sua impressora em uma operação mais previsível, com nichos, ofertas e próximos passos comerciais.",
     tags: ["Negócios", "Nichos", "Vendas"],
   },
-  {
+  {h
     title: "Galvanoplastia em peças impressas em resina",
     file: "/guias/academy/quanton3d_academy_galvanoplastia_resina_V7_premium_corrigida.html",
     icon: Sparkles,
