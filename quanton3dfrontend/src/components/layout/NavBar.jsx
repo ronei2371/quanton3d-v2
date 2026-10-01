@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Menu, X, User, Search } from "lucide-react";
+import { Menu, X, User, Search } from "lucide-react";
 import { NAV_ITEMS } from "../../data/navigation";
 import AnimatedAtomLogo from "./AnimatedAtomLogo";
 
