@@ -46,15 +46,10 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
 app.use(
 cors({
 origin(origin, cb) {
-if (
-!origin ||
-allowedOrigins.length === 0 ||
-allowedOrigins.includes(origin)
-) {
-return cb(null, true);
-}
-
-return cb(new Error(`Origin not allowed by CORS: ${origin}`));
+if (!origin) return cb(null, true);
+if (allowedOrigins.length === 0) return cb(new Error('CORS: ALLOWED_ORIGINS nao configurado'));
+if (allowedOrigins.includes(origin)) return cb(null, true);
+return cb(new Error('CORS: origin nao permitida: ' + origin));
 },
 credentials: true,
 })
