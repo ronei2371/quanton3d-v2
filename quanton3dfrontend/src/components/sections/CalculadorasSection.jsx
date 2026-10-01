@@ -43,7 +43,6 @@ function CalculadorasSection({ calculadoraInicial, onNavegar }) {
     tolerancia_inferior: <CalculadoraToleranciaInferior />,
   };
 
-  const calcAtiva = CALCULADORAS.find((c) => c.id === ativa);
 
   return (
     <section className="q-card q-panel calculators-section" id="calculadoras">
