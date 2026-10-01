@@ -44,7 +44,7 @@ function saveToHist(resinaKey, impressoraSel, p) {
     exposicaoNormal: p.exposicaoNormal,
   };
   const hist = [entry, ...loadHist().filter(h => !(h.resinaKey === entry.resinaKey && h.impressoraSel === entry.impressoraSel))].slice(0, MAX_HIST);
-  try { localStorage.setItem(HIST_KEY, JSON.stringify(hist)); } catch {}
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(hist)); } catch { /* ignore */ }
   return hist;
 }
 
@@ -189,7 +189,7 @@ function ParametrosSection({ onAbrirExposicao }) {
           const mapa = new Map(rawList.map(i => [i.nome.trim().toLowerCase(), i.fotoImpressora || '']));
           setFotosImpressoras(mapa);
         }
-      } catch { }
+      } catch { /* ignore */ }
     } catch (err) {
       console.error("Erro ao carregar parametros:", err);
       setErro("Não foi possível carregar os parâmetros técnicos.");
@@ -241,7 +241,7 @@ function ParametrosSection({ onAbrirExposicao }) {
       url.searchParams.set('resina', resultado.resina);
       url.searchParams.set('impressora', resultado.impressora);
       history.replaceState(null, '', url.toString());
-    } catch { }
+    } catch { /* ignore */ }
   }, [resultado]);
 
   const RESINAS_OCULTAR = ["ATHOM CASTABLE", "ATHOM CASTABLE 2"];
@@ -301,7 +301,7 @@ function ParametrosSection({ onAbrirExposicao }) {
   }
 
   function limparHistorico() {
-    try { localStorage.removeItem(HIST_KEY); } catch {}
+    try { localStorage.removeItem(HIST_KEY); } catch { /* ignore */ }
     setHistorico([]);
   }
 
