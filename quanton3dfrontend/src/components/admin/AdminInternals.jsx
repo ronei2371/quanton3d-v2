@@ -346,7 +346,7 @@ export function AdminContent({ tokenAtendente }) {
       let conversas = [];
       let conversasTotal = null;
       try {
-        const cResp = await api.get("/conversas", { headers, params: { limit: 100 } });
+        const cResp = await api.get("/conversas", { headers, params: { limit: 500 } });
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
         conversasTotal = Number.isFinite(cResp.data?.total) ? cResp.data.total : null;
       } catch (_) {}
@@ -458,6 +458,8 @@ export function AdminContent({ tokenAtendente }) {
   const [editandoPerms, setEditandoPerms] = useState(null);
   const [criandoAt, setCriandoAt] = useState(false);
   const [filtroClienteConv, setFiltroClienteConv] = useState("");
+  const [filtroDataInicioConv, setFiltroDataInicioConv] = useState("");
+  const [filtroDataFimConv, setFiltroDataFimConv] = useState("");
 
   const [buscaCliente, setBuscaCliente] = useState("");
   const [filtroOrigem, setFiltroOrigem] = useState("");
@@ -1749,8 +1751,8 @@ export function AdminContent({ tokenAtendente }) {
         <div>
           {/* Alerta de feedbacks negativos não revisados */}
           {(() => {
-            const naoRevisados = (dados.conversas || []).filter(c => c.feedback === "nao_satisfatoria" && !c.revisadoFeedback);
-            if (naoRevisados.length === 0) return null;
+            const naoRevisados = (dados.conversas || []).filter(c => c.feedback === "nao_satisfatoria" && !c.revisadoFeedback && !c.aprovado);
+            if (naoRevisados.length === 0 || filtroConversas === "nao_revisado") return null;
             return (
               <div style={{ background: "rgba(255,107,107,0.08)", border: "1px solid rgba(255,107,107,0.4)", borderRadius: "12px", padding: "12px 16px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
                 <span style={{ color: "#d73c3c", fontSize: "0.88rem", fontWeight: 800 }}>
@@ -1829,6 +1831,24 @@ export function AdminContent({ tokenAtendente }) {
             );
           })()}
 
+          {/* Filtro de data - visivel somente na aba Aprovadas */}
+          {filtroConversas === "aprovadas" && (
+            <div style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "0.78rem", color: "#9fb4c7", fontWeight: 700 }}>📅 Filtrar por data:</span>
+              <input type="date" value={filtroDataInicioConv} onChange={e => setFiltroDataInicioConv(e.target.value)}
+                style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.82rem" }} />
+              <span style={{ color: "#9fb4c7", fontSize: "0.78rem" }}>até</span>
+              <input type="date" value={filtroDataFimConv} onChange={e => setFiltroDataFimConv(e.target.value)}
+                style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid rgba(113,159,219,0.3)", background: "rgba(4,12,24,0.6)", color: "white", fontSize: "0.82rem" }} />
+              {(filtroDataInicioConv || filtroDataFimConv) && (
+                <button type="button" onClick={() => { setFiltroDataInicioConv(""); setFiltroDataFimConv(""); }}
+                  style={{ padding: "4px 10px", borderRadius: "6px", border: "1px solid rgba(255,107,107,0.3)", background: "rgba(255,107,107,0.08)", color: "#d73c3c", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700, fontFamily: "inherit" }}>
+                  ✕ Limpar datas
+                </button>
+              )}
+            </div>
+          )}
+
           {filtroConversas !== "lacunas" && (!dados.conversas || dados.conversas.length === 0) && !carregando && (
             <div className="gallery-empty">Nenhuma conversa registrada ainda.</div>
           )}
@@ -1841,9 +1861,12 @@ export function AdminContent({ tokenAtendente }) {
               const passaFiltro =
                 filtroConversas === "todas" || filtroConversas === "lacunas" ? true :
                 filtroConversas === "nao_satisfatoria" ? c.feedback === "nao_satisfatoria" :
-                filtroConversas === "nao_revisado" ? (c.feedback === "nao_satisfatoria" && !c.revisadoFeedback) :
+                filtroConversas === "nao_revisado" ? (c.feedback === "nao_satisfatoria" && !c.revisadoFeedback && !c.aprovado) :
                 filtroConversas === "aprovadas" ? c.aprovado : true;
-              return passaFiltro && (filtroClienteConv ? c.clienteId === filtroClienteConv : true);
+              const dataConv = c.createdAt ? new Date(c.createdAt) : null;
+              const passaDataInicio = filtroDataInicioConv ? (dataConv && dataConv >= new Date(filtroDataInicioConv)) : true;
+              const passaDataFim = filtroDataFimConv ? (dataConv && dataConv <= new Date(filtroDataFimConv + "T23:59:59")) : true;
+              return passaFiltro && (filtroClienteConv ? c.clienteId === filtroClienteConv : true) && passaDataInicio && passaDataFim;
             })
             .map((c) => {
             // Em "Bot não soube" o campo começa vazio: a resposta do bot não serve como conhecimento.
