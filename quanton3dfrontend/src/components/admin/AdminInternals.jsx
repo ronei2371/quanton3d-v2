@@ -517,7 +517,7 @@ export function AdminContent({ tokenAtendente }) {
       setSalvandoConversa(id);
       const respostaMelhorada = edicaoConversa[id] || "";
       await api.patch("/conversas/" + id + "/aprovar", { respostaMelhorada, revisadoPor: "Admin" }, { headers: { Authorization: "Bearer " + token } });
-      await carregarDados();
+      setDados(d => ({ ...d, conversas: d.conversas.filter(c => c._id !== id) })); carregarLacunas();
     } catch (err) { alert("Erro ao aprovar conversa."); }
     finally { setSalvandoConversa(""); }
   }
@@ -552,7 +552,7 @@ export function AdminContent({ tokenAtendente }) {
       const respostaMelhorada = edicaoConversa[id] || "";
       await api.patch("/conversas/" + id + "/aprovar", { respostaMelhorada, revisadoPor: "Admin" }, { headers: { Authorization: "Bearer " + token } });
       await api.patch("/conversas/" + id + "/revisar-feedback", {}, { headers: { Authorization: "Bearer " + token } });
-      await carregarDados();
+      setDados(d => ({ ...d, conversas: d.conversas.filter(c => c._id !== id) })); carregarLacunas();
     } catch (err) { alert("Erro ao aprovar e revisar."); }
     finally { setSalvandoConversa(""); }
   }
