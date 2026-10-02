@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molde de Silicone - Quanton 3D Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #a78bfa;
+    --accent2: #7c3aed;
+    --accent-glow: rgba(167,139,250,0.15);
+    --text: #e8e9f0;
+    --text-muted: #8b90a8;
+    --text-dim: #555a75;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --info: #60a5fa;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.65; min-height: 100vh; }
+  .print-btn-wrap { position: fixed; top: 16px; right: 16px; z-index: 100; }
+  .print-btn { background: var(--accent2); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 12px rgba(124,58,237,0.4); transition: background 0.2s; }
+  .print-btn:hover { background: var(--accent); }
+  @media print { .print-btn-wrap, .tab-bar { display: none !important; } .tab-pane { display: block !important; } body { background: #fff; color: #111; } }
+  .hero { background: linear-gradient(135deg, #1a1030 0%, #0f1117 60%); border-bottom: 1px solid var(--border); padding: 48px 24px 36px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(167,139,250,0.12) 0%, transparent 70%); pointer-events: none; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(24px, 5vw, 40px); font-weight: 800; color: #fff; line-height: 1.15; text-wrap: balance; margin-bottom: 14px; }
+  .hero h1 span { color: var(--accent); }
+  .lead { color: var(--text-muted); max-width: 620px; margin: 0 auto 20px; font-size: 15px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+  .tab-bar { display: flex; gap: 2px; padding: 0 16px; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; position: sticky; top: 0; z-index: 50; }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn { background: none; border: none; border-bottom: 3px solid transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 14px 16px 11px; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .content { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+  h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+  h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 12px; }
+  p { color: var(--text-muted); margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+  .section { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+  .section:last-child { border-bottom: none; margin-bottom: 0; }
+  .section-header { margin-bottom: 18px; }
+  .section-subtitle { color: var(--text-dim); font-size: 13px; margin-top: 4px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .card-title { font-weight: 700; color: var(--text); font-size: 14px; margin-bottom: 8px; }
+  .card-body { color: var(--text-muted); font-size: 14px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
+  .hbox { border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; border-left: 4px solid; }
+  .hbox.info  { background: rgba(96,165,250,0.08); border-color: var(--info); }
+  .hbox.warn  { background: rgba(251,191,36,0.08); border-color: var(--warn); }
+  .hbox.danger{ background: rgba(248,113,113,0.08); border-color: var(--danger); }
+  .hbox.good  { background: rgba(52,211,153,0.08); border-color: var(--good); }
+  .hbox-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+  .hbox.info  .hbox-label { color: var(--info); }
+  .hbox.warn  .hbox-label { color: var(--warn); }
+  .hbox.danger .hbox-label { color: var(--danger); }
+  .hbox.good  .hbox-label { color: var(--good); }
+  .hbox p { font-size: 14px; margin-bottom: 0; }
+  .kit-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+  .kit-table th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .kit-table td { padding: 10px 12px; font-size: 14px; color: var(--text-muted); border-bottom: 1px solid rgba(46,50,80,0.5); vertical-align: top; }
+  .kit-table tr:last-child td { border-bottom: none; }
+  .kit-table td:first-child { color: var(--text); font-weight: 600; }
+  .kit-table td .note { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .step-list { list-style: none; counter-reset: steps; }
+  .step-list li { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+  .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; margin-top: 2px; }
+  .step-body { flex: 1; }
+  .step-title { font-weight: 700; color: var(--text); margin-bottom: 4px; font-size: 14px; }
+  .step-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+  .step-tip { margin-top: 8px; background: var(--accent-glow); border: 1px solid rgba(167,139,250,0.2); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px; color: var(--accent); }
+  .falha-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; }
+  .falha-title { font-weight: 700; color: var(--danger); font-size: 14px; margin-bottom: 4px; }
+  .falha-causa { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+  .falha-fix { font-size: 14px; color: var(--good); font-weight: 600; }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 560px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+  .compare-head { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .compare-item { display: flex; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.5; }
+  .compare-item .dot { flex-shrink: 0; margin-top: 6px; width: 6px; height: 6px; border-radius: 50%; }
+  .compare-card.green .dot { background: var(--good); }
+  .compare-card.purple .dot { background: var(--accent); }
+  .shore-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  @media (max-width: 480px) { .shore-row { grid-template-columns: 1fr; } }
+  .shore-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
+  .shore-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+  .shore-label { font-size: 12px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .shore-desc { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .check-group { margin-bottom: 24px; }
+  .check-group h3 { margin-bottom: 10px; }
+  .check-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(46,50,80,0.4); cursor: pointer; user-select: none; }
+  .check-item:last-child { border-bottom: none; }
+  .check-box { flex-shrink: 0; width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 5px; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .check-item.done .check-box { background: var(--good); border-color: var(--good); }
+  .check-item.done .check-box::after { content: 'v'; font-size: 12px; color: #0f1117; font-weight: 800; }
+  .check-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; transition: color 0.15s; }
+  .check-item.done .check-text { color: var(--text-dim); text-decoration: line-through; }
+  .check-note { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .check-progress { height: 4px; background: var(--surface2); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+  .check-bar { height: 100%; background: var(--good); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
+  .lvl { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+  .lvl.entrada  { background: rgba(52,211,153,0.15); color: var(--good); }
+  .lvl.inter    { background: rgba(96,165,250,0.15); color: var(--info); }
+  .lvl.avancado { background: rgba(167,139,250,0.15); color: var(--accent); }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+  .tag.ok  { background: rgba(52,211,153,0.2); color: var(--good); }
+  .tag.atl { background: rgba(251,191,36,0.2); color: var(--warn); }
+  .tag.no  { background: rgba(248,113,113,0.2); color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="print-btn-wrap"><button class="print-btn" onclick="window.print()">Imprimir / salvar PDF</button></div>
+<div class="hero">
+  <div class="eyebrow">Quanton 3D Academy &middot; Guia Tecnico Premium V1</div>
+  <h1>Molde de Silicone<br><span>em pecas impressas em resina</span></h1>
+  <p class="lead">Como transformar uma peca impressa em resina SLA/DLP em master para replicacao com silicone - do molde aberto ao bipartido, sem romantizar os desafios.</p>
+  <div class="pills"><span class="pill">Replicacao</span><span class="pill">Silicone RTV</span><span class="pill">Moldagem</span><span class="pill">SLA &middot; DLP &middot; LCD</span></div>
+</div>
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" onclick="switchTab('conceito',this)">Conceito</button>
+  <button class="tab-btn" onclick="switchTab('maquinario',this)">Maquinario</button>
+  <button class="tab-btn" onclick="switchTab('processo',this)">Processo</button>
+  <button class="tab-btn" onclick="switchTab('falhas',this)">Falhas</button>
+  <button class="tab-btn" onclick="switchTab('decisao',this)">Decisao</button>
+  <button class="tab-btn" onclick="switchTab('checklist',this)">Checklist</button>
+</div>
+<div class="content">
+
+<div class="tab-pane active" id="pane-conceito">
+  <div class="section">
+    <div class="section-header"><h2>O que e e por que fazer</h2><div class="section-subtitle">A logica por tras do molde de silicone a partir de impressao 3D</div></div>
+    <p>Molde de silicone e uma ferramenta de producao. Voce imprime uma peca com qualidade, a usa como <strong>master</strong> (modelo original), faz um negativo em silicone e replica em resina de fundicao, poliuretano, gesso, cera, epoxi ou outros materiais - sem reimprimir.</p>
+    <p>Para pecas de resina SLA/DLP/LCD, o processo e viavel e relativamente acessivel. O ponto critico e que a peca master precisa estar <strong>completamente curada e bem acabada</strong> antes de entrar em contato com o silicone. Resina nao curada pode inibir silicone de adicao (platina) e estragar o molde.</p>
+    <div class="hbox info"><div class="hbox-label">A logica do master</div><p>Tudo que voce faz na peca master - lixamento, acabamento, detalhamento - aparece em cada copia. Um master bem acabado gera copias boas. Um master com marcas de camadas, supports mal removidos ou superficie porosa gera copias com os mesmos defeitos.</p></div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">Quando vale a pena fazer molde</div><div class="card-body">A partir de 5 a 10 copias, o molde comeca a compensar em tempo e custo. Para producoes menores, reimprimir pode ser mais simples - especialmente em impressoras MSLA rapidas.</div></div>
+      <div class="card"><div class="card-title">Aplicacoes tipicas</div><div class="card-body">Pecas decorativas, miniaturas, joias, replicas para pintura, componentes que serao vendidos em outros materiais (poliuretano, gesso pintado, cera de fundicao para perdida).</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><h2>Tipos de silicone</h2><div class="section-subtitle">A escolha errada aqui arruina o molde</div></div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">Silicone de adicao (platina)</div><div class="card-body"><p>Mais estavel dimensionalmente, maior durabilidade do molde (50-150 vazamentos). Nao libera subprodutos. Cura entre 4h e 24h a temperatura ambiente.</p><p style="margin-top:10px"><strong>Atencao:</strong> e inibido por compostos sulfurados, aminas, alguns plasticos, latex, e - principalmente - <strong>resina fotossensivel nao curada</strong>. A peca master precisa estar 100% curada.</p></div></div>
+      <div class="card"><div class="card-title">Silicone de condensacao (estanho)</div><div class="card-body"><p>Mais tolerante a inicao - funciona bem com pecas de resina UV mesmo quando a cura nao foi perfeita. Menor custo inicial.</p><p style="margin-top:10px">Desvantagem: leve retracao na cura (~1-2%), menor vida util do molde (20-50 vazamentos), libera etanol como subproduto da cura.</p></div></div>
+    </div>
+    <div class="hbox warn"><div class="hbox-label">Inicao de platina e resina 3D</div><p>Se o molde de silicone de platina ficou borrachudo, pegajoso ou simplesmente nao curou perto da peca, a causa e inicao. O mais comum com resinas SLA/DLP e a resina fotossensivel residual nao curada. Solucao: curar muito bem a peca (min. 2h em camara UV apos impressao) e aplicar desmoldante como barreira antes do silicone.</p></div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">Molde aberto</div><div class="card-body">A peca master e posicionada de um lado. Silicone cobre toda a face exposta. Produz copias com uma face plana. Simples, ideal para pecas com geometria simples ou faces de apresentacao unicas.</div></div>
+      <div class="card"><div class="card-title">Molde bipartido</div><div class="card-body">Duas metades de silicone. A peca master e totalmente envolvida. Permite replicar geometrias fechadas e com undercuts suaves. Requer atencao na linha de particao e nos pinos de registro.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-pane" id="pane-maquinario">
+  <div class="section">
+    <div class="section-header"><h2>Equipamentos e insumos</h2><div class="section-subtitle">O que voce precisa, organizado por nivel de producao</div></div>
+    <div class="lvl entrada">Entrada - estudo e prototipagem</div>
+    <table class="kit-table">
+      <thead><tr><th>Item</th><th>Funcao / observacao</th></tr></thead>
+      <tbody>
+        <tr><td>Peca master impressa em resina SLA/DLP/LCD<div class="note">Completamente curada, acabada, limpa</div></td><td>Modelo original para o molde. Qualidade da copia depende diretamente do acabamento do master.</td></tr>
+        <tr><td>Silicone RTV bicomponente<div class="note">Adicao (platina) ou condensacao (estanho)</div></td><td>Base do molde. Silicone de condensacao e mais tolerante para iniciante com pecas de resina UV.</td></tr>
+        <tr><td>Balanca de precisao (1g minimo, 0,1g ideal)</td><td>Proporcao silicone:catalisador precisa ser pesada - estimar a olho resulta em cura incompleta ou inicao.</td></tr>
+        <tr><td>Bequeres de polipropileno ou descartaveis</td><td>Para mistura do silicone. Usar PP ou PEAD - evitar PS que pode inibir o silicone.</td></tr>
+        <tr><td>Espatula rigida ou palito de madeira</td><td>Para mistura manual. Raspar bem as paredes e o fundo do bequer.</td></tr>
+        <tr><td>Desmoldante<div class="note">Vaselina liquida, spray de desmolde ou cera carnauba</div></td><td>Aplicar na peca master e na caixa de moldagem. Evita aderencia do silicone. Essencial para silicone de platina.</td></tr>
+        <tr><td>Caixa de moldagem<div class="note">Plastico, papelao com filme plastico interno ou caixas de LEGO</div></td><td>Contem o silicone enquanto cura. Deixar 8-12 mm de borda em volta da peca em todos os lados.</td></tr>
+        <tr><td>Plastilina ou massa para escultura (para bipartido)</td><td>Cria a linha de separacao no molde bipartido. Nao usar massas a base de enxofre - inibem silicone de platina.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <div class="lvl inter">Intermediario - producao controlada</div>
+    <table class="kit-table">
+      <thead><tr><th>Item</th><th>Funcao / observacao</th></tr></thead>
+      <tbody>
+        <tr><td>Camara de vacuo + bomba de vacuo<div class="note">15-30 L, bomba de 2 estagios</div></td><td>Remove bolhas de ar do silicone misturado antes de verter. Grande diferenca em pecas com detalhes finos.</td></tr>
+        <tr><td>Termometro de ambiente</td><td>Temperatura afeta diretamente o tempo de cura. Abaixo de 20 graus C a cura atrasa; acima de 35 graus C pode encurtar o pot life.</td></tr>
+        <tr><td>Misturador mecanico (hastes para furadeira)</td><td>Garante mistura mais homogenea em volumes maiores. Para pequenos volumes, mistura manual com espatula por 3 min e suficiente.</td></tr>
+        <tr><td>Selador para resina UV / primer de superficie</td><td>Aplicar na peca master antes do desmoldante. Fecha microporos da resina e cria barreira extra contra inicao.</td></tr>
+        <tr><td>Pinos de registro (silicone ou PTFE)</td><td>Para moldes bipartidos: garantem alinhamento correto das duas metades em cada vazamento.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <div class="lvl avancado">Avancado - escala e controle total</div>
+    <table class="kit-table">
+      <thead><tr><th>Item</th><th>Funcao / observacao</th></tr></thead>
+      <tbody>
+        <tr><td>Estufa / camara de temperatura controlada</td><td>Acelera a cura do silicone de platina de forma controlada (60 graus C por 1h = equivalente a 24h ambiente). Aumenta produtividade de moldes.</td></tr>
+        <tr><td>Camara de pressao</td><td>Comprime residuo de ar durante o vazamento do material final. Diferente da camara de vacuo - esta e usada na cura das copias, nao do molde.</td></tr>
+        <tr><td>Sistema de canais e respiros em cera ou plastico</td><td>Projeto de canais de entrada e saida de ar no molde bipartido - essencial para materiais de baixa viscosidade e geometrias fechadas.</td></tr>
+      </tbody>
+    </table>
+    <div class="hbox good" style="margin-top:20px"><div class="hbox-label">Recomendacao para comecar</div><p>Silicone de condensacao Shore A 20-30, balanca digital, bequeres de PP, desmoldante em spray e uma caixa improvisada com LEGO ou papelao com plastico filme. Com isso voce aprende o processo sem comprometer um silicone de platina premium em uma primeira tentativa.</p></div>
+  </div>
+</div>
+
+<div class="tab-pane" id="pane-processo">
+  <div class="section">
+    <div class="section-header"><h2>Molde aberto - passo a passo</h2><div class="section-subtitle">O mais simples. Ideal para pecas com face principal de apresentacao definida.</div></div>
+    <ol class="step-list">
+      <li><div class="step-num">1</div><div class="step-body"><div class="step-title">Preparar a peca master</div><div class="step-desc">A peca precisa estar completamente impressa, lavada, curada em camara UV (minimo 2h), lixada com progressao de lixas (120 > 220 > 400 > 600 se necessario), sem marcas de suporte visiveis e sem resina liquida residual em cantos ou cavidades.</div><div class="step-tip">Para silicone de platina: selar a peca com verniz acrilico ou primer de superficie e deixar curar completamente antes de prosseguir. Cria barreira contra inicao.</div></div></li>
+      <li><div class="step-num">2</div><div class="step-body"><div class="step-title">Montar a caixa de moldagem</div><div class="step-desc">Construa ou escolha uma caixa que deixe pelo menos 8-12 mm de borda em todos os lados da peca e na base. Aplique fita adesiva nas juntas para evitar vazamento. Fixe a peca no fundo da caixa com um ponto de cola quente - a face que ficara plana fica voltada para baixo.</div></div></li>
+      <li><div class="step-num">3</div><div class="step-body"><div class="step-title">Aplicar desmoldante</div><div class="step-desc">Aplique desmoldante em toda a peca master e em todas as paredes internas da caixa. Para spray: 2 demaos com intervalo de 2 minutos. Para vaselina: camada fina e uniforme com pincel ou cotonete, removendo excesso.</div><div class="step-tip">Nao deixar acumulo de desmoldante em cantos ou detalhes - vai borrar a superficie da copia.</div></div></li>
+      <li><div class="step-num">4</div><div class="step-body"><div class="step-title">Calcular o volume de silicone necessario</div><div class="step-desc">Encha a caixa com agua ate a altura desejada do molde, meca o volume de agua com bequer graduado, desconte o volume aproximado da peca. Seque tudo completamente antes de misturar o silicone.</div></div></li>
+      <li><div class="step-num">5</div><div class="step-body"><div class="step-title">Pesar e misturar o silicone</div><div class="step-desc">Pese a parte A e a parte B do silicone na proporcao exata indicada pelo fabricante (comum: 10:1 ou 1:1 em peso - confirme a ficha tecnica). Misture com espatula raspando bem as paredes e o fundo do bequer por 3-5 minutos ate homogeneizar completamente, sem estrias visiveis.</div><div class="step-tip">Se tiver camara de vacuo: desgaseiifique o silicone misturado por 2-4 minutos antes de verter. Bolhas sobem e estouram.</div></div></li>
+      <li><div class="step-num">6</div><div class="step-body"><div class="step-title">Verter o silicone</div><div class="step-desc">Verta em fio fino e continuo, de uma altura de 20-30 cm acima da peca, no ponto mais baixo da caixa - nao diretamente sobre a peca. O fio fino ajuda a rebentar bolhas pelo caminho. Preencha ate cobrir a peca com pelo menos 6-8 mm de silicone acima do ponto mais alto.</div></div></li>
+      <li><div class="step-num">7</div><div class="step-body"><div class="step-title">Aguardar a cura</div><div class="step-desc">Cubra a caixa para evitar poeira e deixe em superficie plana, sem vibracao. Temperatura ambiente 22-28 graus C e ideal. Tempo de cura conforme a ficha tecnica do silicone (comum: 4-8h para condensacao, 8-24h para platina). Nao tente acelerar sem estufa controlada.</div></div></li>
+      <li><div class="step-num">8</div><div class="step-body"><div class="step-title">Desmontar e extrair a peca master</div><div class="step-desc">Apos a cura completa, desmonte a caixa. Solte cuidadosamente as bordas do molde com espatula plastica. Dobre o molde com cuidado e extraia a peca master. Se houver resistencia, nao force - verifique se ha undercut que impeca a saida direta.</div><div class="step-tip">O molde esta pronto quando estiver completamente seco ao toque, nao deixar impressao digital e ter superficie firme mas flexivel.</div></div></li>
+      <li><div class="step-num">9</div><div class="step-body"><div class="step-title">Primeiros vazamentos e ajustes</div><div class="step-desc">Aplique desmoldante no molde antes de cada vazamento. As primeiras 2-3 copias costumam ter qualidade ligeiramente inferior enquanto o molde acomoda. A qualidade se estabiliza a partir do 3 ao 4 vazamento.</div></div></li>
+    </ol>
+  </div>
+  <div class="section">
+    <div class="section-header"><h2>Molde bipartido - diferencas do processo</h2><div class="section-subtitle">Para pecas com geometria fechada ou undercuts que impedem saida em molde aberto</div></div>
+    <ol class="step-list">
+      <li><div class="step-num">1</div><div class="step-body"><div class="step-title">Definir a linha de particao</div><div class="step-desc">Identifique o plano que divide a peca em duas metades sem undercuts em nenhuma delas. Marque a linha na peca com marcador. Esta linha vai aparecer como uma fina rebaba nas copias - posicione onde seja mais facil de remover.</div></div></li>
+      <li><div class="step-num">2</div><div class="step-body"><div class="step-title">Criar a primeira metade com plastilina</div><div class="step-desc">Enterre a peca ate a linha de particao na plastilina dentro da caixa de moldagem. Crie 3-4 pinos de registro (meia esfera ou cones pequenos) na superficie da plastilina - eles criam as chaves de alinhamento entre as duas metades.</div><div class="step-tip">Nao usar plastilina com enxofre - inibe silicone de platina. Verificar na embalagem ou testar com uma pequena amostra de silicone antes.</div></div></li>
+      <li><div class="step-num">3</div><div class="step-body"><div class="step-title">Verter a primeira metade de silicone</div><div class="step-desc">Aplique desmoldante na peca master e na plastilina. Misture e verta o silicone sobre a metade exposta da peca. Aguardar cura completa.</div></div></li>
+      <li><div class="step-num">4</div><div class="step-body"><div class="step-title">Remover plastilina e verter a segunda metade</div><div class="step-desc">Apos a cura, vire o conjunto, remova cuidadosamente toda a plastilina. Aplique desmoldante generosamente no silicone curado (essencial para as duas metades nao grudarem entre si). Verta a segunda camada de silicone. Aguardar cura.</div></div></li>
+      <li><div class="step-num">5</div><div class="step-body"><div class="step-title">Separar as metades e extrair o master</div><div class="step-desc">Com cuidado, use espatula para separar as duas metades de silicone pelos cantos. As chaves de registro facilitam o alinhamento nos vazamentos futuros. Para cada vazamento, uma das metades recebe o material, a outra fecha por cima.</div></div></li>
+    </ol>
+  </div>
+</div>
+
+<div class="tab-pane" id="pane-falhas">
+  <div class="section">
+    <div class="section-header"><h2>Falhas comuns e como resolver</h2><div class="section-subtitle">A maioria das falhas em molde de silicone tem causa conhecida e solucao direta</div></div>
+    <div class="falha-card"><div class="falha-title">Silicone nao curou / ficou pegajoso perto da peca</div><div class="falha-causa">Causa: inicao. Resina fotossensivel nao curada na peca master reagiu com o catalisador do silicone de platina. Tambem pode ser contaminacao por enxofre (plastilina errada, luvas de latex, borracha).</div><div class="falha-fix">Solucao: curar a peca por mais tempo na camara UV (min. 2h), selar com verniz acrilico, trocar para silicone de condensacao, ou usar luvas de nitrila em vez de latex.</div></div>
+    <div class="falha-card"><div class="falha-title">Bolhas de ar na superficie do molde</div><div class="falha-causa">Causa: bolhas aprisionadas durante a mistura ou o vazamento do silicone. Comum em silicones de alta viscosidade ou quando vertido rapido demais.</div><div class="falha-fix">Solucao: usar camara de vacuo para desgaseificar apos a mistura, verter em fio fino de altura, aplicar o silicone com pincel na peca master primeiro antes de verter o resto.</div></div>
+    <div class="falha-card"><div class="falha-title">Peca master nao saiu do molde</div><div class="falha-causa">Causa: desmoldante insuficiente ou peca com undercut severo que prende mecanicamente no silicone.</div><div class="falha-fix">Solucao: para desmoldante insuficiente, aplicar mais demaos na proxima vez. Para undercut: planejar o molde bipartido com linha de particao na regiao do undercut.</div></div>
+    <div class="falha-card"><div class="falha-title">Copias com bolhas internas</div><div class="falha-causa">Causa: ar aprisionado no material de fundicao durante o vazamento. Comum com resinas de baixa viscosidade em geometrias fechadas.</div><div class="falha-fix">Solucao: usar camara de pressao apos o vazamento das copias, inclinar o molde durante o vazamento, ou projetar canal de respiro no molde bipartido.</div></div>
+    <div class="falha-card"><div class="falha-title">Copias com dimensoes incorretas</div><div class="falha-causa">Causa: retracao do silicone (especialmente condensacao: 1-2%) ou retracao do material de fundicao.</div><div class="falha-fix">Solucao: trocar para silicone de adicao (platina) com retracao minima (menos de 0,1%), compensar na escala do master se a tolerancia permitir.</div></div>
+    <div class="falha-card"><div class="falha-title">Molde rasgou ao extrair a peca ou copia</div><div class="falha-causa">Causa: silicone muito duro (Shore A alto) para a geometria da peca, ou undercut muito agressivo.</div><div class="falha-fix">Solucao: usar silicone de Shore A mais baixo (10-20) para pecas com detalhes, fazer cortes estrategicos no molde para facilitar a extracao sem rasgar, ou converter para molde bipartido.</div></div>
+    <div class="falha-card"><div class="falha-title">Duas metades do molde bipartido desalinhadas</div><div class="falha-causa">Causa: pinos de registro insuficientes, mal posicionados ou nao criados.</div><div class="falha-fix">Solucao: criar pelo menos 3 pinos de registro em posicoes assimetricas, usar borrachas ou parafusos externos para comprimir e alinhar as duas metades durante o vazamento.</div></div>
+  </div>
+</div>
+
+<div class="tab-pane" id="pane-decisao">
+  <div class="section">
+    <div class="section-header"><h2>Molde vs. reimprimir</h2><div class="section-subtitle">Quando cada opcao faz mais sentido economicamente e tecnicamente</div></div>
+    <div class="compare-grid">
+      <div class="compare-card green">
+        <div class="compare-head">Fazer molde quando...</div>
+        <div class="compare-item"><span class="dot"></span><span>Volume: 10 ou mais copias (molde de condensacao) ou 30+ (platina)</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Produzir em material diferente da resina (poliuretano, gesso, cera, epoxi colorido)</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Peca com acabamento de superficie que seria caro reproduzir na impressora (textura manual, pintura especial)</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Producao continua sem depender da impressora ficar ocupada</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Copias para clientes que precisam de material especifico (flexivel, fundicao de metal por cera perdida)</span></div>
+      </div>
+      <div class="compare-card purple">
+        <div class="compare-head">Reimprimir quando...</div>
+        <div class="compare-item"><span class="dot"></span><span>Volume pequeno (1-5 copias) - custo e tempo do molde nao compensam</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Peca precisa de precisao dimensional elevada - impressao 3D tem menos retracao que fundicao</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Geometria com canais internos ou estruturas que o silicone nao consegue replicar</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Necessidade de alterar o design entre copias</span></div>
+        <div class="compare-item"><span class="dot"></span><span>Impressora MSLA rapida disponivel - tempo de impressao de 10-20 min por peca torna molde desnecessario</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><h2>Escolha do Shore A</h2><div class="section-subtitle">A dureza do silicone define qual geometria voce consegue extrair sem dano</div></div>
+    <div class="shore-row">
+      <div class="shore-card"><div class="shore-val">10-20</div><div class="shore-label">Shore A</div><div class="shore-desc">Moldes muito macios. Para pecas com muitos detalhes finos, textura, e undercuts suaves. Vida util menor. Dificil de manusear em moldes grandes.</div></div>
+      <div class="shore-card"><div class="shore-val">20-35</div><div class="shore-label">Shore A</div><div class="shore-desc">O mais versatil. Bom equilibrio entre flexibilidade e durabilidade. Recomendado para a maioria das pecas de resina de pequeno e medio porte.</div></div>
+      <div class="shore-card"><div class="shore-val">40-60</div><div class="shore-label">Shore A</div><div class="shore-desc">Moldes estruturais, semi-rigidos. Para pecas de geometria simples e producao em escala. Nao funciona com undercuts - exige molde bipartido.</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><h2>Silicone de adicao vs. condensacao - quando trocar</h2></div>
+    <table class="kit-table">
+      <thead><tr><th>Situacao</th><th>Platina (adicao)</th><th>Estanho (condensacao)</th></tr></thead>
+      <tbody>
+        <tr><td>Peca de resina bem curada e selada</td><td>Ideal. Sem retracao, longa vida.</td><td>Funciona, mas vida util menor.</td></tr>
+        <tr><td>Peca de resina com cura duvidosa</td><td>Risco de inicao.</td><td>Mais tolerante neste cenario.</td></tr>
+        <tr><td>Precisao dimensional critica (menos de 0,2%)</td><td>Retracao minima (menos de 0,1%).</td><td>Retracao 1-2%, pode ser problema.</td></tr>
+        <tr><td>Producao de 50 ou mais copias por molde</td><td>Vida util de 50-150 vazamentos.</td><td>20-50 vazamentos normalmente.</td></tr>
+        <tr><td>Orcamento limitado, teste inicial</td><td>Custo mais alto por kg.</td><td>Menor custo. Bom para aprender.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-pane" id="pane-checklist">
+  <div class="section">
+    <div class="section-header"><h2>Checklist de moldagem</h2><div class="section-subtitle">Marque cada item antes de verter o silicone - cada ponto perdido e um molde a refazer</div></div>
+    <div class="check-progress"><div class="check-bar" id="checkBar"></div></div>
+    <div id="checkCount" style="font-size:12px;color:var(--text-dim);margin-bottom:20px;">0 de 0 concluidos</div>
+    <div class="check-group">
+      <h3>Preparacao da peca master</h3>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Peca curada em camara UV por pelo menos 2 horas apos a impressao</div><div class="check-note">Para silicone de platina, quanto mais curada melhor - evita inicao</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Resina liquida residual removida de todos os cantos e cavidades</div><div class="check-note">Verificar com luz UV - resina nao curada fica visivel</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Suportes removidos e marcas lixadas (120 > 400 conforme necessidade)</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Superficie selada com verniz acrilico ou primer (opcional, mas recomendado para silicone de platina)</div><div class="check-note">Aguardar a cura completa do selador antes de prosseguir</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Peca limpa e seca - sem gordura, oleo ou umidade na superficie</div></div></div>
+    </div>
+    <div class="check-group">
+      <h3>Montagem e desmoldante</h3>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Caixa de moldagem montada com bordas de pelo menos 8 mm ao redor da peca em todos os lados</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Juntas da caixa vedadas com fita adesiva para evitar vazamento do silicone</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Peca master fixada no fundo da caixa (cola quente ou fita dupla face)</div><div class="check-note">Evita que a peca flutue quando o silicone for vertido</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Desmoldante aplicado em 2 demaos na peca master e nas paredes da caixa</div><div class="check-note">Aguardar 2 min entre demaos; nao acumular em detalhes finos</div></div></div>
+    </div>
+    <div class="check-group">
+      <h3>Mistura do silicone</h3>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Proporcao A:B pesada na balanca (nao estimada a olho)</div><div class="check-note">Conferir a proporcao na ficha tecnica do silicone especifico que voce esta usando</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Mistura homogeneizada por no minimo 3 minutos, raspando paredes e fundo do bequer</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Se disponivel: silicone desgaseificado em camara de vacuo por 2-4 min apos a mistura</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Silicone ainda dentro do pot life - confirmado antes de verter</div><div class="check-note">Apos o pot life o silicone comeca a gelificar e bolhas nao sobem mais</div></div></div>
+    </div>
+    <div class="check-group">
+      <h3>Vazamento e cura</h3>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Silicone vertido em fio fino e continuo, de 20-30 cm de altura, no ponto mais baixo da caixa</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Peca coberta com pelo menos 6-8 mm de silicone acima do ponto mais alto</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Molde posicionado em superficie plana e nivelada para cura - sem vibracao</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Tempo de cura completo aguardado conforme ficha tecnica antes de desmontar</div><div class="check-note">Desmoldar antes do tempo gera molde deformado e inutilizavel</div></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+function switchTab(id,btn){document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('pane-'+id).classList.add('active');btn.classList.add('active');}
+function toggleCheck(el){el.classList.toggle('done');updateProgress();}
+function updateProgress(){var all=document.querySelectorAll('.check-item');var done=document.querySelectorAll('.check-item.done');var pct=all.length?Math.round(done.length/all.length*100):0;document.getElementById('checkBar').style.width=pct+'%';document.getElementById('checkCount').textContent=done.length+' de '+all.length+' concluidos';}
+updateProgress();
+</script>
+</body>
+</html>
