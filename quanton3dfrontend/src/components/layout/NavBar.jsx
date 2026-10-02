@@ -77,7 +77,7 @@ function NavBar({
             <Search size={14} /> <span className="qnav-search-hint">Buscar</span> <kbd style={{ fontSize: "0.62rem", padding: "1px 4px", borderRadius: 3, background: "var(--surface-card)", border: "1px solid var(--border)", color: "var(--text-faint)", lineHeight: 1.4 }}>⌘K</kbd>
           </button>
           <button type="button" className="q-btn q-btn--sm q-btn--primary qnav-client-button" onClick={atendenteLogado ? onAbrirAdm : onAbrirCadastro}>
-            <User size={14} /> {atendenteLogado ? (atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administracao" : atendenteLogado.codigo) : (cliente ? (String(cliente.nome || "").trim().split(" ")[0] || "Minha conta") : "Area do cliente")}
+            <User size={14} /> {atendenteLogado ? (atendenteLogado?.permissoes?.acessoAdmCompleto ? "Administração" : atendenteLogado.codigo) : (cliente ? (String(cliente.nome || "").trim().split(" ")[0] || "Minha conta") : "Área do cliente")}
           </button>
         </nav>
       </div>
