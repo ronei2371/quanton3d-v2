@@ -31,8 +31,7 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: quanton3dbackend/package-lock.json
-      # npm install (e nao npm ci): o package-lock do backend esta desatualizado (falta o Sentry).
-      - run: npm install --no-audit --no-fund
+      - run: npm ci
       - name: Testes do backend
         run: npm test
 
