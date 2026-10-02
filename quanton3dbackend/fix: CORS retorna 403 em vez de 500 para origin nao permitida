@@ -47,9 +47,9 @@ app.use(
 cors({
 origin(origin, cb) {
 if (!origin) return cb(null, true);
-if (allowedOrigins.length === 0) return cb(new Error('CORS: ALLOWED_ORIGINS nao configurado'));
+if (allowedOrigins.length === 0) { const e = new Error('CORS: ALLOWED_ORIGINS nao configurado'); e.status = 403; return cb(e); }
 if (allowedOrigins.includes(origin)) return cb(null, true);
-return cb(new Error('CORS: origin nao permitida: ' + origin));
+const e = new Error('CORS: origin nao permitida: ' + origin); e.status = 403; return cb(e);
 },
 credentials: true,
 })
