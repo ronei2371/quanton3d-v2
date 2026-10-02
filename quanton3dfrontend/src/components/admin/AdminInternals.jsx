@@ -346,7 +346,7 @@ export function AdminContent({ tokenAtendente }) {
       let conversas = [];
       let conversasTotal = null;
       try {
-        const cResp = await api.get("/conversas", { headers, params: { limit: 500 } });
+        const cResp = await api.get("/conversas", { headers, params: { limit: 300 } });
         conversas = Array.isArray(cResp.data?.data) ? cResp.data.data : [];
         conversasTotal = Number.isFinite(cResp.data?.total) ? cResp.data.total : null;
       } catch (_) {}
@@ -517,7 +517,7 @@ export function AdminContent({ tokenAtendente }) {
       setSalvandoConversa(id);
       const respostaMelhorada = edicaoConversa[id] || "";
       await api.patch("/conversas/" + id + "/aprovar", { respostaMelhorada, revisadoPor: "Admin" }, { headers: { Authorization: "Bearer " + token } });
-      setDados(d => ({ ...d, conversas: d.conversas.filter(c => c._id !== id) })); carregarLacunas();
+      setDados(d => ({ ...d, conversas: d.conversas.map(c => c._id === id ? { ...c, aprovado: true, lacunaResolvida: true, respostaMelhorada } : c) })); carregarLacunas();
     } catch (err) { alert("Erro ao aprovar conversa."); }
     finally { setSalvandoConversa(""); }
   }
@@ -552,7 +552,7 @@ export function AdminContent({ tokenAtendente }) {
       const respostaMelhorada = edicaoConversa[id] || "";
       await api.patch("/conversas/" + id + "/aprovar", { respostaMelhorada, revisadoPor: "Admin" }, { headers: { Authorization: "Bearer " + token } });
       await api.patch("/conversas/" + id + "/revisar-feedback", {}, { headers: { Authorization: "Bearer " + token } });
-      setDados(d => ({ ...d, conversas: d.conversas.filter(c => c._id !== id) })); carregarLacunas();
+      setDados(d => ({ ...d, conversas: d.conversas.map(c => c._id === id ? { ...c, aprovado: true, lacunaResolvida: true, respostaMelhorada } : c) })); carregarLacunas();
     } catch (err) { alert("Erro ao aprovar e revisar."); }
     finally { setSalvandoConversa(""); }
   }
@@ -838,7 +838,7 @@ export function AdminContent({ tokenAtendente }) {
     { id: "formulacoes", label: "Formulações", icon: "🧪", count: dados.formulacoes.length },
     { id: "galeria", label: "Galeria", icon: "📸", count: dados.galeria.length },
     { id: "parceiros", label: "Parceiros", icon: "🤝", count: dados.parceiros?.length || 0 },
-    { id: "conversas", label: "Conversas Bot", icon: "🤖", count: dados.conversasTotal ?? (dados.conversas?.length || 0) },
+    { id: "conversas", label: "Conversas Bot", icon: "🤖", count: lacunas.total ?? 0 },
     { id: "parametros_adm", label: "Parâmetros", icon: "⚙️", count: null },
     { id: "atendentes", label: "Atendentes", icon: "👨‍💼", count: null },
     { id: "logs", label: "Logs", icon: "📋", count: null },
