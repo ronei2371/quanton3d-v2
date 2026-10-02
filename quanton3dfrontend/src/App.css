@@ -11,7 +11,9 @@
   position: sticky;
   top: 0;
   z-index: 200;
-  background: rgba(5, 7, 13, 0.88);
+  /* Opaco de proposito: o build remove o backdrop-filter sem prefixo, */
+  /* entao o blur nao chega no navegador e o conteudo aparecia atras da barra. */
+  background: #05070d;
   border-bottom: 1px solid var(--border-soft);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
