@@ -221,7 +221,7 @@ function BotChat({ cliente }) {
     if (!conversaId) return;
     if (satisfatoria) {
       try {
-        await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "satisfatoria" });
+        await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "satisfatoria" }, { headers: cabecalhoCliente(cliente) });
         setMensagens((prev) => prev.map((m, i) => (i === indice ? { ...m, feedbackEnviado: "satisfatoria" } : m)));
       } catch { /* O feedback é opcional e não deve interromper o chat. */ }
       return;
@@ -243,7 +243,7 @@ function BotChat({ cliente }) {
         paramsFeedback.exposicaoBase && `Exposição base: ${paramsFeedback.exposicaoBase}s`,
         paramsFeedback.camadasBase && `Camadas base: ${paramsFeedback.camadasBase}`,
       ].filter(Boolean);
-      await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "nao_satisfatoria", foto, configuracaoCliente: partesConfig.join(" | ") });
+      await api.patch("/conversas/" + conversaId + "/feedback", { feedback: "nao_satisfatoria", foto, configuracaoCliente: partesConfig.join(" | ") }, { headers: cabecalhoCliente(cliente) });
       setMensagens((prev) => prev.map((m, i) => (i === indice ? { ...m, feedbackEnviado: "nao_satisfatoria" } : m)));
       setFeedbackAberto(null);
       setFotoFeedback(null);
