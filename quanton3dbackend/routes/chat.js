@@ -174,10 +174,12 @@ router.post('/', async (req, res) => {
 
         let cadastro = null;
         if (ehIdDeCadastro(clienteId)) {
-            cadastro = await clienteComChave(clienteId, chaveDoPedido(req));
-            if (!cadastro) {
-                return res.json({ success: true, reply: AVISO_CHAVE, source: 'chave', ragUsado: false, conversaId: null, chaveInvalida: true });
-            }
+          cadastro = await clienteComChave(clienteId, chaveDoPedido(req));
+        }
+        // Toda identificacao exige a chave guardada no navegador do cliente.
+        // Identificador em texto puro (cadastros antigos e testes) nao vale mais.
+        if (!cadastro) {
+          return res.json({ success: true, reply: AVISO_CHAVE, source: 'chave', ragUsado: false, conversaId: null, chaveInvalida: true });
         }
         const clienteTelefone = cadastro?.telefone || '';
         const ehFundador = isFounderPhone(clienteTelefone);
@@ -388,11 +390,10 @@ router.get('/limite/:clienteId', async (req, res) => {
     try {
         const { clienteId } = req.params;
         let semLimite = false;
-        if (ehIdDeCadastro(clienteId)) {
-            const cad = await clienteComChave(clienteId, chaveDoPedido(req));
-            if (!cad) return res.status(401).json({ success: false, error: AVISO_CHAVE, chaveInvalida: true });
-            semLimite = isFounderPhone(cad.telefone);
-        }
+        // Exige a chave para qualquer identificador, nao so para o formato novo.
+        const cad = ehIdDeCadastro(clienteId) ? await clienteComChave(clienteId, chaveDoPedido(req)) : null;
+        if (!cad) return res.status(401).json({ success: false, error: AVISO_CHAVE, chaveInvalida: true });
+        semLimite = isFounderPhone(cad.telefone);
         const usadas = await perguntasHoje(clienteId);
         res.json({ success: true, limite: { usadas: Math.min(usadas, LIMITE_DIARIO), max: LIMITE_DIARIO, restantes: Math.max(0, LIMITE_DIARIO - usadas), semLimite } });
     } catch (e) {
@@ -404,16 +405,16 @@ router.get('/historico/:clienteId', async (req, res) => {
     try {
         const { clienteId } = req.params;
 
-        /* Aceita tanto ObjectId quanto string pura no campo clienteId */
+        /* O historico so sai com cadastro valido + chave. Identificador em texto puro
+           (cadastros antigos e testes) nao abre mais o historico de ninguem. */
         const isObjectId = ehIdDeCadastro(clienteId);
         let cadastro = null;
         if (isObjectId) {
-            cadastro = await clienteComChave(clienteId, chaveDoPedido(req));
-            if (!cadastro) return res.status(401).json({ success: false, error: AVISO_CHAVE, chaveInvalida: true });
+          cadastro = await clienteComChave(clienteId, chaveDoPedido(req));
         }
-        const query = isObjectId
-            ? { $or: [{ clienteId: clienteId }, { clienteId: new mongoose.Types.ObjectId(clienteId) }] }
-            : { clienteId: clienteId };
+        if (!cadastro) return res.status(401).json({ success: false, error: AVISO_CHAVE, chaveInvalida: true });
+
+        const query = { $or: [{ clienteId: clienteId }, { clienteId: new mongoose.Types.ObjectId(clienteId) }] };
 
         const conversas = await Conversa.find(query)
         .sort({ createdAt: 1 })
