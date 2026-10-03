@@ -2,13 +2,14 @@ import express from 'express';
 import { authAdminCompleto } from '../middlewares/authAdmin.js';
 import Conversa from '../models/Conversa.js';
 import { filtroLacunas, motivoDaConversa } from '../services/lacunas.js';
+import { clienteComChave, chaveDoPedido, ehIdDeCadastro } from '../services/chaveCliente.js';
 
 const router = express.Router();
 
 // Rotas do ADM: administrador ou atendente com acesso completo (middlewares/authAdmin.js).
 const authAdmin = authAdminCompleto;
 
-// Feedback do CLIENTE (rota pública, sem autenticação) — usada quando a resposta do bot não ajudou
+// Feedback do CLIENTE: exige a chave do navegador e confere se a conversa e dele mesmo.
 router.patch('/:id/feedback', async (req, res) => {
   try {
     const { id } = req.params;
@@ -22,6 +23,13 @@ router.patch('/:id/feedback', async (req, res) => {
     if (foto && foto.length > 7_000_000) {
       return res.status(400).json({ success: false, error: 'Imagem muito grande' });
     }
+
+    // Dono da conversa: sem cadastro valido + chave ninguem mexe no feedback de outro.
+    const alvo = await Conversa.findById(id).select('clienteId').lean();
+    if (!alvo) return res.status(404).json({ success: false, error: 'Conversa não encontrada' });
+    const dono = String(alvo.clienteId || '');
+    const cadastro = ehIdDeCadastro(dono) ? await clienteComChave(dono, chaveDoPedido(req)) : null;
+    if (!cadastro) return res.status(401).json({ success: false, error: 'Faça seu cadastro de novo para enviar o retorno.', chaveInvalida: true });
 
     const update = { feedback };
     if (feedback === 'nao_satisfatoria') {
