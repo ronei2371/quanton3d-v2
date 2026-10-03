@@ -7,6 +7,9 @@ function BotModal({ cliente, onClose }) {
     <div className="q-modal-backdrop">
       <section
         className="q-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="iaq3d-titulo-modal"
         style={{
           width: "min(760px, calc(100vw - 20px))",
           height: "88dvh", maxHeight: "calc(100dvh - 20px)",
@@ -15,7 +18,7 @@ function BotModal({ cliente, onClose }) {
         }}
       >
         <div className="q-modal-head">
-          <h2 className="iaq3d-head" style={{ fontSize: "1rem" }}>
+          <h2 className="iaq3d-head" id="iaq3d-titulo-modal" style={{ fontSize: "1rem" }}>
             <IAQ3DAvatar size={42} compact />
             <span className="iaq3d-head-text">IAQ3D<small>assistente técnica · online</small></span>
           </h2>
