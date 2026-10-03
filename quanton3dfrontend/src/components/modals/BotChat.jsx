@@ -72,13 +72,14 @@ const ChatInput = React.memo(function ChatInput({ onEnviar, pensando, modo, onMo
       <div style={{ display: "flex", gap: "8px", padding: "8px 4px 4px" }}>
         <input
           className="q-input"
+          aria-label="Sua dúvida técnica para a IAQ3D"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
           placeholder={placeholder}
           style={{ flex: 1, minWidth: 0 }}
         />
-        <button type="button" className="q-btn q-btn--primary" onClick={handleEnviar} disabled={pensando} style={{ flexShrink: 0 }}>
+        <button type="button" className="q-btn q-btn--primary" onClick={handleEnviar} disabled={pensando} style={{ flexShrink: 0 }} aria-label="Enviar pergunta">
           <Send size={15} />
         </button>
       </div>
@@ -358,10 +359,10 @@ function BotChat({ cliente }) {
             {m.isBot && m.conversaId && !m.feedbackEnviado && feedbackAberto !== i && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px", padding: "0 2px" }}>
                 <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Essa resposta ajudou?</span>
-                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, true)} className="q-btn q-btn--sm q-btn--success">
+                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, true)} className="q-btn q-btn--sm q-btn--success" aria-label="Essa resposta ajudou">
                   <ThumbsUp size={12} />
                 </button>
-                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, false)} className="q-btn q-btn--sm q-btn--danger">
+                <button type="button" onClick={() => enviarFeedback(m.conversaId, i, false)} className="q-btn q-btn--sm q-btn--danger" aria-label="Essa resposta não ajudou">
                   <ThumbsDown size={12} />
                 </button>
               </div>
