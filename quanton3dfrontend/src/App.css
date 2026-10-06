@@ -106,6 +106,8 @@
   font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
   transition: color 0.18s ease, background 0.18s ease;
 }
 
