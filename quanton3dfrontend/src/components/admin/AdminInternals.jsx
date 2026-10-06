@@ -2042,7 +2042,7 @@ export function AdminContent({ tokenAtendente }) {
               style={{ padding: "9px 18px", borderRadius: "999px", border: "1px solid rgba(10,255,135,0.5)", background: fixandoFotos ? "rgba(10,255,135,0.05)" : "rgba(10,255,135,0.12)", color: "#0aff87", cursor: fixandoFotos ? "wait" : "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
               {fixandoFotos ? "⏳ Corrigindo fotos…" : "🖼️ Corrigir Fotos do Catálogo"}
             </button>
-            {resultadoFixFotos && (
+            {resultadoFixFotos && (h
               <span style={{ fontSize: "0.78rem", color: resultadoFixFotos.success ? "#0aff87" : "#d73c3c" }}>
                 {resultadoFixFotos.success
                   ? `✅ ${resultadoFixFotos.mensagem}`
@@ -3189,6 +3189,7 @@ const CATEGORIAS_CONHECIMENTO = [
   { id: "impressora", label: "🖨️ Impressora" },
   { id: "problema", label: "⚠️ Problema e solução" },
   { id: "dica", label: "💡 Dica técnica" },
+  { id: "negocio", label: "💼 Negócio" },
   { id: "outro", label: "📝 Outro" },
 ];
 const ROTULO_CATEGORIA = Object.fromEntries(CATEGORIAS_CONHECIMENTO.map((c) => [c.id, c.label]));
