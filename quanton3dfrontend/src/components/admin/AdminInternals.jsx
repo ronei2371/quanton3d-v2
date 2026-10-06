@@ -647,8 +647,6 @@ export function AdminContent({ tokenAtendente }) {
   const [sugestaoEdit, setSugestaoEdit] = useState({});
   const [sugestaoRejeicao, setSugestaoRejeicao] = useState({});
   const [salvandoSugestao, setSalvandoSugestao] = useState("");
-  const [relatorioSemanal, setRelatorioSemanal] = useState(null);
-  const [carregandoRelatorio, setCarregandoRelatorio] = useState(false);
   const [migrandoFotos, setMigrandoFotos] = useState(false);
   const [resultadoMigracao, setResultadoMigracao] = useState(null);
   const [importandoCatalogo, setImportandoCatalogo] = useState(false);
@@ -730,15 +728,6 @@ export function AdminContent({ tokenAtendente }) {
     finally { setSalvandoSugestao(""); }
   }
 
-  async function carregarRelatorio() {
-    try {
-      setCarregandoRelatorio(true);
-      const res = await api.get("/admin/relatorio-semanal", { headers: { Authorization: "Bearer " + token } });
-      // o backend devolve os campos direto na resposta (sem a chave "relatorio")
-      setRelatorioSemanal(res.data?.relatorio || (res.data?.success ? res.data : null));
-    } catch(e) { alert("Erro ao gerar relatório."); }
-    finally { setCarregandoRelatorio(false); }
-  }
   const [observacaoTicket, setObservacaoTicket] = useState({});
   const [salvandoTicket, setSalvandoTicket] = useState("");
   const [sugerindoTicket, setSugerindoTicket] = useState("");
@@ -1560,64 +1549,6 @@ export function AdminContent({ tokenAtendente }) {
               </div>
             }
           </div>
-
-          {/* ── RELATÓRIO SEMANAL ── */}
-          <div style={{ background: "rgba(150,80,245,0.05)", border: "1px solid rgba(150,80,245,0.25)", borderRadius: "14px", padding: "16px", marginBottom: "14px" }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: relatorioSemanal ? "14px" : 0, flexWrap:"wrap", gap:"8px" }}>
-              <p style={{ margin: 0, fontWeight: 800, color: "#9650f5", fontSize: "0.85rem" }}>📊 RELATÓRIO SEMANAL — últimos 7 dias</p>
-              <button type="button" onClick={carregarRelatorio} disabled={carregandoRelatorio}
-                style={{ padding:"7px 16px", borderRadius:"999px", border:"1px solid rgba(150,80,245,0.5)", background: carregandoRelatorio ? "rgba(150,80,245,0.05)" : "rgba(150,80,245,0.12)", color:"#9650f5", cursor: carregandoRelatorio ? "wait" : "pointer", fontSize:"0.8rem", fontWeight:800, fontFamily:"inherit" }}>
-                {carregandoRelatorio ? "⏳ Gerando…" : "🔄 Gerar relatório"}
-              </button>
-            </div>
-            {relatorioSemanal && (
-              <div>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(110px,1fr))", gap:"10px", marginBottom:"14px" }}>
-                  {[
-                    { label:"Novos clientes", valor: relatorioSemanal.novosClientes, cor:"#0aff87", icon:"👥" },
-                    { label:"Conversas bot", valor: relatorioSemanal.totalConversas, cor:"#0092ff", icon:"💬" },
-                    { label:"Chamados abertos", valor: relatorioSemanal.novosTickets, cor:"#d73c3c", icon:"🔧" },
-                    { label:"Feedbacks negativos", valor: relatorioSemanal.feedbacksNegativos, cor:"#dc913c", icon:"👎" },
-                    { label:"Respostas aprovadas", valor: relatorioSemanal.conversasAprovadas, cor:"#9650f5", icon:"✅" },
-                  ].map(item => (
-                    <div key={item.label} style={{ background:"rgba(255,255,255,0.04)", borderRadius:"10px", padding:"12px", textAlign:"center", border:`1px solid ${item.cor}22` }}>
-                      <div style={{ fontSize:"1.2rem", marginBottom:"4px" }}>{item.icon}</div>
-                      <strong style={{ fontSize:"1.5rem", color:item.cor, display:"block", lineHeight:1 }}>{item.valor}</strong>
-                      <span style={{ fontSize:"0.65rem", color:"#9fb4c7", fontWeight:600 }}>{item.label}</span>
-                    </div>
-                  ))}
-                </div>
-                {relatorioSemanal.topPerguntas && relatorioSemanal.topPerguntas.length > 0 && (
-                  <div style={{ marginBottom:"12px" }}>
-                    <p style={{ fontSize:"0.75rem", fontWeight:800, color:"#9fb4c7", textTransform:"uppercase", margin:"0 0 7px" }}>🔝 Perguntas mais frequentes</p>
-                    {relatorioSemanal.topPerguntas.map((p, i) => (
-                      <div key={i} style={{ display:"flex", alignItems:"center", gap:"8px", padding:"5px 8px", borderRadius:"7px", background:"rgba(255,255,255,0.03)", marginBottom:"4px" }}>
-                        <span style={{ fontSize:"0.68rem", color:"#9650f5", fontWeight:800, minWidth:"18px" }}>#{i+1}</span>
-                        <span style={{ fontSize:"0.78rem", color:"#d3e4f8", flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.pergunta}</span>
-                        <span style={{ fontSize:"0.68rem", background:"rgba(150,80,245,0.15)", color:"#9650f5", padding:"1px 7px", borderRadius:"999px", fontWeight:800 }}>{p.total}x</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {relatorioSemanal.topResinas && relatorioSemanal.topResinas.length > 0 && (
-                  <div>
-                    <p style={{ fontSize:"0.75rem", fontWeight:800, color:"#9fb4c7", textTransform:"uppercase", margin:"0 0 7px" }}>🧪 Resinas mais perguntadas</p>
-                    <div style={{ display:"flex", gap:"7px", flexWrap:"wrap" }}>
-                      {relatorioSemanal.topResinas.map((r, i) => (
-                        <span key={i} style={{ padding:"4px 12px", borderRadius:"999px", background:"rgba(0,146,255,0.12)", color:"#0092ff", fontSize:"0.76rem", fontWeight:800, border:"1px solid rgba(0,146,255,0.25)" }}>
-                          {r.resina} ({r.total})
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <p style={{ fontSize:"0.68rem", color:"#6b8aad", margin:"12px 0 0", textAlign:"right" }}>Gerado em {new Date().toLocaleString("pt-BR")}</p>
-              </div>
-            )}
-            {!relatorioSemanal && !carregandoRelatorio && (
-              <p style={{ color:"#8ba3be", fontSize:"0.78rem", margin:"10px 0 0" }}>Clique em "Gerar relatório" para ver o resumo dos últimos 7 dias.</p>
-            )}
-          </div>
         </div>
       )}
 
@@ -2042,7 +1973,7 @@ export function AdminContent({ tokenAtendente }) {
               style={{ padding: "9px 18px", borderRadius: "999px", border: "1px solid rgba(10,255,135,0.5)", background: fixandoFotos ? "rgba(10,255,135,0.05)" : "rgba(10,255,135,0.12)", color: "#0aff87", cursor: fixandoFotos ? "wait" : "pointer", fontSize: "0.82rem", fontWeight: 800, fontFamily: "inherit" }}>
               {fixandoFotos ? "⏳ Corrigindo fotos…" : "🖼️ Corrigir Fotos do Catálogo"}
             </button>
-            {resultadoFixFotos && (h
+            {resultadoFixFotos && (
               <span style={{ fontSize: "0.78rem", color: resultadoFixFotos.success ? "#0aff87" : "#d73c3c" }}>
                 {resultadoFixFotos.success
                   ? `✅ ${resultadoFixFotos.mensagem}`
