@@ -20,6 +20,7 @@ import GuideViewer from "./components/guides/GuideViewer";
 import BotModal from "./components/modals/BotModal";
 import SearchModal from "./components/modals/SearchModal";
 import AdminModal from "./components/modals/AdminModal";
+import { PAGINA_TO_PATH } from "./data/navigation";
 
 function getClienteSalvo() {
   try { const s = localStorage.getItem("quanton3d_cliente"); return s ? JSON.parse(s) : null; } catch { return null; }
@@ -45,11 +46,6 @@ function paginaDaUrl() {
   if (PATH_TO_PAGINA[caminho]) return PATH_TO_PAGINA[caminho];
   return caminho === '/' ? 'inicio' : 'naoEncontrada';
 }
-const PAGINA_TO_PATH = {
-  inicio: '/', catalogo: '/catalogo', parametros: '/parametros',
-  calculadoras: '/calculadoras', guias: '/guias', academy: '/academia',
-  atendimento: '/atendimento', comunidade: '/comunidade', sobre: '/sobre',
-};
 
 function App() {
   const TITULOS = {
