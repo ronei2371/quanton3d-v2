@@ -14,3 +14,11 @@ export const NAV_ITEMS = [
   { id: "catalogo", label: "Catálogo", icon: FlaskConical },
   { id: "sobre", label: "Sobre", icon: Atom },
 ];
+
+// Endereco publico de cada pagina. Fica aqui para existir UM mapa so:
+// o App.jsx usa no history.pushState e o NavBar.jsx usa no href dos links.
+export const PAGINA_TO_PATH = {
+  inicio: '/', catalogo: '/catalogo', parametros: '/parametros',
+  calculadoras: '/calculadoras', guias: '/guias', academy: '/academia',
+  atendimento: '/atendimento', comunidade: '/comunidade', sobre: '/sobre',
+};
