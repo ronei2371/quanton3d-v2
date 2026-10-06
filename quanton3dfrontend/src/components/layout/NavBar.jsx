@@ -55,12 +55,16 @@ function NavBar({
   return (
     <header className="qnav-header">
       <div className="q-shell qnav-inner">
-        <button type="button" className="qnav-brand" onClick={() => navegar("inicio")} aria-label="Ir para o inicio">
+        <a href="/" className="qnav-brand" aria-label="Ir para o inicio" onClick={(event) => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          navegar("inicio");
+        }}>
           <AnimatedAtomLogo />
           <div>
             <span translate="no" className="qnav-title">Quanton3D<sup>®</sup></span>
           </div>
-        </button>
+        </a>
 
         <button
           type="button"
