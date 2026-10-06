@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu, X, User, Search } from "lucide-react";
-import { NAV_ITEMS } from "../../data/navigation";
+import { NAV_ITEMS, PAGINA_TO_PATH } from "../../data/navigation";
 import AnimatedAtomLogo from "./AnimatedAtomLogo";
 
 const PRIMARY_IDS = new Set(["inicio", "parametros", "calculadoras", "guias", "academy", "atendimento", "comunidade", "catalogo", "sobre"]);
@@ -8,14 +8,20 @@ const PRIMARY_IDS = new Set(["inicio", "parametros", "calculadoras", "guias", "a
 function NavItem({ item, active, onClick }) {
   const Icon = item.icon;
   return (
-    <button
-      type="button"
+    <a
+      href={PAGINA_TO_PATH[item.id] || "/"}
       className={`qnav-link${active ? " qnav-link--active" : ""}`}
-      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      onClick={(event) => {
+        // Ctrl/Cmd/Shift/Alt + clique: deixa o navegador abrir em outra aba/janela.
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        onClick();
+      }}
     >
       <Icon size={16} className="qnav-link-icon" aria-hidden="true" />
       {item.label}
-    </button>
+    </a>
   );
 }
 
