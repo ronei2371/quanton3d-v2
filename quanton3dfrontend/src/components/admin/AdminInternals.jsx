@@ -1096,8 +1096,11 @@ export function AdminContent({ tokenAtendente }) {
                 ))}
               </div>
               <p style={{ margin: 0, fontSize: "0.72rem", color: "#9fb4c7", lineHeight: 1.5 }}>
-                Conta feita com os tokens de cada resposta × preço da DeepSeek (US$ {iaCusto.precos?.entrada} entrada / US$ {iaCusto.precos?.saida} saída por milhão, dólar a R$ {String(iaCusto.precos?.dolar).replace(".", ",")}).
-                Saudações e respostas rápidas não gastam IA. Limite atual: {iaCusto.limiteDiario} perguntas por dia por cliente.
+                Conta feita com os tokens de cada resposta × preço da DeepSeek, já separando horário de pico de fora de pico.
+                No pico: US$ {iaCusto.precos?.entrada} entrada / US$ {iaCusto.precos?.cache} cache / US$ {iaCusto.precos?.saida} saída por milhão.
+                Fora de pico (22h–01h e 03h–07h são pico; o resto do dia, noites e fins de semana saem pela metade):
+                US$ {iaCusto.precos?.foraPico?.entrada} / US$ {iaCusto.precos?.foraPico?.cache} / US$ {iaCusto.precos?.foraPico?.saida}. Dólar a R$ {String(iaCusto.precos?.dolar).replace(".", ",")}.
+                Inclui os botões "sugerir" do ADM. Saudações e respostas rápidas não gastam IA. Limite atual: {iaCusto.limiteDiario} perguntas por dia por cliente.
                 O valor exato cobrado está no painel da DeepSeek (platform.deepseek.com → Usage).
               </p>
             </div>
