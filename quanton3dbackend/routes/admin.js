@@ -13,7 +13,7 @@ import Visita from '../models/Visita.js';
 import ContactMessage from '../models/ContactMessage.js';
 import SugestaoConhecimento from '../models/SugestaoConhecimento.js';
 import ImpressoraCatalogo from '../models/ImpressoraCatalogo.js';
-import { resumoCustoIA, inicioDoDiaBrasil, inicioDoMesBrasil, PRECOS, LIMITE_DIARIO, custoEmDolar, FONTES_SEM_IA } from '../services/usoIA.js';
+import { resumoCustoIA, inicioDoDiaBrasil, inicioDoMesBrasil, PRECOS, LIMITE_DIARIO, custoEmDolar, precosDe, registrarUsoAdmin, FONTES_SEM_IA } from '../services/usoIA.js';
 import { periodoSemana, ranking, nomeImpressora, nomeResina, temasDasPerguntas, variacao } from '../services/relatorioSemanal.js';
 import { motivoDaConversa } from '../services/lacunas.js';
 import EventoSite from '../models/EventoSite.js';
@@ -493,12 +493,13 @@ router.get('/relatorio-semanal', auth, async (req, res) => {
 
     const daIA = conversas.filter((c) => !FONTES_SEM_IA.includes(c.fonte));
     const lacunas = daIA.filter((c) => motivoDaConversa(c));
-    const tokens = daIA.reduce((a, c) => ({
-      tokensEntrada: a.tokensEntrada + (c.tokensEntrada || 0),
-      tokensCache: a.tokensCache + (c.tokensCache || 0),
-      tokensSaida: a.tokensSaida + (c.tokensSaida || 0),
-    }), { tokensEntrada: 0, tokensCache: 0, tokensSaida: 0 });
-    const usd = custoEmDolar(tokens);
+    // Cada conversa paga o preco do horario em que foi feita (a DeepSeek cobra
+    // metade fora do pico), por isso a conta e por conversa e nao sobre o total.
+    const usd = daIA.reduce((total, c) => total + custoEmDolar({
+      tokensEntrada: c.tokensEntrada || 0,
+      tokensCache: c.tokensCache || 0,
+      tokensSaida: c.tokensSaida || 0,
+    }, precosDe(c.createdAt)), 0);
 
     res.json({
       success: true,
@@ -583,6 +584,7 @@ Escreva uma resposta melhorada em português do Brasil. Seja técnico, direto e 
 
     const data = await resp.json();
     const sugestao = data.choices?.[0]?.message?.content?.trim() || '';
+    registrarUsoAdmin('sugerir-melhoria', data.usage, req.usuarioNome || req.usuarioCod);
     res.json({ success: true, sugestao });
   } catch (err) {
     console.error('Erro em /admin/sugerir-melhoria:', err);
@@ -639,6 +641,7 @@ Não escreva "olá" genérico — use o nome do cliente se disponível. Não exc
 
     const data = await resp.json();
     const sugestao = data.choices?.[0]?.message?.content?.trim() || '';
+    registrarUsoAdmin('sugerir-resposta-ticket', data.usage, req.usuarioNome || req.usuarioCod);
     res.json({ success: true, sugestao });
   } catch (err) {
     console.error('Erro em /admin/sugerir-resposta-ticket:', err);
