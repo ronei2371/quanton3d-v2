@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Users, Camera, MapPin, AtSign, Globe, Briefcase, X, MessageCircle, Upload, ShieldCheck, Megaphone, SlidersHorizontal, Plus, Play } from "lucide-react";
 import api from "../../lib/api";
+import { urlDaFoto, temFoto } from "../../utils/galeria";
 import CarrosselComunidade from "./CarrosselComunidade";
 import AvisoFotoPrivacidade from "../AvisoFotoPrivacidade";
 import { comprimirImagem } from "../../utils/comprimirImagem";
@@ -403,8 +404,8 @@ function GaleriaTab({ cliente, onPedirCadastro }) {
             const link = linkParametroOficial(item.resina);
             const params = CAMPOS_CONFIGURACAO_GALERIA.filter((campo) => item.parametros?.[campo.name]);
             return (
-              <article key={item._id || item.imagem} className="q-card" style={{ overflow: "hidden", padding: 0, display: "flex", flexDirection: "column" }}>
-                {item.imagem && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={item.imagem} alt={`Peça impressa com ${item.resina || "resina"}`} loading="lazy" style={{ width: "100%", height: "300px", objectFit: "contain", display: "block" }} /></button>}
+              <article key={item._id || urlDaFoto(item)} className="q-card" style={{ overflow: "hidden", padding: 0, display: "flex", flexDirection: "column" }}>
+                {temFoto(item) && <button type="button" onClick={() => setItemSelecionado(item)} aria-label="Ampliar foto da peça" style={{ display: "block", width: "100%", padding: 0, border: 0, background: "rgba(0,0,0,0.3)", cursor: "zoom-in" }}><img src={urlDaFoto(item)} alt={`Peça impressa com ${item.resina || "resina"}`} loading="lazy" style={{ width: "100%", height: "300px", objectFit: "contain", display: "block" }} /></button>}
                 <div style={{ padding: "14px 16px 16px", display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
                   <div>
                     <h3 style={{ margin: "0 0 2px", fontSize: "1rem" }}>{item.resina || "Resina Quanton3D"}</h3>
@@ -432,7 +433,7 @@ function GaleriaTab({ cliente, onPedirCadastro }) {
         <div role="dialog" aria-modal="true" aria-label="Foto ampliada da peça" onClick={() => setItemSelecionado(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", background: "rgba(0, 0, 0, 0.86)", cursor: "zoom-out" }}>
           <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", maxWidth: "96vw", maxHeight: "92dvh", padding: "12px", borderRadius: "var(--r-md)", background: "var(--bg-raised)", boxShadow: "0 24px 70px rgba(0,0,0,0.6)", cursor: "default" }}>
             <button type="button" onClick={() => setItemSelecionado(null)} aria-label="Fechar foto ampliada" className="q-btn q-btn--ghost q-btn--sm" style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1, background: "rgba(5,7,13,0.82)" }}><X size={18} /> Fechar</button>
-            <img src={itemSelecionado.imagem} alt={`Peça impressa com ${itemSelecionado.resina || "resina"}`} style={{ display: "block", maxWidth: "calc(96vw - 48px)", maxHeight: "calc(92dvh - 48px)", objectFit: "contain", borderRadius: "var(--r-sm)" }} />
+            <img src={urlDaFoto(itemSelecionado)} alt={`Peça impressa com ${itemSelecionado.resina || "resina"}`} style={{ display: "block", maxWidth: "calc(96vw - 48px)", maxHeight: "calc(92dvh - 48px)", objectFit: "contain", borderRadius: "var(--r-sm)" }} />
           </div>
         </div>
       )}
