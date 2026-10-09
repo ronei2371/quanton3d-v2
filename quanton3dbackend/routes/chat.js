@@ -416,10 +416,13 @@ router.get('/historico/:clienteId', async (req, res) => {
 
         const query = { $or: [{ clienteId: clienteId }, { clienteId: new mongoose.Types.ObjectId(clienteId) }] };
 
-        const conversas = await Conversa.find(query)
-        .sort({ createdAt: 1 })
+        // As 20 conversas MAIS RECENTES, depois viradas para ordem cronologica.
+        // Antes era sort crescente + limit(20): a partir da 21a conversa o cliente
+        // voltava e o bot so via as 20 PRIMEIRAS, nunca as de agora.
+        const conversas = (await Conversa.find(query)
+        .sort({ createdAt: -1 })
         .limit(20)
-        .lean();
+        .lean()).reverse();
 
         res.json({
             success: true,
