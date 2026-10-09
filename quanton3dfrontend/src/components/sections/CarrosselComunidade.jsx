@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import api from "../../lib/api";
+import { urlDaFoto, temFoto } from "../../utils/galeria";
 
 // Carrossel com as pecas aprovadas na Galeria da Comunidade.
 // Usado na Home (variante "home") e no topo da Galeria (variante "galeria").
@@ -20,7 +21,7 @@ function CarrosselComunidade({ onNavegar, pecas: pecasProp, onAbrirPeca, variant
   const pistaRef = useRef(null);
   const estado = useRef({ offset: 0, alvo: null, mouseEmCima: false, arrastando: false, pausadoBotao: false, inicioX: 0, inicioOffset: 0, moveu: false });
 
-  const pecas = (Array.isArray(pecasProp) ? pecasProp : pecasApi).filter((p) => p && p.imagem);
+  const pecas = (Array.isArray(pecasProp) ? pecasProp : pecasApi).filter((p) => temFoto(p));
   const temPecas = pecas.length >= MINIMO_PECAS;
 
   useEffect(() => {
@@ -157,7 +158,7 @@ function CarrosselComunidade({ onNavegar, pecas: pecasProp, onAbrirPeca, variant
               const repetida = i >= pecas.length;
               return (
                 <button
-                  key={`${peca._id || peca.imagem}-${i}`}
+                  key={`${peca._id || urlDaFoto(peca)}-${i}`}
                   type="button"
                   className="carrossel-card"
                   onClick={(e) => aoClicarPeca(peca, e)}
@@ -166,7 +167,7 @@ function CarrosselComunidade({ onNavegar, pecas: pecasProp, onAbrirPeca, variant
                   aria-hidden={repetida ? "true" : undefined}
                   aria-label={`${peca.observacao || "Peça da comunidade"}${peca.autor ? `, peça de ${peca.autor}` : ""}. ${onAbrirPeca ? "Ampliar a foto" : "Abrir a galeria"}`}
                 >
-                  <img src={peca.imagem} alt="" draggable="false" loading={i < 6 ? "eager" : "lazy"} />
+                  <img src={urlDaFoto(peca)} alt="" draggable="false" loading={i < 6 ? "eager" : "lazy"} />
                   <span className="carrossel-legenda">
                     {peca.autor && <strong>{peca.autor}</strong>}
                     {peca.observacao && <span>{peca.observacao}</span>}
