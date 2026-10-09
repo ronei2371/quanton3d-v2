@@ -15,5 +15,8 @@ const UsoIAAdminSchema = new mongoose.Schema(
 );
 
 UsoIAAdminSchema.index({ createdAt: -1 });
+// Apaga sozinho depois de 1 ano, igual ao EventoSite: serve so para somar custo
+// do mes e da semana, entao nao precisa crescer para sempre no banco.
+UsoIAAdminSchema.index({ createdAt: 1 }, { expireAfterSeconds: 365 * 86400 });
 
 export default mongoose.model('UsoIAAdmin', UsoIAAdminSchema);
