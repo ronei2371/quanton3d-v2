@@ -11,8 +11,8 @@ function BotModal({ cliente, onClose }) {
         aria-modal="true"
         aria-labelledby="iaq3d-titulo-modal"
         style={{
-          width: "min(1040px, calc(100vw - 20px))",
-          height: "88dvh", maxHeight: "calc(100dvh - 20px)",
+          width: "min(90vw, calc(100vw - 20px))",
+          height: "90dvh", maxHeight: "calc(100dvh - 20px)",
           padding: "18px 20px", boxSizing: "border-box", minWidth: 0,
           display: "flex", flexDirection: "column", overflow: "hidden",
         }}
