@@ -4,6 +4,7 @@ import multer from 'multer';
 import {
   aprovarGalleryItem,
   criarGalleryItem,
+  imagemGalleryItem,
   listarGalleryItems,
   listarGalleryItemsAdmin,
   recusarGalleryItem,
@@ -61,6 +62,8 @@ function normalizarPayload(req, _res, next) {
 
 router.post('/', upload.single('fotos'), normalizarPayload, criarGalleryItem);
 router.get('/', listarGalleryItems);
+// Foto de uma peca aprovada, servida fora do JSON da listagem (cache do navegador).
+router.get('/:id/imagem', imagemGalleryItem);
 router.get('/admin', authAdmin, listarGalleryItemsAdmin);
 router.patch('/:id/aprovar', authAdmin, aprovarGalleryItem);
 router.patch('/:id/recusar', authAdmin, recusarGalleryItem);
