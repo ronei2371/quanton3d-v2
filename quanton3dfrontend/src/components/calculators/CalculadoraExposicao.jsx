@@ -221,27 +221,31 @@ Esta combinação foi testada em <strong>{resultado.camadaBase.toFixed(2)} mm</s
 ) : (
 <div>
 <div style={{ marginBottom: "10px" }}>
-<span className="calc-badge" style={{ color: resultado.semAjuste ? "var(--q-verde)" : "var(--primary-strong)" }}>
-{resultado.semAjuste ? <CheckCircle2 size={13} /> : <Ruler size={13} />}
-{resultado.semAjuste && perfilEstimado ? (
-<div className="q-alert q-alert--warning" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-<AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-<div>Esta combinação (<strong>{displayNome(resina)}</strong> na <strong>{impressora}</strong>) ainda é uma <strong>estimativa inicial</strong>, sem teste completo. Use como ponto de partida e calibre com o gabarito Quanton3D antes de imprimir peças importantes.</div>
+<span className="calc-badge" style={{ color: resultado.semAjuste && !perfilEstimado ? "var(--q-verde)" : "var(--primary-strong)" }}>
+              {resultado.semAjuste && !perfilEstimado ? <CheckCircle2 size={13} /> : <Ruler size={13} />}
+              {resultado.semAjuste && !perfilEstimado
+                ? "Perfil oficial Quanton3D"
+                : resultado.semAjuste && perfilEstimado
+                ? "Estimativa inicial da Quanton3D"
+                : "Parâmetros ajustados (estimativa)"}
+            </span>
 </div>
-) : resultado.semAjuste ? (perfilEstimado ? "Estimativa inicial da Quanton3D" : "Perfil oficial Quanton3D") : "Parâmetros ajustados por temperatura (estimativa)"}
-</span>
-</div>
-{resultado.semAjuste ? (
-<div className="q-alert q-alert--success" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-<CheckCircle2 size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-<div>Mostrando o <strong>perfil oficial</strong> da <strong style={{ color: "var(--primary)" }}>{displayNome(resina)}</strong> na <strong style={{ color: "var(--primary)" }}>{impressora}</strong>. É o ponto de partida recomendado pela Quanton3D; o ajuste fino é feito com o gabarito na sua máquina.</div>
-</div>
-) : (
-<div className="q-alert q-alert--info" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-<Ruler size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-<div>Estimativa ajustada por temperatura (fator: <strong>{resultado.fatorTemp}x</strong>) sobre o perfil base ({resultado.camadaBase.toFixed(2)} mm). <strong>Sempre confirme com o gabarito Quanton3D antes do job completo.</strong></div>
-</div>
-)}
+{resultado.semAjuste && !perfilEstimado ? (
+        <div className="q-alert q-alert--success" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+          <CheckCircle2 size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
+          <div>Mostrando o <strong>perfil oficial</strong> da <strong style={{ color: "var(--primary)" }}>{displayNome(resina)}</strong> na <strong style={{ color: "var(--primary)" }}>{impressora}</strong>. É o ponto de partida recomendado pela Quanton3D; o ajuste fino é feito com o gabarito na sua máquina.</div>
+        </div>
+      ) : resultado.semAjuste && perfilEstimado ? (
+        <div className="q-alert q-alert--warning" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+          <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
+          <div>Esta combinação (<strong>{displayNome(resina)}</strong> na <strong>{impressora}</strong>) ainda é uma <strong>estimativa inicial</strong>, sem teste completo. Use como ponto de partida e calibre com o gabarito Quanton3D antes de imprimir peças importantes.</div>
+        </div>
+      ) : (
+        <div className="q-alert q-alert--info" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+          <Ruler size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
+          <div>Estimativa calculada a partir do perfil base (camada {num(base.alturaCamada, 0.05).toFixed(2)} mm, temperatura normal). Fator camada: <strong>{resultado.fatorCamada}x</strong> | Fator temperatura: <strong>{resultado.fatorTemp}x</strong>. A conta da camada é proporcional (camada 2× mais grossa = 2× o tempo), uma aproximação.{Math.abs(resultado.camadaSelecionada - resultado.camadaBase) > 0.02 && <strong> Você mudou bastante a camada: a cura não muda de forma exatamente proporcional, então o erro dessa estimativa cresce.</strong>}<strong> Sempre confirme com o gabarito Quanton3D antes do job completo.</strong></div>
+        </div>
+      )}
 <div className="calc-metrics-grid">
 <div className="calc-metric-card is-highlight">
 <p className="calc-metric-label">Exposição Normal</p>
