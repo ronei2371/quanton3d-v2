@@ -37,6 +37,22 @@ const ChatInput = React.memo(function ChatInput({ onEnviar, pensando, modo, onMo
   const modoAtual = MODOS.find((m) => m.id === modo);
   const placeholder = modoAtual ? modoAtual.placeholder : "Tire sua dúvida técnica...";
 
+  const campoRef = useRef(null);
+
+  // O campo cresce para baixo conforme a pessoa escreve, em vez de empurrar o
+  // texto para a direita (era um <input> de uma linha so, e quem escrevia uma
+  // duvida longa perdia o comeco de vista). Para de crescer em ALTURA_MAXIMA e
+  // a partir dai rola por dentro.
+  const ALTURA_MAXIMA = 160;
+  function ajustarAltura() {
+    const el = campoRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, ALTURA_MAXIMA) + "px";
+    el.style.overflowY = el.scrollHeight > ALTURA_MAXIMA ? "auto" : "hidden";
+  }
+  useEffect(ajustarAltura, [valor]);
+
   function handleEnviar() {
     if (!valor.trim() || pensando) return;
     onEnviar(valor);
@@ -70,14 +86,20 @@ const ChatInput = React.memo(function ChatInput({ onEnviar, pensando, modo, onMo
       </div>
       {/* Input + enviar */}
       <div style={{ display: "flex", gap: "8px", padding: "8px 4px 4px" }}>
-        <input
+        <textarea
+          ref={campoRef}
           className="q-input"
           aria-label="Sua dúvida técnica para a IAQ3D"
+          rows={1}
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
+          onKeyDown={(e) => {
+            // Enter envia, como antes. Shift+Enter pula linha, para quem quiser
+            // separar o problema em paragrafos.
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleEnviar(); }
+          }}
           placeholder={placeholder}
-          style={{ flex: 1, minWidth: 0 }}
+          style={{ flex: 1, minWidth: 0, resize: "none", overflowY: "hidden", lineHeight: 1.5, fontFamily: "inherit" }}
         />
         <button type="button" className="q-btn q-btn--primary" onClick={handleEnviar} disabled={pensando} style={{ flexShrink: 0 }} aria-label="Enviar pergunta">
           <Send size={15} />
@@ -352,7 +374,7 @@ function BotChat({ cliente }) {
               </span>
             )}
             <div
-              style={{ padding: "10px 14px", borderRadius: "var(--r-md)", background: m.isBot ? "var(--bg-raised)" : "rgba(47,123,255,0.12)", border: "1px solid " + (m.isBot ? "var(--border-soft)" : "rgba(47,123,255,0.3)"), color: "var(--text-primary)", fontSize: "0.9rem", lineHeight: 1.55, maxWidth: "min(88%, 640px)", boxSizing: "border-box", overflowWrap: "anywhere", wordBreak: "normal" }}
+              style={{ padding: "10px 14px", borderRadius: "var(--r-md)", background: m.isBot ? "var(--bg-raised)" : "rgba(47,123,255,0.12)", border: "1px solid " + (m.isBot ? "var(--border-soft)" : "rgba(47,123,255,0.3)"), color: "var(--text-primary)", fontSize: "0.9rem", lineHeight: 1.55, maxWidth: "min(92%, 860px)", boxSizing: "border-box", overflowWrap: "anywhere", wordBreak: "normal" }}
               dangerouslySetInnerHTML={{ __html: `<p style="margin:0">${formatarMarkdown(m.text)}</p>` }}
             />
 
