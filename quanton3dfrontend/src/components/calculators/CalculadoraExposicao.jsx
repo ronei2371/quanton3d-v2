@@ -90,18 +90,27 @@ const expBaseBase = num(base.exposicaoBase, 0);
 const camadasBase = Math.max(1, Math.round(num(base.camadasBase, 5)));
 const mesmaCamada = Math.abs(camadaSelecionada - camadaBase) < 0.001;
 const tempNormal = temperatura === "normal";
-const fatorCamada = camadaBase > 0 ? camadaSelecionada / camadaBase : 1;
 const fatorTemp = tempObj.fator;
-const expNormalAjustada = expNormalBase * fatorCamada * fatorTemp;
+// Sem calibração para altura diferente da base — não extrapola, mostra referência
+if (!mesmaCamada) {
+return {
+tipo: 'sem_calibracao',
+expNormalBase, expBaseBase, camadasBase, camadaBase,
+camadaSelecionada, tempNormal,
+fatorTemp: fatorTemp.toFixed(2),
+};
+}
+const expNormalAjustada = expNormalBase * fatorTemp;
 const expBaseAjustada = expBaseBase * fatorTemp;
 return {
+tipo: 'calibrado',
 expNormalBase, expBaseBase, camadasBase, camadaBase,
 expNormalAjustada: expNormalAjustada.toFixed(2),
 expBaseAjustada: expBaseAjustada.toFixed(1),
-mesmaCamada, tempNormal,
-semAjuste: mesmaCamada && tempNormal,
+mesmaCamada: true, tempNormal,
+semAjuste: tempNormal,
 camadaSelecionada,
-fatorCamada: fatorCamada.toFixed(2),
+fatorCamada: '1.00',
 fatorTemp: fatorTemp.toFixed(2),
 };
 }, [base, camadaIdx, temperatura]);
@@ -177,6 +186,40 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 </div>
 {resultado && base ? (
 <div>
+{resultado.tipo === 'sem_calibracao' ? (
+<>
+<div className="q-alert q-alert--warning" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+<AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
+<div>
+<strong>Sem calibração para {resultado.camadaSelecionada.toFixed(2)} mm.</strong>{" "}
+Esta combinação foi testada em <strong>{resultado.camadaBase.toFixed(2)} mm</strong>. Exibindo os valores reais da altura calibrada como referência — não extrapole sem testar.
+</div>
+</div>
+<div className="calc-metrics-grid" style={{ opacity: 0.82 }}>
+<div className="calc-metric-card is-highlight">
+<p className="calc-metric-label">Exposição Normal <span style={{ fontSize: "0.7em", fontWeight: 400, color: "var(--text-muted)" }}>(ref. {resultado.camadaBase.toFixed(2)} mm)</span></p>
+<p className="calc-metric-value">{resultado.expNormalBase}</p>
+<span className="calc-metric-unit">s — calibrado em {resultado.camadaBase.toFixed(2)} mm</span>
+</div>
+<div className="calc-metric-card is-highlight">
+<p className="calc-metric-label">Exposição Base <span style={{ fontSize: "0.7em", fontWeight: 400, color: "var(--text-muted)" }}>(ref. {resultado.camadaBase.toFixed(2)} mm)</span></p>
+<p className="calc-metric-value">{resultado.expBaseBase}</p>
+<span className="calc-metric-unit">s — calibrado em {resultado.camadaBase.toFixed(2)} mm</span>
+</div>
+<div className="calc-metric-card">
+<p className="calc-metric-label">Altura selecionada</p>
+<p className="calc-metric-value">{resultado.camadaSelecionada.toFixed(2)}</p>
+<span className="calc-metric-unit">mm (sem calibração)</span>
+</div>
+<div className="calc-metric-card">
+<p className="calc-metric-label">Camadas base</p>
+<p className="calc-metric-value">{resultado.camadasBase}</p>
+<span className="calc-metric-unit">camadas iniciais</span>
+</div>
+</div>
+</>
+) : (
+<div>
 <div style={{ marginBottom: "10px" }}>
 <span className="calc-badge" style={{ color: resultado.semAjuste ? "var(--q-verde)" : "var(--primary-strong)" }}>
 {resultado.semAjuste ? <CheckCircle2 size={13} /> : <Ruler size={13} />}
@@ -185,7 +228,7 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
 <div>Esta combinação (<strong>{displayNome(resina)}</strong> na <strong>{impressora}</strong>) ainda é uma <strong>estimativa inicial</strong>, sem teste completo. Use como ponto de partida e calibre com o gabarito Quanton3D antes de imprimir peças importantes.</div>
 </div>
-) : resultado.semAjuste ? (perfilEstimado ? "Estimativa inicial da Quanton3D" : "Perfil oficial Quanton3D") : "Parâmetros ajustados (estimativa)"}
+) : resultado.semAjuste ? (perfilEstimado ? "Estimativa inicial da Quanton3D" : "Perfil oficial Quanton3D") : "Parâmetros ajustados por temperatura (estimativa)"}
 </span>
 </div>
 {resultado.semAjuste ? (
@@ -196,7 +239,7 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 ) : (
 <div className="q-alert q-alert--info" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
 <Ruler size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-<div>Estimativa calculada a partir do perfil base (camada {num(base.alturaCamada, 0.05).toFixed(2)} mm, temperatura normal). Fator camada: <strong>{resultado.fatorCamada}x</strong> | Fator temperatura: <strong>{resultado.fatorTemp}x</strong>. A conta da camada é proporcional (camada 2× mais grossa = 2× o tempo), uma aproximação.{Math.abs(resultado.camadaSelecionada - resultado.camadaBase) > 0.02 && <strong> Você mudou bastante a camada: a cura não muda de forma exatamente proporcional, então o erro dessa estimativa cresce.</strong>}<strong> Sempre confirme com o gabarito Quanton3D antes do job completo.</strong></div>
+<div>Estimativa ajustada por temperatura (fator: <strong>{resultado.fatorTemp}x</strong>) sobre o perfil base ({resultado.camadaBase.toFixed(2)} mm). <strong>Sempre confirme com o gabarito Quanton3D antes do job completo.</strong></div>
 </div>
 )}
 <div className="calc-metrics-grid">
@@ -223,6 +266,8 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 <span className="calc-metric-unit">camadas iniciais</span>
 </div>
 </div>
+</div>
+)}
 <div className="calc-guide-card">
 <p className="calc-guide-card-title"><ClipboardList size={15} /> Parâmetros completos cadastrados — {displayNome(resina)} + {impressora}</p>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "8px" }}>
