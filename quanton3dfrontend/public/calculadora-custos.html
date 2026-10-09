@@ -732,9 +732,6 @@
                     <option value="60" data-valor="6500" data-vida="2500" data-fep="55" data-fep-jobs="30" data-lcd="300" data-lcd-h="2000">Phrozen Sonic Mini 8K</option>
                     <option value="75" data-valor="9500" data-vida="3000" data-fep="70" data-fep-jobs="28" data-lcd="420" data-lcd-h="2500">Phrozen Sonic Mighty 8K</option>
                   </optgroup>
-                  <optgroup label="Bambu Lab">
-
-                  </optgroup>
                 </select>
               </div>
               <div class="field"><label for="printerWatts">Consumo da impressora (W)</label><input autocomplete="off" id="printerWatts" type="text" inputmode="decimal" placeholder="Ex: 45" /></div>
@@ -1316,6 +1313,9 @@
       const r = history.find(item => item.id === id);
       if (!r) return;
       fill(r.input);
+      const totalMin = parseBR($("printMinutes").value) || 0;
+      $("printHoursInput").value = totalMin > 0 ? String(Math.floor(totalMin / 60)) : "";
+      $("printMinutesOnly").value = totalMin > 0 ? String(totalMin % 60) : "";
       calculate(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
