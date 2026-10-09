@@ -34,6 +34,9 @@ tracesSampleRate: 1.0,
 });
 
 const app = express();
+// Nao anunciar "x-powered-by: Express" em toda resposta: nao e falha por si so,
+// mas entrega de graca qual tecnologia roda aqui para quem procura alvo.
+app.disable("x-powered-by");
 // O Render fica na frente do app (1 proxy): assim req.ip e o IP real do visitante.
 app.set("trust proxy", 1);
 const PORT = Number(process.env.PORT || 10000);
