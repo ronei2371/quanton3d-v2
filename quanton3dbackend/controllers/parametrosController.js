@@ -6,6 +6,8 @@ export const CAMPOS_TECNICOS=['alturaCamada','exposicaoNormal','exposicaoBase','
 function valorComparavel(v){ return String(v ?? '').replace(',', '.').replace(/\s+/g,'').toLowerCase(); }
 export function camposTecnicosMudaram(atual={},novo={}){ return CAMPOS_TECNICOS.some(c=>Object.prototype.hasOwnProperty.call(novo,c) && valorComparavel(novo[c])!==valorComparavel(atual?.[c])); }
 export async function criarParametro(req,res){ const p={...req.body}; delete p._id; delete p.createdAt; delete p.updatedAt; p.revisadoEm=new Date(); if(!p.resina||!p.impressora) return res.status(400).json({success:false,error:'Resina e impressora são obrigatórias'}); p.alturaCamada=cleanMm(p.alturaCamada); const parametro=await Parametro.create(p); res.status(201).json({success:true,data:parametro}); }
+  if (req.body.impressora) req.body.impressora = req.body.impressora.trim();
+  if (req.body.resina) req.body.resina = req.body.resina.trim();
 // Perfil so vale se tiver exposicao normal e de base maiores que zero (o banco tem registros "0s").
 function numeroParametro(v){ const m=String(v ?? '').replace(',', '.').match(/\d+(?:\.\d+)?/); return m ? Number(m[0]) : 0; }
 export function perfilValido(p){ return numeroParametro(p?.exposicaoNormal) > 0 && numeroParametro(p?.exposicaoBase) > 0; }
@@ -36,8 +38,11 @@ export function perfilConfiavel(p){ return perfilValido(p) && problemasPerfil(p)
 export function visivelNoSite(p){ return perfilConfiavel(p) && !RESINAS_INDISPONIVEIS.has(String(p?.resina || '').trim().toUpperCase()); }
 export async function listarParametros(req,res){ const parametros=await Parametro.find().sort({resina:1,impressora:1}).lean(); const todos=req.query?.todos==='1'; res.json({success:true,data: todos ? parametros : parametros.filter(visivelNoSite)}); }
 export async function listarResinas(_req,res){ const resinas=(await Parametro.distinct('resina')).filter((r) => r && !RESINAS_INDISPONIVEIS.has(String(r).trim().toUpperCase())).sort(); res.json({success:true,data:resinas}); }
-export async function listarImpressoras(_req,res){
-  const nomes = (await Parametro.distinct('impressora')).filter(Boolean).sort((a,b) => a.localeCompare(b));
+export async function listarImpressoras(_req, res) {
+  const raw = (await Parametro.distinct('impressora')).filter(Boolean);
+  const seen = new Map();
+  raw.forEach(n => { const key = n.trim().toLowerCase(); if (!seen.has(key)) seen.set(key, n.trim()); });
+  const nomes = [...seen.values()].sort((a, b) => a.localeCompare(b));
   res.json({ success: true, data: nomes });
 }
 export async function listarImpressorasComFoto(_req, res) {
