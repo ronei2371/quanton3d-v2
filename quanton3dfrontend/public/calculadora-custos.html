@@ -1042,7 +1042,8 @@
         const id = input.id;
         const value = input.value;
         let valid = String(value).trim() !== "";
-        if (["priceKg", "resinGrams", "piecesQty", "marginPct"].includes(id)) valid = parseBR(value) > 0;
+        if (["priceKg", "resinGrams", "piecesQty"].includes(id)) valid = parseBR(value) > 0;
+        if (id === "marginPct") valid = parseBR(value) >= 0;
         if (!valid) {
           field.classList.add("invalid");
           ok = false;
@@ -1101,6 +1102,10 @@
       const commissionPct = parseBR(d.commissionPct) / 100;
       const marginPct = parseBR(d.marginPct) / 100;
       const sellCostPct = clamp(taxPct + commissionPct, 0, 0.95);
+      if (d.marginMode !== "markup" && sellCostPct + marginPct >= 1) {
+        setStatus("⚠️ Margem + impostos + comissão excedem 100%. Ajuste os percentuais.", "bad");
+        return null;
+      }
       let rawSuggested = 0;
       if (d.marginMode === "markup") rawSuggested = totalCost * (1 + marginPct) / Math.max(0.01, 1 - sellCostPct);
       else rawSuggested = totalCost / Math.max(0.01, 1 - sellCostPct - marginPct);
@@ -1459,7 +1464,7 @@
             const av = document.createElement("div");
             av.id = "avisoSimples";
             av.style.cssText = "padding:10px 14px;border-radius:10px;margin-bottom:12px;background:rgba(79,209,255,0.08);border:1px solid rgba(79,209,255,0.2);color:#7dd3fc;font-size:0.82rem;display:flex;gap:8px;align-items:center;";
-            av.innerHTML = "<span>⚡</span><span><strong>Modo Simples ativo</strong> — mostrando apenas os campos essenciais. Campos ocultos (lavagem, mão de obra, frete) usam os valores já preenchidos.</span>";
+            av.innerHTML = "<span>⚡</span><span><strong>Modo Simples ativo</strong> — mostrando apenas os campos essenciais. Campos ocultos (lavagem, mão de obra, frete) valem zero — ative o Modo Avançado para incluí-los no custo.</span>";
             form.insertBefore(av, form.firstChild);
           }
         } else {
