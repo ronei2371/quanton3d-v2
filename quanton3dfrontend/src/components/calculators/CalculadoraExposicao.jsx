@@ -19,6 +19,11 @@ function displayNome(nome = "") {
   return s ? s.toUpperCase() : "—";
 }
 function num(v, fb = 0) { const n = parseFloat(String(v || "").replace(",", ".")); return isFinite(n) ? n : fb; }
+function ajusteAltura(camada) {
+const ref = 0.05;
+if (camada <= ref) { return (camada - ref) * (0.4 / 0.03); }
+return (camada - ref) * (0.3 / 0.05);
+}
 
 export default function CalculadoraExposicao({ onIrParametros }) {
 const [parametros, setParametros] = useState([]);
@@ -91,25 +96,20 @@ const camadasBase = Math.max(1, Math.round(num(base.camadasBase, 5)));
 const mesmaCamada = Math.abs(camadaSelecionada - camadaBase) < 0.001;
 const tempNormal = temperatura === "normal";
 const fatorTemp = tempObj.fator;
-// Sem calibração para altura diferente da base — não extrapola, mostra referência
-if (!mesmaCamada) {
-return {
-tipo: 'sem_calibracao',
-expNormalBase, expBaseBase, camadasBase, camadaBase,
-camadaSelecionada, tempNormal,
-fatorTemp: fatorTemp.toFixed(2),
-};
-}
-const expNormalAjustada = expNormalBase * fatorTemp;
+// Ajuste por altura de camada: 0.02mm→−0.4s, 0.05mm→0s, 0.10mm→+0.3s (regra Quanton3D)
+const deltaAltura = ajusteAltura(camadaSelecionada) - ajusteAltura(camadaBase);
+const expNormalComCamada = Math.max(0.1, expNormalBase + deltaAltura);
+const expNormalAjustada = expNormalComCamada * fatorTemp;
 const expBaseAjustada = expBaseBase * fatorTemp;
 return {
 tipo: 'calibrado',
 expNormalBase, expBaseBase, camadasBase, camadaBase,
 expNormalAjustada: expNormalAjustada.toFixed(2),
 expBaseAjustada: expBaseAjustada.toFixed(1),
-mesmaCamada: true, tempNormal,
-semAjuste: tempNormal,
+mesmaCamada, tempNormal,
+semAjuste: mesmaCamada && tempNormal,
 camadaSelecionada,
+deltaAltura: deltaAltura.toFixed(2),
 fatorCamada: '1.00',
 fatorTemp: fatorTemp.toFixed(2),
 };
@@ -186,39 +186,6 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 </div>
 {resultado && base ? (
 <div>
-{resultado.tipo === 'sem_calibracao' ? (
-<>
-<div className="q-alert q-alert--warning" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-<AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-<div>
-<strong>Sem calibração para {resultado.camadaSelecionada.toFixed(2)} mm.</strong>{" "}
-Esta combinação foi testada em <strong>{resultado.camadaBase.toFixed(2)} mm</strong>. Exibindo os valores reais da altura calibrada como referência — não extrapole sem testar.
-</div>
-</div>
-<div className="calc-metrics-grid" style={{ opacity: 0.82 }}>
-<div className="calc-metric-card is-highlight">
-<p className="calc-metric-label">Exposição Normal <span style={{ fontSize: "0.7em", fontWeight: 400, color: "var(--text-muted)" }}>(ref. {resultado.camadaBase.toFixed(2)} mm)</span></p>
-<p className="calc-metric-value">{resultado.expNormalBase}</p>
-<span className="calc-metric-unit">s — calibrado em {resultado.camadaBase.toFixed(2)} mm</span>
-</div>
-<div className="calc-metric-card is-highlight">
-<p className="calc-metric-label">Exposição Base <span style={{ fontSize: "0.7em", fontWeight: 400, color: "var(--text-muted)" }}>(ref. {resultado.camadaBase.toFixed(2)} mm)</span></p>
-<p className="calc-metric-value">{resultado.expBaseBase}</p>
-<span className="calc-metric-unit">s — calibrado em {resultado.camadaBase.toFixed(2)} mm</span>
-</div>
-<div className="calc-metric-card">
-<p className="calc-metric-label">Altura selecionada</p>
-<p className="calc-metric-value">{resultado.camadaSelecionada.toFixed(2)}</p>
-<span className="calc-metric-unit">mm (sem calibração)</span>
-</div>
-<div className="calc-metric-card">
-<p className="calc-metric-label">Camadas base</p>
-<p className="calc-metric-value">{resultado.camadasBase}</p>
-<span className="calc-metric-unit">camadas iniciais</span>
-</div>
-</div>
-</>
-) : (
 <div>
 <div style={{ marginBottom: "10px" }}>
 <span className="calc-badge" style={{ color: resultado.semAjuste && !perfilEstimado ? "var(--q-verde)" : "var(--primary-strong)" }}>
@@ -227,7 +194,11 @@ Esta combinação foi testada em <strong>{resultado.camadaBase.toFixed(2)} mm</s
                 ? "Perfil oficial Quanton3D"
                 : resultado.semAjuste && perfilEstimado
                 ? "Estimativa inicial da Quanton3D"
-                : "Parâmetros ajustados (estimativa)"}
+                : !resultado.mesmaCamada && !resultado.tempNormal
+? "Ajustado — camada + temperatura"
+: !resultado.mesmaCamada
+? `Ajustado para ${resultado.camadaSelecionada.toFixed(2)} mm`
+: "Ajustado por temperatura"}
             </span>
 </div>
 {resultado.semAjuste && !perfilEstimado ? (
@@ -243,7 +214,11 @@ Esta combinação foi testada em <strong>{resultado.camadaBase.toFixed(2)} mm</s
       ) : (
         <div className="q-alert q-alert--info" style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
           <Ruler size={18} style={{ flexShrink: 0, marginTop: "1px" }} />
-          <div>Estimativa calculada a partir do perfil base (camada {num(base.alturaCamada, 0.05).toFixed(2)} mm, temperatura normal). Fator camada: <strong>{resultado.fatorCamada}x</strong> | Fator temperatura: <strong>{resultado.fatorTemp}x</strong>. A conta da camada é proporcional (camada 2× mais grossa = 2× o tempo), uma aproximação.{Math.abs(resultado.camadaSelecionada - resultado.camadaBase) > 0.02 && <strong> Você mudou bastante a camada: a cura não muda de forma exatamente proporcional, então o erro dessa estimativa cresce.</strong>}<strong> Sempre confirme com o gabarito Quanton3D antes do job completo.</strong></div>
+          <div>
+{!resultado.mesmaCamada && <><strong>Ajuste por altura: {Number(resultado.deltaAltura) >= 0 ? "+" : ""}{resultado.deltaAltura}s</strong> em relação ao perfil base ({resultado.camadaBase.toFixed(2)} mm). </>}
+{!resultado.tempNormal && <>Fator temperatura: <strong>{resultado.fatorTemp}×</strong>. </>}
+<strong>Sempre confirme com o gabarito Quanton3D antes do job completo.</strong>
+</div>
         </div>
       )}
 <div className="calc-metrics-grid">
@@ -271,7 +246,6 @@ Esta combinação foi testada em <strong>{resultado.camadaBase.toFixed(2)} mm</s
 </div>
 </div>
 </div>
-)}
 <div className="calc-guide-card">
 <p className="calc-guide-card-title"><ClipboardList size={15} /> Parâmetros completos cadastrados — {displayNome(resina)} + {impressora}</p>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "8px" }}>
