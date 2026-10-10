@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { UserCog, Check } from "lucide-react";
 import IAQ3DAvatar from "./components/IAQ3DAvatar";
 import api from "./lib/api";
@@ -16,10 +16,10 @@ import AtendimentoSection from "./components/sections/AtendimentoSection";
 import ComunidadeSection from "./components/sections/ComunidadeSection";
 import CatalogoSection from "./components/sections/CatalogoSection";
 import SobreSection from "./components/sections/SobreSection";
-import GuideViewer from "./components/guides/GuideViewer";
-import BotModal from "./components/modals/BotModal";
+const GuideViewer = lazy(() => import("./components/guides/GuideViewer"));
+const BotModal = lazy(() => import("./components/modals/BotModal"));
 import SearchModal from "./components/modals/SearchModal";
-import AdminModal from "./components/modals/AdminModal";
+const AdminModal = lazy(() => import("./components/modals/AdminModal"));
 import { PAGINA_TO_PATH } from "./data/navigation";
 
 function getClienteSalvo() {
@@ -322,9 +322,9 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
         <CadastroInicial formCliente={formCliente} salvandoCliente={salvandoCliente} erroCadastro={erroCadastro} alterarCliente={alterarCliente} salvarCliente={salvarCliente} onFechar={fecharCadastro} onAcessoEquipe={abrirAcessoEquipe} motivo={motivoCadastro} />
       )}
 
-      {mostrarBot && <BotModal cliente={cliente} onClose={() => setMostrarBot(false)} />}
+      {mostrarBot && <Suspense fallback={null}><BotModal cliente={cliente} onClose={() => setMostrarBot(false)} /></Suspense>}
       {mostrarBusca && <SearchModal onClose={() => setMostrarBusca(false)} onNavegar={navegar} />}
-      {mostrarAdm && <AdminModal atendenteLogado={atendenteLogado} onClose={() => setMostrarAdm(false)} onLogout={logoutAtendente} />}
+      {mostrarAdm && <Suspense fallback={null}><AdminModal atendenteLogado={atendenteLogado} onClose={() => setMostrarAdm(false)} onLogout={logoutAtendente} /></Suspense>}
       <ContactMessageModal aberto={mostrarContatoMensagem} aoFechar={() => setMostrarContatoMensagem(false)} cliente={cliente} />
       <PartnerRequestModal aberto={mostrarParceiroModal} aoFechar={() => setMostrarParceiroModal(false)} cliente={cliente} />
 
@@ -363,7 +363,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
 
       <main className="app-main q-shell">
         {activeGuide
-          ? <GuideViewer guide={activeGuide} onVoltar={() => setActiveGuide(null)} />
+          ? <Suspense fallback={null}><GuideViewer guide={activeGuide} onVoltar={() => setActiveGuide(null)} /></Suspense>
           : paginas[paginaAtiva]}
       </main>
 
