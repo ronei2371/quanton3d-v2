@@ -59,7 +59,7 @@ export function BoasVindasModal({ onEntrar }) {
   }
   return (
     <div className={"welcome-screen" + (saindo ? " leaving" : "")}>
-      <TunelEntrada acelerar={s
+      <TunelEntrada acelerar={saindo} />
 
           <h1 className="welcome-entra welcome-shimmer" style={{ "--atraso": "0.35s", fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 24px", background: "linear-gradient(135deg, #ffffff 30%, var(--q-marine) 60%, var(--q-ametista) 80%, #ffffff 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerQ 3s linear infinite" }}>
             Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "var(--q-marine)" }}>®</sup>
