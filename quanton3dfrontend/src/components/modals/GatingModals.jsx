@@ -45,7 +45,7 @@ return (
 <source src="/atom-bg-web.mp4" type="video/mp4" />
 </video>
 
-<h1 className="welcome-entra" style={{ "--atraso": "0.35s", position:"absolute", top:"clamp(24px,5vh,60px)", right:"clamp(20px,4vw,50px)", fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 7vw, 4.2rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1, margin: 0, textAlign:"right", zIndex:1 }}>
+<h1 className="welcome-entra" style={{ "--atraso": "0.35s", position:"absolute", top:"clamp(24px,5vh,60px)", left:"clamp(20px,4vw,50px)", fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 7vw, 4.2rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1, margin: 0, textAlign:"left", zIndex:1 }}>
 <span style={{ background: "linear-gradient(135deg, #00d4ff 0%, #ffffff 20%, #a855f7 45%, #00aaff 65%, #ffffff 80%, #00d4ff 100%)", backgroundSize: "300% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerQ 2.5s linear infinite, colorwaveQ 5s ease-in-out infinite", display: "inline-block" }}>Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "#00aaff" }}>®</sup></span>
 </h1>
 
