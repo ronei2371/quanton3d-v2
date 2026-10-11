@@ -33,23 +33,26 @@ export function BoasVindasModal({ onEntrar }) {
   function handleEntrar() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const bufLen = Math.floor(ctx.sampleRate * 1.0);
-      const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
-      const src = ctx.createBufferSource();
-      src.buffer = buf;
-      const filt = ctx.createBiquadFilter();
-      filt.type = "bandpass";
-      filt.frequency.setValueAtTime(3200, ctx.currentTime);
-      filt.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.9);
-      filt.Q.setValueAtTime(2.5, ctx.currentTime);
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
-      src.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
-      src.start(ctx.currentTime); src.stop(ctx.currentTime + 1.0);
+      const play = () => {
+        const bufLen = Math.floor(ctx.sampleRate * 1.0);
+        const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const filt = ctx.createBiquadFilter();
+        filt.type = "bandpass";
+        filt.frequency.setValueAtTime(3200, ctx.currentTime);
+        filt.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.9);
+        filt.Q.setValueAtTime(2.5, ctx.currentTime);
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.9, ctx.currentTime + 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
+        src.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+        src.start(ctx.currentTime); src.stop(ctx.currentTime + 1.0);
+      };
+      ctx.state === "suspended" ? ctx.resume().then(play) : play();
     } catch (e) { /* silent */ }
     setSaindo(true);
     setTimeout(onEntrar, 750);
