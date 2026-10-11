@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Lock, X } from "lucide-react";
 import { WHATSAPP_SUPORTE_URL } from "../../data/contact";
 
@@ -16,52 +16,48 @@ const ORIGENS = ["Instagram", "YouTube", "Google / Pesquisa", "Indicação de am
 export { SOCIAL_LINKS, ORIGENS };
 
 export function BoasVindasModal({ onEntrar }) {
-  const [saindo, setSaindo] = useState(false);
+const [saindo, setSaindo] = useState(false);
+const videoRef = useRef(null);
 
-  // som whoosh na entrada
-  useEffect(() => {
-    // shimmer keyframe
-    if (!document.getElementById('q3d-shimmer')) {
-      const s = document.createElement('style');
-      s.id = 'q3d-shimmer';
-      s.textContent = '@keyframes shimmerQ { 0%{background-position:0% center} 100%{background-position:200% center} }';
-      document.head.appendChild(s);
-    }
-    
-  }, []);
-  function handleEntrar() {
-    try {
-      const audio = new Audio('/sounds/viralaudio-descent-whoosh-long-cinematic-sound-effect-405921.mp3');
-      audio.volume = 1.0;
-      audio.play().catch(() => {});
-    } catch (e) { /* silent */ }
-    setSaindo(true);
-    setTimeout(onEntrar, 750);
-  }
-  return (
-    <div className={"welcome-screen" + (saindo ? " leaving" : "")}>
-      <video autoPlay muted loop playsInline style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",zIndex:0,opacity:saindo?0.3:1,transition:"opacity 0.75s ease"}}>
-        <source src="/atom-bg-web.mp4" type="video/mp4" />
-      </video>
+useEffect(() => {
+if (!document.getElementById('q3d-shimmer')) {
+const s = document.createElement('style');
+s.id = 'q3d-shimmer';
+s.textContent = '@keyframes shimmerQ { 0%{background-position:0% center} 100%{background-position:200% center} } @keyframes colorwaveQ { 0%{filter:hue-rotate(0deg) brightness(1.3)} 50%{filter:hue-rotate(70deg) brightness(1.6)} 100%{filter:hue-rotate(140deg) brightness(1.3)} }';
+document.head.appendChild(s);
+}
+if (videoRef.current) {
+videoRef.current.play().catch(() => {});
+}
+}, []);
+function handleEntrar() {
+try {
+const audio = new Audio('/sounds/viralaudio-descent-whoosh-long-cinematic-sound-effect-405921.mp3');
+audio.volume = 1.0;
+audio.play().catch(() => {});
+} catch (e) { }
+setSaindo(true);
+setTimeout(onEntrar, 750);
+}
+return (
+<div className={"welcome-screen" + (saindo ? " leaving" : "")}>
+<video ref={videoRef} autoPlay muted loop playsInline style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",zIndex:0,opacity:saindo?0.3:1,transition:"opacity 0.75s ease",filter:"brightness(1.4) saturate(1.5) contrast(1.05)"}}>
+<source src="/atom-bg-web.mp4" type="video/mp4" />
+</video>
 
-                        <h1 className="welcome-entra" style={{ "--atraso": "0.35s", fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 24px" }}>
-                <span style={{ background: "linear-gradient(135deg, #ffffff 30%, var(--q-marine) 60%, var(--q-ametista) 80%, #ffffff 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerQ 3s linear infinite", display: "inline-block" }}>Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "var(--q-marine)" }}>®</sup></span>
-              </h1>
+<h1 className="welcome-entra" style={{ "--atraso": "0.35s", position:"absolute", top:"clamp(24px,5vh,60px)", right:"clamp(20px,4vw,50px)", fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 7vw, 4.2rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1, margin: 0, textAlign:"right", zIndex:1 }}>
+<span style={{ background: "linear-gradient(135deg, #00d4ff 0%, #ffffff 20%, #a855f7 45%, #00aaff 65%, #ffffff 80%, #00d4ff 100%)", backgroundSize: "300% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerQ 2.5s linear infinite, colorwaveQ 5s ease-in-out infinite", display: "inline-block" }}>Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "#00aaff" }}>®</sup></span>
+</h1>
 
-      
-      
+<button type="button" className="q-btn q-btn--primary welcome-botao welcome-entra" style={{ "--atraso": "1.1s", position:"absolute", bottom:"clamp(50px,8vh,90px)", right:"clamp(20px,4vw,50px)", padding: "16px 46px", fontSize: "1rem", zIndex:1 }} onClick={handleEntrar}>
+▶ Acessar o Suporte Técnico
+</button>
 
-      
-
-      <button type="button" className="q-btn q-btn--primary welcome-botao welcome-entra" style={{ "--atraso": "1.1s", padding: "16px 46px", fontSize: "1rem" }} onClick={handleEntrar}>
-        ▶ Acessar o Suporte Técnico
-      </button>
-
-      <p style={{ position: "absolute", bottom: "18px", fontSize: "0.68rem", color: "var(--text-muted)" }}>
-        © 2026 Quanton3D LTDA · quanton3d.com.br
-      </p>
-    </div>
-  );
+<p style={{ position: "absolute", bottom: "18px", fontSize: "0.68rem", color: "var(--text-muted)" }}>
+© 2026 Quanton3D LTDA · quanton3d.com.br
+</p>
+</div>
+);
 }
 
 // Termo de Privacidade (LGPD - Lei 13.709/2018). Se mudar o texto, atualize TERMO_VERSAO.
