@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Lock, Atom, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Lock, X } from "lucide-react";
 import { WHATSAPP_SUPORTE_URL } from "../../data/contact";
 import TunelEntrada from "./TunelEntrada";
 
@@ -18,6 +18,40 @@ export { SOCIAL_LINKS, ORIGENS };
 
 export function BoasVindasModal({ onEntrar }) {
   const [saindo, setSaindo] = useState(false);
+
+  // som whoosh na entrada
+  useEffect(() => {
+    // shimmer keyframe
+    if (!document.getElementById('q3d-shimmer')) {
+      const s = document.createElement('style');
+      s.id = 'q3d-shimmer';
+      s.textContent = '@keyframes shimmerQ { 0%{background-position:0% center} 100%{background-position:200% center} }';
+      document.head.appendChild(s);
+    }
+        try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const bufLen = Math.floor(ctx.sampleRate * 1.0);
+      const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const filt = ctx.createBiquadFilter();
+      filt.type = "bandpass";
+      filt.frequency.setValueAtTime(3200, ctx.currentTime);
+      filt.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.9);
+      filt.Q.setValueAtTime(2.5, ctx.currentTime);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
+      src.connect(filt);
+      filt.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(ctx.currentTime);
+      src.stop(ctx.currentTime + 1.0);
+    } catch (e) { /* silent fallback */ }
+  }, []);
   function handleEntrar() {
     setSaindo(true);
     // o tunel acelera (efeito de "dobra") e a tela some logo depois
@@ -25,27 +59,16 @@ export function BoasVindasModal({ onEntrar }) {
   }
   return (
     <div className={"welcome-screen" + (saindo ? " leaving" : "")}>
-      <TunelEntrada acelerar={saindo} />
-      <div className="welcome-logo welcome-entra" style={{ "--atraso": "0.1s" }}>
-        <Atom size={34} color="#bfe8ff" />
-      </div>
+      <TunelEntrada acelerar={s
 
-      <h1 className="welcome-entra" style={{ "--atraso": "0.35s", fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 12px", background: "linear-gradient(135deg, #ffffff 0%, var(--q-marine) 50%, var(--q-ametista) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-        Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "var(--q-marine)" }}>®</sup>
-      </h1>
+          <h1 className="welcome-entra welcome-shimmer" style={{ "--atraso": "0.35s", fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 24px", background: "linear-gradient(135deg, #ffffff 30%, var(--q-marine) 60%, var(--q-ametista) 80%, #ffffff 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerQ 3s linear infinite" }}>
+            Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "var(--q-marine)" }}>®</sup>
+          </h1>
 
-      <p className="welcome-entra" style={{ "--atraso": "0.6s", fontSize: "clamp(0.82rem, 2.5vw, 1.05rem)", color: "rgba(200,220,240,0.9)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, margin: "0 0 6px" }}>
-        Resinas UV para impressão 3D LCD/DLP
-      </p>
-      <p className="welcome-entra" style={{ "--atraso": "0.75s", fontSize: "clamp(0.72rem, 2vw, 0.88rem)", color: "var(--text-muted)", margin: 0 }}>
-        Fabricação nacional · Belo Horizonte, MG · Desde 2020
-      </p>
+      
+      
 
-      <div className="welcome-badge-row welcome-entra" style={{ "--atraso": "0.9s" }}>
-        {["🧪 14 linhas exclusivas", "🇧🇷 100% nacional", "🏆 Pioneira em resina acessível"].map((b) => (
-          <span key={b} className="q-badge">{b}</span>
-        ))}
-      </div>
+      
 
       <button type="button" className="q-btn q-btn--primary welcome-botao welcome-entra" style={{ "--atraso": "1.1s", padding: "16px 46px", fontSize: "1rem" }} onClick={handleEntrar}>
         ▶ Acessar o Suporte Técnico
