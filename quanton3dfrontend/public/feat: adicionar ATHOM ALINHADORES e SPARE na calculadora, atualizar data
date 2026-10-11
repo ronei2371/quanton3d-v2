@@ -904,7 +904,7 @@
   <textarea autocomplete="off" id="internalSummary" class="hidden"></textarea>
 
   <script>
-    // Preco de tabela da loja quanton3d.com.br por kg, sem promocao (conferido em 29/09/2026).
+    // Preco de tabela da loja quanton3d.com.br por kg, sem promocao (conferido em 11/10/2026).
     // ALCHEMIST so e vendida em 500 g (R$ 102,70) -> R$ 205,40 por kg.
     const RESINS = [
       { name: "— Selecione ou preencha manualmente —", price: 0 },
@@ -912,6 +912,7 @@
       { name: "ATHOM ALINHADORES", price: 210 },
       { name: "ATHOM DENTAL", price: 179 },
       { name: "ATHOM WASHABLE", price: 215 },
+      { name: "ATHOM ALINHADORES", price: 210 },
       { name: "FLEXFORM", price: 309 },
       { name: "IRON", price: 263 },
       { name: "IRON 70/30", price: 259 },
@@ -920,6 +921,7 @@
       { name: "PYROBLAST", price: 150 },
       { name: "SPARK", price: 168 },
       { name: "SPIN", price: 200 },
+      { name: "SPARE", price: 110 },
       { name: "VELVET SKIN", price: 190 },
       { name: "VULCAN CAST", price: 539 }
     ];
