@@ -28,7 +28,10 @@ export function BoasVindasModal({ onEntrar }) {
       s.textContent = '@keyframes shimmerQ { 0%{background-position:0% center} 100%{background-position:200% center} }';
       document.head.appendChild(s);
     }
-        try {
+    
+  }, []);
+  function handleEntrar() {
+    try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const bufLen = Math.floor(ctx.sampleRate * 1.0);
       const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
@@ -45,25 +48,19 @@ export function BoasVindasModal({ onEntrar }) {
       gain.gain.setValueAtTime(0, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.12);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
-      src.connect(filt);
-      filt.connect(gain);
-      gain.connect(ctx.destination);
-      src.start(ctx.currentTime);
-      src.stop(ctx.currentTime + 1.0);
-    } catch (e) { /* silent fallback */ }
-  }, []);
-  function handleEntrar() {
+      src.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+      src.start(ctx.currentTime); src.stop(ctx.currentTime + 1.0);
+    } catch (e) { /* silent */ }
     setSaindo(true);
-    // o tunel acelera (efeito de "dobra") e a tela some logo depois
     setTimeout(onEntrar, 750);
   }
   return (
     <div className={"welcome-screen" + (saindo ? " leaving" : "")}>
       <TunelEntrada acelerar={saindo} />
 
-          <h1 className="welcome-entra welcome-shimmer" style={{ "--atraso": "0.35s", fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 24px", background: "linear-gradient(135deg, #ffffff 30%, var(--q-marine) 60%, var(--q-ametista) 80%, #ffffff 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerQ 3s linear infinite" }}>
-            Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "var(--q-marine)" }}>®</sup>
-          </h1>
+                        <h1 className="welcome-entra" style={{ "--atraso": "0.35s", fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 11vw, 5.6rem)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1, margin: "0 0 24px" }}>
+                <span style={{ background: "linear-gradient(135deg, #ffffff 30%, var(--q-marine) 60%, var(--q-ametista) 80%, #ffffff 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerQ 3s linear infinite", display: "inline-block" }}>Quanton3D<sup style={{ fontSize: "0.32em", WebkitTextFillColor: "var(--q-marine)" }}>®</sup></span>
+              </h1>
 
       
       
