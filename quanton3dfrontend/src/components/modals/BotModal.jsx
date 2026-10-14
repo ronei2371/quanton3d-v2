@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import BotChat from "./BotChat";
 import IAQ3DAvatar from "../IAQ3DAvatar";
 
-function BotModal({ cliente, onClose }) {
+function BotModal({ cliente, onClose }) {h
   return (
     <div className="q-modal-backdrop">
       <section
@@ -20,7 +20,7 @@ function BotModal({ cliente, onClose }) {
         <div className="q-modal-head">
           <h2 className="iaq3d-head" id="iaq3d-titulo-modal" style={{ fontSize: "1rem" }}>
             <IAQ3DAvatar size={42} compact />
-            <span className="iaq3d-head-text">IAQ3D<small>assistente técnica · online</small></span>
+            <span className="iaq3d-head-text">IAQ3D<small>assistente técnica · versão beta · online</small></span>
           </h2>
           <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
         </div>
