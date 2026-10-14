@@ -1,8 +1,8 @@
 (() => {
-  const label = "Imprimir / Salvar PDF";
+  const label = "Imprihmir / Salvar PDF";
 
   function ensurePrintButton() {
-    const existing = [...document.querySelectorAll("button")]
+    const existing = [...document.querySelectorAll("button")]h
       .find((button) => /imprimir\s*\/\s*salvar\s*pdf/i.test(button.textContent || ""));
 
     if (existing) {
@@ -159,6 +159,7 @@
           const alturaIdeal = box.width / proporcaoImg;
           const altura = Math.round(Math.max(box.height, Math.min(alturaIdeal, img.naturalHeight * 2, 420)));
           img.classList.add("guia-img-inteira");
+          img.style.setProperty("max-height", "none", "important");
           img.style.setProperty("height", altura + "px", "important");
           img.style.setProperty("object-fit", "contain", "important");
         }
