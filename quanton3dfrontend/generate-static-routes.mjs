@@ -15,8 +15,7 @@ const indexHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
 
 // Endereco oficial do site. Se um dia o dominio proprio (ex.: lab.quanton3d.com.br) for
 // configurado, basta trocar aqui, no index.html e no public/robots.txt.
-const BASE_URL = 'https://quanton3d-v2.onrender.com';
-
+const BASE_URL = 'https://lab.quanton3d.com.br';
 function esc(texto) {
   return String(texto ?? '')
     .replace(/&/g, '&amp;')
