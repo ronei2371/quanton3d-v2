@@ -16,7 +16,7 @@ export function perfilValido(p){ return numeroParametro(p?.exposicaoNormal) > 0 
 // Resinas que NAO aparecem na pagina publica de parametros nem nas calculadoras.
 // Continuam no banco e no ADM. Decisao do Ronei em 06/10: RPG 4K ainda nao existe,
 // e as ATHOM CASTABLE estao marcadas (OFF) na planilha oficial e nao estao a venda.
-export const RESINAS_INDISPONIVEIS = new Set(['RPG 4K', 'ATHOM CASTABLE', 'ATHOM CASTABLE 2']);
+export const RESINAS_INDISPONIVEIS = new Set(['RPG 4K', 'ATHOM CASTABLE', 'ATHOM CASTABLE 2', 'ATHOM GENGIVA']);
 // Perfil com campo claramente trocado na digitacao (ex.: "camadas de base: 1,50s", altura "0.05s",
 // exposicao normal 0,05 s). Fica escondido do site e o bot nao passa esses valores ate o ADM corrigir.
 // Mesma regra em quanton3dfrontend/src/components/admin/AdminInternals.jsx (problemasParametro).
