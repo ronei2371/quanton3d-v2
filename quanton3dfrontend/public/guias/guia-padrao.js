@@ -1,8 +1,8 @@
 (() => {
-  const label = "Imprihmir / Salvar PDF";
+  const label = "Imprimir / Salvar PDF";
 
   function ensurePrintButton() {
-    const existing = [...document.querySelectorAll("button")]h
+    const existing = [...document.querySelectorAll("button")]
       .find((button) => /imprimir\s*\/\s*salvar\s*pdf/i.test(button.textContent || ""));
 
     if (existing) {
