@@ -468,6 +468,88 @@ function ComunidadeSection({ cliente, onAbrirParceiroModal, onPedirCadastro }) {
 
       {aba === "galeria" && <GaleriaTab cliente={cliente} onPedirCadastro={onPedirCadastro} />}
       {aba === "parceiros" && <ParceirosLista onAbrirParceiroModal={onAbrirParceiroModal} />}
+      {/* Parceria: Tanuki Figures x Quanton3D x Sagga Studios */}
+        <section
+          aria-label="Parceria Tanuki Figures, Quanton3D e Sagga Studios"
+          style={{
+            position: 'relative',
+            background: 'linear-gradient(135deg, #0c1a2e 0%, #071220 100%)',
+            borderTop: '1px solid rgba(249,115,22,0.22)',
+            borderBottom: '1px solid rgba(30,143,255,0.15)',
+          }}
+        >
+          <div style={{
+            maxWidth: '1100px',
+            margin: '0 auto',
+            padding: '28px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '24px',
+            flexWrap: 'wrap',
+          }}>
+            <div style={{
+              width: '100px',
+              height: '100px',
+              flexShrink: 0,
+              borderRadius: '8px',
+              overflow: 'hidden',
+              border: '1px solid rgba(249,115,22,0.2)',
+            }}>
+              <img
+                src="/images/parceria/popeye-comparacao.jpg"
+                alt="Popeye impresso com resina Quanton3D Pyro Blast"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'left top', display: 'block' }}
+              />
+            </div>
+            <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Parceria</span>
+                {['Tanuki Figures', 'Quanton3D', 'Sagga Studios'].map((brand, i, arr) => (
+                  <span key={brand} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 700, color: i === 1 ? '#f97316' : 'rgba(255,255,255,0.45)' }}>
+                      {brand}
+                    </span>
+                    {i < arr.length - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '11px' }}>x</span>}
+                  </span>
+                ))}
+              </div>
+              <h3 style={{ color: '#fff', fontSize: 'clamp(15px, 1.8vw, 18px)', fontWeight: 800, lineHeight: 1.25, marginBottom: '4px', letterSpacing: '-0.02em' }}>
+                Imprima o Popeye.{' '}
+                <span style={{ color: '#f97316' }}>Ganhe recompensas.</span>
+              </h3>
+              <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', lineHeight: 1.5, margin: 0 }}>
+                STL incluso + 5% OFF na Pyro Blast com cupom TANUKI.
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                background: 'rgba(0,0,0,0.18)',
+                border: '1.5px dashed rgba(249,115,22,0.35)',
+                borderRadius: '6px', padding: '5px 11px',
+              }}>
+                <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: '9px' }}>Cupom</span>
+                <span style={{ color: '#f97316', fontWeight: 900, fontSize: '13px', letterSpacing: '0.1em', fontFamily: 'monospace' }}>TANUKI</span>
+                <span style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)', color: '#f97316', borderRadius: '4px', padding: '1px 6px', fontSize: '9px', fontWeight: 700 }}>5% OFF</span>
+              </div>
+              <a
+                href="https://quanton3d.com.br/produtos/resina-quanton-pyroblast/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '5px',
+                  background: 'linear-gradient(135deg, #1e8fff 0%, #2563eb 100%)',
+                  boxShadow: '0 2px 10px rgba(30,143,255,0.22)',
+                  color: '#fff', padding: '7px 14px', borderRadius: '6px',
+                  fontWeight: 700, fontSize: '12px', textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Comprar Pyro Blast
+              </a>
+            </div>
+          </div>
+        </section>
     </section>
   );
 }
