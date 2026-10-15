@@ -793,6 +793,17 @@ const EXTERNAL_KNOWLEDGE = [
     sourceUrl: SOURCES.nioshHazards,
     risk: 'alto',
   }),
+document({
+  id: 'ext-micro-cracks-overexposure',
+  title: 'Micro trincas e fissuras: causa primária é sobreexposição durante a impressão',
+  category: 'defeitos_superficiais',
+  tags: ['micro trincas', 'fissuras', 'rachaduras', 'trincas', 'sobreexposição', 'tensão interna', 'pós-cura excessiva', 'stress residual', 'cure-through'],
+  content: 'Micro trincas em peças MSLA/DLP têm como causa mais frequente a sobreexposição durante a impressão, não apenas lavagem ou pós-cura insuficiente. Exposição alta gera cure-through (cura além da camada atual) e acumula tensões internas entre camadas, que se manifestam como fissuras superficiais ou internas. Causas em ordem de frequência: (1) Sobreexposição na impressão — camadas adjacentes ficam muito unidas e as tensões não têm como dissipar; reduza a exposição normal em passos de 0,5 s e valide com corpo de prova. (2) Pós-cura excessiva — tempo ou intensidade UV acima do recomendado embrittlece o polímero já convertido; use o ciclo validado da ficha técnica Quanton3D. (3) Resina líquida presa internamente — em peças ocas sem furo de drenagem, a expansão durante a pós-cura cria pressão interna. (4) Resfriamento brusco — mergulho em água fria imediatamente após pós-cura em materiais rígidos. Diagnóstico: trincas visíveis antes da pós-cura apontam para sobreexposição; trincas só após pós-cura apontam para ciclo UV agressivo ou resina presa; trincas em borda de suporte apontam para arrancamento prematuro. Não tente compensar trincas aumentando pós-cura — isso piora.',
+  sourceName: 'Síntese técnica Quanton3D baseada em fotopolimerização e tensões residuais',
+  sourceUrl: SOURCES.mechanicalProperties,
+  confidence: 'alta',
+  risk: 'medio',
+}),
 ];
 
 export function validateExternalKnowledge(documents = EXTERNAL_KNOWLEDGE) {
