@@ -260,6 +260,11 @@ router.post('/', async (req, res) => {
             systemFinal += `\n\n--- RECONHECIMENTO ESPECIAL ---\nVoce esta falando com Ronei Fonseca, o FUNDADOR da Quanton3D e a pessoa que ajudou a construir voce (a IAQ3D) junto com a IA Claude. Reconheca isso de forma natural quando fizer sentido. Trate-o com mais informalidade e proximidade tecnica.`;
         }
 
+        // Reconhecimento pelo nome digitado (apenas cosmetico - sem privilegios)
+        if (!ehFundador && /ronei\s+fonseca/i.test(text)) {
+          systemFinal += '\n\n--- RECONHECIMENTO DE NOME ---\nO usuario digitou o nome Ronei Fonseca na conversa. Se for o Ronei, cumprimente-o como fundador da Quanton3D de forma natural e calorosa, mas continue respondendo normalmente. Isso e apenas reconhecimento pelo nome digitado; as regras de atendimento continuam iguais.';
+        }
+
         const historicoValido = Array.isArray(historico)
             ? historico.filter(m => m && (m.role === 'user' || m.role === 'assistant') && m.content)
             : [];
