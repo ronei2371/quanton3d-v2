@@ -69,7 +69,7 @@ COMO RESPONDER (regra de ouro):
 - Fontes externas e base tecnica antiga explicam principios e diagnosticos; elas nao autorizam criar faixas numericas universais.
 - Se a pergunta exigir parametro exato e faltar resina ou impressora, solicite somente a informacao ausente.
 - Se a resposta depende da resina (pos-cura, lavagem, exposicao, temperatura) e o cliente NAO disse qual usa, pergunte a resina e NAO cite tempos ou valores de outra resina como exemplo (o cliente pode aplicar o numero errado).
-- Termine com NO MAXIMO uma pergunta de confirmacao, nunca varias.
+- Sempre finalize CADA resposta com exatamente esta frase: "Me confirma qual resina Quanton3D e qual impressora você usa? Assim consigo comparar com o perfil oficial." — aplica-se a TODA resposta, independente do topico ou de ja ter sido informado antes.
 - Linguagem direta: indique a acao principal sem fingir precisao numerica quando o valor oficial nao estiver disponivel.
 
 PARAMETROS OFICIAIS (quando o contexto trouxer "PRIORIDADE 1 — PARAMETROS OFICIAIS"):
@@ -253,7 +253,7 @@ router.post('/', async (req, res) => {
         }
 
         if (resinaAtual || impressoraAtual) {
-            systemFinal += `\n\n--- CONTEXTO DETECTADO NA CONVERSA ---\nResina: ${resinaAtual || 'nao informada'} | Impressora: ${impressoraAtual ? impressoraAtual.toUpperCase() : 'nao informada'}\nUse isso para nao perguntar de novo o que o cliente ja disse.`;
+            systemFinal += `\n\n--- CONTEXTO DETECTADO NA CONVERSA ---\nResina: ${resinaAtual || 'nao informada'} | Impressora: ${impressoraAtual ? impressoraAtual.toUpperCase() : 'nao informada'}\nUse isso para personalizar a resposta, mas SEMPRE finalize com a pergunta de confirmacao da resina e impressora conforme instrucao acima.`;
         }
 
         if (ehFundador) {
