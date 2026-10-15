@@ -61,7 +61,7 @@ const ChatInput = React.memo(function ChatInput({ onEnviar, pensando, modo, onMo
   return (
     <div style={{ borderTop: "1px solid var(--border-soft)", flexShrink: 0, width: "100%", minWidth: 0, boxSizing: "border-box" }}>
       {/* Botões de modo */}
-      <div style={{ display: "flex", gap: "6px", padding: "8px 4px 0", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "6px", padding: "8px 4px 0", overflowX: "auto", flexWrap: "nowrap", scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {MODOS.map((m) => (
           <button
             key={m.id}
@@ -434,10 +434,10 @@ function BotChat({ cliente }) {
       </div>
 
       {clienteJaPerguntou && (
-        <div className="iaq3d-handoff">
-          <span>Prefere falar com a equipe? Mandamos o resumo desta conversa, você não precisa repetir nada.</span>
+        <div className="iaq3d-handoff" style={{ padding: "6px 8px", flexDirection: "row", flexWrap: "nowrap", gap: "8px", alignItems: "center" }}>
+          <span style={{ fontSize: "0.7rem", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Prefere a equipe? Mandamos o resumo da conversa.</span>
           <a className="q-btn q-btn--sm q-btn--whatsapp" href={linkWhatsapp} target="_blank" rel="noopener noreferrer" onClick={registrarWhatsapp}>
-            <MessageCircle size={14} /> Continuar no WhatsApp
+            <MessageCircle size={13} /> WhatsApp
           </a>
         </div>
       )}
@@ -447,7 +447,7 @@ function BotChat({ cliente }) {
       ) : (
         <div className={"iaq3d-limite" + (limite.restantes <= 3 ? " iaq3d-limite--alerta" : "")} role="status">
           {limite.restantes > 0
-            ? <>Perguntas para a IA hoje: restam <strong>{limite.restantes} de {limite.max}</strong>. Saudações e respostas rápidas não contam.</>
+            ? <>IA: restam <strong>{limite.restantes} de {limite.max}</strong> perguntas hoje.</>
             : <>Você usou as <strong>{limite.max} perguntas</strong> de hoje. Amanhã libera de novo, ou continue no WhatsApp com o resumo.</>}
           <span className="iaq3d-limite-barra" aria-hidden="true"><i style={{ width: `${Math.max(0, Math.min(100, (limite.restantes / limite.max) * 100))}%` }} /></span>
         </div>
