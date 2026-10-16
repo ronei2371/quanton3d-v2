@@ -35,7 +35,7 @@ try {
 const audio = new Audio('/sounds/viralaudio-descent-whoosh-long-cinematic-sound-effect-405921.mp3');
 audio.volume = 1.0;
 audio.play().catch(() => {});
-} catch (e) { }
+} catch { /* noop */ }
 setSaindo(true);
 setTimeout(onEntrar, 750);
 }
