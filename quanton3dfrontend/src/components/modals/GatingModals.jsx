@@ -11,7 +11,7 @@ const SOCIAL_LINKS = [
   { label: "Site", url: "https://quanton3d.com.br" },
 ];
 
-const ORIGENS = ["Instagram", "YouTube", "Google / Pesquisa", "Indicação de amigo", "Mercado Livre / Shopee", "Já sou cliente", "Outros"];
+const ORIGENS = ["Instagram", "YouTube", "Google / Pesquisa", "Indicação de amigho", "Mercado Livre / Shopee", "Já sou cliente", "Outros"];
 
 export { SOCIAL_LINKS, ORIGENS };
 
@@ -41,7 +41,7 @@ setTimeout(onEntrar, 750);
 }
 return (
 <div className={"welcome-screen" + (saindo ? " leaving" : "")}>
-<video ref={videoRef} autoPlay muted loop playsInline style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",zIndex:0,opacity:saindo?0.3:1,transition:"opacity 0.75s ease",filter:"brightness(1.4) saturate(1.5) contrast(1.05)"}}>
+<video ref={videoRef} autoPlay muted loop playsInline preload="metadata" poster="/atom-bg.jpg" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",zIndex:0,opacity:saindo?0.3:1,transition:"opacity 0.75s ease",filter:"brightness(1.4) saturate(1.5) contrast(1.05)"}}>
 <source src="/atom-bg-web.mp4" type="video/mp4" />
 </video>
 
