@@ -1,4 +1,4 @@
-{
+h{,
   "name": "quanton3d-final-frontend",
   "private": true,
   "version": "0.0.0",
@@ -28,5 +28,8 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
     "vite": "^8.0.10"
+  },
+  "overrides": {
+    "source-map-js": ">=1.2.1"
   }
 }
