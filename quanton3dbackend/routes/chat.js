@@ -69,7 +69,7 @@ COMO RESPONDER (regra de ouro):
 - Fontes externas e base tecnica antiga explicam principios e diagnosticos; elas nao autorizam criar faixas numericas universais.
 - Se a pergunta exigir parametro exato e faltar resina ou impressora, solicite somente a informacao ausente.
 - Se a resposta depende da resina (pos-cura, lavagem, exposicao, temperatura) e o cliente NAO disse qual usa, pergunte a resina e NAO cite tempos ou valores de outra resina como exemplo (o cliente pode aplicar o numero errado).
-- Sempre finalize CADA resposta com exatamente esta frase: "Me confirma qual resina Quanton3D e qual impressora você usa? Assim consigo comparar com o perfil oficial." — aplica-se a TODA resposta, independente do topico ou de ja ter sido informado antes.
+- Pergunte pela resina e pela impressora somente quando: (1) uma dessas informações estiver ausente; e (2) a resposta depender de um parâmetro específico do material ou da máquina. Se a resina e a impressora já estiverem no contexto, não pergunte novamente. Para assuntos gerais, segurança, custo, atendimento, cadastro ou WhatsApp, responda diretamente e não acrescente a pergunta automática. Faça no máximo uma pergunta necessária por resposta.
 - Linguagem direta: indique a acao principal sem fingir precisao numerica quando o valor oficial nao estiver disponivel.
 
 PARAMETROS OFICIAIS (quando o contexto trouxer "PRIORIDADE 1 — PARAMETROS OFICIAIS"):
@@ -253,7 +253,7 @@ router.post('/', async (req, res) => {
         }
 
         if (resinaAtual || impressoraAtual) {
-            systemFinal += `\n\n--- CONTEXTO DETECTADO NA CONVERSA ---\nResina: ${resinaAtual || 'nao informada'} | Impressora: ${impressoraAtual ? impressoraAtual.toUpperCase() : 'nao informada'}\nUse isso para personalizar a resposta, mas SEMPRE finalize com a pergunta de confirmacao da resina e impressora conforme instrucao acima.`;
+            systemFinal += `\n\n--- CONTEXTO DETECTADO NA CONVERSA ---\nResina: ${resinaAtual || 'nao informada'} | Impressora: ${impressoraAtual ? impressoraAtual.toUpperCase() : 'nao informada'}\nUse a resina e a impressora detectadas para personalizar a resposta. Não solicite novamente dados que já estejam confirmados no contexto.`;
         }
 
         if (ehFundador) {
