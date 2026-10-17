@@ -203,6 +203,7 @@ function ParametrosSection({ onAbrirExposicao }) {
     if (r) _pendingURL.current = { resina: r, impressora: i || '' };
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { const t = setTimeout(carregarParametros, 0); return () => clearTimeout(t); }, []);
 
   // Apos carregar dados, aplica auto-selecao da URL
