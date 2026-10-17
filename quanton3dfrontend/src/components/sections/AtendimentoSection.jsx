@@ -27,7 +27,6 @@ const PROBLEMAS = [
 
 // Sintomas com correspondência direta no guia de Diagnóstico de Falhas.
 // Quem não está aqui não tem uma âncora específica — segue direto para o chamado.
-const DIAGNOSTICO_ANCORA = {
   "Peça não adere à plataforma": "problema-1",
   "Peça adere demais / não solta": "problema-3",
   "Peça porosa ou com buracos": "problema-2",
@@ -48,9 +47,6 @@ function ChamadoTecnico({ cliente, inicial }) {
   const [enviando, setEnviando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
   const [erro, setErro] = useState("");
-  const [, setMostrarFormularioCompleto] = useState(false);
-  const [mostrarDiagnosticoModal, setMostrarDiagnosticoModal] = useState(false);
-  const ancoraDiagnostico = DIAGNOSTICO_ANCORA[form.problema];
   useEffect(() => {
     api.get("/parametros").then((res) => {
       const lista = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data?.parametros) ? res.data.parametros : [];
@@ -105,8 +101,6 @@ function ChamadoTecnico({ cliente, inicial }) {
     </div>
   );
 
-  const mostrarTriagem = false;
-  const mostrarRestoForm = true;
 
   return (
     <form onSubmit={enviar}>
@@ -125,51 +119,11 @@ function ChamadoTecnico({ cliente, inicial }) {
         </label>
       </div>
 
-      {mostrarTriagem && (
-        <div className="q-alert q-alert--info" style={{ padding: "18px" }}>
-          <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.85rem", color: "var(--text-primary)", margin: "0 0 6px" }}>
-            <Stethoscope size={15} /> Este sintoma tem explicação no guia
-          </h4>
-          <p style={{ fontSize: "0.82rem", margin: "0 0 14px" }}>Veja a causa provável e a solução no guia técnico antes de abrir um chamado — pode resolver na hora.</p>
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            <button type="button" className="q-btn q-btn--primary" onClick={() => setMostrarDiagnosticoModal(true)}>
-              <Stethoscope size={15} /> Ver no guia de falhas
-            </button>
-            <button type="button" className="q-btn q-btn--ghost" onClick={() => setMostrarFormularioCompleto(true)}>
-              Não resolveu — Abrir chamado técnico <ArrowRight size={15} />
-            </button>
-          </div>
-        </div>
-      )}
 
-      {mostrarDiagnosticoModal && (
-        <div className="q-modal-backdrop" onClick={(e) => e.target === e.currentTarget && setMostrarDiagnosticoModal(false)}>
-          <section className="q-modal q-modal--wide calculator-modal" style={{ display: "flex", flexDirection: "column" }}>
-            <div className="q-modal-head">
-              <h2 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.05rem" }}>
-                <Stethoscope size={17} color="var(--primary)" /> Guia de falhas — {form.problema}
-              </h2>
-              <button type="button" className="q-modal-close" onClick={() => setMostrarDiagnosticoModal(false)}><X size={13} /> Fechar</button>
-            </div>
-            <div className="calculator-shell" style={{ flex: 1, display: "flex", padding: 0 }}>
-              <iframe
-                title="Guia de falhas"
-                src={`/guias/guia-diagnostico-problemas.html#${ancoraDiagnostico}`}
-                style={{ flex: 1, width: "100%", border: "none", background: "#fff" }}
-              />
-            </div>
-          </section>
-        </div>
-      )}
 
-      {mostrarRestoForm && (
-        <>
-          {mostrarTriagem && ancoraDiagnostico && (
-            <div className="q-alert q-alert--info" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
-              <span>Já vimos o diagnóstico rápido para este sintoma.</span>
-              <button type="button" className="home-text-link" onClick={() => { setMostrarFormularioCompleto(false); setMostrarDiagnosticoModal(true); }}>Ver de novo</button>
-            </div>
-          )}
+
+
+              <>
 
           <div className="q-form-grid" style={{ marginBottom: "18px" }}>
             <label className="q-field"><span>Resina usada *</span>
@@ -228,7 +182,6 @@ function ChamadoTecnico({ cliente, inicial }) {
             <Wrench size={15} /> {enviando ? "Enviando chamado..." : "Abrir Chamado Técnico"}
           </button>
         </>
-      )}
     </form>
   );
 }
