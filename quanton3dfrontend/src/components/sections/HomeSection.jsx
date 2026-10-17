@@ -145,6 +145,130 @@ onClick={() => setCaminhoAtivo(caminho)}
 
 <CarrosselComunidade onNavegar={onNavegar} />
 
+{/* ── PARCERIA: Tanuki Figures × Quanton3D × Sagga Studios ── */}
+<section
+aria-label="Parceria Tanuki Figures, Quanton3D e Sagga Studios"
+style={{
+position: 'relative',
+background: 'linear-gradient(135deg, #0c1a2e 0%, #071220 100%)',
+borderTop: '1px solid rgba(249,115,22,0.22)',
+borderBottom: '1px solid rgba(30,143,255,0.15)',
+}}
+>
+<div style={{
+maxWidth: '1100px',
+margin: '0 auto',
+padding: '32px 24px',
+display: 'flex',
+alignItems: 'center',
+gap: '28px',
+flexWrap: 'wrap',
+}}>
+
+{/* Thumb do Popeye */}
+<div style={{
+width: '120px',
+height: '120px',
+flexShrink: 0,
+borderRadius: '10px',
+overflow: 'hidden',
+border: '1px solid rgba(249,115,22,0.22)',
+}}>
+<img
+src="/images/parceria/popeye-comparacao.jpg"
+alt="Popeye em resina Quanton3D Pyro Blast"
+style={{
+width: '100%',
+height: '100%',
+objectFit: 'cover',
+objectPosition: 'left top',
+display: 'block',
+}}
+/>
+</div>
+
+{/* Texto central */}
+<div style={{ flex: '1 1 220px', minWidth: 0 }}>
+<div style={{
+display: 'flex', alignItems: 'center', gap: '5px',
+marginBottom: '8px', flexWrap: 'wrap',
+}}>
+<span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Parceria</span>
+{['Tanuki Figures', 'Quanton3D', 'Sagga Studios'].map((brand, i, arr) => (
+<span key={brand} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+<span style={{
+fontSize: '11px', fontWeight: 700,
+color: i === 1 ? '#f97316' : 'rgba(255,255,255,0.55)',
+}}>
+{brand}
+</span>
+{i < arr.length - 1 && <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: '12px' }}>×</span>}
+</span>
+))}
+</div>
+
+<h3 style={{
+color: '#fff',
+fontSize: 'clamp(17px, 2vw, 21px)',
+fontWeight: 800,
+lineHeight: 1.25,
+marginBottom: '5px',
+letterSpacing: '-0.02em',
+}}>
+Imprima o Popeye.{' '}
+<span style={{ color: '#f97316' }}>Ganhe recompensas.</span>
+</h3>
+<p style={{
+color: 'rgba(255,255,255,0.38)',
+fontSize: '12px',
+lineHeight: 1.6,
+margin: 0,
+}}>
+STL incluso + 5% OFF na Pyro Blast com cupom TANUKI.
+</p>
+</div>
+
+{/* Cupom + botão */}
+<div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+<div style={{
+display: 'inline-flex', alignItems: 'center', gap: '8px',
+background: 'rgba(0,0,0,0.22)',
+border: '1.5px dashed rgba(249,115,22,0.4)',
+borderRadius: '8px', padding: '7px 14px',
+}}>
+<span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px' }}>Cupom</span>
+<span style={{
+color: '#f97316', fontWeight: 900, fontSize: '15px',
+letterSpacing: '0.12em', fontFamily: 'monospace',
+}}>TANUKI</span>
+<span style={{
+background: 'rgba(249,115,22,0.14)',
+border: '1px solid rgba(249,115,22,0.28)',
+color: '#f97316', borderRadius: '5px',
+padding: '2px 7px', fontSize: '10px', fontWeight: 700,
+}}>5% OFF</span>
+</div>
+
+<a
+href="https://quanton3d.com.br/produtos/resina-quanton-pyroblast/"
+target="_blank"
+rel="noopener noreferrer"
+style={{
+display: 'inline-flex', alignItems: 'center', gap: '6px',
+background: 'linear-gradient(135deg, #1e8fff 0%, #2563eb 100%)',
+boxShadow: '0 3px 14px rgba(30,143,255,0.26)',
+color: '#fff', padding: '9px 18px', borderRadius: '8px',
+fontWeight: 700, fontSize: '13px', textDecoration: 'none',
+whiteSpace: 'nowrap',
+}}
+>
+Comprar Pyro Blast →
+</a>
+</div>
+
+</div>
+</section>
+{/* ── fim da seção parceria ── */}
 
 <section className="home-product-banner" aria-labelledby="product-banner-title">
 <img src="/images/linha-resinas-quanton3d.png" alt="Linha de resinas Quanton3D" />
