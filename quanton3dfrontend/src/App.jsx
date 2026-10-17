@@ -134,6 +134,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     } catch {
       // registro de visita e opcional
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loginEquipe() {
@@ -263,6 +264,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     }
     window.addEventListener("popstate", aoVoltar);
     return () => window.removeEventListener("popstate", aoVoltar);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function navegar(pagina) {
