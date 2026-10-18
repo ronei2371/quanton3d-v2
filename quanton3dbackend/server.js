@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -37,6 +38,47 @@ const app = express();
 // Nao anunciar "x-powered-by: Express" em toda resposta: nao e falha por si so,
 // mas entrega de graca qual tecnologia roda aqui para quem procura alvo.
 app.disable("x-powered-by");
+
+// Headers de seguranca HTTP (Helmet 8).
+// crossOriginEmbedderPolicy: false — evita quebrar scripts GA4 e imagens R2 cross-origin.
+// crossOriginResourcePolicy cross-origin — permite que o CDN R2 sirva imagens para o frontend.
+// unsafe-inline em scriptSrc/styleSrc — necessario para o bloco GA4 inline e estilos JSX do React.
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://www.googletagmanager.com",
+          "https://www.google-analytics.com",
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
+        fontSrc: ["'self'", "data:"],
+        connectSrc: [
+          "'self'",
+          "https://www.google-analytics.com",
+          "https://analytics.google.com",
+          "https://www.googletagmanager.com",
+          "https://region1.google-analytics.com",
+          "https://region1.analytics.google.com",
+        ],
+        mediaSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  })
+);
+
 // O Render fica na frente do app (1 proxy): assim req.ip e o IP real do visitante.
 app.set("trust proxy", 1);
 const PORT = Number(process.env.PORT || 10000);
