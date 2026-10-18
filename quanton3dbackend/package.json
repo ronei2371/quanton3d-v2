@@ -22,6 +22,7 @@
     "bcryptjs": "^2.4.3"
   },
   "overrides": {
-    "proxy-addr": "2.0.8"
+    "proxy-addr": "2.0.8",
+    "@opentelemetry/core": ">=1.28.0"
   }
 }
