@@ -80,20 +80,21 @@ function MetricCard({ label, value, unit, highlight = false }) {
 }
 
 export default function CalculadoraVolume() {
-  const [parametros, setParametros]           = useState([]);
-  const [carregando, setCarregando]           = useState(true);
-  const [erro, setErro]                       = useState("");
+  const [parametros, setParametros]               = useState([]);
+  const [carregando, setCarregando]               = useState(true);
+  const [erro, setErro]                           = useState("");
   const [resinaSelecionada, setResinaSelecionada] = useState("");
   const [impressoraSelecionada, setImpressoraSelecionada] = useState("");
-  const [volumePecaMl, setVolumePecaMl]       = useState(10);
-  const [quantidade, setQuantidade]           = useState(1);
-  const [valorLitro, setValorLitro]           = useState(120);
-  const [potenciaW, setPotenciaW]             = useState(0);
-  const [horasImpressao, setHorasImpressao]   = useState(3);
-  const [valorKwh, setValorKwh]               = useState(1.1);
-  const [taxaFalha, setTaxaFalha]             = useState(10);
-  const [custoConsumiveis, setCustoConsumiveis] = useState(3);
-  const [custoPosProcesso, setCustoPosProcesso] = useState(2);
+  const [volumePecaMl, setVolumePecaMl]           = useState(10);
+  const [quantidade, setQuantidade]               = useState(1);
+  const [densidadeGml, setDensidadeGml]           = useState(1.1);
+  const [valorKg, setValorKg]                     = useState(120);
+  const [potenciaW, setPotenciaW]                 = useState(0);
+  const [horasImpressao, setHorasImpressao]       = useState(3);
+  const [valorKwh, setValorKwh]                   = useState(1.1);
+  const [taxaFalha, setTaxaFalha]                 = useState(10);
+  const [custoConsumiveis, setCustoConsumiveis]   = useState(3);
+  const [custoPosProcesso, setCustoPosProcesso]   = useState(2);
 
   useEffect(() => {
     let ativo = true;
@@ -127,7 +128,7 @@ export default function CalculadoraVolume() {
     return () => clearTimeout(t);
   }, [opcoesResina, resinaSelecionada]);
 
-  // Quando muda impressora, preenche a potência automaticamente
+  // Quando muda impressora, preenche a potencia automaticamente
   function handleImpressoraChange(val) {
     setImpressoraSelecionada(val);
     if (!val) return;
@@ -140,7 +141,8 @@ export default function CalculadoraVolume() {
   const resultado = useMemo(() => {
     const volume    = Math.max(0, Number(volumePecaMl) || 0);
     const qtd       = Math.max(1, Number(quantidade) || 1);
-    const vrResina  = Math.max(0, Number(valorLitro) || 0);
+    const densidade = Math.max(0.5, Number(densidadeGml) || 1.1);
+    const vrKg      = Math.max(0, Number(valorKg) || 0);
     const potencia  = Math.max(0, Number(potenciaW) || 0);
     const horas     = Math.max(0, Number(horasImpressao) || 0);
     const kwh       = Math.max(0, Number(valorKwh) || 0);
@@ -148,23 +150,26 @@ export default function CalculadoraVolume() {
     const cons      = Math.max(0, Number(custoConsumiveis) || 0);
     const pos       = Math.max(0, Number(custoPosProcesso) || 0);
 
-    const volumeBruto          = volume * qtd;
-    const margemSeguranca      = volumeBruto * 0.05;
-    const volumeTotal          = volumeBruto + margemSeguranca;
-    const litrosTotal          = volumeTotal / 1000;
-    const custoResina          = litrosTotal * vrResina;
-    const consumoEnergiaKwh    = (potencia / 1000) * horas;
-    const custoEnergia         = consumoEnergiaKwh * kwh;
-    const subtotalOperacional  = custoResina + custoEnergia + cons + pos;
-    const custoFalha           = subtotalOperacional * (falha / 100);
-    const custoTotalReal       = subtotalOperacional + custoFalha;
-    const custoPorPeca         = qtd > 0 ? custoTotalReal / qtd : 0;
+    const volumeBruto         = volume * qtd;
+    const margemSeguranca     = volumeBruto * 0.05;
+    const volumeTotal         = volumeBruto + margemSeguranca;
+    // conversao ml -> kg usando densidade real da resina
+    const pesoResina_g        = volumeTotal * densidade;
+    const pesoResina_kg       = pesoResina_g / 1000;
+    const custoResina         = pesoResina_kg * vrKg;
+    const consumoEnergiaKwh   = (potencia / 1000) * horas;
+    const custoEnergia        = consumoEnergiaKwh * kwh;
+    const subtotalOperacional = custoResina + custoEnergia + cons + pos;
+    const custoFalha          = subtotalOperacional * (falha / 100);
+    const custoTotalReal      = subtotalOperacional + custoFalha;
+    const custoPorPeca        = qtd > 0 ? custoTotalReal / qtd : 0;
 
     return {
       volumeBruto: volumeBruto.toFixed(1),
       margemSeguranca: margemSeguranca.toFixed(1),
       volumeTotal: volumeTotal.toFixed(1),
-      litrosTotal: litrosTotal.toFixed(3),
+      pesoResina_g: pesoResina_g.toFixed(1),
+      pesoResina_kg: pesoResina_kg.toFixed(3),
       custoResina: custoResina.toFixed(2),
       consumoEnergiaKwh: consumoEnergiaKwh.toFixed(2),
       custoEnergia: custoEnergia.toFixed(2),
@@ -174,7 +179,7 @@ export default function CalculadoraVolume() {
       custoPorPeca: custoPorPeca.toFixed(2),
       taxaFalha: falha.toFixed(0),
     };
-  }, [volumePecaMl, quantidade, valorLitro, potenciaW, horasImpressao, valorKwh, taxaFalha, custoConsumiveis, custoPosProcesso]);
+  }, [volumePecaMl, quantidade, densidadeGml, valorKg, potenciaW, horasImpressao, valorKwh, taxaFalha, custoConsumiveis, custoPosProcesso]);
 
   return (
     <section className="calc-section">
@@ -228,14 +233,25 @@ export default function CalculadoraVolume() {
           <SelectField label="Resina Quanton3D" value={resinaSelecionada}
             onChange={setResinaSelecionada} options={opcoesResina}
             disabled={carregando || !opcoesResina.length} />
-          <NumberField label="Valor da resina por litro" value={valorLitro}
-            onChange={setValorLitro} min={0} step={0.01} suffix="R$/L" />
+          <NumberField label="Valor da resina por kg" value={valorKg}
+            onChange={setValorKg} min={0} step={0.01} suffix="R$/kg" />
           <NumberField label="Volume da peça" value={volumePecaMl}
             onChange={setVolumePecaMl} min={0.1} step={0.1} suffix="ml" />
         </div>
-        <p className="calc-hint" style={{ marginTop: "-6px", marginBottom: "14px" }}>
-          <strong>Preço por litro</strong> = o que você pagou no frasco ÷ litros do frasco (frasco de 500 ml por R$ 100 → R$ 200/L).{" "}
-          <strong>Volume</strong> = o valor em ml que o fatiador mostra, já com os suportes. Não use o peso em gramas.
+        <div className="calc-grid-3" style={{ marginTop: "0" }}>
+          <NumberField label="Densidade da resina" value={densidadeGml}
+            onChange={(v) => setDensidadeGml(Math.max(0.5, v))} min={0.5} step={0.01} suffix="g/ml" />
+          <div className="calc-field" style={{ gridColumn: "2 / -1" }}>
+            <label className="calc-label" style={{ opacity: 0 }}>.</label>
+            <span className="calc-hint" style={{ marginTop: "8px" }}>
+              <strong>Densidade típica:</strong> resinas standard 1,08–1,12 g/ml · castable/cera 1,05–1,10 g/ml · tough/ABS-like 1,12–1,18 g/ml.
+              Consulte o TDS da resina para o valor exato.
+            </span>
+          </div>
+        </div>
+        <p className="calc-hint" style={{ marginTop: "4px", marginBottom: "14px" }}>
+          <strong>Preço por kg</strong> = o que você pagou no frasco ÷ peso em kg (frasco de 500 g por R$ 65 → R$ 130/kg).{" "}
+          <strong>Volume</strong> = o valor em ml que o fatiador mostra, já com os suportes. A calculadora converte para gramas usando a densidade.
         </p>
 
         <div className="calc-grid-2">
@@ -262,7 +278,7 @@ export default function CalculadoraVolume() {
           <div className="calc-tip">
             <Info size={16} />
             <div>
-              Resina = <strong>volume × quantidade + 5% de perda</strong> (resina que fica na cuba e nos suportes).<br />
+              Resina = <strong>volume × densidade × quantidade + 5% de perda</strong> (resina que fica na cuba e nos suportes).<br />
               Depois somamos energia, consumíveis e pós-processo, e a taxa de falha entra sobre esse total (reserva para reimpressão).
             </div>
           </div>
@@ -271,17 +287,17 @@ export default function CalculadoraVolume() {
 
       <span className="calc-badge">Resultados</span>
       <div className="calc-metrics-grid">
-        <MetricCard label="Volume bruto"         value={resultado.volumeBruto}         unit="ml" />
-        <MetricCard label="Margem 5%"            value={resultado.margemSeguranca}      unit="ml" />
-        <MetricCard label="Total de resina"      value={resultado.volumeTotal}          unit="ml"  highlight />
-        <MetricCard label="Total em litros"      value={resultado.litrosTotal}          unit="L" />
-        <MetricCard label="Custo da resina"      value={`R$ ${resultado.custoResina}`}  unit="matéria-prima" />
-        <MetricCard label="Energia consumida"    value={resultado.consumoEnergiaKwh}    unit="kWh" />
-        <MetricCard label="Custo da energia"     value={`R$ ${resultado.custoEnergia}`} unit="elétrica" />
+        <MetricCard label="Volume bruto"         value={resultado.volumeBruto}              unit="ml" />
+        <MetricCard label="Margem 5%"            value={resultado.margemSeguranca}           unit="ml" />
+        <MetricCard label="Total de resina"      value={resultado.volumeTotal}               unit="ml"  highlight />
+        <MetricCard label="Peso da resina"       value={`${resultado.pesoResina_g} g`}       unit={`${resultado.pesoResina_kg} kg`} />
+        <MetricCard label="Custo da resina"      value={`R$ ${resultado.custoResina}`}       unit="matéria-prima" />
+        <MetricCard label="Energia consumida"    value={resultado.consumoEnergiaKwh}         unit="kWh" />
+        <MetricCard label="Custo da energia"     value={`R$ ${resultado.custoEnergia}`}      unit="elétrica" />
         <MetricCard label="Subtotal"             value={`R$ ${resultado.subtotalOperacional}`} unit="antes da falha" />
-        <MetricCard label="Impacto da falha"     value={`R$ ${resultado.custoFalha}`}   unit={`${resultado.taxaFalha}%`} />
-        <MetricCard label="Custo total real"     value={`R$ ${resultado.custoTotalReal}`} unit="estimado" highlight />
-        <MetricCard label="Custo por peça"       value={`R$ ${resultado.custoPorPeca}`} unit="/ peça" highlight />
+        <MetricCard label="Impacto da falha"     value={`R$ ${resultado.custoFalha}`}        unit={`${resultado.taxaFalha}%`} />
+        <MetricCard label="Custo total real"     value={`R$ ${resultado.custoTotalReal}`}    unit="estimado" highlight />
+        <MetricCard label="Custo por peça"       value={`R$ ${resultado.custoPorPeca}`}      unit="/ peça" highlight />
       </div>
 
       <p className="calc-hint" style={{ marginTop: "16px", textAlign: "center" }}>
