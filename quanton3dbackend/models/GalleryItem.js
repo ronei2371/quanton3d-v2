@@ -39,7 +39,8 @@ const Schema = new mongoose.Schema(
     clienteId: String,
     resina: String,
     impressora: String,
-    imagem: String,
+    imagem: String,          // legado — base64 armazenado no Mongo (itens antigos)
+    imagemUrl: { type: String, default: '' }, // R2 — URL pública no Cloudflare (itens novos)
     observacao: String,
     parametros: ParametrosSchema,
     redesSociais: RedesSociaisSchema,
