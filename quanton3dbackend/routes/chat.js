@@ -349,7 +349,7 @@ router.post('/', async (req, res) => {
             completionTokens: completion.usage?.completion_tokens ?? null,
             numericRewrite,
         }));
-        const reply = providerReply
+        let reply = providerReply
             || ruleBasedAnswer(text)
             || 'Nao consegui gerar uma resposta segura agora. Informe a resina, o modelo da impressora e descreva o sintoma; se preferir, chame a equipe pelo WhatsApp (31) 3271-6935.';
 
@@ -372,7 +372,10 @@ router.post('/', async (req, res) => {
             console.error('[SALVAR CONVERSA]', err.message);
         }
 
-        registrarUsoIp(ip);
+        if (firstChoice?.finish_reason === 'length') {
+      reply += '\n\n_(Resposta pode estar incompleta. Tente reformular a pergunta de forma mais específica.)_';
+    }
+    registrarUsoIp(ip);
         res.json({
             success: true,
             reply,
