@@ -1,0 +1,35 @@
+name: Regenerar package-lock.json
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-lockfiles:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Regenerar lockfile do backend
+        working-directory: quanton3dbackend
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Regenerar lockfile do frontend
+        working-directory: quanton3dfrontend
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Commitar lockfiles atualizados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add quanton3dbackend/package-lock.json quanton3dfrontend/package-lock.json
+          git diff --staged --quiet || git commit -m "fix(lock): regenerar package-lock.json com helmet, aws-sdk e proxy-addr"
+          git push
