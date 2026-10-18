@@ -1,5 +1,4 @@
 import { useState } from "react";
-import CarrosselComunidade from "./CarrosselComunidade";
 import {
 ArrowRight,
 BookOpen,
@@ -142,8 +141,6 @@ onClick={() => setCaminhoAtivo(caminho)}
 </div>
 </div>
 </section>
-
-<CarrosselComunidade onNavegar={onNavegar} />
 
 {/* ── PARCERIA: Tanuki Figures × Quanton3D × Sagga Studios ── */}
 <section
