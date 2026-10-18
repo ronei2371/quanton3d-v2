@@ -10,7 +10,7 @@ import DiagnosticoGuiado from "../DiagnosticoGuiado";
 const PROBLEMAS = [
   "Peça não adere à plataforma",
   "Peça adere demais / não solta",
-  "Delaminação (camadas separando)",
+  "Delamináção (camadas separando)",
   "Warping / empenamento",
   "Suporte difícil de remover",
   "Peça porosa ou com buracos",
@@ -27,6 +27,7 @@ const PROBLEMAS = [
 
 // Sintomas com correspondência direta no guia de Diagnóstico de Falhas.
 // Quem não está aqui não tem uma âncora específica — segue direto para o chamado.
+const SINTOMAS_GUIA = {
   "Peça não adere à plataforma": "problema-1",
   "Peça adere demais / não solta": "problema-3",
   "Peça porosa ou com buracos": "problema-2",
@@ -101,7 +102,6 @@ function ChamadoTecnico({ cliente, inicial }) {
     </div>
   );
 
-
   return (
     <form onSubmit={enviar}>
       <p style={{ fontSize: "0.86rem", marginBottom: "16px" }}>Conte pra gente qual problema você teve — se houver um diagnóstico rápido pra ele, mostramos antes de abrir o chamado.</p>
@@ -119,69 +119,65 @@ function ChamadoTecnico({ cliente, inicial }) {
         </label>
       </div>
 
+      <>
 
-
-
-
-              <>
-
-          <div className="q-form-grid" style={{ marginBottom: "18px" }}>
-            <label className="q-field"><span>Resina usada *</span>
-              <select className="q-select" value={form.resina} onChange={(e) => set("resina", e.target.value)}>
-                <option value="">Selecione a resina</option>
-                {resinas.map((r) => <option key={r} value={r}>{r}</option>)}
-                <option value="Outra">Outra (não listada)</option>
-              </select>
-            </label>
-            <label className="q-field"><span>Impressora *</span>
-              <select className="q-select" value={form.impressora} onChange={(e) => set("impressora", e.target.value)}>
-                <option value="">Selecione a impressora</option>
-                {impressoras.map((i) => <option key={i} value={i}>{i}</option>)}
-                <option value="Outra">Outra (não listada)</option>
-              </select>
-            </label>
-          </div>
-
-          <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Settings2 size={13} /> Parâmetros que você está usando</h4>
-          <div className="q-form-grid" style={{ marginBottom: "18px" }}>
-            {[
-              { campo: "alturaCamada", label: "Altura de camada", placeholder: "Ex: 0.05mm" },
-              { campo: "exposicaoNormal", label: "Exposição normal (s)", placeholder: "Ex: 2.1" },
-              { campo: "exposicaoBase", label: "Exposição base (s)", placeholder: "Ex: 35" },
-              { campo: "camadasBase", label: "Camadas base", placeholder: "Ex: 6" },
-            ].map(({ campo, label, placeholder }) => (
-              <label key={campo} className="q-field"><span>{label}</span>
-                <input className="q-input" value={form[campo]} onChange={(e) => set(campo, e.target.value)} placeholder={placeholder} />
-              </label>
-            ))}
-          </div>
-
-          <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Thermometer size={13} /> Contexto e tentativas</h4>
-          <div className="q-form-grid" style={{ marginBottom: "18px" }}>
-            <label className="q-field"><span>Temperatura ambiente (°C)</span>
-              <input className="q-input" value={form.temperatura} onChange={(e) => set("temperatura", e.target.value)} placeholder="Ex: 22" />
-            </label>
-            <label className="q-field q-field-full"><span>O que você já tentou para resolver?</span>
-              <input className="q-input" value={form.tentativas} onChange={(e) => set("tentativas", e.target.value)} placeholder="Ex: aumentei exposição base, nivelei a plataforma..." />
-            </label>
-            <label className="q-field q-field-full"><span>Observações adicionais</span>
-              <textarea className="q-textarea" rows={3} value={form.observacao} onChange={(e) => set("observacao", e.target.value)} placeholder="Quando começou? É sempre ou às vezes? Algum detalhe importante..." />
-            </label>
-          </div>
-
-          <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Camera size={13} /> Fotos do problema (até 2)</h4>
-          <AvisoFotoPrivacidade />
-          <label style={{ display: "block", padding: "16px", borderRadius: "var(--r-md)", border: "2px dashed var(--border-soft)", background: "rgba(0,146,255,0.04)", cursor: "pointer", textAlign: "center", marginBottom: "18px" }}>
-            <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => setFotos(Array.from(e.target.files || []).slice(0, 2))} />
-            {fotos.length > 0
-              ? <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--q-verde)", fontWeight: 700 }}><CheckCircle2 size={14} /> {fotos.length} foto(s): {fotos.map((f) => f.name).join(", ")}</span>
-              : <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--text-muted)", fontSize: "0.85rem" }}><FolderOpen size={14} /> Clique para selecionar fotos da peça com problema</span>}
+        <div className="q-form-grid" style={{ marginBottom: "18px" }}>
+          <label className="q-field"><span>Resina usada *</span>
+            <select className="q-select" value={form.resina} onChange={(e) => set("resina", e.target.value)}>
+              <option value="">Selecione a resina</option>
+              {resinas.map((r) => <option key={r} value={r}>{r}</option>)}
+              <option value="Outra">Outra (não listada)</option>
+            </select>
           </label>
+          <label className="q-field"><span>Impressora *</span>
+            <select className="q-select" value={form.impressora} onChange={(e) => set("impressora", e.target.value)}>
+              <option value="">Selecione a impressora</option>
+              {impressoras.map((i) => <option key={i} value={i}>{i}</option>)}
+              <option value="Outra">Outra (não listada)</option>
+            </select>
+          </label>
+        </div>
 
-          <button type="submit" className="q-btn q-btn--primary q-btn--block" disabled={enviando}>
-            <Wrench size={15} /> {enviando ? "Enviando chamado..." : "Abrir Chamado Técnico"}
-          </button>
-        </>
+        <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Settings2 size={13} /> Parâmetros que você está usando</h4>
+        <div className="q-form-grid" style={{ marginBottom: "18px" }}>
+          {[
+            { campo: "alturaCamada", label: "Altura de camada", placeholder: "Ex: 0.05mm" },
+            { campo: "exposicaoNormal", label: "Exposição normal (s)", placeholder: "Ex: 2.1" },
+            { campo: "exposicaoBase", label: "Exposição base (s)", placeholder: "Ex: 35" },
+            { campo: "camadasBase", label: "Camadas base", placeholder: "Ex: 6" },
+          ].map(({ campo, label, placeholder }) => (
+            <label key={campo} className="q-field"><span>{label}</span>
+              <input className="q-input" value={form[campo]} onChange={(e) => set(campo, e.target.value)} placeholder={placeholder} />
+            </label>
+          ))}
+        </div>
+
+        <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Thermometer size={13} /> Contexto e tentativas</h4>
+        <div className="q-form-grid" style={{ marginBottom: "18px" }}>
+          <label className="q-field"><span>Temperatura ambiente (°C)</span>
+            <input className="q-input" value={form.temperatura} onChange={(e) => set("temperatura", e.target.value)} placeholder="Ex: 22" />
+          </label>
+          <label className="q-field q-field-full"><span>O que você já tentou para resolver?</span>
+            <input className="q-input" value={form.tentativas} onChange={(e) => set("tentativas", e.target.value)} placeholder="Ex: aumentei exposição base, nivelei a plataforma..." />
+          </label>
+          <label className="q-field q-field-full"><span>Observações adicionais</span>
+            <textarea className="q-textarea" rows={3} value={form.observacao} onChange={(e) => set("observacao", e.target.value)} placeholder="Quando começou? É sempre ou às vezes? Algum detalhe importante..." />
+          </label>
+        </div>
+
+        <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}><Camera size={13} /> Fotos do problema (até 2)</h4>
+        <AvisoFotoPrivacidade />
+        <label style={{ display: "block", padding: "16px", borderRadius: "var(--r-md)", border: "2px dashed var(--border-soft)", background: "rgba(0,146,255,0.04)", cursor: "pointer", textAlign: "center", marginBottom: "18px" }}>
+          <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => setFotos(Array.from(e.target.files || []).slice(0, 2))} />
+          {fotos.length > 0
+            ? <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--q-verde)", fontWeight: 700 }}><CheckCircle2 size={14} /> {fotos.length} foto(s): {fotos.map((f) => f.name).join(", ")}</span>
+            : <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--text-muted)", fontSize: "0.85rem" }}><FolderOpen size={14} /> Clique para selecionar fotos da peça com problema</span>}
+        </label>
+
+        <button type="submit" className="q-btn q-btn--primary q-btn--block" disabled={enviando}>
+          <Wrench size={15} /> {enviando ? "Enviando chamado..." : "Abrir Chamado Técnico"}
+        </button>
+      </>
     </form>
   );
 }
@@ -254,7 +250,7 @@ function AtendimentoSection({ cliente, onAbrirContato, onPedirCadastro, onAbrirG
         <button type="button" className="q-btn q-btn--primary" onClick={onAbrirContato}><MessageCircle size={15} /> Fale Conosco</button>
         <a className="q-btn q-btn--whatsapp" href={WHATSAPP_SUPORTE_URL} target="_blank" rel="noreferrer"><Phone size={15} /> WhatsApp Suporte</a>
       </div>
-          <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginTop: "4px" }}>Horário: {HORARIO_ATENDIMENTO}</p>
+      <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginTop: "4px" }}>Horário: {HORARIO_ATENDIMENTO}</p>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "18px", borderBottom: "1px solid var(--border-soft)", overflowX: "auto" }}>
         {ABAS.map((a) => {
