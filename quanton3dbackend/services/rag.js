@@ -214,7 +214,7 @@ function queryWithHistory(message, history = []) {
 if (tokenize(message).length >= 2) return message;
 const recentUserMessages = Array.isArray(history)
   ? history
-    .filter((item) => item && item.role === 'user' && item.content)
+    .filter((item) => item && item.role === 'user' && item.content && String(item.content).trim() !== String(message).trim())
     .slice(-1)
     .map((item) => item.content)
   : [];
