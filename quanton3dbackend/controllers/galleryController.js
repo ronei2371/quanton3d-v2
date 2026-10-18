@@ -2,47 +2,75 @@ import mongoose from 'mongoose';
 import GalleryItem from '../models/GalleryItem.js';
 import { itemPublicoGaleria } from '../services/galleryPublic.js';
 import { avisarEquipe } from '../services/avisoEquipe.js';
+import { uploadBase64ParaR2, deletarImagemR2 } from '../services/r2Storage.js';
 
 export async function criarGalleryItem(req, res) {
   // O visitante nao escolhe id, datas nem status (tudo entra como pendente para o ADM aprovar).
-  const { _id, createdAt, updatedAt, status, ...dados } = req.body || {}; // eslint-disable-line no-unused-vars
+  const { _id, createdAt, updatedAt, status, imagem, ...dados } = req.body || {}; // eslint-disable-line no-unused-vars
+
+  let imagemUrl = '';
+  if (imagem) {
+    try {
+      imagemUrl = await uploadBase64ParaR2(imagem, 'gallery');
+    } catch (err) {
+      console.error('[Gallery] Falha no upload para R2:', err.message);
+      return res.status(500).json({ success: false, error: 'Falha ao salvar imagem. Tente novamente.' });
+    }
+  }
+
   const item = await GalleryItem.create({
     ...dados,
+    imagemUrl,
+    // imagem não é mais salvo no Mongo — só a URL do R2
     status: 'pendente',
   });
-  avisarEquipe('galeria', [item.resina, item.impressora].filter(Boolean).join(' · ') || 'Aguardando aprovação'); // celular da equipe (se configurado)
+  avisarEquipe('galeria', [item.resina, item.impressora].filter(Boolean).join(' · ') || 'Aguardando aprovação');
 
   return res.status(201).json({ success: true, data: item });
 }
 
-// Tipos de imagem que a rota publica pode servir. Serve para nao devolver, por
-// exemplo, text/html gravado num data: URI, que o navegador executaria.
+// Tipos de imagem que a rota publica pode servir.
 const MIMES_DE_IMAGEM = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
 
 export async function listarGalleryItems(_req, res) {
-  // Sem o base64: a listagem nao carrega a foto do banco, so marca quem tem uma.
-  // Cada foto vai pelo endereco proprio (imagemUrl), em GET /gallery/:id/imagem.
+  // temImagem = true se tem URL R2 OU legado base64
   const items = await GalleryItem.aggregate([
     { $match: { status: 'aprovado' } },
     { $sort: { createdAt: -1 } },
     { $limit: 200 },
-    { $addFields: { temImagem: { $ne: [{ $ifNull: ['$imagem', ''] }, ''] } } },
-    { $project: { imagem: 0 } },
+    {
+      $addFields: {
+        temImagem: {
+          $or: [
+            { $ne: [{ $ifNull: ['$imagemUrl', ''] }, ''] },
+            { $ne: [{ $ifNull: ['$imagem', ''] }, ''] },
+          ],
+        },
+      },
+    },
+    { $project: { imagem: 0 } }, // nunca expõe base64 na listagem
   ]);
 
-  // Nunca expor telefone/e-mail de quem enviou; credito so com autorizacao
   return res.json({ success: true, data: items.map(itemPublicoGaleria) });
 }
 
-// Foto de uma peca aprovada. Fica fora do JSON da listagem para o navegador
-// poder baixar em paralelo, so o que aparece na tela, e guardar em cache.
+// Foto de uma peca aprovada.
 export async function imagemGalleryItem(req, res) {
   const { id } = req.params;
   const naoAchou = () => res.status(404).json({ success: false, error: 'Foto nao encontrada.' });
   if (!mongoose.isValidObjectId(id)) return naoAchou();
 
-  // Só item aprovado: pendente e recusado continuam invisiveis para o publico.
-  const item = await GalleryItem.findOne({ _id: id, status: 'aprovado' }).select('imagem').lean();
+  const item = await GalleryItem.findOne({ _id: id, status: 'aprovado' })
+    .select('imagem imagemUrl')
+    .lean();
+  if (!item) return naoAchou();
+
+  // Novo: redireciona para R2 CDN (cache infinito no browser)
+  if (item.imagemUrl) {
+    return res.redirect(301, item.imagemUrl);
+  }
+
+  // Legado: serve base64 armazenado no Mongo
   const dataUri = typeof item?.imagem === 'string' ? item.imagem : '';
   const partes = /^data:([a-z0-9.+-]+\/[a-z0-9.+-]+);base64,(.*)$/is.exec(dataUri);
   if (!partes) return naoAchou();
@@ -55,7 +83,6 @@ export async function imagemGalleryItem(req, res) {
 
   res.set('Content-Type', mime);
   res.set('X-Content-Type-Options', 'nosniff');
-  // O endereco carrega a versao (?v=), entao o conteudo daquele endereco nunca muda.
   res.set('Cache-Control', 'public, max-age=31536000, immutable');
   return res.send(buffer);
 }
@@ -70,14 +97,8 @@ export async function listarGalleryItemsAdmin(req, res) {
 
   if (dataInicio || dataFim) {
     filtro.createdAt = {};
-
-    if (dataInicio) {
-      filtro.createdAt.$gte = new Date(`${dataInicio}T00:00:00.000Z`);
-    }
-
-    if (dataFim) {
-      filtro.createdAt.$lte = new Date(`${dataFim}T23:59:59.999Z`);
-    }
+    if (dataInicio) filtro.createdAt.$gte = new Date(`${dataInicio}T00:00:00.000Z`);
+    if (dataFim)    filtro.createdAt.$lte = new Date(`${dataFim}T23:59:59.999Z`);
   }
 
   const items = await GalleryItem.find(filtro)
@@ -107,6 +128,13 @@ export async function recusarGalleryItem(req, res) {
 
   if (!item) {
     return res.status(404).json({ success: false, error: 'Item não encontrado' });
+  }
+
+  // Remove imagem do R2 (se existir) após exclusão do doc
+  if (item.imagemUrl) {
+    deletarImagemR2(item.imagemUrl).catch((err) =>
+      console.error('[Gallery] Erro ao deletar imagem R2:', err.message)
+    );
   }
 
   return res.json({ success: true, message: 'Item recusado e excluído.' });
