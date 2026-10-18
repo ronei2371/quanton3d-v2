@@ -1592,13 +1592,13 @@ export function AdminContent({ tokenAtendente }) {
               <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "14px", marginBottom: "12px" }}>
                 {/* Foto */}
                 <div style={{ background: "rgba(0,0,0,0.4)", borderRadius: "10px", border: "1px solid rgba(113,159,219,0.2)", overflow: "hidden", minHeight: "180px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {item.imagem
-                    ? <img src={item.imagem} alt="Envio do cliente" onClick={() => window.open(item.imagem, "_blank")}
+                  {item.imagemUrl
+                    ? <img src={item.imagemUrl} alt="Envio do cliente" onClick={() => window.open(item.imagemUrl, "_blank")}
                         style={{ width: "100%", maxHeight: "220px", objectFit: "contain", cursor: "pointer", display: "block" }}
                         onError={(e) => { e.target.style.display="none"; e.target.nextSibling.style.display="flex"; }}
                       />
                     : null}
-                  <div style={{ display: item.imagem ? "none" : "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "#9pb4c7", fontSize: "0.82rem", padding: "20px" }}>
+                  <div style={{ display: item.imagemUrl ? "none" : "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "#9pb4c7", fontSize: "0.82rem", padding: "20px" }}>
                     <span style={{ fontSize: "2rem" }}>📷</span>
                     <span style={{ color: "#9fb4c7" }}>Sem foto</span>
                   </div>
