@@ -264,10 +264,10 @@ export function formatParameter(parameter = {}) {
     parts.push(`Distancia de elevacao: ${withUnit(parameter.liftDistance || parameter.distanciaElevacao, 'mm')}`);
   }
   if (parameter.liftSpeed || parameter.velocidadeElevacao) {
-    parts.push(`Velocidade de elevacao: ${withUnit(parameter.liftSpeed || parameter.velocidadeElevacao, 'mm/min')}`);
+    parts.push(`Velocidade de elevacao: ${withUnit(parameter.liftSpeed || parameter.velocidadeElevacao, 'mm/s')}`);
   }
   if (parameter.retractSpeed || parameter.velocidadeRetracao) {
-    parts.push(`Velocidade de retracao: ${withUnit(parameter.retractSpeed || parameter.velocidadeRetracao, 'mm/min')}`);
+    parts.push(`Velocidade de retracao: ${withUnit(parameter.retractSpeed || parameter.velocidadeRetracao, 'mm/s')}`);
   }
   if (parameter.lightOffDelay) parts.push(`Light-off delay: ${withUnit(parameter.lightOffDelay, 's')}`);
   if (parameter.codigoChitubox) parts.push(`Codigo CHITUBOX: ${parameter.codigoChitubox}`);
