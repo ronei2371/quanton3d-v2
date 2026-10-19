@@ -11,7 +11,7 @@ const STOP_WORDS = new Set([
   'quando', 'coloquei', 'apareceram', 'deixou', 'toda', 'todo', 'muda',
   'outro', 'outra', 'novo', 'nova', 'tirar', 'usar', 'serve', 'servir',
   'direito', 'cheia', 'cheio', 'sempre', 'mesmo', 'dia', 'dias', 'colocar',
-]);
+]);h
 
 const SYNONYM_GROUPS = [
   ['aderir', 'adere', 'adesao', 'colar', 'cola', 'grudar', 'gruda', 'fixar'],
