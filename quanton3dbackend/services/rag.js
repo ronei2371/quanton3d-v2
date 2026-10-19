@@ -276,14 +276,15 @@ const list = Array.isArray(history) ? history.filter((item) => item && item.cont
 const userTexts = list.filter((item) => item.role !== 'assistant').map((item) => item.content).reverse();
 
 let resin = detectResin(message);
+  let resinSource = resin ? 'message' : null;
 if (!resin) {
-  for (const t of userTexts) { resin = detectResin(t); if (resin) break; }
+  for (const t of userTexts) { resin = detectResin(t); if (resin) { resinSource = 'history'; break; } }
 }
 if (!resin) {
   // Se a ultima resposta do bot indicou UMA unica resina, o cliente provavelmente esta falando dela.
   const lastBot = [...list].reverse().find((item) => item.role === 'assistant');
   const botResins = lastBot ? detectAllResins(lastBot.content) : [];
-  if (botResins.length === 1) resin = botResins[0];
+  if (botResins.length === 1) { resin = botResins[0]; resinSource = 'bot-context'; }
 }
 
 let printer = detectPrinter(message);
@@ -301,7 +302,7 @@ const lhMm = message.match(/([d.]+)\s*mm\b/i);
 const lhUm = message.match(/(\d+)\s*microns?\b/i);
 if (lhMm) { const v = parseFloat(lhMm[1]); if (v >= 0.01 && v <= 0.30) layerHeight = v; }
 else if (lhUm) { const v = parseFloat(lhUm[1]) / 1000; if (v >= 0.01 && v <= 0.30) layerHeight = v; }
-return { resin: resin, printer: printer, layerHeight: layerHeight };
+return { resin: resin, printer: printer, resinSource: resinSource };
 }
 
 function numericValue(value) {
@@ -477,6 +478,7 @@ const query = queryWithHistory(message, history);
 const entities = extractEntities(message, history);
 const resin = entities.resin;
 const printer = entities.printer;
+  const resinSource = entities.resinSource;
 const threshold = getRagMinRelevance();
 const limit = Math.min(5, Math.max(1, Number.parseInt(process.env.RAG_MAX_RESULTS, 10) || 3));
 const rankingOptions = { threshold: threshold, limit: limit, entity: resin };
@@ -542,7 +544,7 @@ const sources = [
 console.log('[RAG-INFO]', JSON.stringify({
   threshold: threshold,
   resin: resin || null,
-  printer: printer || null,
+  printer: printer || null resinSource: resinSource,,
   catalogo: { resinas: catalogCache.resins.length, impressoras: catalogCache.printers.length },
   sources: sources,
   results: {
