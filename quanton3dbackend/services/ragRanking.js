@@ -11,7 +11,7 @@ const STOP_WORDS = new Set([
   'quando', 'coloquei', 'apareceram', 'deixou', 'toda', 'todo', 'muda',
   'outro', 'outra', 'novo', 'nova', 'tirar', 'usar', 'serve', 'servir',
   'direito', 'cheia', 'cheio', 'sempre', 'mesmo', 'dia', 'dias', 'colocar',
-]);h
+]);
 
 const SYNONYM_GROUPS = [
   ['aderir', 'adere', 'adesao', 'colar', 'cola', 'grudar', 'gruda', 'fixar'],
@@ -264,10 +264,10 @@ export function formatParameter(parameter = {}) {
     parts.push(`Distancia de elevacao: ${withUnit(parameter.liftDistance || parameter.distanciaElevacao, 'mm')}`);
   }
   if (parameter.liftSpeed || parameter.velocidadeElevacao) {
-    parts.push(`Velocidade de elevacao: ${withUnit(parameter.liftSpeed || parameter.velocidadeElevacao, 'mm/s')}`);
+    parts.push(`Velocidade de elevacao: ${withUnit(parameter.liftSpeed || parameter.velocidadeElevacao, 'mm/min')}`);
   }
   if (parameter.retractSpeed || parameter.velocidadeRetracao) {
-    parts.push(`Velocidade de retracao: ${withUnit(parameter.retractSpeed || parameter.velocidadeRetracao, 'mm/s')}`);
+    parts.push(`Velocidade de retracao: ${withUnit(parameter.retractSpeed || parameter.velocidadeRetracao, 'mm/min')}`);
   }
   if (parameter.lightOffDelay) parts.push(`Light-off delay: ${withUnit(parameter.lightOffDelay, 's')}`);
   if (parameter.codigoChitubox) parts.push(`Codigo CHITUBOX: ${parameter.codigoChitubox}`);
