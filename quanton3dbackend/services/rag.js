@@ -290,7 +290,12 @@ let printer = detectPrinter(message);
 if (!printer) {
   for (const t of userTexts) { printer = detectPrinter(t); if (printer) break; }
 }
-return { resin: resin, printer: printer };
+let layerHeight = null;
+const lhMm = message.match(/([d.]+)\s*mm\b/i);
+const lhUm = message.match(/(\d+)\s*microns?\b/i);
+if (lhMm) { const v = parseFloat(lhMm[1]); if (v >= 0.01 && v <= 0.30) layerHeight = v; }
+else if (lhUm) { const v = parseFloat(lhUm[1]) / 1000; if (v >= 0.01 && v <= 0.30) layerHeight = v; }
+return { resin: resin, printer: printer, layerHeight: layerHeight };
 }
 
 function numericValue(value) {
@@ -333,7 +338,7 @@ return (Array.isArray(rows) ? rows : []).filter(isUsableParameter);
 
 // message e passada para restringir o guard apenas a perguntas de parametros.
 // Perguntas de diagnostico (encolhimento, defeito, sintoma) passam sem guard.
-async function retrieveOfficialParameters(resin, printer, message) {
+async function retrieveOfficialParameters(resin, printer, message, layerHeight = null) {
 if (!message) message = '';
 if (!resin && !printer) return { context: '', guardInstruction: '', found: false };
 const wantsParameters = isParameterRequest(message);
@@ -402,7 +407,11 @@ if (!exact.length) {
   };
 }
 
-const profiles = uniqueProfiles(exact).slice(0, 2);
+let profiles = uniqueProfiles(exact).slice(0, 2);
+if (layerHeight != null) {
+const filtered = profiles.filter(p => { const ph = numericValue(p.alturaCamada); return ph != null && Math.abs(ph - layerHeight) <= 0.005; });
+if (filtered.length > 0) profiles = filtered;
+}
 const lines = profiles.map(formatParameter).filter(Boolean);
 if (profiles.length > 1) {
   lines.push('Observacao: ha mais de um perfil cadastrado para esta combinacao. Apresente o primeiro como perfil principal e cite o segundo como alternativa.');
@@ -468,7 +477,7 @@ const rankingOptions = { threshold: threshold, limit: limit, entity: resin };
 
 // Passa message para que retrieveOfficialParameters distinga parametros de diagnostico
 const results = await Promise.all([
-  retrieveOfficialParameters(resin, printer, message).catch((error) => {
+  retrieveOfficialParameters(resin, printer, message, entities.layerHeight).catch((error) => {
     console.error('[RAG-WARN] Falha ao consultar parametros oficiais:', error.message);
     return { context: '', guardInstruction: '', found: false };
   }),
