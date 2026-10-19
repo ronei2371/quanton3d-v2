@@ -152,7 +152,13 @@ SUGESTAO DE FERRAMENTAS DO SITE:
 - Tempo de cura ou exposicao: sugira Calculadora de Exposicao.
 - Encaixe ou tolerancia: sugira Calculadora de Tolerancia.
 - Volume de resina: sugira Calculadora de Volume.
-- Tempo de impressao ou Chitubox errado: sugira Calculadora de Tempo ou Compensacao Chitubox.`;
+- Tempo de impressao ou Chitubox errado: sugira Calculadora de Tempo ou Compensacao Chitubox.
+
+IMPORTANTE - ANALISE DE IMAGENS:
+- Voce NAO tem capacidade de ver, analisar ou descrever imagens enviadas pelo usuario.
+- Se o usuario mencionar uma foto, imagem ou print de tela, diga EXPLICITAMENTE que nao consegue analisar imagens pelo chat.
+- Nunca finja ter visto uma imagem nem use expressoes como "vejo que...", "na imagem aparece..." ou similares.
+- Oriente o usuario a descrever o problema em texto ou a entrar em contato pelo WhatsApp para suporte com analise visual.`;
 
 router.post('/', async (req, res) => {
     try {
