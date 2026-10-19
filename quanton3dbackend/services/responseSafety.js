@@ -1,7 +1,12 @@
 const TECHNICAL_QUANTITY_PATTERN = /\b\d+(?:[.,]\d+)?(?:\s*[-–a]\s*\d+(?:[.,]\d+)?)?\s*(?:%|s(?:egundos?)?|min(?:utos?)?|mm|cm|°\s*c)(?=$|[^a-z0-9])/i;
 
+// Detecta número solto (sem unidade) próximo de termos técnicos de impressão
+// Ex: "use 80" ou "2.1 de exposição" — bloqueia invenção de valores sem contexto aprovado
+const BARE_TECHNICAL_PATTERN = /(?:exposi[cç][aã]o|camada|lift|retra[cç][aã]o|velocidade|temperatura|tempo)\s+(?:de\s+|base\s+)?\d+(?:[.,]\d+)?|\b\d+(?:[.,]\d+)?\s+(?:de\s+)?(?:exposi[cç][aã]o|camada|lift|retra[cç][aã]o|velocidade|temperatura)/i;
+
 export function containsTechnicalQuantity(value = '') {
-  return TECHNICAL_QUANTITY_PATTERN.test(String(value));
+  const s = String(value);
+  return TECHNICAL_QUANTITY_PATTERN.test(s) || BARE_TECHNICAL_PATTERN.test(s);
 }
 
 // Quebra em frases sem cortar abreviacao ("max."), negrito aberto ou numero de lista.
