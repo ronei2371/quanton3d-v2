@@ -290,6 +290,12 @@ let printer = detectPrinter(message);
 if (!printer) {
   for (const t of userTexts) { printer = detectPrinter(t); if (printer) break; }
 }
+// GPT-5: evitar que marca de impressora seja confundida com resina
+if (printer && resin) {
+  const np = normalizeText(printer) || '';
+  const nr = normalizeText(resin) || '';
+  if (nr.length > 0 && np.startsWith(nr)) resin = null;
+}
 let layerHeight = null;
 const lhMm = message.match(/([d.]+)\s*mm\b/i);
 const lhUm = message.match(/(\d+)\s*microns?\b/i);
