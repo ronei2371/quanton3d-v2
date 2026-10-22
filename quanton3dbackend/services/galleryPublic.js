@@ -59,4 +59,4 @@ function itemPublicoGaleria(item = {}) {
   return publico;
 }
 
-export default itemPublicoGaleria;
+export { itemPublicoGaleria };
