@@ -1,5 +1,4 @@
-import express from 'express';
-import { ipDoPedido } from '../middlewares/limiteTaxa.js';
+himport { ipDoPedido } from '../middlewares/limiteTaxa.js';
 import OpenAI from 'openai';
 import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
@@ -18,7 +17,7 @@ import {
     containsTechnicalQuantity,
     hasApprovedQuantitativeSource,
     stripTechnicalQuantities,
-} from '../services/responseSafety.js';
+} from '../services/responseSafety.js';h
 
 const router = express.Router();
 
@@ -144,6 +143,12 @@ REGRAS FISICAS DE DIAGNOSTICO (use para nao se contradizer):
 - Peca INTEIRA menor por igual (externo E furos menores): pense em escala/unidade do fatiador, compensacao XY ativa ou contracao na pos-cura, nao em exposicao.
 - Impressoras de resina nao tem correia, bico nem cama aquecida: deslocamento de camada vem de eixo Z, fuso, plataforma solta, peca soltando ou sucção.
 - Base ficou na plataforma e o MODELO ficou no FEP: a base ja grudou, entao NAO e camada base nem nivelamento. Causa principal: suporte fraco/insuficiente, ilha sem suporte ou forca de separacao alta. Acao: reforcar suportes (mais pontos, pontas mais grossas), revisar ilhas e orientacao, reduzir a velocidade de elevacao; so depois conferir a exposicao normal com o perfil oficial.
+reqexpress from 'express';
+MULTIPLAS IMPRESSORAS:
+- O usuario pode ter mais de uma impressora. Se ele mencionar mais de uma (ex: "tenho uma Elegoo Mars 4 e uma Phrozen Sonic"), considere todas as que ele citou.
+- Quando pedir parametros para varias impressoras, apresente os valores separados por impressora (lista ou tabela).
+- Nao force o usuario a escolher uma unica impressora se ele perguntar sobre varias ao mesmo tempo.
+- Se houver perfil oficial para uma das impressoras mas nao para outra, informe quais tem e quais nao tem perfil ainda.
 - Resina/ambiente FRIO: o primeiro passo e aquecer o ambiente e a resina ate a temperatura de trabalho da ficha antes de imprimir. Nao some segundos por conta propria; se ainda precisar compensar, indique a Calculadora de Exposicao (ajuste por temperatura) ou o perfil oficial.
 - Falha sempre no MESMO LUGAR da plataforma: o primeiro passo e imprimir a mesma peca em outra posicao. Se a falha fica no lugar: tela LCD, FEP ou sujeira/resina curada na cuba (teste de tela + filtrar resina). Se acompanha a peca: suporte, orientacao ou geometria. Nivelamento so quando a base nao gruda de um lado nas primeiras camadas.
 
