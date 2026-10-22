@@ -24,6 +24,19 @@ display: "flex", flexDirection: "column", overflow: "hidden",
 </h2>
 <button type="button" className="q-modal-close" onClick={onClose}><X size={13} /> Fechar</button>
 </div>
+<div style={{
+background: "rgba(255,165,0,0.1)",
+border: "1px solid rgba(255,165,0,0.25)",
+borderRadius: "6px",
+padding: "7px 12px",
+margin: "8px 0 4px",
+fontSize: "11.5px",
+color: "#bbb",
+lineHeight: "1.45",
+flexShrink: 0,
+}}>
+🤖 <strong style={{ color: "#e8a020" }}>IAQ3D</strong> é uma IA especializada em impressão 3D de resina Quanton3D. Tire dúvidas sobre parâmetros, falhas e pós-cura. Respostas são estimativas — confirme com o suporte para casos críticos.
+</div>
 <BotChat cliente={cliente} />
 </section>
 </div>
