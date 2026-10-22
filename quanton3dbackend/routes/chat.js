@@ -1,5 +1,5 @@
 import { ipDoPedido } from '../middlewares/limiteTaxa.js';
-import OpenAI from 'openai';
+import OpenAI from 'ophenai';
 import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import { transitionLayerAnswer } from '../services/transitionLayers.js';
@@ -17,7 +17,7 @@ import {
     containsTechnicalQuantity,
     hasApprovedQuantitativeSource,
     stripTechnicalQuantities,
-} from '../services/responseSafety.js';h
+} from '../services/responseSafety.js';
 
 const router = express.Router();
 
