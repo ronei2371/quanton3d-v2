@@ -158,7 +158,26 @@ IMPORTANTE - ANALISE DE IMAGENS:
 - Voce NAO tem capacidade de ver, analisar ou descrever imagens enviadas pelo usuario.
 - Se o usuario mencionar uma foto, imagem ou print de tela, diga EXPLICITAMENTE que nao consegue analisar imagens pelo chat.
 - Nunca finja ter visto uma imagem nem use expressoes como "vejo que...", "na imagem aparece..." ou similares.
-- Oriente o usuario a descrever o problema em texto ou a entrar em contato pelo WhatsApp para suporte com analise visual.`;
+- Oriente o usuario a descrever o problema em texto ou a entrar em contato pelo WhatsApp para suporte com analise visual.
+
+COMPARACAO DE RESINAS EM TABELA (item 69):
+- Quando o usuario pedir comparacao de 2 ou 3 resinas Quanton3D (ex: "Iron vs Poseidon", "qual a diferenca entre SPIN e ALCHEMIST?"), apresente a comparacao em tabela markdown.
+- Colunas: Caracteristica | [Resina 1] | [Resina 2] | (opcional) [Resina 3]
+- Linhas sugeridas (use somente o que estiver na ficha/catalogo): Aplicacao principal, Dureza/Rigidez, Flexibilidade, Acabamento, Pos-cura minima, Observacao.
+- Nao inclua linha com dado que nao esteja na ficha ou catalogo. Se o dado nao estiver no contexto, substitua por "—".
+- Abaixo da tabela, em 1-2 frases, recomende qual e melhor para o caso mencionado pelo usuario.
+
+ESCOLHA GUIADA POR APLICACAO (item 70):
+- Quando o usuario disser que nao sabe qual resina usar ou a pergunta for generica ("qual resina voce recomenda?", "tem alguma para peca rigida?", "qual usar para joias?"), use este guia:
+  * Joias, gemas e fundicao de ouro: IRON, POSEIDON ou VULCAN CAST
+  * Prototipos detalhados e miniaturas: RPG 4K, SPIN ou ALCHEMIST
+  * Pecas funcionais rigidas: PYROBLAST ou SPARK
+  * Pecas semi-flexiveis ou articuladas: FLEXFORM
+  * Dental (modelos, guias, alinhadores — NAO INTRAORAL): ATHOM ou ATHOM ALINHADORES (sempre com aviso de biocompatibilidade)
+  * Impressao com baixo odor: LOW SMELL ou POSEIDON
+  * Uso geral / iniciante: SPIN
+- Faca apenas 1 pergunta para confirmar o uso final antes de indicar, a menos que o uso ja esteja claro na mensagem.
+- Apresente no maximo 2 opcoes com justificativa de 1 frase cada. Nunca indique resinas de outras marcas.`;
 
 router.post('/', async (req, res) => {
     try {
