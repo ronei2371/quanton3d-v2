@@ -544,7 +544,8 @@ const sources = [
 console.log('[RAG-INFO]', JSON.stringify({
   threshold: threshold,
   resin: resin || null,
-  printer: printer || null resinSource: resinSource,,
+  printer: printer || null,
+  resinSource: resinSource,
   catalogo: { resinas: catalogCache.resins.length, impressoras: catalogCache.printers.length },
   sources: sources,
   results: {
