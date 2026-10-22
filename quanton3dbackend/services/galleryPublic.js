@@ -22,7 +22,15 @@ function versaoDaFoto(item) {
   return Number.isFinite(ms) && ms > 0 ? String(ms) : '1';
 }
 
-export function itemPublicoGaleria(item = {}) {
+export 
+// LGPD: exibe apenas primeiro nome + inicial do sobrenome (ex: "Maria S.")
+function abreviarNome(nomeCompleto) {
+  if (!nomeCompleto) return '';
+  const partes = nomeCompleto.trim().split(/\s+/);
+  if (partes.length === 1) return partes[0];
+  return `${partes[0]} ${partes[partes.length - 1][0]}.`;
+}
+function itemPublicoGaleria(item = {}) {
   const publico = {};
   CAMPOS_PUBLICOS.forEach((campo) => {
     if (item[campo] !== undefined) publico[campo] = item[campo];
@@ -43,7 +51,7 @@ export function itemPublicoGaleria(item = {}) {
       const valor = textoLimpo(redes[rede]);
       if (valor) creditoRedes[rede] = valor;
     });
-    const nome = textoLimpo(item.nome);
+    const nome = abreviarNome(textoLimpo(item.nome));
     if (nome) publico.autor = nome;
     if (Object.keys(creditoRedes).length > 0) publico.redesSociais = creditoRedes;
   }
