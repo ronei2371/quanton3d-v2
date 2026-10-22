@@ -40,9 +40,9 @@ const app = express();
 app.disable("x-powered-by");
 
 // Headers de seguranca HTTP (Helmet 8).
-// crossOriginEmbedderPolicy: false — evita quebrar scripts GA4 e imagens R2 cross-origin.
-// crossOriginResourcePolicy cross-origin — permite que o CDN R2 sirva imagens para o frontend.
-// unsafe-inline em scriptSrc/styleSrc — necessario para o bloco GA4 inline e estilos JSX do React.
+// crossOriginEmbedderPolicy: false â evita quebrar scripts GA4 e imagens R2 cross-origin.
+// crossOriginResourcePolicy cross-origin â permite que o CDN R2 sirva imagens para o frontend.
+// unsafe-inline em scriptSrc/styleSrc â necessario para o bloco GA4 inline e estilos JSX do React.
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -54,9 +54,9 @@ app.use(
           "https://www.googletagmanager.com",
           "https://www.google-analytics.com",
         ],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "blob:", "https:"],
-        fontSrc: ["'self'", "data:"],
+        fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
         connectSrc: [
           "'self'",
           "https://www.google-analytics.com",
@@ -124,7 +124,7 @@ app.patch("/api/conversas/:id/feedback", limiteUpload);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/bot-tickets", botTicketsRoutes);
 
-// Servir arquivos estáticos do Frontend
+// Servir arquivos estÃ¡ticos do Frontend
 const frontendBuildPath = path.join(__dirname, "../quanton3dfrontend/dist");
 app.use(express.static(frontendBuildPath));
 
@@ -182,5 +182,5 @@ error: err.message || "Erro interno",
 await connectDB();
 
 app.listen(PORT, () => {
-console.log(`🚀 Quanton3D Final Backend rodando na porta ${PORT}`);
+console.log(`ð Quanton3D Final Backend rodando na porta ${PORT}`);
 });
