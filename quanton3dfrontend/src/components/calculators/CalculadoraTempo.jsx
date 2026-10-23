@@ -139,7 +139,7 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
     <section className="calc-section">
       <div className="calc-header">
         <span className="calc-badge"><Timer size={12} /> Planejamento de produção</span>
-        <h2 className="calc-title">Calculadora de Tempo de Impressão</h2>
+        <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Calculadora de Tempo de Impressão</h2><a href="/guias/02-guia-tempo-impressao-quanton3d.html" style={{ fontSize:'0.78rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:500 }}>📖 Guia Técnico</a></div>
         <p className="calc-subtitle">Estime o tempo total a partir dos seus parâmetros do fatiador e simule o impacto de mudar os tempos de descanso entre camadas.</p>
       </div>
 
@@ -313,14 +313,6 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
         </div>
       )}
 
-      <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
-        <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-          Quer entender melhor os parâmetros de tempo de impressão?
-        </p>
-        <a href="/guias/02-guia-tempo-impressao-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
-          📖 Dúvida? Clique aqui — Guia Técnico
-        </a>
-      </div>
     </section>
   );
 }
