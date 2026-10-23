@@ -1,5 +1,5 @@
 import { ipDoPedido } from '../middlewares/limiteTaxa.js';
-import OpenAI from 'ophenai';
+import OpenAI from 'openai';
 import mongoose from 'mongoose';
 import { ruleBasedAnswer } from '../services/aiRules.js';
 import { transitionLayerAnswer } from '../services/transitionLayers.js';
