@@ -41,11 +41,11 @@ function CalculadorasSection({ calculadoraInicial, onNavegar }) {
     custo_simples: <CalculadoraVolume />,
     custo_avancado: <CalculadoraCustos />,
     exposicao: <CalculadoraExposicao onIrParametros={onNavegar ? () => { setAtiva(null); onNavegar("parametros"); } : undefined} />,
-    tolerancia: <CalculadoraTolerancia />,
+    tolerancia: <CalculadoraTolerancia onAbrirGuias={() => { if (onNavegar) { setAtiva(null); onNavegar("guias"); } }} />,
     tempo: <CalculadoraTempo onAbrirCompensacao={() => setAtiva("compensacao")} />,
-    compensacao: <CalculadoraCompensacao />,
-    encolhimento: <CalculadoraEncolhimento />,
-    tolerancia_inferior: <CalculadoraToleranciaInferior />,
+    compensacao: <CalculadoraCompensacao onAbrirGuias={() => { if (onNavegar) { setAtiva(null); onNavegar("guias"); } }} />,
+    encolhimento: <CalculadoraEncolhimento onAbrirGuias={() => { if (onNavegar) { setAtiva(null); onNavegar("guias"); } }} />,
+    tolerancia_inferior: <CalculadoraToleranciaInferior onAbrirGuias={() => { if (onNavegar) { setAtiva(null); onNavegar("guias"); } }} />,
   };
 
 
