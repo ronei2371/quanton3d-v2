@@ -1,3 +1,4 @@
+import express from 'express';
 import { ipDoPedido } from '../middlewares/limiteTaxa.js';
 import OpenAI from 'openai';
 import mongoose from 'mongoose';
