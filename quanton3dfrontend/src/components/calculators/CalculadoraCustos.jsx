@@ -11,7 +11,7 @@ export default function CalculadoraCustos({ cliente }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", minHeight: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 8px 4px 0', flexShrink: 0 }}>
-        <a href="/guias/07-guia-custos-orcamentos-avancado-quanton3d.html" target="_blank" rel="noreferrer" style={{ fontSize: '0.78rem', color: 'var(--primary)', textDecoration: 'none', whiteSpace: 'nowrap', fontWeight: 500 }}>📖 Guia Técnico</a>
+        <a href="/guias/07-guia-custos-orcamentos-avancado-quanton3d.html" target="_blank" rel="noreferrer" style={{ fontSize: '0.85rem', color: 'var(--primary)', textDecoration: 'none', whiteSpace: 'nowrap', fontWeight: 600, border: '1px solid var(--primary)', borderRadius: '4px', padding: '2px 10px' }}>📖 Guia Técnico</a>
       </div>
       <div style={{ flex: 1, minHeight: 0, overflow: "hidden", borderRadius: "8px" }}>
       <iframe
