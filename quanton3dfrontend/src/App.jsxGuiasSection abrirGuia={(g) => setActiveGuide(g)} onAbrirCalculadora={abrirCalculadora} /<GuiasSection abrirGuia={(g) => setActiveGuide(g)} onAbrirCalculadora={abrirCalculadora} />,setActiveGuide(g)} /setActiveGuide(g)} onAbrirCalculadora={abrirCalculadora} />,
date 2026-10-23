@@ -65,8 +65,6 @@ function App() {
   const [clienteSalvoInicial] = useState(() => getClienteSalvo());
   const [privacidadeAceitaInicial] = useState(() => getPrivacidadeAceita());
   const [cliente, setCliente] = useState(clienteSalvoInicial);
-  // Cadastro feito antes da chave secreta existir: pede a chave uma vez (codigo + telefone).
-  // Se o cadastro nao confere mais (apagado ou telefone diferente), pede o cadastro de novo.
   useEffect(() => {
     const id = cliente?._id || cliente?.id;
     if (!id || cliente?.chave) return;
@@ -88,13 +86,11 @@ function App() {
   }, [cliente]);
   const [mostrarBoasVindas, setMostrarBoasVindas] = useState(!clienteSalvoInicial && !privacidadeAceitaInicial);
   const [mostrarPrivacidade, setMostrarPrivacidade] = useState(false);
-  const [lerTermo, setLerTermo] = useState(false); // termo aberto pelo rodape (so leitura)
+  const [lerTermo, setLerTermo] = useState(false);
   const [mostrarCadastro, setMostrarCadastro] = useState(!clienteSalvoInicial && privacidadeAceitaInicial);
   const [formCliente, setFormCliente] = useState({ nome: "", telefone: "", email: "", origem: "Instagram" });
   const [salvandoCliente, setSalvandoCliente] = useState(false);
   const [erroCadastro, setErroCadastro] = useState("");
-  // Recursos de suporte (IAQ3D, chamado, formulação, envio de peça) exigem cadastro.
-  // Se a pessoa fechou o cadastro, pedimos de novo na hora de usar e depois seguimos para o que ela queria.
   const [motivoCadastro, setMotivoCadastro] = useState("");
   const acaoAposCadastro = useRef(null);
 
@@ -122,7 +118,6 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Registra visita ao site uma vez por sessao do navegador (alimenta o relatorio de visitantes do ADM)
   useEffect(() => {
     try {
       let sessionId = sessionStorage.getItem("quanton3d_session_id");
@@ -143,8 +138,6 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
       setLoginAtLoading(true);
       setLoginAtErro("");
 
-      // Primeiro valida a credencial administrativa. Se não for admin,
-      // tenta a conta de atendente sem revelar qual tipo de conta existe.
       try {
         const admin = await api.post("/admin/login", { user: loginAtForm.email.trim(), password: loginAtForm.senha });
         if (admin.data?.success && admin.data?.token) {
@@ -253,7 +246,6 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
 
   const [calcInicial, setCalcInicial] = useState(null);
 
-  // Botao "voltar" do navegador/celular volta para a pagina anterior do site.
   useEffect(() => {
     function aoVoltar() {
       const pagina = paginaDaUrl();
@@ -273,12 +265,10 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     setActiveGuide(null);
     const titulo = TITULOS[pagina] || TITULOS["inicio"];
     document.title = titulo;
-    // p0-seo-5: atualiza URL sem recarregar a página
     history.pushState({ pagina }, titulo, PAGINA_TO_PATH[pagina] || '/');
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  // Abre a página de calculadoras já com uma calculadora específica aberta (ex: link cruzado de Parâmetros → Exposição).
   function abrirCalculadora(id) {
     setCalcInicial(id);
     setPaginaAtiva("calculadoras");
@@ -290,7 +280,7 @@ useEffect(() => { document.title = TITULOS[paginaDaUrl()] || TITULOS["inicio"]; 
     inicio: <HomeSection onNavegar={navegar} />,
     parametros: <ParametrosSection onAbrirExposicao={() => abrirCalculadora("exposicao")} />,
     calculadoras: <CalculadorasSection calculadoraInicial={calcInicial} onNavegar={navegar} />,
-    guias: <GuiasSection abrirGuia={(g) => setActiveGuide(g)} />,
+    guias: <GuiasSection abrirGuia={(g) => setActiveGuide(g)} onAbrirCalculadora={abrirCalculadora} />,
     academy: <AcademySection abrirAcademy={(g) => setActiveGuide({ ...g, returnLabel: "Voltar à Quanton Academy" })} />,
     atendimento: <AtendimentoSection cliente={cliente} onAbrirContato={() => setMostrarContatoMensagem(true)} onPedirCadastro={() => exigirCadastro("Para abrir um chamado técnico ou pedir formulação, faça seu cadastro rápido: assim a equipe consegue te responder.")}
       onAbrirGuia={(g) => setActiveGuide({ ...g, returnLabel: "Voltar ao diagnóstico" })}
