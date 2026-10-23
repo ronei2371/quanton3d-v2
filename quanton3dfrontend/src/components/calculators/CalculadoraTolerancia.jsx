@@ -167,7 +167,44 @@ function ToleranceCard({ title, description, valores, tipo, onChange, onCalculat
   );
 }
 
-export default function CalculadoraTolerancia() {
+function SvgTolerancia() {
+  return (
+    <div style={{ background: "var(--bg-void)", borderRadius: "var(--r-sm)", padding: "14px 14px 10px", marginBottom: "16px", overflow: "hidden" }}>
+      <svg viewBox="0 0 320 118" width="100%" aria-hidden="true">
+        {/* === Lado esquerdo: Arquivo (projeto) === */}
+        <text x="78" y="13" textAnchor="middle" fontSize="9.5" fill="currentColor" opacity="0.5">Arquivo (projeto)</text>
+        {/* Bloco externo tracejado */}
+        <rect x="18" y="19" width="120" height="80" rx="3" fill="none" stroke="#2f7bff" strokeWidth="1.5" strokeDasharray="5 3" />
+        {/* Furo tracejado */}
+        <rect x="62" y="44" width="32" height="30" rx="2" fill="none" stroke="#2f7bff" strokeWidth="1.2" strokeDasharray="3 2" />
+        <text x="78" y="62" textAnchor="middle" fontSize="8" fill="#2f7bff">⌀ 6,000</text>
+        <text x="78" y="111" textAnchor="middle" fontSize="8.5" fill="#2f7bff">parede: 20,000 mm</text>
+
+        {/* === Centro: seta UV === */}
+        <text x="162" y="52" textAnchor="middle" fontSize="20" fill="#dc9138">→</text>
+        <text x="162" y="65" textAnchor="middle" fontSize="7.5" fill="#dc9138">UV</text>
+        <text x="162" y="75" textAnchor="middle" fontSize="7.5" fill="#dc9138">bleeding</text>
+
+        {/* === Lado direito: Impresso (real) === */}
+        <text x="244" y="13" textAnchor="middle" fontSize="9.5" fill="currentColor" opacity="0.5">Impresso (real)</text>
+        {/* Bloco externo maior */}
+        <rect x="183" y="19" width="122" height="84" rx="3" fill="rgba(220,80,60,0.05)" stroke="#dc9138" strokeWidth="1.5" />
+        {/* Furo menor */}
+        <rect x="232" y="47" width="24" height="24" rx="2" fill="var(--bg-void,#0a0a0f)" stroke="#dc9138" strokeWidth="1.2" />
+        <text x="244" y="62" textAnchor="middle" fontSize="8" fill="#dc9138">⌀ 5,800</text>
+        <text x="244" y="115" textAnchor="middle" fontSize="8.5" fill="#dc9138">parede: 20,140 mm ↑</text>
+
+        {/* Legenda */}
+        <rect x="8" y="107" width="8" height="6" rx="1" fill="none" stroke="#2f7bff" strokeWidth="1.2" strokeDasharray="3 2" />
+        <text x="19" y="113" fontSize="7.5" fill="currentColor" opacity="0.45">projeto</text>
+        <rect x="52" y="107" width="8" height="6" rx="1" fill="rgba(220,80,60,0.05)" stroke="#dc9138" strokeWidth="1.2" />
+        <text x="63" y="113" fontSize="7.5" fill="currentColor" opacity="0.45">impresso</text>
+      </svg>
+    </div>
+  );
+}
+
+export default function CalculadoraTolerancia({ onAbrirGuias }) {
   const [externo, setExterno] = useState({ teorica: "", real: "", resultado: null, erro: "", aviso: "" });
   const [interno, setInterno] = useState({ teorica: "", real: "", resultado: null, erro: "", aviso: "" });
 
@@ -217,6 +254,8 @@ export default function CalculadoraTolerancia() {
         <p className="calc-subtitle">Meça a peça de teste, informe a medida do arquivo e a real, e veja o valor de compensação para colocar no fatiador.</p>
       </div>
 
+      <SvgTolerancia />
+
       <Guia />
 
       <div className="calc-grid-2" style={{ marginTop: "6px" }}>
@@ -239,6 +278,22 @@ export default function CalculadoraTolerancia() {
           Limpar campos
         </button>
       </div>
+
+      {onAbrirGuias && (
+        <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
+          <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+            Quer entender melhor o conceito antes de calibrar?
+          </p>
+          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/guias/01-guia-tolerancia-xy-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
+              📖 Dúvida? Clique aqui — Guia Técnico
+            </a>
+            <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
+              Ver todos os guias →
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
