@@ -285,7 +285,7 @@ export default function CalculadoraTolerancia({ onAbrirGuias }) {
             Quer entender melhor o conceito antes de calibrar?
           </p>
           <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/guias/01-guia-tolerancia-xy-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
+            <a href="/guias/01-guia-tolerancia-xy-quanton3d.html" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
               📖 Dúvida? Clique aqui — Guia Técnico
             </a>
             <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
