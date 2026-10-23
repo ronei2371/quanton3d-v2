@@ -250,7 +250,7 @@ export default function CalculadoraTolerancia({ onAbrirGuias }) {
     <section className="calc-section">
       <div className="calc-header">
         <span className="calc-badge"><ScanLine size={12} /> Encaixe e calibração</span>
-        <h2 className="calc-title">Calculadora de Tolerância X/Y</h2>
+        <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Calculadora de Tolerância X/Y</h2><a href="/guias/01-guia-tolerancia-xy-quanton3d.html" style={{ fontSize:'0.78rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:500 }}>📖 Guia Técnico</a></div>
         <p className="calc-subtitle">Meça a peça de teste, informe a medida do arquivo e a real, e veja o valor de compensação para colocar no fatiador.</p>
       </div>
 
@@ -281,17 +281,9 @@ export default function CalculadoraTolerancia({ onAbrirGuias }) {
 
       {onAbrirGuias && (
         <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
-          <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-            Quer entender melhor o conceito antes de calibrar?
-          </p>
-          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/guias/01-guia-tolerancia-xy-quanton3d.html" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
-              📖 Dúvida? Clique aqui — Guia Técnico
-            </a>
-            <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
-              Ver todos os guias →
-            </button>
-          </div>
+          <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
+            Ver todos os guias →
+          </button>
         </div>
       )}
     </section>
