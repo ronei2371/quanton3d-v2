@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compensação de Tempo — Quanton3D</title>
+<style>
+:root{--bg:#f8f9fb;--bg2:#fff;--fg:#1a1d23;--fg2:#4a5568;--border:#e2e8f0;--primary:#2563eb;--primary-bg:#eff6ff;--orange:#d97706;--orange-bg:#fffbeb;--green:#059669;--green-bg:#ecfdf5;--radius:10px;}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#1a1d26;--fg:#e8eaf0;--fg2:#9aa3b2;--border:#2d3148;--primary:#3b82f6;--primary-bg:#1e2d4a;--orange:#f59e0b;--orange-bg:#2a1f0a;--green:#10b981;--green-bg:#0a2018;}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;font-size:15px;padding-bottom:60px;}
+.hero{background:linear-gradient(135deg,#1e3a5f 0%,#1a2744 100%);color:#fff;padding:36px 20px 32px;text-align:center;}
+.hero-tag{display:inline-block;background:rgba(59,130,246,.35);color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;}
+.hero h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;line-height:1.25;margin-bottom:10px;}
+.hero p{opacity:.75;font-size:.95rem;max-width:520px;margin:0 auto;}
+.container{max-width:700px;margin:0 auto;padding:0 16px;}
+.section{margin-top:28px;}
+h2{font-size:1.1rem;font-weight:700;color:var(--fg);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+h2 .num{background:var(--primary);color:#fff;font-size:.75rem;font-weight:800;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+p{margin-bottom:12px;color:var(--fg2);}
+strong{color:var(--fg);font-weight:600;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px;}
+.alert{border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;font-size:.9rem;}
+.alert--info{background:var(--primary-bg);border-left:3px solid var(--primary);}
+.alert--warning{background:var(--orange-bg);border-left:3px solid var(--orange);}
+.alert--success{background:var(--green-bg);border-left:3px solid var(--green);}
+.alert p{margin-bottom:6px;} .alert p:last-child{margin-bottom:0;}
+.formula-box{background:var(--bg2);border:1px solid var(--primary);border-radius:var(--radius);padding:18px 20px;text-align:center;margin:18px 0;}
+.formula{font-family:"Courier New",monospace;font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:8px;}
+.formula-desc{font-size:.82rem;color:var(--fg2);}
+.example-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:16px 0;}
+.example-box h3{font-size:.9rem;font-weight:700;margin-bottom:12px;color:var(--green);}
+.example-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+.example-row:last-child{border-bottom:none;}
+.example-label{color:var(--fg2);}
+.example-val{font-weight:700;font-family:monospace;color:var(--fg);}
+.example-val--result{color:var(--primary);font-size:1rem;}
+.steps{list-style:none;padding:0;counter-reset:steps;}
+.steps li{counter-increment:steps;position:relative;padding:14px 16px 14px 52px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;font-size:.9rem;color:var(--fg2);}
+.steps li::before{content:counter(steps);position:absolute;left:14px;top:14px;background:var(--primary);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;}
+.steps li strong{display:block;color:var(--fg);font-weight:600;margin-bottom:4px;}
+.footer{margin-top:36px;padding:20px;text-align:center;font-size:.8rem;color:var(--fg2);border-top:1px solid var(--border);}
+.footer a{color:var(--primary);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Calibração · Guia 03</div>
+  <h1>Compensação de Tempo<br>do Fatiador</h1>
+  <p>Calcule o fator de correção entre o tempo estimado pelo fatiador e o tempo real de impressão.</p>
+</div>
+<div class="container">
+  <div class="section">
+    <div class="alert alert--info">
+      <p><strong>Para que serve este guia?</strong></p>
+      <p>O fatiador mostra "2h 00min" mas a impressora demora "2h 30min". A diferença é sistemática — acontece sempre. Este guia ensina a calcular o <strong>fator de correção</strong> da sua impressora para prever o tempo real com precisão.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">1</span> O fator de correção</h2>
+    <div class="card">
+      <p>O fator de correção é a relação entre o tempo real medido e o tempo estimado pelo fatiador. Uma vez calculado, você multiplica qualquer estimativa futura por esse fator para ter uma previsão confiável.</p>
+      <p style="margin-bottom:0">O fator é específico por impressora — cada máquina tem seu próprio motor Z, FEP e latência interna.</p>
+    </div>
+    <div class="formula-box">
+      <div class="formula">Fator = Tempo Real ÷ Tempo Estimado</div>
+      <div class="formula-desc">Fator maior que 1 = impressora mais lenta que o previsto</div>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">2</span> Como medir</h2>
+    <ul class="steps">
+      <li><strong>Escolha uma impressão de referência</strong>Use qualquer peça que você já vai imprimir. Peças maiores dão medições mais precisas do fator.</li>
+      <li><strong>Anote o tempo estimado</strong>Veja no fatiador o tempo total exibido antes de enviar para a impressora. Anote com minutos exatos.</li>
+      <li><strong>Meça o tempo real</strong>Use o cronômetro do celular do início (quando a primeira camada começa a curar) até o fim (quando a plataforma sobe pela última vez).</li>
+      <li><strong>Calcule o fator</strong>Divida o tempo real pelo estimado. Faça isso em 3–5 impressões e use a média para mais precisão.</li>
+    </ul>
+  </div>
+  <div class="section">
+    <h2><span class="num">3</span> Exemplo de cálculo</h2>
+    <div class="example-box">
+      <h3>📏 Medição de 3 impressões</h3>
+      <div class="example-row"><span class="example-label">Impressão 1: estimado / real</span><span class="example-val">2h00 / 2h28 → 1,23</span></div>
+      <div class="example-row"><span class="example-label">Impressão 2: estimado / real</span><span class="example-val">1h30 / 1h51 → 1,23</span></div>
+      <div class="example-row"><span class="example-label">Impressão 3: estimado / real</span><span class="example-val">3h15 / 3h59 → 1,23</span></div>
+      <div class="example-row"><span class="example-label">Fator médio</span><span class="example-val example-val--result">1,23</span></div>
+    </div>
+    <div class="alert alert--success">
+      <p><strong>Interpretação:</strong> Com fator 1,23, uma estimativa de 2h no fatiador corresponde a 2h × 1,23 = <strong>2h 28min</strong> de impressão real. Planeje seu tempo com esse ajuste.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">4</span> Usando a calculadora</h2>
+    <div class="card">
+      <p>A Calculadora de Tempo do Quanton3D aceita o fator de correção como parâmetro. Após calcular seu fator:</p>
+      <ol style="margin:8px 0 0 18px;color:var(--fg2);font-size:.9rem;line-height:2">
+        <li>Abra a calculadora de tempo</li>
+        <li>Insira os parâmetros da sua configuração</li>
+        <li>Insira o fator de correção no campo correspondente</li>
+        <li>O resultado já virá ajustado para o tempo real</li>
+      </ol>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">5</span> Quando recalibrar o fator</h2>
+    <div class="card"><p><strong>Troca de FEP</strong> — Um FEP novo tem menos resistência. O fator pode cair de 1,25 para 1,15.</p></div>
+    <div class="card"><p><strong>Mudança de velocidades</strong> — Se você alterar lift speed ou retract speed no perfil, o fator muda proporcionalmente.</p></div>
+    <div class="card"><p><strong>Temperatura ambiente muito diferente</strong> — Em ambiente frio, a resina mais viscosa aumenta o tempo de peel, subindo o fator.</p></div>
+    <div class="alert alert--warning">
+      <p><strong>Dica prática:</strong> Mantenha uma planilha simples com data, impressão e fator calculado. Quando o fator começar a subir, é sinal de que o FEP está envelhecendo ou o motor Z precisa de manutenção.</p>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <p><a href="/">← Voltar ao Quanton3D</a></p>
+  <p style="margin-top:8px">Quanton3D · Guia Técnico de Impressão em Resina</p>
+</div>
+</body>
+</html>
