@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pé de Elefante — Quanton3D</title>
+<style>
+:root{--bg:#f8f9fb;--bg2:#fff;--fg:#1a1d23;--fg2:#4a5568;--border:#e2e8f0;--primary:#2563eb;--primary-bg:#eff6ff;--orange:#d97706;--orange-bg:#fffbeb;--green:#059669;--green-bg:#ecfdf5;--radius:10px;}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#1a1d26;--fg:#e8eaf0;--fg2:#9aa3b2;--border:#2d3148;--primary:#3b82f6;--primary-bg:#1e2d4a;--orange:#f59e0b;--orange-bg:#2a1f0a;--green:#10b981;--green-bg:#0a2018;}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;font-size:15px;padding-bottom:60px;}
+.hero{background:linear-gradient(135deg,#1e3a5f 0%,#1a2744 100%);color:#fff;padding:36px 20px 32px;text-align:center;}
+.hero-tag{display:inline-block;background:rgba(59,130,246,.35);color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;}
+.hero h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;line-height:1.25;margin-bottom:10px;}
+.hero p{opacity:.75;font-size:.95rem;max-width:520px;margin:0 auto;}
+.container{max-width:700px;margin:0 auto;padding:0 16px;}
+.section{margin-top:28px;}
+h2{font-size:1.1rem;font-weight:700;color:var(--fg);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+h2 .num{background:var(--primary);color:#fff;font-size:.75rem;font-weight:800;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+p{margin-bottom:12px;color:var(--fg2);}
+strong{color:var(--fg);font-weight:600;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px;}
+.alert{border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;font-size:.9rem;}
+.alert--info{background:var(--primary-bg);border-left:3px solid var(--primary);}
+.alert--warning{background:var(--orange-bg);border-left:3px solid var(--orange);}
+.alert--success{background:var(--green-bg);border-left:3px solid var(--green);}
+.alert p{margin-bottom:6px;} .alert p:last-child{margin-bottom:0;}
+.formula-box{background:var(--bg2);border:1px solid var(--primary);border-radius:var(--radius);padding:18px 20px;text-align:center;margin:18px 0;}
+.formula{font-family:"Courier New",monospace;font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:8px;}
+.formula-desc{font-size:.82rem;color:var(--fg2);}
+.example-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:16px 0;}
+.example-box h3{font-size:.9rem;font-weight:700;margin-bottom:12px;color:var(--green);}
+.example-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+.example-row:last-child{border-bottom:none;}
+.example-label{color:var(--fg2);}
+.example-val{font-weight:700;font-family:monospace;color:var(--fg);}
+.example-val--result{color:var(--primary);font-size:1rem;}
+.steps{list-style:none;padding:0;counter-reset:steps;}
+.steps li{counter-increment:steps;position:relative;padding:14px 16px 14px 52px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;font-size:.9rem;color:var(--fg2);}
+.steps li::before{content:counter(steps);position:absolute;left:14px;top:14px;background:var(--primary);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;}
+.steps li strong{display:block;color:var(--fg);font-weight:600;margin-bottom:4px;}
+.svg-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;}
+.footer{margin-top:36px;padding:20px;text-align:center;font-size:.8rem;color:var(--fg2);border-top:1px solid var(--border);}
+.footer a{color:var(--primary);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Correção · Guia 05</div>
+  <h1>Pé de Elefante<br>Tolerância Inferior da Base</h1>
+  <p>Corrija o excesso de cura nas primeiras camadas que causa expansão lateral na base da peça.</p>
+</div>
+<div class="container">
+  <div class="section">
+    <div class="alert alert--info">
+      <p><strong>O que é o pé de elefante?</strong></p>
+      <p>As primeiras camadas recebem muito mais tempo de exposição UV (bottom exposure) para aderir à plataforma. Esse excesso de cura faz a resina curar além da área projetada, criando uma base alargada que parece a pata de um elefante.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">1</span> Como identificar</h2>
+    <div class="svg-box">
+      <svg viewBox="0 0 320 120" width="100%" aria-hidden="true">
+        <rect x="80" y="15" width="120" height="55" rx="2" fill="rgba(37,99,235,0.08)" stroke="#2563eb" stroke-width="1.5"/>
+        <text x="140" y="47" text-anchor="middle" font-size="9" fill="#2563eb">corpo: 20,00 mm ✓</text>
+        <polygon points="66,70 214,70 228,90 52,90" fill="rgba(217,119,6,0.12)" stroke="#d97706" stroke-width="1.5"/>
+        <text x="140" y="84" text-anchor="middle" font-size="8.5" fill="#d97706">base: 20,35 mm ↔ alargada</text>
+        <rect x="52" y="90" width="176" height="6" rx="1" fill="currentColor" opacity="0.08"/>
+        <text x="140" y="106" text-anchor="middle" font-size="7.5" fill="currentColor" opacity="0.4">plataforma de impressão</text>
+        <text x="248" y="30" font-size="8" fill="currentColor" opacity="0.45">Correção:</text>
+        <text x="248" y="55" font-size="13" font-weight="700" fill="#059669">−0,175 mm</text>
+        <text x="248" y="68" font-size="7.5" fill="currentColor" opacity="0.4">por lado</text>
+      </svg>
+    </div>
+    <div class="card">
+      <p><strong>Como reconhecer:</strong> A peça está correta no meio (corpo), mas alargada na base (primeiras camadas). Encaixes e furos perto da base ficam apertados ou impossíveis de montar.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">2</span> Causa raiz</h2>
+    <div class="card">
+      <p><strong>Bottom exposure muito alta</strong> — O tempo de exposição de base (30–60 s) é muito maior que a exposição normal (1,5–4 s). Esse excesso cura resina além das bordas projetadas.</p>
+    </div>
+    <div class="card">
+      <p><strong>Bottom layers em excesso</strong> — Muitas camadas de base (acima de 6–8) aumentam a região afetada pelo pé de elefante.</p>
+    </div>
+    <div class="alert alert--warning">
+      <p><strong>Antes de compensar:</strong> Verifique se bottom exposure e bottom layers estão nos valores do perfil oficial da sua resina. Uma exposição de base muito alta além de causar pé de elefante também dificulta a remoção da peça.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">3</span> Como medir e calcular</h2>
+    <ul class="steps">
+      <li><strong>Imprima um cubo 20×20×20 mm direto na plataforma</strong>Sem suportes — o pé de elefante só aparece na base colada à plataforma.</li>
+      <li><strong>Meça a base com paquímetro</strong>Meça bem rente à base (onde a expansão aparece). Anote separado da medição do meio do corpo.</li>
+      <li><strong>Calcule a compensação</strong>Compensação = (STL − Medido na base) ÷ 2</li>
+    </ul>
+    <div class="formula-box">
+      <div class="formula">Compensação = (Teórico − Medido Base) ÷ 2</div>
+      <div class="formula-desc">Dividido por 2 porque o fatiador aplica em cada lado</div>
+    </div>
+    <div class="example-box">
+      <h3>📏 Exemplo</h3>
+      <div class="example-row"><span class="example-label">Dimensão no STL</span><span class="example-val">20,000 mm</span></div>
+      <div class="example-row"><span class="example-label">Medido no meio (corpo)</span><span class="example-val">20,050 mm ✓</span></div>
+      <div class="example-row"><span class="example-label">Medido na base</span><span class="example-val">20,350 mm ⚠</span></div>
+      <div class="example-row"><span class="example-label">Compensação por lado</span><span class="example-val example-val--result">−0,175 mm</span></div>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">4</span> Onde aplicar</h2>
+    <div class="card">
+      <p><strong>CHITUBOX:</strong> Configurações → aba <strong>Avançado</strong> → ative <strong>Compensação de Tolerância Inferior</strong> (Bottom Tolerance Compensation) → campo <strong>b</strong> = valor calculado (ex: −0,175). Se furos perto da base ficaram apertados, aplique o mesmo valor no campo <strong>a</strong>.</p>
+    </div>
+    <div class="card">
+      <p><strong>Outros fatiadores:</strong> Procure "elephant foot compensation", "bottom tolerance" ou "base compensation". Insira o valor por lado.</p>
+    </div>
+    <div class="alert alert--success">
+      <p><strong>Validação:</strong> Reimprima o cubo e meça novamente a base. Aceite diferença de ±0,05 mm entre base e corpo como tolerância normal.</p>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <p><a href="/">← Voltar ao Quanton3D</a></p>
+  <p style="margin-top:8px">Quanton3D · Guia Técnico de Impressão em Resina</p>
+</div>
+</body>
+</html>
