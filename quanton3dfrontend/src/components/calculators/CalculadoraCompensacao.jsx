@@ -144,7 +144,7 @@ export default function CalculadoraCompensacao({ onAbrirGuias }) {
       <div className="calc-header">
         <span className="calc-badge"><Timer size={12} /> Calibração do fatiador</span>
 
-        <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Compensação de Tempo — Chitubox e Lychee</h2><a href="/guias/03-guia-compensacao-tempo-quanton3d.html" style={{ fontSize:'0.78rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:500 }}>📖 Guia Técnico</a></div>
+        <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Compensação de Tempo — Chitubox e Lychee</h2><a href="/guias/03-guia-compensacao-tempo-quanton3d.html" style={{ fontSize:'0.85rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:600, border:'1px solid var(--primary)', borderRadius:'4px', padding:'2px 10px' }}>📖 Guia Técnico</a></div>
         <p className="calc-subtitle">Compare o tempo previsto pelo fatiador com o tempo real da impressora e descubra o valor de compensação por camada que deixa a estimativa precisa.</p>
       </div>
 
