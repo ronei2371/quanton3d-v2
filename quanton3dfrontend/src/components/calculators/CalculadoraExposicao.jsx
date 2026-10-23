@@ -283,6 +283,15 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 <p>Selecione uma resina e impressora para ver os parâmetros.</p>
 </div>
 ) : null}
+
+      <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
+        <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+          Quer aprender mais sobre calibração de exposição UV?
+        </p>
+        <a href="/guias/06-guia-calculadora-exposicao-uv-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
+          📖 Dúvida? Clique aqui — Guia Técnico
+        </a>
+      </div>
 </section>
 );
 }
