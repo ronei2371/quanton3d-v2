@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempo de Impressão — Quanton3D</title>
+<style>
+:root { --bg:#f8f9fb;--bg2:#fff;--fg:#1a1d23;--fg2:#4a5568;--border:#e2e8f0;--primary:#2563eb;--primary-bg:#eff6ff;--orange:#d97706;--orange-bg:#fffbeb;--green:#059669;--green-bg:#ecfdf5;--radius:10px; }
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#1a1d26;--fg:#e8eaf0;--fg2:#9aa3b2;--border:#2d3148;--primary:#3b82f6;--primary-bg:#1e2d4a;--orange:#f59e0b;--orange-bg:#2a1f0a;--green:#10b981;--green-bg:#0a2018;}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;font-size:15px;padding-bottom:60px;}
+.hero{background:linear-gradient(135deg,#1e3a5f 0%,#1a2744 100%);color:#fff;padding:36px 20px 32px;text-align:center;}
+.hero-tag{display:inline-block;background:rgba(59,130,246,.35);color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;}
+.hero h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;line-height:1.25;margin-bottom:10px;}
+.hero p{opacity:.75;font-size:.95rem;max-width:520px;margin:0 auto;}
+.container{max-width:700px;margin:0 auto;padding:0 16px;}
+.section{margin-top:28px;}
+h2{font-size:1.1rem;font-weight:700;color:var(--fg);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+h2 .num{background:var(--primary);color:#fff;font-size:.75rem;font-weight:800;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+p{margin-bottom:12px;color:var(--fg2);}
+strong{color:var(--fg);font-weight:600;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px;}
+.alert{border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;font-size:.9rem;}
+.alert--info{background:var(--primary-bg);border-left:3px solid var(--primary);}
+.alert--warning{background:var(--orange-bg);border-left:3px solid var(--orange);}
+.alert p{margin-bottom:6px;} .alert p:last-child{margin-bottom:0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+@media(max-width:500px){.grid2{grid-template-columns:1fr;}}
+.grid-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+.grid-card h4{font-size:.82rem;font-weight:700;margin-bottom:8px;color:var(--primary);text-transform:uppercase;letter-spacing:.05em;}
+.grid-card p{font-size:.82rem;margin-bottom:0;}
+.formula-box{background:var(--bg2);border:1px solid var(--primary);border-radius:var(--radius);padding:18px 20px;text-align:center;margin:18px 0;}
+.formula{font-family:"Courier New",monospace;font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:8px;}
+.formula-desc{font-size:.82rem;color:var(--fg2);}
+.time-table{width:100%;border-collapse:collapse;font-size:.88rem;margin:14px 0;}
+.time-table th{background:var(--primary);color:#fff;padding:8px 12px;text-align:left;font-weight:600;}
+.time-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--fg2);}
+.time-table tr:last-child td{border-bottom:none;}
+.time-table tr:nth-child(even) td{background:rgba(0,0,0,.03);}
+@media(prefers-color-scheme:dark){.time-table tr:nth-child(even) td{background:rgba(255,255,255,.03);}}
+.footer{margin-top:36px;padding:20px;text-align:center;font-size:.8rem;color:var(--fg2);border-top:1px solid var(--border);}
+.footer a{color:var(--primary);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Calibração · Guia 02</div>
+  <h1>Tempo de Impressão<br>Como Calcular e Estimar</h1>
+  <p>Por que o fatiador erra o tempo previsto e como usar a calculadora para ter uma estimativa mais real.</p>
+</div>
+<div class="container">
+  <div class="section">
+    <div class="alert alert--info">
+      <p><strong>O tempo do fatiador é uma estimativa</strong></p>
+      <p>O tempo exibido pelo Chitubox ou Lychee é calculado com base nos parâmetros configurados, mas ignora variações de hardware, temperatura e qualidade do FEP. Na prática, a impressão real pode demorar 10%–40% mais.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">1</span> Como o fatiador calcula o tempo</h2>
+    <div class="card">
+      <p>Para cada camada, o fatiador soma:</p>
+      <p><strong>Tempo por camada</strong> = Exposição + Tempo de Lift + Tempo de Descida + Tempo de Rest</p>
+      <p style="margin-bottom:0">Multiplicado pelo número de camadas, dá o tempo total estimado. O problema é que esse cálculo ignora variações reais de velocidade do motor Z, tempo de pressurização do FEP e comunicação com a impressora.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">2</span> Componentes do tempo por camada</h2>
+    <table class="time-table">
+      <thead><tr><th>Componente</th><th>O que é</th><th>Típico</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Exposição normal</strong></td><td>Tempo de cura da camada</td><td>1,5–4 s</td></tr>
+        <tr><td><strong>Exposição de base</strong></td><td>Primeiras camadas (bottom layers)</td><td>25–60 s</td></tr>
+        <tr><td><strong>Lift speed / dist</strong></td><td>Subida da plataforma após cura</td><td>40–60 mm/min</td></tr>
+        <tr><td><strong>Retract speed</strong></td><td>Descida antes da próxima camada</td><td>60–150 mm/min</td></tr>
+        <tr><td><strong>Rest time</strong></td><td>Pausa para resina estabilizar</td><td>0–3 s</td></tr>
+        <tr><td><strong>Anti-aliasing</strong></td><td>Tempo extra para suavização (se ativo)</td><td>varia</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <h2><span class="num">3</span> Por que o tempo real difere</h2>
+    <div class="grid2">
+      <div class="grid-card">
+        <h4>Motor Z mais lento</h4>
+        <p>Impressoras antigas ou com fuso desgastado movem mais devagar que o configurado no fatiador.</p>
+      </div>
+      <div class="grid-card">
+        <h4>FEP com resistência</h4>
+        <p>Um FEP velho ou mal tensionado aumenta a força de peel e desacelera o lift.</p>
+      </div>
+      <div class="grid-card">
+        <h4>Temperatura baixa</h4>
+        <p>Resina fria fica mais viscosa, aumentando o tempo de separação do FEP.</p>
+      </div>
+      <div class="grid-card">
+        <h4>Comunicação USB</h4>
+        <p>Algumas impressoras têm latência entre comandos, adicionando tempo não previsto.</p>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">4</span> A fórmula de estimativa</h2>
+    <div class="formula-box">
+      <div class="formula">Tempo Real ≈ Tempo Fatiador × Fator de Correção</div>
+      <div class="formula-desc">O fator de correção é medido uma vez por impressora e serve para ajustar futuras estimativas</div>
+    </div>
+    <div class="alert alert--info">
+      <p><strong>Como descobrir seu fator de correção:</strong></p>
+      <p>1. Imprima qualquer peça e anote o <strong>tempo real</strong> no cronômetro</p>
+      <p>2. Anote o <strong>tempo estimado</strong> pelo fatiador para esse arquivo</p>
+      <p>3. Fator = Tempo Real ÷ Tempo Estimado</p>
+      <p style="margin-bottom:0">Ex: real = 2h 30min, estimado = 2h → fator = 1,25 (25% a mais que o previsto)</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">5</span> Usando a Calculadora de Tempo</h2>
+    <div class="card">
+      <p>A calculadora do Quanton3D permite inserir os parâmetros da sua configuração e calcular uma estimativa mais precisa que o fatiador, levando em conta:</p>
+      <ul style="margin:8px 0 0 18px;color:var(--fg2);font-size:.9rem;line-height:2">
+        <li>Número de camadas normais e de base</li>
+        <li>Tempos de exposição, lift e rest</li>
+        <li>Distância e velocidade de lift/retract</li>
+        <li>Fator de correção da sua impressora</li>
+      </ul>
+    </div>
+    <div class="alert alert--warning">
+      <p><strong>Dica:</strong> Meça o tempo real de 2–3 impressões e calcule a média do fator de correção. Depois de 5 impressões, você terá um fator bem calibrado para sua impressora.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">6</span> Dicas para reduzir o tempo</h2>
+    <div class="card"><p><strong>Reduza a distância de lift</strong> — Usar 5 mm em vez de 8 mm de lift pode economizar 15%–20% do tempo total. Funciona bem com FEP em bom estado.</p></div>
+    <div class="card"><p><strong>Aumente a velocidade de retract</strong> — A descida pode ser mais rápida que a subida (150–200 mm/min) sem prejudicar a qualidade.</p></div>
+    <div class="card"><p><strong>TSMC (Two-Stage Motion Control)</strong> — Disponível no Chitubox Pro: sobe rápido, desacelera no topo, desce rápido. Reduz tempo sem aumentar falhas.</p></div>
+    <div class="card"><p><strong>Rest antes da exposição</strong> — Pequeno rest (0,5–1 s) antes de expor permite a resina se acomodar. Em alguns casos substitui rest maior após exposição.</p></div>
+  </div>
+</div>
+<div class="footer">
+  <p><a href="/">← Voltar ao Quanton3D</a></p>
+  <p style="margin-top:8px">Quanton3D · Guia Técnico de Impressão em Resina</p>
+</div>
+</body>
+</html>
