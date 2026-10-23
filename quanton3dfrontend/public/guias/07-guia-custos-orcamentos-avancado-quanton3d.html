@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custos e Orçamentos — Quanton3D</title>
+<style>
+:root {
+  --bg: #f8f9fb; --bg2: #ffffff; --fg: #1a1d23; --fg2: #4a5568;
+  --border: #e2e8f0; --primary: #2563eb; --primary-bg: #eff6ff;
+  --orange: #d97706; --orange-bg: #fffbeb; --green: #059669;
+  --green-bg: #ecfdf5; --red: #dc2626; --red-bg: #fef2f2; --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1117; --bg2: #1a1d26; --fg: #e8eaf0; --fg2: #9aa3b2;
+    --border: #2d3148; --primary: #3b82f6; --primary-bg: #1e2d4a;
+    --orange: #f59e0b; --orange-bg: #2a1f0a; --green: #10b981;
+    --green-bg: #0a2018; --red: #f87171; --red-bg: #2a0f0f;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--fg); line-height: 1.7; font-size: 15px; padding-bottom: 60px; }
+.hero { background: linear-gradient(135deg, #1e3a5f 0%, #1a2744 100%); color: #fff; padding: 36px 20px 32px; text-align: center; }
+.hero-tag { display: inline-block; background: rgba(59,130,246,0.35); color: #93c5fd; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+.hero h1 { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; line-height: 1.25; margin-bottom: 10px; }
+.hero p { opacity: 0.75; font-size: 0.95rem; max-width: 520px; margin: 0 auto; }
+.container { max-width: 700px; margin: 0 auto; padding: 0 16px; }
+.section { margin-top: 28px; }
+h2 { font-size: 1.1rem; font-weight: 700; color: var(--fg); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+h2 .num { background: var(--primary); color: #fff; font-size: 0.75rem; font-weight: 800; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+p { margin-bottom: 12px; color: var(--fg2); }
+strong { color: var(--fg); font-weight: 600; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px; }
+.alert { border-radius: var(--radius); padding: 14px 18px; margin-bottom: 14px; font-size: 0.9rem; }
+.alert--info { background: var(--primary-bg); border-left: 3px solid var(--primary); }
+.alert--warning { background: var(--orange-bg); border-left: 3px solid var(--orange); }
+.alert--success { background: var(--green-bg); border-left: 3px solid var(--green); }
+.alert p { margin-bottom: 6px; } .alert p:last-child { margin-bottom: 0; }
+.steps { list-style: none; padding: 0; counter-reset: steps; }
+.steps li { counter-increment: steps; position: relative; padding: 14px 16px 14px 52px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; font-size: 0.9rem; color: var(--fg2); }
+.steps li::before { content: counter(steps); position: absolute; left: 14px; top: 14px; background: var(--primary); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; }
+.steps li strong { display: block; color: var(--fg); font-weight: 600; margin-bottom: 4px; }
+.cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 500px) { .cost-grid { grid-template-columns: 1fr; } }
+.cost-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.cost-card h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; }
+.cost-card p { font-size: 0.82rem; margin-bottom: 0; }
+.formula-box { background: var(--bg2); border: 1px solid var(--primary); border-radius: var(--radius); padding: 18px 20px; text-align: center; margin: 18px 0; }
+.formula { font-family: "Courier New", monospace; font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+.formula-desc { font-size: 0.82rem; color: var(--fg2); }
+.example-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin: 16px 0; }
+.example-box h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--green); }
+.example-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+.example-row:last-child { border-bottom: none; }
+.example-label { color: var(--fg2); }
+.example-val { font-weight: 700; font-family: monospace; color: var(--fg); }
+.example-val--result { color: var(--green); font-size: 1rem; }
+.example-val--total { color: var(--primary); font-size: 1.05rem; }
+.margin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+@media (max-width: 500px) { .margin-grid { grid-template-columns: 1fr; } }
+.margin-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; text-align: center; }
+.margin-card .pct { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+.margin-card .label { font-size: 0.78rem; color: var(--fg2); margin-top: 4px; }
+.footer { margin-top: 36px; padding: 20px; text-align: center; font-size: 0.8rem; color: var(--fg2); border-top: 1px solid var(--border); }
+.footer a { color: var(--primary); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Negócio · Guia 07</div>
+  <h1>Custos e Orçamentos<br>Guia Avançado</h1>
+  <p>Domine a Calculadora de Custos do Quanton3D: materiais, energia, tempo de máquina, mão de obra e precificação com margem justa.</p>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="alert alert--info">
+      <p><strong>Por que calcular custos com precisão?</strong></p>
+      <p>Muitos impressores cobram por intuição e perdem dinheiro sem perceber — resina desperdiçada, energia e mão de obra não contabilizadas corroem a margem. Com a calculadora do Quanton3D, você vê o custo real de cada peça antes de fechar o preço.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">1</span> Os 4 componentes do custo</h2>
+    <div class="cost-grid">
+      <div class="cost-card">
+        <h4>Material (resina)</h4>
+        <p>Volume impresso em ml × preço por ml da resina. Inclua os suportes — eles também consomem resina e tempo de cura.</p>
+      </div>
+      <div class="cost-card">
+        <h4>Energia elétrica</h4>
+        <p>Potência da impressora (W) × tempo de impressão (h) × tarifa (R$/kWh). Não esqueça a pós-cura: lavagem + UV.</p>
+      </div>
+      <div class="cost-card">
+        <h4>Desgaste de máquina</h4>
+        <p>FEP, display LCD e plataforma têm vida útil. Divida o custo de reposição pelo número de horas de uso estimado.</p>
+      </div>
+      <div class="cost-card">
+        <h4>Mão de obra</h4>
+        <p>Seu tempo tem valor. Inclua: preparação do arquivo, monitoramento, lavagem, pós-cura, remoção de suportes e acabamento.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">2</span> Como preencher a calculadora</h2>
+    <ul class="steps">
+      <li>
+        <strong>Volume de resina</strong>
+        O fatiador mostra o volume em ml antes de imprimir. Use esse valor. Se a peça tem suportes, adicione o volume deles ao custo — eles são descartados mas foram impressos.
+      </li>
+      <li>
+        <strong>Preço da resina por ml</strong>
+        Divida o preço total da resina (R$) pela capacidade do frasco (ml). Ex: R$ 120 ÷ 500 ml = R$ 0,24/ml. Se compra em lotes com desconto, use o preço médio.
+      </li>
+      <li>
+        <strong>Potência e tempo de impressão</strong>
+        A potência está na especificação da impressora (típico: 40–60 W). O tempo vem do fatiador ou do contador da impressora.
+      </li>
+      <li>
+        <strong>Tarifa de energia</strong>
+        Consulte sua conta de luz (R$/kWh). No Brasil, a média residencial fica em torno de R$ 0,90–1,20/kWh dependendo da bandeira tarifária.
+      </li>
+      <li>
+        <strong>Custo de consumíveis</strong>
+        FEP típico: R$ 30–60, troca a cada 300–500 horas. Display LCD: R$ 150–400, troca a cada 1.000–2.000 horas. A calculadora divide automaticamente pelo tempo de vida estimado.
+      </li>
+      <li>
+        <strong>Mão de obra</strong>
+        Defina sua hora de trabalho em R$/h. Estime o tempo ativo total (não inclua o tempo que a impressora trabalha sozinha — apenas seu tempo presencial).
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">3</span> Exemplo completo</h2>
+    <div class="example-box">
+      <h3>🧮 Peça pequena — 8 ml de resina, 3h de impressão</h3>
+      <div class="example-row">
+        <span class="example-label">Resina (8 ml × R$ 0,24)</span>
+        <span class="example-val">R$ 1,92</span>
+      </div>
+      <div class="example-row">
+        <span class="example-label">Energia (55 W × 3 h × R$ 1,00/kWh)</span>
+        <span class="example-val">R$ 0,17</span>
+      </div>
+      <div class="example-row">
+        <span class="example-label">Desgaste FEP + display (3 h)</span>
+        <span class="example-val">R$ 0,45</span>
+      </div>
+      <div class="example-row">
+        <span class="example-label">Mão de obra (30 min × R$ 30/h)</span>
+        <span class="example-val">R$ 15,00</span>
+      </div>
+      <div class="example-row">
+        <span class="example-label"><strong>Custo total da peça</strong></span>
+        <span class="example-val example-val--result">R$ 17,54</span>
+      </div>
+      <div class="example-row">
+        <span class="example-label">Com 60% de margem → preço de venda</span>
+        <span class="example-val example-val--total">R$ 28,06</span>
+      </div>
+    </div>
+    <div class="alert alert--warning">
+      <p><strong>Surpresa comum:</strong> a mão de obra costuma ser o maior custo — não a resina. Quem cobra só pelo material está trabalhando de graça.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">4</span> Margem de lucro recomendada</h2>
+    <p>A margem depende do tipo de trabalho, da concorrência e do seu posicionamento no mercado:</p>
+    <div class="margin-grid">
+      <div class="margin-card">
+        <div class="pct">30–50%</div>
+        <div class="label">Peças simples, alta concorrência, clientes recorrentes</div>
+      </div>
+      <div class="margin-card">
+        <div class="pct">60–80%</div>
+        <div class="label">Peças técnicas, protótipos, prazo curto, exclusividade</div>
+      </div>
+      <div class="margin-card">
+        <div class="pct">100–200%</div>
+        <div class="label">Projetos personalizados, joias, odonto, arte, arquitetura</div>
+      </div>
+    </div>
+    <div class="alert alert--info" style="margin-top:14px">
+      <p><strong>Como calcular:</strong> Preço de venda = Custo total ÷ (1 − margem). Para 60% de margem: R$ 17,54 ÷ 0,40 = R$ 43,85. Não confunda com markup (custo × multiplicador).</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">5</span> Custos escondidos que muitos ignoram</h2>
+    <div class="card">
+      <p><strong>Falhas e reimpressões:</strong> Se 1 em cada 10 peças falha, adicione 10% ao custo de material de toda produção. A calculadora tem um campo de "taxa de falha" para isso.</p>
+    </div>
+    <div class="card">
+      <p><strong>Solvente de lavagem:</strong> IPA ou solvente específico tem custo e vida útil. Calcule o volume usado por peça e inclua no orçamento. Cubas de lavagem ultrassônica também consomem energia.</p>
+    </div>
+    <div class="card">
+      <p><strong>Embalagem e envio:</strong> Caixa, espuma, fita, etiqueta e frete não entram na calculadora de custo de impressão — mas devem estar no orçamento final ao cliente.</p>
+    </div>
+    <div class="card">
+      <p><strong>Tempo de setup:</strong> Nivelar a plataforma, preparar a resina e limpar a impressora entre trabalhos é tempo que custa. Se atende vários clientes por semana, distribua esse tempo pelos jobs da semana.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">6</span> Como usar o orçamento gerado</h2>
+    <div class="alert alert--info">
+      <p><strong>A calculadora do Quanton3D gera um orçamento completo</strong> com seu nome, dados de contato (preenchidos automaticamente se você estiver logado) e o detalhamento de custos. Você pode compartilhar diretamente com o cliente pelo WhatsApp ou e-mail.</p>
+    </div>
+    <div class="card">
+      <p><strong>Dica profissional:</strong> Apresente o orçamento itemizado ao cliente — material, impressão, acabamento. Clientes que entendem o que estão pagando aceitam melhor o preço e voltam mais.</p>
+    </div>
+    <div class="card">
+      <p><strong>Validade do orçamento:</strong> Resinas e energia mudam de preço. Coloque validade de 15–30 dias no orçamento. Se o preço da resina subiu, recalcule antes de confirmar a produção.</p>
+    </div>
+    <div class="card">
+      <p><strong>Arquivo de projetos anteriores:</strong> Guarde os orçamentos e anote o resultado real (volume impresso, tempo, falhas). Com o tempo, você afina suas estimativas e cobra com mais precisão.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><a href="/">← Voltar ao Quanton3D</a></p>
+  <p style="margin-top:8px">Quanton3D · Guia Técnico de Impressão em Resina</p>
+</div>
+
+</body>
+</html>
