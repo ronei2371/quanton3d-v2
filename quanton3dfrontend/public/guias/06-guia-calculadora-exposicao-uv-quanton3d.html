@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Exposição UV — Quanton3D</title>
+<style>
+:root {
+  --bg: #f8f9fb;
+  --bg2: #ffffff;
+  --fg: #1a1d23;
+  --fg2: #4a5568;
+  --border: #e2e8f0;
+  --primary: #2563eb;
+  --primary-bg: #eff6ff;
+  --orange: #d97706;
+  --orange-bg: #fffbeb;
+  --green: #059669;
+  --green-bg: #ecfdf5;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1117;
+    --bg2: #1a1d26;
+    --fg: #e8eaf0;
+    --fg2: #9aa3b2;
+    --border: #2d3148;
+    --primary: #3b82f6;
+    --primary-bg: #1e2d4a;
+    --orange: #f59e0b;
+    --orange-bg: #2a1f0a;
+    --green: #10b981;
+    --green-bg: #0a2018;
+    --red: #f87171;
+    --red-bg: #2a0f0f;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.7;
+  font-size: 15px;
+  padding-bottom: 60px;
+}
+.hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1a2744 100%);
+  color: #fff;
+  padding: 36px 20px 32px;
+  text-align: center;
+}
+.hero-tag {
+  display: inline-block;
+  background: rgba(59,130,246,0.35);
+  color: #93c5fd;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.hero h1 { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; line-height: 1.25; margin-bottom: 10px; }
+.hero p { opacity: 0.75; font-size: 0.95rem; max-width: 520px; margin: 0 auto; }
+.container { max-width: 700px; margin: 0 auto; padding: 0 16px; }
+.section { margin-top: 28px; }
+h2 { font-size: 1.1rem; font-weight: 700; color: var(--fg); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+h2 .num { background: var(--primary); color: #fff; font-size: 0.75rem; font-weight: 800; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+p { margin-bottom: 12px; color: var(--fg2); }
+strong { color: var(--fg); font-weight: 600; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px; }
+.alert { border-radius: var(--radius); padding: 14px 18px; margin-bottom: 14px; font-size: 0.9rem; }
+.alert--info { background: var(--primary-bg); border-left: 3px solid var(--primary); }
+.alert--warning { background: var(--orange-bg); border-left: 3px solid var(--orange); }
+.alert--success { background: var(--green-bg); border-left: 3px solid var(--green); }
+.alert--error { background: var(--red-bg); border-left: 3px solid var(--red); }
+.alert p { margin-bottom: 6px; }
+.alert p:last-child { margin-bottom: 0; }
+.steps { list-style: none; padding: 0; counter-reset: steps; }
+.steps li { counter-increment: steps; position: relative; padding: 14px 16px 14px 52px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; font-size: 0.9rem; color: var(--fg2); }
+.steps li::before { content: counter(steps); position: absolute; left: 14px; top: 14px; background: var(--primary); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; }
+.steps li strong { display: block; color: var(--fg); font-weight: 600; margin-bottom: 4px; }
+.param-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 500px) { .param-grid { grid-template-columns: 1fr; } }
+.param-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.param-card h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; }
+.param-card p { font-size: 0.82rem; margin-bottom: 0; }
+.range-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+.range-table th { background: var(--primary-bg); color: var(--primary); font-weight: 700; padding: 8px 12px; text-align: left; border-bottom: 2px solid var(--primary); }
+.range-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--fg2); }
+.range-table tr:last-child td { border-bottom: none; }
+.range-table td strong { color: var(--fg); }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin: 2px; }
+.tag--ok { background: var(--green-bg); color: var(--green); }
+.tag--warn { background: var(--orange-bg); color: var(--orange); }
+.tag--bad { background: var(--red-bg); color: var(--red); }
+.footer { margin-top: 36px; padding: 20px; text-align: center; font-size: 0.8rem; color: var(--fg2); border-top: 1px solid var(--border); }
+.footer a { color: var(--primary); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Calibração · Guia 06</div>
+  <h1>Calculadora de Exposição UV<br>Encontre o Tempo Ideal</h1>
+  <p>Entenda como a calculadora do Quanton3D funciona e use-a para calibrar a exposição da sua resina e impressora com precisão.</p>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="alert alert--info">
+      <p><strong>O que é o tempo de exposição?</strong></p>
+      <p>É quanto tempo (em segundos) o display UV fica ligado para curar cada camada de resina. Muito pouco → camadas não aderem, peça descola ou falha. Muito = peça fica grossa, perde detalhe e pode travar no FEP.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">1</span> Como a calculadora funciona</h2>
+    <p>A Calculadora de Exposição UV do Quanton3D gera um conjunto de valores com base na sua impressora e resina. Você informa:</p>
+    <div class="param-grid">
+      <div class="param-card">
+        <h4>Impressora</h4>
+        <p>Modelo ou potência de luz UV (mW/cm²). Impressoras mais potentes precisam de menos tempo de exposição.</p>
+      </div>
+      <div class="param-card">
+        <h4>Resina</h4>
+        <p>Tipo e fabricante. Resinas fotossensíveis têm sensibilidades UV diferentes — o mesmo tempo não serve para todas.</p>
+      </div>
+      <div class="param-card">
+        <h4>Altura de camada</h4>
+        <p>Camadas mais finas (ex: 0,05 mm) precisam de menos tempo que camadas mais grossas (ex: 0,10 mm).</p>
+      </div>
+      <div class="param-card">
+        <h4>Ambiente</h4>
+        <p>Temperatura do ambiente. Resina fria cura mais devagar — considere aquecer o ambiente ou a resina em dias frios.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">2</span> Passo a passo para usar a calculadora</h2>
+    <ul class="steps">
+      <li>
+        <strong>Acesse a calculadora no Quanton3D</strong>
+        No menu principal, abra <strong>Calculadoras → Exposição UV</strong>. Selecione sua impressora na lista ou insira a potência de luz manualmente.
+      </li>
+      <li>
+        <strong>Informe sua resina</strong>
+        Selecione o fabricante e o tipo de resina (padrão, ABS-like, castable, odontológica etc.). Se não encontrar sua resina, escolha a mais próxima e ajuste ±10% no resultado.
+      </li>
+      <li>
+        <strong>Defina a altura de camada</strong>
+        Insira a altura de camada que você usa no fatiador (ex: 0,05 mm ou 0,10 mm). A calculadora ajusta o tempo proporcionalmente.
+      </li>
+      <li>
+        <strong>Confirme a temperatura</strong>
+        Informe a temperatura do ambiente (ou da resina). Abaixo de 20°C, adicione 10–20% ao tempo sugerido.
+      </li>
+      <li>
+        <strong>Leia os resultados</strong>
+        A calculadora retorna: tempo de exposição normal (cada camada), tempo de exposição de base (bottom layers) e número recomendado de camadas de base. Use esses valores no seu fatiador.
+      </li>
+      <li>
+        <strong>Valide com uma impressão de teste</strong>
+        Imprima o modelo de calibração incluído no resultado (Rook ou cubo de teste). Analise o resultado e ajuste conforme os sintomas indicados na seção 4.
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">3</span> Faixas de referência</h2>
+    <div style="overflow-x:auto">
+      <table class="range-table">
+        <thead>
+          <tr>
+            <th>Tipo de resina</th>
+            <th>Camada 0,05 mm</th>
+            <th>Camada 0,10 mm</th>
+            <th>Base (bottom)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Padrão / Genérica</strong></td>
+            <td>1,5 – 2,5 s</td>
+            <td>2,5 – 4,0 s</td>
+            <td>25 – 40 s</td>
+          </tr>
+          <tr>
+            <td><strong>ABS-like / Rígida</strong></td>
+            <td>2,0 – 3,5 s</td>
+            <td>3,5 – 5,5 s</td>
+            <td>35 – 55 s</td>
+          </tr>
+          <tr>
+            <td><strong>Flexível / Elástica</strong></td>
+            <td>3,0 – 5,0 s</td>
+            <td>5,0 – 8,0 s</td>
+            <td>40 – 70 s</td>
+          </tr>
+          <tr>
+            <td><strong>Odontológica / Castable</strong></td>
+            <td>1,0 – 2,0 s</td>
+            <td>2,0 – 3,5 s</td>
+            <td>20 – 35 s</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert--warning" style="margin-top:14px">
+      <p><strong>Atenção:</strong> Esses valores são pontos de partida. A potência real do seu display pode diferir do fabricante, e resinas do mesmo tipo variam entre marcas. Sempre valide com impressão de teste.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">4</span> Diagnóstico pelo resultado visual</h2>
+    <div class="card">
+      <p style="margin-bottom:8px;font-weight:600">Peça descola durante a impressão, ilhas soltas ou camadas não aderem</p>
+      <p style="margin-bottom:6px"><span class="tag tag--bad">Exposição baixa</span></p>
+      <p style="margin-bottom:0">Aumente o tempo de exposição em 10–15% e reimprima. Confira também se a plataforma está bem nivelada e se a resina está homogeneizada.</p>
+    </div>
+    <div class="card">
+      <p style="margin-bottom:8px;font-weight:600">Peça prende no FEP, detalhes perdidos, paredes mais grossas que o arquivo</p>
+      <p style="margin-bottom:6px"><span class="tag tag--bad">Exposição alta</span></p>
+      <p style="margin-bottom:0">Reduza o tempo de exposição em 10–15%. Muita exposição cura resina além das bordas (bleeding) e pode travar a peça no FEP.</p>
+    </div>
+    <div class="card">
+      <p style="margin-bottom:8px;font-weight:600">Base ok, mas peça descola nas primeiras camadas normais</p>
+      <p style="margin-bottom:6px"><span class="tag tag--warn">Base ok · Normal baixa</span></p>
+      <p style="margin-bottom:0">Aumente apenas o tempo de exposição normal, sem mexer na base. Ou reduza a velocidade de lift para dar mais tempo à camada se desprender do FEP.</p>
+    </div>
+    <div class="card">
+      <p style="margin-bottom:8px;font-weight:600">Impressão perfeita, dimensões corretas, sem trinca</p>
+      <p style="margin-bottom:6px"><span class="tag tag--ok">Exposição ideal</span></p>
+      <p style="margin-bottom:0">Salve o perfil no fatiador! Anote a resina, o lote e a temperatura do ambiente para reproduzir no futuro.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">5</span> Exposição de base (bottom layers)</h2>
+    <div class="alert alert--info">
+      <p><strong>Por que a base usa um tempo maior?</strong></p>
+      <p>As primeiras camadas precisam aderir com força à plataforma de alumínio. O tempo maior garante essa adesão. O número típico de camadas de base é 3 a 8 camadas.</p>
+    </div>
+    <div class="card">
+      <p><strong>Regra prática:</strong> tempo de base ≈ 10–20× o tempo de exposição normal. Se a exposição normal é 2 s, a base fica em 25–40 s. A calculadora já calcula isso automaticamente com base no tipo de resina e na potência da impressora.</p>
+    </div>
+    <div class="alert alert--warning">
+      <p><strong>Base alta demais → pé de elefante.</strong> Se o tempo de base for excessivo, as primeiras camadas incham lateralmente e criam o pé de elefante. Se isso acontecer, reduza o tempo de base 10–20% antes de ativar a compensação de tolerância inferior.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">6</span> Dicas avançadas</h2>
+    <div class="card">
+      <p><strong>Resina fria?</strong> Abaixo de 20°C, a viscosidade aumenta e a cura fica mais lenta. Coloque a resina em um recipiente com água morna (30–35°C) por 5–10 minutos antes de imprimir, ou aqueça o ambiente. Adicione 10–20% ao tempo sugerido pela calculadora.</p>
+    </div>
+    <div class="card">
+      <p><strong>Display com uso intenso?</strong> O display LCD perde potência ao longo do tempo. Displays com mais de 500 horas de uso podem precisar de 10–25% a mais de tempo de exposição. A calculadora tem um campo de "fator de desgaste" para compensar isso.</p>
+    </div>
+    <div class="card">
+      <p><strong>Troca de lote da resina?</strong> Resinas do mesmo modelo mas de lotes diferentes podem ter sensibilidade ligeiramente diferente. Se trocar o lote, faça uma impressão de validação e ajuste ±5–10% se necessário.</p>
+    </div>
+    <div class="card">
+      <p><strong>Guarde o perfil completo:</strong> resina + lote + temperatura + impressora + tempo de exposição + tempo de base + resultado visual. Assim você não precisa recalibrar a cada uso do mesmo setup.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><a href="/">← Voltar ao Quanton3D</a></p>
+  <p style="margin-top:8px">Quanton3D · Guia Técnico de Impressão em Resina</p>
+</div>
+
+</body>
+</html>
