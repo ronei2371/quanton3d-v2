@@ -119,7 +119,7 @@ return (
 <section className="calc-section">
 <div className="calc-header">
 <span className="calc-badge"><Compass size={12} /> Parâmetros de exposição</span>
-<h2 className="calc-title">Calculadora de Exposição UV</h2>
+<div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Calculadora de Exposição UV</h2><a href="/guias/06-guia-calculadora-exposicao-uv-quanton3d.html" style={{ fontSize:'0.78rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:500 }}>📖 Guia Técnico</a></div>
 <p className="calc-subtitle">
 Mostra os <strong style={{ color: "var(--primary)" }}>parâmetros reais testados</strong> para cada resina e impressora cadastrada.
 Ajuste temperatura e camada para estimar variações — mas sempre faça o teste de calibração na sua máquina.
@@ -284,14 +284,7 @@ Os valores abaixo são <strong>referências reais</strong> para iniciar — o aj
 </div>
 ) : null}
 
-      <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
-        <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-          Quer aprender mais sobre calibração de exposição UV?
-        </p>
-        <a href="/guias/06-guia-calculadora-exposicao-uv-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
-          📖 Dúvida? Clique aqui — Guia Técnico
-        </a>
-      </div>
+
 </section>
 );
 }
