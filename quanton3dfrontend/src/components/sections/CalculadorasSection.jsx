@@ -23,6 +23,8 @@ const CALCULADORAS = [
 
 function CalculadorasSection({ calculadoraInicial, onNavegar }) {
   const [ativa, setAtiva] = useState(calculadoraInicial || null);
+  const [guiaAberto, setGuiaAberto] = useState(false);
+  const [guiaUrl, setGuiaUrl] = useState("");
 
   // Sincroniza calculadoraInicial com ativa quando o prop muda apos montagem
   useEffect(() => {
@@ -48,10 +50,18 @@ function CalculadorasSection({ calculadoraInicial, onNavegar }) {
     tolerancia_inferior: <CalculadoraToleranciaInferior onAbrirGuias={() => { if (onNavegar) { setAtiva(null); onNavegar("guias"); } }} />,
   };
 
+  // Intercepta cliques em links de guia dentro das calculadoras e abre o modal
+  function handleClickGuia(e) {
+    const link = e.target.closest('a[href^="/guias/"]');
+    if (link) {
+      e.preventDefault();
+      setGuiaUrl(link.getAttribute("href"));
+      setGuiaAberto(true);
+    }
+  }
 
   return (
     <section className="q-card q-panel calculators-section" id="calculadoras">
-      {/* Mesmo visual dos cartoes da pagina Guias (antes as etiquetas ficavam sem estilo, encavaladas no texto) */}
       <span className="q-eyebrow">Ferramentas</span>
       <h2 className="q-section-title">Calculadoras</h2>
       <p className="q-section-desc">Ferramentas de precisão para sua impressão 3D em resina.</p>
@@ -75,10 +85,39 @@ function CalculadorasSection({ calculadoraInicial, onNavegar }) {
             <button className="q-modal-close" style={{ alignSelf: "flex-start", marginBottom: "10px" }} onClick={() => setAtiva(null)} aria-label="Fechar">
               <X size={20} />
             </button>
-            {/* A calculadora ocupa a janela inteira; a de custos (iframe) precisa de altura definida */}
-            <div style={{ flex: 1, minHeight: 0, overflowY: ativa === "custo_avancado" ? "hidden" : "auto" }}>
+            {/* onClick intercepta links /guias/ e abre modal do guia em vez de navegar */}
+            <div style={{ flex: 1, minHeight: 0, overflowY: ativa === "custo_avancado" ? "hidden" : "auto" }} onClick={handleClickGuia}>
               {conteudo[ativa]}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal do Guia Tecnico — abre por cima do modal da calculadora */}
+      {guiaAberto && (
+        <div
+          className="q-modal-backdrop"
+          style={{ zIndex: 2000 }}
+          onClick={() => setGuiaAberto(false)}
+        >
+          <div
+            className="q-modal q-modal--wide"
+            style={{ display: "flex", flexDirection: "column", height: "85vh", padding: "12px", boxSizing: "border-box" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="q-modal-close"
+              style={{ alignSelf: "flex-end", marginBottom: "8px" }}
+              onClick={() => setGuiaAberto(false)}
+              aria-label="Fechar guia"
+            >
+              <X size={20} />
+            </button>
+            <iframe
+              src={guiaUrl}
+              title="Guia Técnico Quanton3D"
+              style={{ flex: 1, width: "100%", border: "none", borderRadius: "8px" }}
+            />
           </div>
         </div>
       )}
