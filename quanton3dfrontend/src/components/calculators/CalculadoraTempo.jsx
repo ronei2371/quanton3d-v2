@@ -312,6 +312,15 @@ export default function CalculadoraTempo({ onAbrirCompensacao }) {
           )}
         </div>
       )}
+
+      <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
+        <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+          Quer entender melhor os parâmetros de tempo de impressão?
+        </p>
+        <a href="/guias/02-guia-tempo-impressao-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
+          📖 Dúvida? Clique aqui — Guia Técnico
+        </a>
+      </div>
     </section>
   );
 }
