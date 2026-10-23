@@ -24,6 +24,11 @@ const CALCULADORAS = [
 function CalculadorasSection({ calculadoraInicial, onNavegar }) {
   const [ativa, setAtiva] = useState(calculadoraInicial || null);
 
+  // Sincroniza calculadoraInicial com ativa quando o prop muda apos montagem
+  useEffect(() => {
+    if (calculadoraInicial) setAtiva(calculadoraInicial);
+  }, [calculadoraInicial]);
+
   // Conta no Google Analytics cada calculadora aberta (pelo cartao, por link ou pela
   // Tempo -> Compensacao). A de Exposicao continua mandando tambem o start_calibration.
   useEffect(() => {
