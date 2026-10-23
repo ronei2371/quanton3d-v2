@@ -11,6 +11,14 @@ const FISPQS = [
 { nome: "Spark", arquivo: "SPARK.pdf" },
 { nome: "PyroBlast", arquivo: "PYRO.pdf" },
 { nome: "Low Smell", arquivo: "LOWSMELL.pdf" },
+{ nome: "Athom Washable", arquivo: "ATHOM_WASHABLE.pdf" },
+{ nome: "Athom Dental", arquivo: "ATHOM_DENTAL.pdf" },
+{ nome: "Velvet Skin", arquivo: "VELVET_SKIN.pdf" },
+{ nome: "Basic Form", arquivo: "BASIC_FORM.pdf" },
+{ nome: "Athom Articuladores", arquivo: "ATHOM_ARTICULADORES.pdf" },
+{ nome: "Flexform", arquivo: "FLEXFORM.pdf" },
+{ nome: "Alchemist", arquivo: "ALCHEMIST.pdf" },
+{ nome: "Athom Alinhadores", arquivo: "ATHOM_ALINHADORES.pdf" },
 ];
 
 // Cores e volumes conferidos diretamente nas variações de cada produto em quanton3d.com.br
