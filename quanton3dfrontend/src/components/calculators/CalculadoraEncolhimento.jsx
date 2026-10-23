@@ -122,7 +122,7 @@ export default function CalculadoraEncolhimento({ onAbrirGuias }) {
 
   return (
     <div className="calc-wrapper">
-      <h2 className="calc-title">Compensação de Encolhimento</h2>
+      <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Compensação de Encolhimento</h2><a href="/guias/04-guia-compensacao-encolhimento-quanton3d.html" style={{ fontSize:'0.78rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:500 }}>📖 Guia Técnico</a></div>
 
       <SvgEncolhimento />
 
@@ -174,17 +174,9 @@ export default function CalculadoraEncolhimento({ onAbrirGuias }) {
 
       {onAbrirGuias && (
         <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
-          <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-            Precisa entender quando usar Scale vs. Tolerância?
-          </p>
-          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/guias/04-guia-compensacao-encolhimento-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
-              📖 Dúvida? Clique aqui — Guia Técnico
-            </a>
-            <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
-              Ver todos os guias →
-            </button>
-          </div>
+          <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
+            Ver todos os guias →
+          </button>
         </div>
       )}
     </div>
