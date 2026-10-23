@@ -71,7 +71,37 @@ function Guia() {
   );
 }
 
-export default function CalculadoraToleranciaInferior() {
+function SvgPeElefante() {
+  return (
+    <div style={{ background: "var(--bg-void)", borderRadius: "var(--r-sm)", padding: "14px 14px 10px", marginBottom: "16px", overflow: "hidden" }}>
+      <svg viewBox="0 0 310 115" width="100%" aria-hidden="true">
+        {/* === Vista lateral: cubo com pé de elefante === */}
+        {/* Corpo do cubo (correto) */}
+        <rect x="70" y="18" width="120" height="52" rx="2" fill="rgba(47,123,255,0.07)" stroke="#2f7bff" strokeWidth="1.5" />
+        <text x="130" y="48" textAnchor="middle" fontSize="9" fill="#2f7bff">corpo: 20,00 mm ✓</text>
+
+        {/* Pé de elefante (trapézio alargado) */}
+        <polygon points="58,70 202,70 216,88 44,88" fill="rgba(220,145,60,0.12)" stroke="#dc9138" strokeWidth="1.5" />
+        <text x="130" y="83" textAnchor="middle" fontSize="8.5" fill="#dc9138">base: 20,35 mm ↔ (alargada)</text>
+        <line x1="70" y1="70" x2="70" y2="90" stroke="#dc9138" strokeWidth="1" opacity="0.4" />
+        <line x1="190" y1="70" x2="190" y2="90" stroke="#dc9138" strokeWidth="1" opacity="0.4" />
+
+        {/* Label: plataforma */}
+        <rect x="44" y="88" width="172" height="6" rx="1" fill="currentColor" opacity="0.1" />
+        <text x="130" y="103" textAnchor="middle" fontSize="7.5" fill="currentColor" opacity="0.4">plataforma de impressão</text>
+
+        {/* Resultado */}
+        <text x="240" y="28" fontSize="8.5" fill="currentColor" opacity="0.45">Compensação</text>
+        <text x="240" y="42" fontSize="8.5" fill="currentColor" opacity="0.45">por lado:</text>
+        <text x="240" y="60" fontSize="13" fontWeight="700" fill="#17c982">−0,175 mm</text>
+        <text x="240" y="74" fontSize="7.5" fill="currentColor" opacity="0.4">(20,00−20,35) ÷ 2</text>
+        <text x="240" y="87" fontSize="7.5" fill="currentColor" opacity="0.4">campo b Chitubox</text>
+      </svg>
+    </div>
+  );
+}
+
+export default function CalculadoraToleranciaInferior({ onAbrirGuias }) {
   const [teorico, setTeorico] = useState("");
   const [medido, setMedido] = useState("");
 
@@ -85,6 +115,8 @@ export default function CalculadoraToleranciaInferior() {
   return (
     <div className="calc-wrapper">
       <h2 className="calc-title">Tolerância Inferior — Pé de Elefante</h2>
+
+      <SvgPeElefante />
 
       <Guia />
 
@@ -131,6 +163,22 @@ export default function CalculadoraToleranciaInferior() {
       <div className="calc-info">
         <strong>Fórmula:</strong> Compensação (por lado) = (Arquivo − Medido na base) ÷ 2
       </div>
+
+      {onAbrirGuias && (
+        <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
+          <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+            Quer entender mais sobre o pé de elefante e a exposição de base?
+          </p>
+          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/guias/05-guia-tolerancia-inferior-pe-elefante-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
+              📖 Dúvida? Clique aqui — Guia Técnico
+            </a>
+            <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
+              Ver todos os guias →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
