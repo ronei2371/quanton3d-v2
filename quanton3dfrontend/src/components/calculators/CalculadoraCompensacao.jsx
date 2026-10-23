@@ -42,7 +42,38 @@ function GuideStep({ n, children }) {
   );
 }
 
-export default function CalculadoraCompensacao() {
+function SvgCompensacao() {
+  return (
+    <div style={{ background: "var(--bg-void)", borderRadius: "var(--r-sm)", padding: "14px 14px 10px", marginBottom: "16px", overflow: "hidden" }}>
+      <svg viewBox="0 0 310 96" width="100%" aria-hidden="true">
+        {/* Linha 1: Fatiador previu */}
+        <text x="8" y="20" fontSize="9" fill="currentColor" opacity="0.5">Fatiador previu:</text>
+        <rect x="90" y="8" width="130" height="18" rx="4" fill="rgba(47,123,255,0.1)" stroke="#2f7bff" strokeWidth="1.5" />
+        <text x="155" y="21" textAnchor="middle" fontSize="9" fill="#2f7bff">1h 20min</text>
+
+        {/* Linha 2: Impressora real */}
+        <text x="8" y="54" fontSize="9" fill="currentColor" opacity="0.5">Impressora real:</text>
+        <rect x="90" y="42" width="175" height="18" rx="4" fill="rgba(220,145,60,0.1)" stroke="#dc9138" strokeWidth="1.5" />
+        <text x="177" y="55" textAnchor="middle" fontSize="9" fill="#dc9138">1h 35min</text>
+
+        {/* Chaves indicando diferença */}
+        <line x1="220" y1="26" x2="265" y2="26" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" opacity="0.3" />
+        <line x1="265" y1="26" x2="265" y2="42" stroke="#e05050" strokeWidth="1.5" />
+        <line x1="220" y1="60" x2="265" y2="60" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" opacity="0.3" />
+        <line x1="265" y1="60" x2="265" y2="60" stroke="#e05050" strokeWidth="1.5" />
+        <text x="270" y="41" fontSize="8.5" fill="#e05050">Δ +15min</text>
+
+        {/* Fórmula simplificada */}
+        <text x="8" y="82" fontSize="8" fill="currentColor" opacity="0.4">Compensação/camada = (real − previsto) ÷ nº de camadas</text>
+
+        {/* Por camada label */}
+        <text x="8" y="94" fontSize="7.5" fill="#2f7bff" opacity="0.8">Ex: (5700 − 4800) ÷ 850 camadas = +1,06 s/camada</text>
+      </svg>
+    </div>
+  );
+}
+
+export default function CalculadoraCompensacao({ onAbrirGuias }) {
   const [tempoPrevisto, setTempoPrevisto] = useState(["", "", ""]);
   const [tempoReal, setTempoReal] = useState(["", "", ""]);
   const [modoCamadas, setModoCamadas] = useState("numero");
@@ -112,9 +143,12 @@ export default function CalculadoraCompensacao() {
     <section className="calc-section">
       <div className="calc-header">
         <span className="calc-badge"><Timer size={12} /> Calibração do fatiador</span>
+
         <h2 className="calc-title">Compensação de Tempo — Chitubox e Lychee</h2>
         <p className="calc-subtitle">Compare o tempo previsto pelo fatiador com o tempo real da impressora e descubra o valor de compensação por camada que deixa a estimativa precisa.</p>
       </div>
+
+      <SvgCompensacao />
 
       <div style={{ marginBottom: "16px" }}>
         <p className="calc-mini-title" style={{ marginBottom: "8px" }}>Qual fatiador você usa?</p>
@@ -275,6 +309,22 @@ export default function CalculadoraCompensacao() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {onAbrirGuias && (
+        <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
+          <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+            Quer entender melhor como o fatiador prevê o tempo?
+          </p>
+          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/guias/03-guia-compensacao-tempo-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
+              📖 Dúvida? Clique aqui — Guia Técnico
+            </a>
+            <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
+              Ver todos os guias →
+            </button>
+          </div>
         </div>
       )}
     </section>
