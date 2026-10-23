@@ -67,7 +67,7 @@ app.use(
         ],
         mediaSrc: ["'self'"],
         objectSrc: ["'none'"],
-        frameSrc: ["'none'"],
+        frameSrc: ["'self'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
         upgradeInsecureRequests: [],
