@@ -144,7 +144,7 @@ export default function CalculadoraCompensacao({ onAbrirGuias }) {
       <div className="calc-header">
         <span className="calc-badge"><Timer size={12} /> Calibração do fatiador</span>
 
-        <h2 className="calc-title">Compensação de Tempo — Chitubox e Lychee</h2>
+        <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Compensação de Tempo — Chitubox e Lychee</h2><a href="/guias/03-guia-compensacao-tempo-quanton3d.html" style={{ fontSize:'0.78rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:500 }}>📖 Guia Técnico</a></div>
         <p className="calc-subtitle">Compare o tempo previsto pelo fatiador com o tempo real da impressora e descubra o valor de compensação por camada que deixa a estimativa precisa.</p>
       </div>
 
@@ -314,17 +314,9 @@ export default function CalculadoraCompensacao({ onAbrirGuias }) {
 
       {onAbrirGuias && (
         <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
-          <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-            Quer entender melhor como o fatiador prevê o tempo?
-          </p>
-          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/guias/03-guia-compensacao-tempo-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
-              📖 Dúvida? Clique aqui — Guia Técnico
-            </a>
-            <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
-              Ver todos os guias →
-            </button>
-          </div>
+          <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
+            Ver todos os guias →
+          </button>
         </div>
       )}
     </section>
