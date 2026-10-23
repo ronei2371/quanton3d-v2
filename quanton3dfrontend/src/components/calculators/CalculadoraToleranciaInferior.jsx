@@ -114,7 +114,7 @@ export default function CalculadoraToleranciaInferior({ onAbrirGuias }) {
 
   return (
     <div className="calc-wrapper">
-      <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Tolerância Inferior — Pé de Elefante</h2><a href="/guias/05-guia-tolerancia-inferior-pe-elefante-quanton3d.html" style={{ fontSize:'0.78rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:500 }}>📖 Guia Técnico</a></div>
+      <div style={{ display:'flex', alignItems:'center', gap:'10px', flexWrap:'wrap' }}><h2 className="calc-title" style={{ margin:0 }}>Tolerância Inferior — Pé de Elefante</h2><a href="/guias/05-guia-tolerancia-inferior-pe-elefante-quanton3d.html" style={{ fontSize:'0.85rem', color:'var(--primary)', textDecoration:'none', whiteSpace:'nowrap', fontWeight:600, border:'1px solid var(--primary)', borderRadius:'4px', padding:'2px 10px' }}>📖 Guia Técnico</a></div>
 
       <SvgPeElefante />
 
