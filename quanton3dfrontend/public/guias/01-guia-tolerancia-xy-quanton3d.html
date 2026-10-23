@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tolerância X/Y — Quanton3D</title>
+<style>
+:root {
+  --bg: #f8f9fb; --bg2: #ffffff; --fg: #1a1d23; --fg2: #4a5568;
+  --border: #e2e8f0; --primary: #2563eb; --primary-bg: #eff6ff;
+  --orange: #d97706; --orange-bg: #fffbeb; --green: #059669;
+  --green-bg: #ecfdf5; --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1117; --bg2: #1a1d26; --fg: #e8eaf0; --fg2: #9aa3b2;
+    --border: #2d3148; --primary: #3b82f6; --primary-bg: #1e2d4a;
+    --orange: #f59e0b; --orange-bg: #2a1f0a; --green: #10b981; --green-bg: #0a2018;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--fg); line-height: 1.7; font-size: 15px; padding-bottom: 60px; }
+.hero { background: linear-gradient(135deg, #1e3a5f 0%, #1a2744 100%); color: #fff; padding: 36px 20px 32px; text-align: center; }
+.hero-tag { display: inline-block; background: rgba(59,130,246,0.35); color: #93c5fd; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+.hero h1 { font-size: clamp(1.4rem,4vw,2rem); font-weight: 800; line-height: 1.25; margin-bottom: 10px; }
+.hero p { opacity: 0.75; font-size: 0.95rem; max-width: 520px; margin: 0 auto; }
+.container { max-width: 700px; margin: 0 auto; padding: 0 16px; }
+.section { margin-top: 28px; }
+h2 { font-size: 1.1rem; font-weight: 700; color: var(--fg); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+h2 .num { background: var(--primary); color: #fff; font-size: 0.75rem; font-weight: 800; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+p { margin-bottom: 12px; color: var(--fg2); }
+strong { color: var(--fg); font-weight: 600; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px; }
+.alert { border-radius: var(--radius); padding: 14px 18px; margin-bottom: 14px; font-size: 0.9rem; }
+.alert--info { background: var(--primary-bg); border-left: 3px solid var(--primary); }
+.alert--warning { background: var(--orange-bg); border-left: 3px solid var(--orange); }
+.alert--success { background: var(--green-bg); border-left: 3px solid var(--green); }
+.alert p { margin-bottom: 6px; } .alert p:last-child { margin-bottom: 0; }
+.formula-box { background: var(--bg2); border: 1px solid var(--primary); border-radius: var(--radius); padding: 18px 20px; text-align: center; margin: 18px 0; }
+.formula { font-family: "Courier New",monospace; font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+.formula-desc { font-size: 0.82rem; color: var(--fg2); }
+.steps { list-style: none; padding: 0; counter-reset: steps; }
+.steps li { counter-increment: steps; position: relative; padding: 14px 16px 14px 52px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; font-size: 0.9rem; color: var(--fg2); }
+.steps li::before { content: counter(steps); position: absolute; left: 14px; top: 14px; background: var(--primary); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; }
+.steps li strong { display: block; color: var(--fg); font-weight: 600; margin-bottom: 4px; }
+.example-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin: 16px 0; }
+.example-box h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--green); }
+.example-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+.example-row:last-child { border-bottom: none; }
+.example-label { color: var(--fg2); }
+.example-val { font-weight: 700; font-family: monospace; color: var(--fg); }
+.example-val--result { color: var(--primary); font-size: 1rem; }
+.slicer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 500px) { .slicer-grid { grid-template-columns: 1fr; } }
+.slicer-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.slicer-card h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 8px; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; }
+.slicer-card p { font-size: 0.82rem; margin-bottom: 0; }
+.footer { margin-top: 36px; padding: 20px; text-align: center; font-size: 0.8rem; color: var(--fg2); border-top: 1px solid var(--border); }
+.footer a { color: var(--primary); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Calibração · Guia 01</div>
+  <h1>Tolerância X/Y<br>Compensação Dimensional</h1>
+  <p>Entenda por que suas peças ficam maiores ou menores do que o arquivo e como corrigir com precisão.</p>
+</div>
+<div class="container">
+  <div class="section">
+    <div class="alert alert--info">
+      <p><strong>O que é tolerância X/Y?</strong></p>
+      <p>É o desvio entre a dimensão do arquivo STL e a dimensão real da peça impressa nos eixos X e Y (horizontal). Uma peça projetada com 20 mm pode sair com 20,3 mm ou 19,8 mm — a tolerância X/Y é esse erro sistemático que aparece em todas as peças.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">1</span> Por que isso acontece?</h2>
+    <div class="card">
+      <p>A luz UV do display cura a resina além da área projetada — um fenômeno chamado <strong>bleeding ou over-cure</strong>. Quanto mais tempo de exposição, mais resina extra é curada nas bordas, aumentando as dimensões finais.</p>
+      <p style="margin-bottom:0">Outros fatores: temperatura da resina, encolhimento pós-cura e distorção óptica do display.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">2</span> Como medir</h2>
+    <ul class="steps">
+      <li><strong>Imprima uma peça de calibração</strong>Cubo de 20 × 20 × 20 mm diretamente na plataforma, sem suportes, com seu perfil de resina atual.</li>
+      <li><strong>Deixe curar completamente</strong>Lave, remova e cure antes de medir. A peça ainda mole pode deformar ao ser medida.</li>
+      <li><strong>Meça com paquímetro digital</strong>Meça no meio da peça, não nas bordas. Meça X e Y separadamente com 3 casas decimais.</li>
+      <li><strong>Calcule o desvio</strong>Desvio = Medido − Teórico. Se mediu 20,30 e o STL tem 20,00 → desvio = +0,30 mm.</li>
+    </ul>
+  </div>
+  <div class="section">
+    <h2><span class="num">3</span> A fórmula</h2>
+    <div class="formula-box">
+      <div class="formula">Compensação = (Teórico − Medido) ÷ 2</div>
+      <div class="formula-desc">Dividido por 2 porque o fatiador aplica o valor em cada lado da parede</div>
+    </div>
+    <div class="example-box">
+      <h3>📐 Exemplo prático</h3>
+      <div class="example-row"><span class="example-label">Dimensão no STL</span><span class="example-val">20,000 mm</span></div>
+      <div class="example-row"><span class="example-label">Dimensão medida</span><span class="example-val">20,300 mm</span></div>
+      <div class="example-row"><span class="example-label">Diferença total</span><span class="example-val">+0,300 mm</span></div>
+      <div class="example-row"><span class="example-label">Compensação por lado</span><span class="example-val example-val--result">−0,150 mm</span></div>
+    </div>
+    <div class="alert alert--warning">
+      <p><strong>Resultado negativo é normal!</strong> Se a peça saiu maior que o arquivo (caso mais comum), a compensação será negativa — o fatiador vai reduzir cada lado para compensar o excesso de cura.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">4</span> Onde aplicar no fatiador</h2>
+    <div class="slicer-grid">
+      <div class="slicer-card">
+        <h4>CHITUBOX</h4>
+        <p>Configurações → aba <strong>Avançado</strong> → ative <strong>Tolerância X/Y</strong> (XY Tolerance Compensation) → insira o valor (ex: <strong>−0,150</strong>).</p>
+      </div>
+      <div class="slicer-card">
+        <h4>LYCHEE SLICER</h4>
+        <p>Perfil de impressão → <strong>Avançado</strong> → <strong>Compensação de tamanho horizontal</strong> → insira o valor negativo.</p>
+      </div>
+    </div>
+    <div class="alert alert--info" style="margin-top:14px">
+      <p><strong>Dica:</strong> Reimprima a peça de calibração para confirmar. Aceite erro residual de ±0,05 mm — abaixo disso, variação natural do material já domina.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">5</span> Quando NÃO usar tolerância X/Y</h2>
+    <div class="alert alert--warning">
+      <p><strong>Pé de elefante?</strong> Se a peça está maior só na base, use a <strong>Calculadora de Tolerância Inferior</strong>, não esta.</p>
+    </div>
+    <div class="alert alert--warning">
+      <p><strong>Encolhimento?</strong> Se a peça saiu menor que o arquivo, use a <strong>Calculadora de Compensação de Encolhimento (Scale)</strong>.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">6</span> Dúvidas frequentes</h2>
+    <div class="card"><p><strong>Preciso medir X e Y separadamente?</strong><br>Sim! Algumas impressoras têm desvio diferente em X e Y por diferença de resolução ou óptica do display.</p></div>
+    <div class="card"><p><strong>A cada troca de resina preciso recalibrar?</strong><br>Sim. Resinas diferentes têm viscosidade e tempo de cura distintos, o que muda o bleeding.</p></div>
+    <div class="card"><p><strong>Para encaixes precisos — qual tolerância usar?</strong><br>Aplique a compensação X/Y e depois use tolerâncias de projeto: 0,1–0,2 mm/lado para encaixe justo, 0,3–0,5 mm para encaixe folgado.</p></div>
+  </div>
+</div>
+<div class="footer">
+  <p><a href="/">← Voltar ao Quanton3D</a></p>
+  <p style="margin-top:8px">Quanton3D · Guia Técnico de Impressão em Resina</p>
+</div>
+</body>
+</html>
