@@ -71,7 +71,44 @@ function Guia() {
   );
 }
 
-export default function CalculadoraEncolhimento() {
+function SvgEncolhimento() {
+  return (
+    <div style={{ background: "var(--bg-void)", borderRadius: "var(--r-sm)", padding: "14px 14px 10px", marginBottom: "16px", overflow: "hidden" }}>
+      <svg viewBox="0 0 300 110" width="100%" aria-hidden="true">
+        {/* Retângulo STL (maior, tracejado) */}
+        <rect x="20" y="18" width="110" height="72" rx="3" fill="none" stroke="#2f7bff" strokeWidth="1.5" strokeDasharray="5 3" />
+        <text x="75" y="11" textAnchor="middle" fontSize="9.5" fill="#2f7bff">STL: 50,000 mm</text>
+
+        {/* Retângulo impresso (menor, sólido, sobreposto) */}
+        <rect x="33" y="29" width="84" height="52" rx="3" fill="rgba(220,145,60,0.1)" stroke="#dc9138" strokeWidth="1.5" />
+        <text x="75" y="100" textAnchor="middle" fontSize="9.5" fill="#dc9138">Impresso: 49,600 mm</text>
+
+        {/* Legenda */}
+        <rect x="20" y="103" width="10" height="6" rx="1" fill="none" stroke="#2f7bff" strokeDasharray="4 2" strokeWidth="1.2" />
+        <text x="33" y="109" fontSize="7.5" fill="currentColor" opacity="0.45">STL (projeto)</text>
+        <rect x="90" y="103" width="10" height="6" rx="1" fill="rgba(220,145,60,0.1)" stroke="#dc9138" strokeWidth="1.2" />
+        <text x="103" y="109" fontSize="7.5" fill="currentColor" opacity="0.45">impresso</text>
+
+        {/* Seta central */}
+        <line x1="155" y1="54" x2="188" y2="54" stroke="currentColor" strokeWidth="1.5" opacity="0.3" markerEnd="url(#arrowE)" />
+        <defs>
+          <marker id="arrowE" markerWidth="5" markerHeight="5" refX="5" refY="2.5" orient="auto">
+            <path d="M0,0 L5,2.5 L0,5 Z" fill="currentColor" opacity="0.4" />
+          </marker>
+        </defs>
+
+        {/* Resultado */}
+        <text x="195" y="38" fontSize="9" fill="currentColor" opacity="0.5">Scale =</text>
+        <text x="195" y="55" fontSize="14" fontWeight="700" fill="#2f7bff">101,210%</text>
+        <text x="195" y="68" fontSize="7.5" fill="currentColor" opacity="0.45">(50 ÷ 49,6 × 100)</text>
+        <text x="195" y="82" fontSize="7.5" fill="currentColor" opacity="0.45">Insira no fatiador</text>
+        <text x="195" y="92" fontSize="7.5" fill="currentColor" opacity="0.45">em "Shrinkage %"</text>
+      </svg>
+    </div>
+  );
+}
+
+export default function CalculadoraEncolhimento({ onAbrirGuias }) {
   const [teorico, setTeorico] = useState("");
   const [medido, setMedido] = useState("");
 
@@ -86,6 +123,8 @@ export default function CalculadoraEncolhimento() {
   return (
     <div className="calc-wrapper">
       <h2 className="calc-title">Compensação de Encolhimento</h2>
+
+      <SvgEncolhimento />
 
       <Guia />
 
@@ -132,6 +171,22 @@ export default function CalculadoraEncolhimento() {
       <div className="calc-info">
         <strong>Fórmula:</strong> Scale (%) = (Teórico ÷ Medido) × 100
       </div>
+
+      {onAbrirGuias && (
+        <div style={{ textAlign: "center", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)" }}>
+          <p style={{ margin: "0 0 8px", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+            Precisa entender quando usar Scale vs. Tolerância?
+          </p>
+          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/guias/04-guia-compensacao-encolhimento-quanton3d.html" target="_blank" rel="noreferrer" className="q-btn q-btn--primary" style={{ fontSize: "0.82rem", textDecoration: "none" }}>
+              📖 Dúvida? Clique aqui — Guia Técnico
+            </a>
+            <button type="button" className="q-btn q-btn--ghost" style={{ fontSize: "0.82rem" }} onClick={onAbrirGuias}>
+              Ver todos os guias →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
