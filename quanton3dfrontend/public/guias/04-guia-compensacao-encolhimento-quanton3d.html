@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compensação de Encolhimento — Quanton3D</title>
+<style>
+:root{--bg:#f8f9fb;--bg2:#fff;--fg:#1a1d23;--fg2:#4a5568;--border:#e2e8f0;--primary:#2563eb;--primary-bg:#eff6ff;--orange:#d97706;--orange-bg:#fffbeb;--green:#059669;--green-bg:#ecfdf5;--red:#dc2626;--red-bg:#fef2f2;--radius:10px;}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#1a1d26;--fg:#e8eaf0;--fg2:#9aa3b2;--border:#2d3148;--primary:#3b82f6;--primary-bg:#1e2d4a;--orange:#f59e0b;--orange-bg:#2a1f0a;--green:#10b981;--green-bg:#0a2018;--red:#f87171;--red-bg:#2a0f0f;}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;font-size:15px;padding-bottom:60px;}
+.hero{background:linear-gradient(135deg,#1e3a5f 0%,#1a2744 100%);color:#fff;padding:36px 20px 32px;text-align:center;}
+.hero-tag{display:inline-block;background:rgba(59,130,246,.35);color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;}
+.hero h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;line-height:1.25;margin-bottom:10px;}
+.hero p{opacity:.75;font-size:.95rem;max-width:520px;margin:0 auto;}
+.container{max-width:700px;margin:0 auto;padding:0 16px;}
+.section{margin-top:28px;}
+h2{font-size:1.1rem;font-weight:700;color:var(--fg);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+h2 .num{background:var(--primary);color:#fff;font-size:.75rem;font-weight:800;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+p{margin-bottom:12px;color:var(--fg2);}
+strong{color:var(--fg);font-weight:600;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px;}
+.alert{border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;font-size:.9rem;}
+.alert--info{background:var(--primary-bg);border-left:3px solid var(--primary);}
+.alert--warning{background:var(--orange-bg);border-left:3px solid var(--orange);}
+.alert--success{background:var(--green-bg);border-left:3px solid var(--green);}
+.alert--error{background:var(--red-bg);border-left:3px solid var(--red);}
+.alert p{margin-bottom:6px;} .alert p:last-child{margin-bottom:0;}
+.formula-box{background:var(--bg2);border:1px solid var(--primary);border-radius:var(--radius);padding:18px 20px;text-align:center;margin:18px 0;}
+.formula{font-family:"Courier New",monospace;font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:8px;}
+.formula-desc{font-size:.82rem;color:var(--fg2);}
+.example-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:16px 0;}
+.example-box h3{font-size:.9rem;font-weight:700;margin-bottom:12px;color:var(--green);}
+.example-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+.example-row:last-child{border-bottom:none;}
+.example-label{color:var(--fg2);}
+.example-val{font-weight:700;font-family:monospace;color:var(--fg);}
+.example-val--result{color:var(--primary);font-size:1rem;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+@media(max-width:500px){.compare-grid{grid-template-columns:1fr;}}
+.compare-card{border-radius:var(--radius);padding:16px;}
+.compare-card--tolerance{background:var(--primary-bg);border:1px solid var(--primary);}
+.compare-card--scale{background:var(--orange-bg);border:1px solid var(--orange);}
+.compare-card h4{font-size:.85rem;font-weight:700;margin-bottom:10px;}
+.compare-card--tolerance h4{color:var(--primary);}
+.compare-card--scale h4{color:var(--orange);}
+.compare-card ul{margin:0 0 0 16px;font-size:.82rem;color:var(--fg2);line-height:2;}
+.footer{margin-top:36px;padding:20px;text-align:center;font-size:.8rem;color:var(--fg2);border-top:1px solid var(--border);}
+.footer a{color:var(--primary);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Calibração · Guia 04</div>
+  <h1>Compensação de Encolhimento<br>Scale X/Y no Fatiador</h1>
+  <p>Quando usar Scale X/Y em vez de Tolerância e como calcular o fator de escala correto para sua resina.</p>
+</div>
+<div class="container">
+  <div class="section">
+    <div class="alert alert--info">
+      <p><strong>Encolhimento vs. Over-cure: qual a diferença?</strong></p>
+      <p>Resinas encolhem ao curar — é uma propriedade química inevitável. Já o over-cure (excesso de cura) faz a peça crescer além do arquivo por exposição excessiva. A compensação de tolerância X/Y corrige over-cure; o Scale X/Y corrige encolhimento. Se sua peça saiu <strong>menor</strong> que o arquivo, provavelmente é encolhimento.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">1</span> Tolerância X/Y vs. Scale — quando usar cada um</h2>
+    <div class="compare-grid">
+      <div class="compare-card compare-card--tolerance">
+        <h4>⬛ Tolerância X/Y</h4>
+        <ul>
+          <li>Peça saiu <strong>maior</strong> que o STL</li>
+          <li>Erro uniforme em todas as dimensões</li>
+          <li>Causado por over-cure / bleeding</li>
+          <li>Valor em mm (ex: −0,15 mm)</li>
+          <li>Aplica offset fixo em cada lado</li>
+        </ul>
+      </div>
+      <div class="compare-card compare-card--scale">
+        <h4>📐 Scale X/Y</h4>
+        <ul>
+          <li>Peça saiu <strong>menor</strong> que o STL</li>
+          <li>Erro proporcional ao tamanho</li>
+          <li>Causado por encolhimento pós-cura</li>
+          <li>Valor em % ou fator (ex: 1,008)</li>
+          <li>Amplia toda a geometria do modelo</li>
+        </ul>
+      </div>
+    </div>
+    <div class="alert alert--warning">
+      <p><strong>Como identificar encolhimento:</strong> Meça uma peça grande (50 mm) e uma pequena (10 mm). Se o erro percentual for parecido nos dois casos, é encolhimento. Se o erro em mm for parecido, é tolerância X/Y.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">2</span> A fórmula do fator de escala</h2>
+    <div class="formula-box">
+      <div class="formula">Fator = Dimensão no STL ÷ Dimensão Medida</div>
+      <div class="formula-desc">Aplique este fator como Scale X e Scale Y no fatiador antes de fatiar</div>
+    </div>
+    <div class="example-box">
+      <h3>📐 Exemplo — peça encolheu</h3>
+      <div class="example-row"><span class="example-label">Dimensão no STL</span><span class="example-val">50,000 mm</span></div>
+      <div class="example-row"><span class="example-label">Dimensão medida</span><span class="example-val">49,600 mm</span></div>
+      <div class="example-row"><span class="example-label">Fator de escala</span><span class="example-val">50,000 ÷ 49,600</span></div>
+      <div class="example-row"><span class="example-label">Resultado</span><span class="example-val example-val--result">1,00806 (≈ 100,8%)</span></div>
+    </div>
+    <div class="alert alert--success">
+      <p><strong>Aplicação:</strong> No fatiador, na tela de scale/dimensionamento do modelo, insira Scale X = 100,8% e Scale Y = 100,8%. Mantenha Scale Z em 100% (o eixo Z não encolhe do mesmo modo).</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">3</span> Como medir com precisão</h2>
+    <div class="card">
+      <p><strong>Use peças de referência grandes</strong> — Erros de 0,1 mm em uma peça de 50 mm representam 0,2%, que está na margem de erro do paquímetro. Quanto maior a peça de referência, mais preciso é o cálculo do fator.</p>
+    </div>
+    <div class="card">
+      <p><strong>Meça após cura final completa</strong> — A peça ainda encolhe durante a pós-cura UV. Meça sempre depois de curar completamente no tempo recomendado para sua resina.</p>
+    </div>
+    <div class="card">
+      <p><strong>Meça X e Y separadamente</strong> — Algumas resinas encolhem de forma diferente nos dois eixos por anisotropia da exposição UV. Se a diferença for maior que 0,2%, use Scale X e Scale Y diferentes.</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2><span class="num">4</span> E se tiver os dois problemas?</h2>
+    <div class="alert alert--warning">
+      <p><strong>Over-cure E encolhimento juntos</strong> são comuns. Nesse caso, a peça pode sair maior em algumas dimensões e menor em outras. A solução é:</p>
+      <p>1. Corrija o over-cure primeiro com tolerância X/Y</p>
+      <p style="margin-bottom:0">2. Se ainda sobrar encolhimento, aplique Scale por cima</p>
+    </div>
+    <div class="card">
+      <p><strong>Dica:</strong> Resinas de engenharia (ABS-like, tough) tendem a encolher mais que resinas standard. Resinas de castable e modelos dentários podem encolher de formas muito específicas — consulte o fabricante.</p>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <p><a href="/">← Voltar ao Quanton3D</a></p>
+  <p style="margin-top:8px">Quanton3D · Guia Técnico de Impressão em Resina</p>
+</div>
+</body>
+</html>
