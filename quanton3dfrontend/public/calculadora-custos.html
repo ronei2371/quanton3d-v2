@@ -1265,15 +1265,11 @@
           <div class="print-box"><h3>Pedido</h3><p><b>Projeto:</b> ${escapeHtml(d.projectName)}</p><p><b>Status:</b> ${escapeHtml(d.quoteStatus)}</p><p><b>Prazo:</b> ${escapeHtml(d.deadline || "A combinar")}</p><p><b>Validade:</b> ${escapeHtml(d.quoteValidity || "7")} dia(s)</p></div>
         </div>
         <div class="print-box"><h3>Descrição</h3><p>${escapeHtml(d.pieceDescription || "Não informado")}</p></div>
-        <div class="print-price"><span>Valor total sugerido</span><strong>${money(r.suggestedPrice)}</strong><span>Valor por peça: ${money(r.unitSuggestedPrice)} · Quantidade: ${r.pieces} peça(s)</span></div>
+        <div class="print-price">${r.agreedPrice > 0 ? `<span>Preço combinado/acordado</span><strong>${money(r.agreedPrice)}</strong>` : `<span>Valor total sugerido</span><strong>${money(r.suggestedPrice)}</strong>`}<span>Valor por peça: ${money(r.unitSuggestedPrice)} · Quantidade: ${r.pieces} peça(s)</span></div>
         <div class="print-grid">
           <div class="print-box"><h3>Material</h3><p><b>Resina:</b> ${escapeHtml(r.resinName)}</p><p><b>Consumo estimado:</b> ${num(r.resinKgBase, 3)} kg</p></div>
           <div class="print-box"><h3>Observações</h3><p>${escapeHtml(d.notes || "Sem observações adicionais.")}</p></div>
         </div>
-        <table class="print-table">
-          <thead><tr><th>Resumo interno</th><th>Valor</th></tr></thead>
-          <tbody><tr><td>Custo técnico total</td><td>${money(r.totalCost)}</td></tr><tr><td>Custo unitário</td><td>${money(r.unitRealCost)}</td></tr><tr><td>Lucro líquido estimado</td><td>${money(r.netProfit)}</td></tr><tr><td>Margem líquida estimada</td><td>${pct(r.netMargin)}</td></tr></tbody>
-        </table>
       `;
     }
 
