@@ -119,9 +119,7 @@ export function CadastroInicial({ formCliente, salvandoCliente, erroCadastro, al
       <form className="q-modal q-modal--narrow" onSubmit={salvarCliente} style={{ position: "relative" }}>
         <h2 style={{ fontSize: "1.2rem", marginBottom: "6px", paddingRight: "42px" }}>Seja bem-vindo!</h2>
         <p style={{ fontSize: "0.86rem", marginBottom: "16px" }}>Identifique-se para liberar o suporte técnico especializado.</p>
-        {motivo
-          ? <div className="q-alert" style={{ marginBottom: "14px", fontSize: "0.82rem", border: "1px solid rgba(47,123,255,0.4)", background: "rgba(47,123,255,0.08)" }}>{motivo}</div>
-         }
+        {motivo && <div className="q-alert" style={{ marginBottom: "14px", fontSize: "0.82rem", border: "1px solid rgba(47,123,255,0.4)", background: "rgba(47,123,255,0.08)" }}>{motivo}</div>}
         {erroCadastro && <div className="q-alert q-alert--error">{erroCadastro}</div>}
         <div className="q-form-grid" style={{ marginBottom: "16px" }}>
           <label className="q-field"><span>Seu Nome</span>
