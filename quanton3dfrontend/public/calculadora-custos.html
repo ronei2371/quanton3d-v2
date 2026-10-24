@@ -1004,11 +1004,16 @@
     }
 
     function collect() {
-      const data = {};
-      ids.forEach(id => data[id] = $(id).value);
-      data.resinName = RESINS[Number(data.resinSelect)]?.name || "Manual";
-      return data;
-    }
+  const data = {};
+  const isSimple = document.querySelector('.modo-simples') !== null;
+  ids.forEach(id => {
+    const el = $(id);
+    if (isSimple && el && el.closest('.secao-avancada')) { data[id] = ''; return; }
+    data[id] = el ? el.value : '';
+  });
+  data.resinName = RESINS[Number(data.resinSelect)]?.name || "Manual";
+  return data;
+}
 
     function fill(data) {
       ids.forEach(id => {
